@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Nakama JS Test Example</title>
+  </head>
+  <body>
+    <script src="dist/nakama-js.umd.js"></script>
+    <script>
+      var client = new nakamajs.Client("defaultkey");
+      var request = nakamajs.AuthenticateRequest.email("hello@world.com", "password");
+
+      client.login(request).then(function(session) {
+        return client.connect(session);
+      }).catch(function(res) {
+        return client.register(request);
+      }).then(function(session){
+        return client.connect(session);
+      }).then(function(session){
+        var req = new nakamajs.SelfFetchRequest();
+        return client.send(req)
+      }).catch(function(err){
+        console.log(err);
+      });
+    </script>
+  </body>
+</html>
