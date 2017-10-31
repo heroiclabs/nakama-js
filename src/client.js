@@ -174,7 +174,7 @@ export class Client {
       if (message.self) {
         p.resolve(message.self.self)
       } else {
-        if (window.console) {
+        if (window.console && Object.keys(message).length > 1) { // if the object has properties, other than the collationId, log a warning
           console.log("Unrecognized message received:")
           console.log(message)
         }
@@ -192,6 +192,14 @@ export class Client {
         this.socket_ = null;
       }
     });
+  }
+
+  logout() {
+    return this.send({
+      payload_: {
+        logout: {}
+      }
+    })
   }
 
   send(request) {
@@ -269,6 +277,55 @@ const uuidv4 = function() {
     return result.toString(16);
   });
 };
+
+export class LinkRequest {
+  constructor(message) {
+    this.payload_ = message;
+  }
+
+  static custom(id) {
+    return new LinkRequest({
+      link: {
+        custom: id
+      }
+    });
+  }
+
+  static device(id) {
+    return new LinkRequest({
+      link: {
+        device: id
+      }
+    });
+  }
+
+  static email(email, password) {
+    return new LinkRequest({
+      link: {
+        email: {
+          email: email,
+          password: password
+        }
+      }
+    });
+  }
+
+  static facebook(oauthToken) {
+    return new LinkRequest({
+      link: {
+        facebook: oauthToken
+      }
+    });
+  }
+
+  static google(oauthToken) {
+    return new LinkRequest({
+      link: {
+        google: oauthToken
+      }
+    });
+  }
+}
 
 export class SelfFetchRequest {
   constructor(message) {

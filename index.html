@@ -18,7 +18,7 @@
       }).then(function(session){
         return client.connect(session);
       }).then(function(session){
-        var req = new nakamajs.SelfFetchRequest();
+        var req = nakamajs.LinkRequest.device("12455522234331fe");
         return client.send(req)
       }).catch(function(err){
         console.log(err);
