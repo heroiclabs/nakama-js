@@ -19,6 +19,20 @@ const DEFAULT_SERVER_KEY = 'defaultkey';
 const DEFAULT_HOST = '127.0.0.1';
 const DEFAULT_PORT = '7350';
 
+/**
+ * Build a string which looks like a UUIDv4 type.
+ */
+const uuidv4 = function() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, character => {
+    const randomNumber = Math.random() * 16 | 0,
+          result =
+            character === 'x' ?
+              randomNumber :
+              randomNumber & 0x3 | 0x8;
+    return result.toString(16);
+  });
+};
+
 export class AuthenticateRequest {
   constructor(message) {
     this.message_ = message;
@@ -78,39 +92,7 @@ export class Client {
     this.collationIds_ = new Map();
   }
 
-  authenticate_(request, path) {
-    const message = request.message_;
-    message["collationId"] = uuidv4();
-    const url = new URL(window.location.href);
-    url.protocol = (this.ssl_) ? 'https' : 'http';
-    url.hostname = this.host_;
-    url.port = this.port_;
-    url.pathname = path;
-
-    if (this.verbose_ && window.console) {
-      console.log("AuthenticateRequest: %s -> %s", url, JSON.stringify(message));
-    }
-
-    return fetch(url.toString(), {
-      "method": "POST",
-      "body": JSON.stringify(message),
-      "headers": {
-        "Accept-Language": this.lang_,
-        "Authorization": 'Basic ' + btoa(this.serverKey_ + ':'),
-        "Content-Type": 'application/json',
-        "Accept": 'application/json',
-        "User-Agent": `nakama/${VERSION}`
-      }
-    }).then(function(response) {
-      return response.json();
-    }).then(function(response) {
-      if (response.error) {
-        throw response.error;
-      } else {
-        return Session.restore(response.session.token);
-      }
-    });
-  }
+  ondisconnect(event) {}
 
   login(request) {
     return this.authenticate_(request, '/user/login');
@@ -118,6 +100,14 @@ export class Client {
 
   register(request) {
     return this.authenticate_(request, '/user/register');
+  }
+
+  disconnect() {
+    this.socket_.close();
+  }
+
+  logout() {
+    return this.send_({ logout: {} }, null)
   }
 
   connect(session) {
@@ -194,15 +184,14 @@ export class Client {
     });
   }
 
-  logout() {
-    return this.send({
-      payload_: {
-        logout: {}
-      }
-    })
+  send(request) {
+    var collationId = uuidv4();
+    var message = request.build_();
+    message.collationId = collationId;
+    return this.send_(message, collationId);
   }
 
-  send(request) {
+  send_(message, collationId) {
     if (this.socket_ == null) {
       return new Promise((resolve, reject) => {
         reject("Socket connection has not been established yet.");
@@ -210,38 +199,65 @@ export class Client {
     }
 
     return new Promise((resolve, reject) => {
-      var collationId = uuidv4();
-
-      this.collationIds_[collationId] = {
-        resolve: resolve,
-        reject: reject
+      if (collationId) {
+        this.collationIds_[collationId] = {
+          resolve: resolve,
+          reject: reject
+        }
       }
 
-      var message = JSON.parse(JSON.stringify(request.payload_));
-      message.collationId = collationId;
-
+      var j = JSON.stringify(message)
       if (this.verbose_ && window.console) {
-        console.log("Request: %s", JSON.stringify(message));
+        console.log("Request: %s", j);
       }
 
-      this.socket_.send(JSON.stringify(message))
+      this.socket_.send(j)
     })
   }
 
-  ondisconnect(event) {}
+  authenticate_(request, path) {
+    const message = request.message_;
+    message["collationId"] = uuidv4();
+    const url = new URL(window.location.href);
+    url.protocol = (this.ssl_) ? 'https' : 'http';
+    url.hostname = this.host_;
+    url.port = this.port_;
+    url.pathname = path;
 
-  disconnect() {
-    this.socket_.close();
+    if (this.verbose_ && window.console) {
+      console.log("AuthenticateRequest: %s -> %s", url, JSON.stringify(message));
+    }
+
+    return fetch(url.toString(), {
+      "method": "POST",
+      "body": JSON.stringify(message),
+      "headers": {
+        "Accept-Language": this.lang_,
+        "Authorization": 'Basic ' + btoa(this.serverKey_ + ':'),
+        "Content-Type": 'application/json',
+        "Accept": 'application/json',
+        "User-Agent": `nakama/${VERSION}`
+      }
+    }).then(function(response) {
+      return response.json();
+    }).then(function(response) {
+      if (response.error) {
+        throw response.error;
+      } else {
+        return Session.restore(response.session.token);
+      }
+    });
   }
 };
 
 export class Session {
   constructor(createdAt, expiresAt, handle, id, token) {
-    this.createdAt_ = createdAt;
-    this.expiresAt_ = expiresAt;
-    this.handle_ = handle;
-    this.id_ = id;
     this.token_ = token;
+
+    this.createdAt = createdAt;
+    this.expiresAt = expiresAt;
+    this.handle = handle;
+    this.id = id;
   }
 
   /**
@@ -249,7 +265,7 @@ export class Session {
    * @returns {bool} True if the session has expired.
    */
   isexpired(currenttime) {
-    return (this.expiresAt_ - currenttime) < 0;
+    return (this.expiresAt - currenttime) < 0;
   }
 
   static restore(jwt) {
@@ -259,78 +275,84 @@ export class Session {
     }
     const decoded = JSON.parse(atob(parts[1]));
     const expiresAt = Math.floor(parseInt(decoded['exp']) * 1000);
-    // TODO store "id" as byte[]
+
     return new Session(Date.now(), expiresAt, decoded['handle'], decoded['id'], jwt);
   }
 }
 
-/**
- * Build a string which looks like a UUIDv4 type.
- */
-const uuidv4 = function() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, character => {
-    const randomNumber = Math.random() * 16 | 0,
-          result =
-            character === 'x' ?
-              randomNumber :
-              randomNumber & 0x3 | 0x8;
-    return result.toString(16);
-  });
-};
-
 export class LinkRequest {
-  constructor(message) {
-    this.payload_ = message;
+  constructor() {
+    this.custom = null;
+    this.device = null;
+    this.facebook = null;
+    this.google = null;
+    this.email = {
+      email: "",
+      password: ""
+    };
   }
 
-  static custom(id) {
-    return new LinkRequest({
-      link: {
-        custom: id
-      }
-    });
+  build_() {
+    if (this.custom) {
+      return {link: {custom: this.custom}}
+    }
+
+    if (this.device) {
+      return {link: {device: this.device}}
+    }
+
+    if (this.facebook) {
+      return {link: {facebook: this.facebook}}
+    }
+
+    if (this.google) {
+      return {link: {google: this.google}}
+    }
+
+    if (this.email.email != "") {
+      return {link: {email: this.email}}
+    }
+  }
+}
+
+export class UnlinkRequest {
+  constructor() {
+    this.custom = null;
+    this.device = null;
+    this.facebook = null;
+    this.google = null;
+    this.email = null;
   }
 
-  static device(id) {
-    return new LinkRequest({
-      link: {
-        device: id
-      }
-    });
-  }
+  build_() {
+    if (this.custom) {
+      return {unlink: {custom: this.custom}}
+    }
 
-  static email(email, password) {
-    return new LinkRequest({
-      link: {
-        email: {
-          email: email,
-          password: password
-        }
-      }
-    });
-  }
+    if (this.device) {
+      return {unlink: {device: this.device}}
+    }
 
-  static facebook(oauthToken) {
-    return new LinkRequest({
-      link: {
-        facebook: oauthToken
-      }
-    });
-  }
+    if (this.facebook) {
+      return {unlink: {facebook: this.facebook}}
+    }
 
-  static google(oauthToken) {
-    return new LinkRequest({
-      link: {
-        google: oauthToken
-      }
-    });
+    if (this.google) {
+      return {unlink: {google: this.google}}
+    }
+
+    if (this.email) {
+      return {unlink: {email: this.email}}
+    }
   }
 }
 
 export class SelfFetchRequest {
-  constructor(message) {
-    this.payload_ = {
+  constructor() {}
+
+  build_() {
+    return {
       selfFetch: {}
-    };
+    }
   }
 }
