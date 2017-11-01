@@ -78,14 +78,14 @@ export class Client {
               port = DEFAULT_PORT,
               lang = 'en',
               ssl = false,
-              verbose = true) {
-    this.serverKey_ = serverkey;
-    this.host_ = host;
-    this.port_ = port;
-    this.lang_ = lang;
-    this.ssl_ = ssl;
-    this.verbose_ = verbose;
-    this.serverTimestamp_ = 0;
+              verbose = false) {
+    this.serverKey = serverkey;
+    this.host = host;
+    this.port = port;
+    this.lang = lang;
+    this.ssl = ssl;
+    this.verbose = verbose;
+    this.serverTimestamp = 0;
 
     // private
     this.socket_ = null;
@@ -107,7 +107,7 @@ export class Client {
   }
 
   logout() {
-    return this.send_({ logout: {} }, null)
+    return this.send_({ logout: {} }, null, "Logout")
   }
 
   connect(session) {
@@ -119,13 +119,13 @@ export class Client {
 
     const searchParams = new URLSearchParams();
     searchParams.append("token", session.token_);
-    searchParams.append("lang", this.lang_);
+    searchParams.append("lang", this.lang);
     searchParams.append("format", "json");
 
     const url = new URL(window.location.href);
-    url.protocol = (this.ssl_) ? 'wss' : 'ws';
-    url.hostname = this.host_;
-    url.port = this.port_;
+    url.protocol = (this.ssl) ? 'wss' : 'ws';
+    url.hostname = this.host;
+    url.port = this.port;
     url.search = searchParams.toString();
     url.pathname = '/api';
 
@@ -138,19 +138,18 @@ export class Client {
     this.socket_.onmessage = (event) => {
       var message = JSON.parse(event.data)
       if (message.heartbeat) {
-        this.serverTimestamp_ = message.heartbeat
+        this.serverTimestamp = message.heartbeat
         return
       }
 
-      if (this.verbose_ && window.console) {
-        console.log("Response: %s", JSON.stringify(message));
+      if (this.verbose && window.console) {
+        console.log("Response: %o", message);
       }
 
       var p = this.collationIds_[message.collationId]
       if (p == null) {
         if (window.console) {
-          console.log("Did not find promise for message:")
-          console.log(message)
+          console.error("Did not find promise for message: %o", message)
         }
         return
       }
@@ -163,10 +162,22 @@ export class Client {
 
       if (message.self) {
         p.resolve(message.self.self)
+      } else if (message.users) {
+        message.users.users.forEach(function(user) {
+          // translate base64 into json object
+          user.metadata = JSON.parse(atob(user.metadata));
+        })
+        p.resolve(message.users.users)
+      } else if (message.storageData) {
+        p.resolve(message.storageData)
+      } else if (message.storageKeys) {
+        p.resolve(message.storageKeys)
       } else {
         if (window.console && Object.keys(message).length > 1) { // if the object has properties, other than the collationId, log a warning
-          console.log("Unrecognized message received:")
-          console.log(message)
+          console.error("Unrecognized message received: %o", message);
+          p.resolve(message);
+        } else {
+          p.resolve();
         }
       }
     }
@@ -188,10 +199,10 @@ export class Client {
     var collationId = uuidv4();
     var message = request.build_();
     message.collationId = collationId;
-    return this.send_(message, collationId);
+    return this.send_(message, collationId, request.constructor.name);
   }
 
-  send_(message, collationId) {
+  send_(message, collationId, requestName) {
     if (this.socket_ == null) {
       return new Promise((resolve, reject) => {
         reject("Socket connection has not been established yet.");
@@ -206,12 +217,11 @@ export class Client {
         }
       }
 
-      var j = JSON.stringify(message)
-      if (this.verbose_ && window.console) {
-        console.log("Request: %s", j);
+      if (this.verbose && window.console) {
+        console.log("%s: %o", requestName, message);
       }
 
-      this.socket_.send(j)
+      this.socket_.send(JSON.stringify(message))
     })
   }
 
@@ -219,28 +229,37 @@ export class Client {
     const message = request.message_;
     message["collationId"] = uuidv4();
     const url = new URL(window.location.href);
-    url.protocol = (this.ssl_) ? 'https' : 'http';
-    url.hostname = this.host_;
-    url.port = this.port_;
+    url.protocol = (this.ssl) ? 'https' : 'http';
+    url.hostname = this.host;
+    url.port = this.port;
     url.pathname = path;
 
-    if (this.verbose_ && window.console) {
-      console.log("AuthenticateRequest: %s -> %s", url, JSON.stringify(message));
+    if (this.verbose && window.console) {
+      console.log("AuthenticateRequest: %s, %o", url.toString(), message);
     }
 
+    var verbose = this.verbose;
     return fetch(url.toString(), {
       "method": "POST",
       "body": JSON.stringify(message),
       "headers": {
-        "Accept-Language": this.lang_,
-        "Authorization": 'Basic ' + btoa(this.serverKey_ + ':'),
+        "Accept-Language": this.lang,
+        "Authorization": 'Basic ' + btoa(this.serverKey + ':'),
         "Content-Type": 'application/json',
         "Accept": 'application/json',
         "User-Agent": `nakama/${VERSION}`
       }
     }).then(function(response) {
+      if (verbose && window.console) {
+        console.log("AuthenticateResponse: %o", response);
+      }
+
       return response.json();
     }).then(function(response) {
+      if (verbose && window.console) {
+        console.log("AuthenticateResponse (body): %o", response);
+      }
+
       if (response.error) {
         throw response.error;
       } else {
@@ -276,12 +295,13 @@ export class Session {
     const decoded = JSON.parse(atob(parts[1]));
     const expiresAt = Math.floor(parseInt(decoded['exp']) * 1000);
 
-    return new Session(Date.now(), expiresAt, decoded['handle'], decoded['id'], jwt);
+    return new Session(Date.now(), expiresAt, decoded['han'], decoded['uid'], jwt);
   }
 }
 
 export class LinkRequest {
   constructor() {
+    // only set one of these fields
     this.custom = null;
     this.device = null;
     this.facebook = null;
@@ -317,6 +337,7 @@ export class LinkRequest {
 
 export class UnlinkRequest {
   constructor() {
+    // only set one of these fields
     this.custom = null;
     this.device = null;
     this.facebook = null;
@@ -354,5 +375,252 @@ export class SelfFetchRequest {
     return {
       selfFetch: {}
     }
+  }
+}
+
+export class SelfUpdateRequest {
+  constructor() {
+    this.handle = null;
+    this.fullname = null;
+    this.timezone = null;
+    this.location = null;
+    this.lang = null;
+    this.metadata = null;
+    this.avatarUrl = null;
+  }
+
+  build_() {
+    return {
+      selfUpdate: {
+        handle: this.handle,
+        fullname: this.fullname,
+        timezone: this.timezone,
+        location: this.location,
+        lang: this.lang,
+        avatarUrl: this.avatarUrl,
+        metadata: this.metadata ? btoa(JSON.stringify(this.metadata)) : btoa("{}")
+      }
+    }
+  }
+}
+
+export class UsersFetchRequest {
+  constructor() {
+    // base64 user IDs
+    this.userIds = [];
+    this.handles = [];
+  }
+
+  build_() {
+    var msg = {usersFetch: {users: []}}
+    this.userIds.forEach(function(id) {
+      msg.usersFetch.users.push({userId: id})
+    });
+    this.handles.forEach(function(handle) {
+      msg.usersFetch.users.push({handle: handle})
+    });
+    return msg
+  }
+}
+
+export class StorageListRequest {
+  constructor() {
+    // base64 user ID
+    this.userId = null;
+    this.bucket = null;
+    this.collection = null;
+    this.limit = null;
+    this.cursor = null;
+  }
+
+  build_() {
+    return {
+      storageList: {
+        userId: this.userId,
+        bucket: this.bucket,
+        collection: this.collection,
+        limit: this.limit,
+        cursor: this.cursor
+      }
+    }
+  }
+}
+
+export class StorageFetchRequest {
+  constructor() {
+    this.keys = [];
+  }
+
+  fetch(bucket, collection, record, userId) {
+    this.keys.push({
+      bucket: bucket,
+      collection: collection,
+      record: record,
+      userId: userId
+    })
+    return this;
+  }
+
+  build_() {
+    return {storageFetch: {keys: this.keys}}
+  }
+}
+
+export class StorageWriteRequest {
+  constructor() {
+    this.data = [];
+  }
+
+  write(bucket, collection, record, value, permissionRead = 1, permissionWrite = 1, version) {
+    this.data.push({
+      bucket: bucket,
+      collection: collection,
+      record: record,
+      value: value ? btoa(JSON.stringify(value)) : btoa("{}"),
+      version: version ? btoa(version) : null,
+      permissionRead: permissionRead,
+      permissionWrite: permissionWrite
+    })
+    return this;
+  }
+
+  build_() {
+    return {storageWrite: {data: this.data}}
+  }
+}
+
+export class StorageRemoveRequest {
+  constructor() {
+    this.keys = [];
+  }
+
+  remove(bucket, collection, record, userId) {
+    this.keys.push({
+      bucket: bucket,
+      collection: collection,
+      record: record,
+      userId: userId
+    })
+    return this;
+  }
+
+  build_() {
+    return {storageRemove: {keys: this.keys}}
+  }
+}
+
+export class StorageUpdateRequest {
+  constructor() {
+    this.updates = [];
+  }
+
+  build_() {
+    return {storageUpdate: {updates: this.updates}};
+  }
+
+  /**
+    storageOps variable must be an array
+  */
+  update(bucket, collection, record, storageOps = [], permissionRead = 1, permissionWrite = 1, version) {
+    this.updates.push({
+      key: {
+        bucket: bucket,
+        collection: collection,
+        record: record,
+        version: version ? btoa(version) : null,
+      },
+      permissionRead: permissionRead,
+      permissionWrite: permissionWrite,
+      ops: storageOps,
+    })
+    return this;
+  }
+
+  static add(path, value) {
+    return {
+      op: 0,
+      path: path,
+      value: btoa(JSON.stringify(value))
+    };
+  }
+
+  static append(path, value) {
+    return {
+      op: 1,
+      path: path,
+      value: btoa(JSON.stringify(value))
+    };
+  }
+
+  static copy(path, from) {
+    return {
+      op: 2,
+      path: path,
+      from: from
+    };
+  }
+
+  static incr(path, value) {
+    return {
+      op: 3,
+      path: path,
+      value: btoa(JSON.stringify(value))
+    };
+  }
+
+  static init(path, value) {
+    return {
+      op: 4,
+      path: path,
+      value: btoa(JSON.stringify(value))
+    };
+  }
+
+  static merge(path, from) {
+    return {
+      op: 5,
+      path: path,
+      from: from
+    };
+  }
+
+  static move(path, from) {
+    return {
+      op: 6,
+      path: path,
+      from: from
+    };
+  }
+
+  static remove(path) {
+    return {
+      op: 8,
+      path: path,
+    };
+  }
+
+  static replace(path, value) {
+    return {
+      op: 9,
+      path: path,
+      value: btoa(JSON.stringify(value))
+    };
+  }
+
+  static test(path, value) {
+    return {
+      op: 10,
+      path: path,
+      value: btoa(JSON.stringify(value))
+    };
+  }
+
+  static compare(path, value, assertValue) {
+    return {
+      op: 11,
+      path: path,
+      value: btoa(JSON.stringify(value)),
+      assert: assertValue
+    };
   }
 }
