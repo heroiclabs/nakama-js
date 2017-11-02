@@ -165,7 +165,7 @@ export class Client {
           }
           return
         }
-        this.collationIds_.delete(message.collationId)
+        this.collationIds_.delete(message.collationId);
 
         if (message.error) {
           p.reject(message.error);
@@ -194,9 +194,27 @@ export class Client {
         } else if (message.topicMessages) {
           message.topicMessages.messages.forEach(function(message) {
             // translate base64 into json object
-            message.data = JSON.parse(atob(message.data))
+            message.data = JSON.parse(atob(message.data));
           })
           p.resolve(message.topicMessages);
+        } else if (message.groups) {
+          message.groups.groups.forEach(function(group) {
+            // translate base64 into json object
+            group.metadata = JSON.parse(atob(group.metadata));
+          })
+          p.resolve(message.groups);
+        } else if (message.groupsSelf) {
+          message.groupsSelf.groupsSelf.forEach(function(groupSelf) {
+            // translate base64 into json object
+            groupSelf.group.metadata = JSON.parse(atob(groupSelf.group.metadata));
+          })
+          p.resolve(message.groupsSelf);
+        } else if (message.groupUsers) {
+          message.groupUsers.users.forEach(function(groupUser) {
+            // translate base64 into json object
+            groupUser.user.metadata = JSON.parse(atob(groupUser.user.metadata));
+          })
+          p.resolve(message.groupUsers);
         } else {
           // if the object has properties, other than the collationId, log a warning
           if (window.console && Object.keys(message).length > 1) {
@@ -799,19 +817,19 @@ export class GroupsCreateRequest {
     this.groups = [];
   }
 
-  create(name, description, avatarUrl, lang, metadata, private) {
+  create(name, description, avatarUrl, lang, metadata, privateGroup) {
     this.groups.push({
       name: name,
       description: description,
       avatarUrl: avatarUrl,
       lang: lang,
-      private: private,
-      metadata: btoa(JSON.stringify(metadata)),
+      "private": privateGroup,
+      metadata: metadata ? btoa(JSON.stringify(metadata)) : btoa("{}"),
     })
   }
 
   build_() {
-    return {groupsCreate: this.groups};
+    return {groupsCreate: {groups: this.groups}};
   }
 }
 
@@ -820,35 +838,37 @@ export class GroupsUpdateRequest {
     this.groups = [];
   }
 
-  update(groupId, name, description, avatarUrl, lang, metadata, private) {
+  update(groupId, name, description, avatarUrl, lang, metadata, privateGroup) {
     this.groups.push({
       groupId: groupId,
       name: name,
       description: description,
       avatarUrl: avatarUrl,
       lang: lang,
-      private: private,
-      metadata: btoa(JSON.stringify(metadata)),
+      "private": privateGroup,
+      metadata: metadata ? btoa(JSON.stringify(metadata)) : btoa("{}"),
     })
   }
 
   build_() {
-    return {groupsUpdate: this.groups};
+    return {groupsUpdate: {groups: this.groups}};
   }
 }
 
 export class GroupsRemoveRequest {
   constructor() {
-    this.groupIds = []; // this is a list of groupIds.
+    // this is a list of groupIds.
+    this.groups = [];
   }
 
   build_() {
-    return {groupsRemove: this.groupId};
+    return {groupsRemove: {groupIds: this.groups}};
   }
 }
 
 export class GroupsFetchRequest {
   constructor() {
+    // this is a list of groupIds.
     this.groupIds = [];
     this.names = [];
   }
@@ -885,11 +905,11 @@ export class GroupsListRequest {
     }};
 
     if (this.lang) {
-      msg.lang = this.lang;
+      msg.groupsList.lang = this.lang;
     } else if (this.createdAt) {
-      msg.createdAt = this.createdAt;
+      msg.groupsList.createdAt = this.createdAt;
     } else if (this.count) {
-      msg.count = this.count;
+      msg.groupsList.count = this.count;
     }
 
     return msg;
@@ -916,21 +936,23 @@ export class GroupUsersListRequest {
 
 export class GroupsJoinRequest {
   constructor() {
-    this.groupIds = [];
+    // this is a list of groupIds.
+    this.groups = [];
   }
 
   build_() {
-    return {groupsJoin: {groupIds: this.groupIds}};
+    return {groupsJoin: {groupIds: this.groups}};
   }
 }
 
 export class GroupsLeaveRequest {
   constructor() {
-    this.groupIds = [];
+    // this is a list of groupIds.
+    this.groups = [];
   }
 
   build_() {
-    return {groupsLeave: {groupIds: this.groupIds}};
+    return {groupsLeave: {groupIds: this.groups}};
   }
 }
 

@@ -25,6 +25,7 @@
 
       var userId = null;
       var topicId = null;
+      var groupId = null;
 
       var request = nakamajs.AuthenticateRequest.email("hello@world.com", "password");
       client.login(request).then(function(session) {
@@ -99,9 +100,32 @@
         return client.send(req);
       }).then(function(result) {
         console.log("Result: %o", result);
-        console.log("TopicId: %o", topicId);
         var req = new nakamajs.TopicsLeaveRequest();
         req.topics.push(topicId);
+        return client.send(req);
+      }).then(function() {
+        var req = new nakamajs.GroupsCreateRequest();
+        req.create("groupName", "", "", "js");
+        return client.send(req);
+      }).then(function(result) {
+        console.log("Result: %o", result);
+        groupId = result.groups[0].id;
+
+        var req = new nakamajs.GroupsListRequest();
+        req.lang = "js";
+        return client.send(req);
+      }).then(function(result) {
+        console.log("Result: %o", result);
+        var req = new nakamajs.GroupsSelfListRequest();
+        return client.send(req);
+      }).then(function(result) {
+        console.log("Result: %o", result);
+        var req = new nakamajs.GroupUsersListRequest(groupId);
+        return client.send(req);
+      }).then(function(result) {
+        console.log("Result: %o", result);
+        var req = new nakamajs.GroupsRemoveRequest();
+        req.groups.push(groupId);
         return client.send(req);
       }).then(function() {
         client.logout();
