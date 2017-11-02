@@ -93,6 +93,8 @@ export class Client {
   }
 
   ondisconnect(event) {}
+  ontopicmessage(event) {}
+  ontopicpresence(event) {}
 
   login(request) {
     return this.authenticate_(request, '/user/login');
@@ -137,47 +139,72 @@ export class Client {
 
     this.socket_.onmessage = (event) => {
       var message = JSON.parse(event.data)
-      if (message.heartbeat) {
-        this.serverTimestamp = message.heartbeat
-        return
-      }
 
-      if (this.verbose && window.console) {
+      if (this.verbose && window.console && !message.heartbeat) {
         console.log("Response: %o", message);
       }
 
-      var p = this.collationIds_[message.collationId]
-      if (p == null) {
-        if (window.console) {
-          console.error("Did not find promise for message: %o", message)
-        }
-        return
-      }
-      this.collationIds_.delete(message.collationId)
-
-      if (message.error) {
-        p.reject(message.error)
-        return
-      }
-
-      if (message.self) {
-        p.resolve(message.self.self)
-      } else if (message.users) {
-        message.users.users.forEach(function(user) {
-          // translate base64 into json object
-          user.metadata = JSON.parse(atob(user.metadata));
-        })
-        p.resolve(message.users.users)
-      } else if (message.storageData) {
-        p.resolve(message.storageData)
-      } else if (message.storageKeys) {
-        p.resolve(message.storageKeys)
-      } else {
-        if (window.console && Object.keys(message).length > 1) { // if the object has properties, other than the collationId, log a warning
-          console.error("Unrecognized message received: %o", message);
-          p.resolve(message);
+      if (!message.collationId) {
+        if (message.heartbeat) {
+          this.serverTimestamp = message.heartbeat
+        } else if (message.topicMessage) {
+          message.topicMessage.data = JSON.parse(atob(message.topicMessage.data))
+          this.ontopicmessage(message.topicMessage);
+        } else if (message.topicPresence) {
+          this.ontopicpresence(message.topicPresence);
         } else {
-          p.resolve();
+          if (window.console) {
+            console.error("Unrecognized message received: %o", message);
+          }
+        }
+      } else {
+        var p = this.collationIds_[message.collationId]
+        if (!p) {
+          if (window.console) {
+            console.error("Did not find promise for message: %o", message)
+          }
+          return
+        }
+        this.collationIds_.delete(message.collationId)
+
+        if (message.error) {
+          p.reject(message.error);
+        } else if (message.self) {
+          p.resolve(message.self);
+        } else if (message.users) {
+          message.users.users.forEach(function(user) {
+            // translate base64 into json object
+            user.metadata = JSON.parse(atob(user.metadata));
+          })
+          p.resolve(message.users.users);
+        } else if (message.storageData) {
+          p.resolve(message.storageData);
+        } else if (message.storageKeys) {
+          p.resolve(message.storageKeys);
+        } else if (message.friends) {
+          message.friends.friends.forEach(function(friend) {
+            // translate base64 into json object
+            friend.user.metadata = JSON.parse(atob(friend.user.metadata));
+          })
+          p.resolve(message.friends);
+        } else if (message.topics) {
+          p.resolve(message.topics);
+        } else if (message.topicMessageAck) {
+          p.resolve(message.topicMessageAck);
+        } else if (message.topicMessages) {
+          message.topicMessages.messages.forEach(function(message) {
+            // translate base64 into json object
+            message.data = JSON.parse(atob(message.data))
+          })
+          p.resolve(message.topicMessages);
+        } else {
+          // if the object has properties, other than the collationId, log a warning
+          if (window.console && Object.keys(message).length > 1) {
+            console.error("Unrecognized message received: %o", message);
+            p.resolve(message);
+          } else {
+            p.resolve();
+          }
         }
       }
     }
@@ -624,3 +651,144 @@ export class StorageUpdateRequest {
     };
   }
 }
+
+export class FriendsAddRequest {
+  constructor() {
+    // base64 user IDs
+    this.userIds = [];
+    this.handles = [];
+  }
+
+  build_() {
+    var msg = {friendsAdd: {friends: []}}
+    this.userIds.forEach(function(id) {
+      msg.friendsAdd.friends.push({userId: id})
+    });
+    this.handles.forEach(function(handle) {
+      msg.friendsAdd.friends.push({handle: handle})
+    });
+    return msg
+  }
+}
+
+export class FriendsRemoveRequest {
+  constructor() {
+    // base64 user IDs
+    this.userIds = [];
+  }
+
+  build_() {
+    var msg = {friendsRemove: {userIds: []}}
+    this.userIds.forEach(function(id) {
+      msg.friendsRemove.userIds.push({userId: id})
+    });
+    return msg
+  }
+}
+
+export class FriendsBlockRequest {
+  constructor() {
+    // base64 user IDs
+    this.userIds = [];
+  }
+
+  build_() {
+    var msg = {friendsBlock: {userIds: []}}
+    this.userIds.forEach(function(id) {
+      msg.friendsBlock.userIds.push({userId: id})
+    });
+    return msg
+  }
+}
+
+export class FriendsListRequest {
+  constructor() {}
+
+  build_() {
+    return {
+      friendsList: {}
+    }
+  }
+}
+
+export class TopicsJoinRequest {
+  constructor() {
+    this.topics = [];
+  }
+
+  dm(userId) {
+    this.topics.push({userId: userId})
+  }
+
+  group(groupId) {
+    this.topics.push({groupId: groupId})
+  }
+
+  room(room) {
+    this.topics.push({room: room})
+  }
+
+  build_() {
+    return {topicsJoin: {joins: this.topics}}
+  }
+}
+
+export class TopicsLeaveRequest {
+  constructor() {
+    // this is a list of topicIds.
+    this.topics = [];
+  }
+
+  build_() {
+    return {topicsLeave: {topics: this.topics}}
+  }
+}
+
+
+export class TopicMessageSendRequest {
+  constructor() {
+    // this is the topicId.
+    this.topic = null;
+    this.data = null;
+  }
+
+  build_() {
+    return {topicsLeave: {
+      topic: this.topic,
+      data: btoa(JSON.stringify(this.data))
+    }}
+  }
+}
+
+export class TopicMessagesListRequest {
+  constructor() {
+    this.cursor = null;
+    this.forward = null; // boolean
+    this.limit = null; // number <= 100
+
+    // set only one of the followings
+    this.userId = null;
+    this.room = null;
+    this.groupId = null;
+  }
+
+  build_() {
+    var msg = {topicMessageList: {
+      cursor: this.cursor,
+      forward: this.forward,
+      limit: this.limit
+    }}
+
+    if (this.userId) {
+      msg.userId = this.userId;
+    } else if (this.room) {
+      msg.room = this.room;
+    } else if (this.groupId) {
+      msg.groupId = this.groupId;
+    }
+
+    return msg;
+  }
+}
+
+
