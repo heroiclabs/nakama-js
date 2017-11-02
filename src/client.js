@@ -748,7 +748,6 @@ export class TopicsLeaveRequest {
   }
 }
 
-
 export class TopicMessageSendRequest {
   constructor() {
     // this is the topicId.
@@ -795,4 +794,197 @@ export class TopicMessagesListRequest {
   }
 }
 
+export class GroupsCreateRequest {
+  constructor() {
+    this.groups = [];
+  }
+
+  create(name, description, avatarUrl, lang, metadata, private) {
+    this.groups.push({
+      name: name,
+      description: description,
+      avatarUrl: avatarUrl,
+      lang: lang,
+      private: private,
+      metadata: btoa(JSON.stringify(metadata)),
+    })
+  }
+
+  build_() {
+    return {groupsCreate: this.groups};
+  }
+}
+
+export class GroupsUpdateRequest {
+  constructor() {
+    this.groups = [];
+  }
+
+  update(groupId, name, description, avatarUrl, lang, metadata, private) {
+    this.groups.push({
+      groupId: groupId,
+      name: name,
+      description: description,
+      avatarUrl: avatarUrl,
+      lang: lang,
+      private: private,
+      metadata: btoa(JSON.stringify(metadata)),
+    })
+  }
+
+  build_() {
+    return {groupsUpdate: this.groups};
+  }
+}
+
+export class GroupsRemoveRequest {
+  constructor() {
+    this.groupIds = []; // this is a list of groupIds.
+  }
+
+  build_() {
+    return {groupsRemove: this.groupId};
+  }
+}
+
+export class GroupsFetchRequest {
+  constructor() {
+    this.groupIds = [];
+    this.names = [];
+  }
+
+  build_() {
+    var msg = {groupsFetch: {groups: []}}
+    this.groupIds.forEach(function(id) {
+      msg.groupsFetch.groups.push({groupId: id})
+    });
+    this.names.forEach(function(name) {
+      msg.groupsFetch.groups.push({name: name})
+    });
+    return msg
+  }
+}
+
+export class GroupsListRequest {
+  constructor() {
+    this.pageLimit = null;
+    this.orderByAsc = null;
+    this.cursor = null;
+
+    // only set one of the followings
+    this.lang = null;
+    this.createdAt = null;
+    this.count = null;
+  }
+
+  build_() {
+    var msg = {groupsList: {
+      pageLimit: this.pageLimit,
+      orderByAsc: this.orderByAsc,
+      cursor: this.cursor,
+    }};
+
+    if (this.lang) {
+      msg.lang = this.lang;
+    } else if (this.createdAt) {
+      msg.createdAt = this.createdAt;
+    } else if (this.count) {
+      msg.count = this.count;
+    }
+
+    return msg;
+  }
+}
+
+export class GroupsSelfListRequest {
+  constructor() {}
+
+  build_() {
+    return {groupsSelfList: {}}
+  }
+}
+
+export class GroupUsersListRequest {
+  constructor(groupId) {
+    this.groupId = groupId;
+  }
+
+  build_() {
+    return {groupUsersList: {groupId: this.groupId}};
+  }
+}
+
+export class GroupsJoinRequest {
+  constructor() {
+    this.groupIds = [];
+  }
+
+  build_() {
+    return {groupsJoin: {groupIds: this.groupIds}};
+  }
+}
+
+export class GroupsLeaveRequest {
+  constructor() {
+    this.groupIds = [];
+  }
+
+  build_() {
+    return {groupsLeave: {groupIds: this.groupIds}};
+  }
+}
+
+export class GroupUsersAddRequest {
+  constructor() {
+    this.groupIds = [];
+    this.userIds = [];
+  }
+
+  build_() {
+    var msg = {groupUsersAdd: {groupUsers: []}}
+    this.groupIds.forEach(function(id) {
+      msg.groupUsersAdd.groupUsers.push({groupId: id})
+    });
+    this.userIds.forEach(function(id) {
+      msg.groupUsersAdd.groupUsers.push({userId: id})
+    });
+    return msg
+  }
+}
+
+export class GroupUsersKickRequest {
+  constructor() {
+    this.groupIds = [];
+    this.userIds = [];
+  }
+
+  build_() {
+    var msg = {groupUsersKick: {groupUsers: []}}
+    this.groupIds.forEach(function(id) {
+      msg.groupUsersKick.groupUsers.push({groupId: id})
+    });
+    this.userIds.forEach(function(id) {
+      msg.groupUsersKick.groupUsers.push({userId: id})
+    });
+    return msg
+  }
+}
+
+export class GroupUsersPromoteRequest {
+  constructor() {
+    this.groupIds = [];
+    this.userIds = [];
+  }
+
+  build_() {
+    var msg = {groupUsersPromote: {groupUsers: []}}
+    this.groupIds.forEach(function(id) {
+      msg.groupUsersPromote.groupUsers.push({groupId: id})
+    });
+    this.userIds.forEach(function(id) {
+      msg.groupUsersPromote.groupUsers.push({userId: id})
+    });
+    return msg
+  }
+}
 
