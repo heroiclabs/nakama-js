@@ -93,8 +93,9 @@ export class Client {
   }
 
   ondisconnect(event) {}
-  ontopicmessage(event) {}
-  ontopicpresence(event) {}
+  ontopicmessage(message) {}
+  ontopicpresence(presenceUpdate) {}
+  onnotification(notification) {}
 
   login(request) {
     return this.authenticate_(request, '/user/login');
@@ -152,6 +153,12 @@ export class Client {
           this.ontopicmessage(message.topicMessage);
         } else if (message.topicPresence) {
           this.ontopicpresence(message.topicPresence);
+        } else if (message.liveNotifications) {
+          message.liveNotifications.notifications.forEach(function(notification) {
+            // translate base64 into json object
+            notification.content = JSON.parse(atob(notification.content));
+            this.onnotification(notification);
+          });
         } else {
           if (window.console) {
             console.error("Unrecognized message received: %o", message);
@@ -185,7 +192,7 @@ export class Client {
           message.friends.friends.forEach(function(friend) {
             // translate base64 into json object
             friend.user.metadata = JSON.parse(atob(friend.user.metadata));
-          })
+          });
           p.resolve(message.friends);
         } else if (message.topics) {
           p.resolve(message.topics);
@@ -195,26 +202,35 @@ export class Client {
           message.topicMessages.messages.forEach(function(message) {
             // translate base64 into json object
             message.data = JSON.parse(atob(message.data));
-          })
+          });
           p.resolve(message.topicMessages);
         } else if (message.groups) {
           message.groups.groups.forEach(function(group) {
             // translate base64 into json object
             group.metadata = JSON.parse(atob(group.metadata));
-          })
+          });
           p.resolve(message.groups);
         } else if (message.groupsSelf) {
           message.groupsSelf.groupsSelf.forEach(function(groupSelf) {
             // translate base64 into json object
             groupSelf.group.metadata = JSON.parse(atob(groupSelf.group.metadata));
-          })
+          });
           p.resolve(message.groupsSelf);
         } else if (message.groupUsers) {
           message.groupUsers.users.forEach(function(groupUser) {
             // translate base64 into json object
             groupUser.user.metadata = JSON.parse(atob(groupUser.user.metadata));
-          })
+          });
           p.resolve(message.groupUsers);
+        } else if (message.rpc) {
+          message.rpc.payload = message.rpc.payload ? JSON.parse(atob(message.rpc.payload)) : null;
+          p.resolve(message.rpc);
+        } else if (message.notifications) {
+          message.notifications.notifications.forEach(function(notification) {
+            // translate base64 into json object
+            notification.content = JSON.parse(atob(notification.content));
+          });
+          p.resolve(message.notifications);
         } else {
           // if the object has properties, other than the collationId, log a warning
           if (window.console && Object.keys(message).length > 1) {
@@ -1010,3 +1026,41 @@ export class GroupUsersPromoteRequest {
   }
 }
 
+export class NotificationsListRequest {
+  constructor() {
+    this.limit = null;
+    this.resumableCursor = null;
+  }
+
+  build_() {
+    return { notificationsList: {
+      limit: this.limit ? this.limit : 10,
+      resumableCursor: this.resumableCursor
+    }};
+  }
+}
+
+export class NotificationsRemoveRequest {
+  constructor() {
+    // this is a list of notificationIds.
+    this.notifications = [];
+  }
+
+  build_() {
+    return {notificationsRemove: {notificationIds: this.notifications}};
+  }
+}
+
+export class RpcRequest {
+  constructor() {
+    this.id = null;
+    this.payload = null;
+  }
+
+  build_() {
+    return {rpc: {
+      id: this.id,
+      payload: this.payload ? btoa(JSON.stringify(this.payload)) : null
+    }}
+  }
+}

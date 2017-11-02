@@ -15,12 +15,16 @@
         console.log("Client disconnected: %o", event);
       }
 
-      client.ontopicmessage = function(event) {
-        console.log("Received topic message: %o", event);
+      client.ontopicmessage = function(message) {
+        console.log("Received topic message: %o", message);
       }
 
-      client.ontopicpresence = function(event) {
-        console.log("Received topic presence: %o", event);
+      client.ontopicpresence = function(presence) {
+        console.log("Received topic presence: %o", presence);
+      }
+
+      client.onnotification = function(notification) {
+        console.log("Received notification: %o", notification);
       }
 
       var userId = null;
@@ -56,17 +60,17 @@
         var req = new nakamajs.UsersFetchRequest();
         req.handles.push("124ss555222o34331fe22");
         return client.send(req);
-      }).then(function(result) {
-        console.log("Result: %o", result);
+      }).then(function(users) {
+        console.log("Users: %o", users);
         var req = (new nakamajs.StorageWriteRequest()).write("jsTestBucket", "jsTestCollection", "jsTestRecord", {"key":"value"}, 2, 1);
         return client.send(req);
-      }).then(function(result) {
-        console.log("Result: %o", result);
+      }).then(function(storageKeys) {
+        console.log("Storage Keys: %o", storageKeys);
         var req = new nakamajs.StorageListRequest();
         req.bucket = "jsTestBucket";
         return client.send(req);
-      }).then(function(result) {
-        console.log("Result: %o", result);
+      }).then(function(storageRecords) {
+        console.log("Storage Records: %o", storageRecords);
         var req = new nakamajs.StorageUpdateRequest();
         var updates = [
           nakamajs.StorageUpdateRequest.init("/foo", {coins: 100, gems: 10, artifacts: 0}),
@@ -74,32 +78,32 @@
         ];
         req.update("jsTestBucket", "jsTestCollection", "jsTestRecord", updates);
         return client.send(req)
-      }).then(function(result) {
-        console.log("Result: %o", result);
+      }).then(function(storageKeys) {
+        console.log("Storage Keys: %o", storageKeys);
         var req = (new nakamajs.StorageFetchRequest()).fetch("jsTestBucket", "jsTestCollection", "jsTestRecord", userId);
         return client.send(req);
-      }).then(function(result) {
-        console.log("Result: %o", result);
+      }).then(function(storageRecords) {
+        console.log("Storage Records: %o", storageRecords);
         var req = (new nakamajs.StorageRemoveRequest()).remove("jsTestBucket", "jsTestCollection", "jsTestRecord");
         return client.send(req);
       }).then(function() {
         var req = (new nakamajs.TopicsJoinRequest()).room(btoa("jsRoom"));
         return client.send(req);
-      }).then(function(result) {
-        console.log("Result: %o", result);
-        topicId = result.topics[0].topic;
+      }).then(function(topics) {
+        console.log("Topics: %o", topics);
+        topicId = topics.topics[0].topic;
 
         var req = new nakamajs.TopicMessageSendRequest();
         req.topic = topicId;
         req.data = {"message": "hello-world"};
         return client.send(req);
-      }).then(function(result) {
-        console.log("Result: %o", result);
+      }).then(function(messageAck) {
+        console.log("Message Ack: %o", messageAck);
         var req = new nakamajs.TopicMessagesListRequest();
         req.room = topicId.room;
         return client.send(req);
-      }).then(function(result) {
-        console.log("Result: %o", result);
+      }).then(function(messages) {
+        console.log("Messages: %o", messages);
         var req = new nakamajs.TopicsLeaveRequest();
         req.topics.push(topicId);
         return client.send(req);
@@ -107,27 +111,31 @@
         var req = new nakamajs.GroupsCreateRequest();
         req.create("groupName", "", "", "js");
         return client.send(req);
-      }).then(function(result) {
-        console.log("Result: %o", result);
-        groupId = result.groups[0].id;
+      }).then(function(groups) {
+        console.log("Groups: %o", groups);
+        groupId = groups.groups[0].id;
 
         var req = new nakamajs.GroupsListRequest();
         req.lang = "js";
         return client.send(req);
-      }).then(function(result) {
-        console.log("Result: %o", result);
+      }).then(function(groups) {
+        console.log("Groups List: %o", groups);
         var req = new nakamajs.GroupsSelfListRequest();
         return client.send(req);
-      }).then(function(result) {
-        console.log("Result: %o", result);
+      }).then(function(groups) {
+        console.log("Groups Self: %o", groups);
         var req = new nakamajs.GroupUsersListRequest(groupId);
         return client.send(req);
-      }).then(function(result) {
-        console.log("Result: %o", result);
+      }).then(function(groupUsers) {
+        console.log("Group Users: %o", groupUsers);
         var req = new nakamajs.GroupsRemoveRequest();
         req.groups.push(groupId);
         return client.send(req);
       }).then(function() {
+        var req = new nakamajs.NotificationsListRequest();
+        return client.send(req);
+      }).then(function(result) {
+        console.log("Notifications: %o", result);
         client.logout();
       }).catch(function(err){
         console.log(err);
