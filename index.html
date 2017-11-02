@@ -11,7 +11,20 @@
       var client = new nakamajs.Client("defaultkey");
       client.verbose = false;
 
+      client.ondisconnect = function(event) {
+        console.log("Client disconnected: %o", event);
+      }
+
+      client.ontopicmessage = function(event) {
+        console.log("Received topic message: %o", event);
+      }
+
+      client.ontopicpresence = function(event) {
+        console.log("Received topic presence: %o", event);
+      }
+
       var userId = null;
+      var topicId = null;
 
       var request = nakamajs.AuthenticateRequest.email("hello@world.com", "password");
       client.login(request).then(function(session) {
@@ -30,44 +43,68 @@
         req.metadata = {"updater": "nakama-js"};
         return client.send(req);
       }).then(function(){
-        return client.send(new nakamajs.SelfFetchRequest())
+        return client.send(new nakamajs.SelfFetchRequest());
       }).then(function(result) {
         console.log("Result: %o", result);
-        userId = result.user.id;
+        userId = result.self.user.id;
 
         var req = new nakamajs.UnlinkRequest();
         req.custom = "nakama-js-custom-link";
         return client.send(req);
       }).then(function() {
-        var req = new nakamajs.UsersFetchRequest()
+        var req = new nakamajs.UsersFetchRequest();
         req.handles.push("124ss555222o34331fe22");
-        return client.send(req)
+        return client.send(req);
       }).then(function(result) {
         console.log("Result: %o", result);
         var req = (new nakamajs.StorageWriteRequest()).write("jsTestBucket", "jsTestCollection", "jsTestRecord", {"key":"value"}, 2, 1);
-        return client.send(req)
+        return client.send(req);
       }).then(function(result) {
         console.log("Result: %o", result);
-        var req = new nakamajs.StorageListRequest()
+        var req = new nakamajs.StorageListRequest();
         req.bucket = "jsTestBucket";
-        return client.send(req)
+        return client.send(req);
       }).then(function(result) {
         console.log("Result: %o", result);
-        var req = new nakamajs.StorageUpdateRequest()
+        var req = new nakamajs.StorageUpdateRequest();
         var updates = [
           nakamajs.StorageUpdateRequest.init("/foo", {coins: 100, gems: 10, artifacts: 0}),
           nakamajs.StorageUpdateRequest.incr("/foo/coins", -10)
         ];
         req.update("jsTestBucket", "jsTestCollection", "jsTestRecord", updates);
         return client.send(req)
-      }).then(function(result){
+      }).then(function(result) {
         console.log("Result: %o", result);
-        var req = (new nakamajs.StorageFetchRequest()).fetch("jsTestBucket", "jsTestCollection", "jsTestRecord", userId)
-        return client.send(req)
-      }).then(function(result){
+        var req = (new nakamajs.StorageFetchRequest()).fetch("jsTestBucket", "jsTestCollection", "jsTestRecord", userId);
+        return client.send(req);
+      }).then(function(result) {
         console.log("Result: %o", result);
-        var req = (new nakamajs.StorageRemoveRequest()).remove("jsTestBucket", "jsTestCollection", "jsTestRecord")
-        return client.send(req)
+        var req = (new nakamajs.StorageRemoveRequest()).remove("jsTestBucket", "jsTestCollection", "jsTestRecord");
+        return client.send(req);
+      }).then(function() {
+        var req = (new nakamajs.TopicsJoinRequest()).room(btoa("jsRoom"));
+        return client.send(req);
+      }).then(function(result) {
+        console.log("Result: %o", result);
+        topicId = result.topics[0].topic;
+
+        var req = new nakamajs.TopicMessageSendRequest();
+        req.topic = topicId;
+        req.data = {"message": "hello-world"};
+        return client.send(req);
+      }).then(function(result) {
+        console.log("Result: %o", result);
+        var req = new nakamajs.TopicMessagesListRequest();
+        req.room = topicId.room;
+        return client.send(req);
+      }).then(function(result) {
+        console.log("Result: %o", result);
+        console.log("TopicId: %o", topicId);
+        var req = new nakamajs.TopicsLeaveRequest();
+        req.topics.push(topicId);
+        return client.send(req);
+      }).then(function() {
+        client.logout();
       }).catch(function(err){
         console.log(err);
       });

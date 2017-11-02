@@ -713,19 +713,23 @@ export class FriendsListRequest {
 
 export class TopicsJoinRequest {
   constructor() {
+    // NOTE: The server only processes the first item of the list, and will ignore and logs a warning message for other items.
     this.topics = [];
   }
 
   dm(userId) {
     this.topics.push({userId: userId})
+    return this;
   }
 
   group(groupId) {
     this.topics.push({groupId: groupId})
+    return this;
   }
 
   room(room) {
     this.topics.push({room: room})
+    return this;
   }
 
   build_() {
@@ -735,8 +739,8 @@ export class TopicsJoinRequest {
 
 export class TopicsLeaveRequest {
   constructor() {
-    // this is a list of topicIds.
-    this.topics = [];
+    // NOTE: The server only processes the first item of the list, and will ignore and logs a warning message for other items.
+    this.topics = []; // this is a list of topicIds.
   }
 
   build_() {
@@ -753,7 +757,7 @@ export class TopicMessageSendRequest {
   }
 
   build_() {
-    return {topicsLeave: {
+    return {topicMessageSend: {
       topic: this.topic,
       data: btoa(JSON.stringify(this.data))
     }}
@@ -773,18 +777,18 @@ export class TopicMessagesListRequest {
   }
 
   build_() {
-    var msg = {topicMessageList: {
+    var msg = {topicMessagesList: {
       cursor: this.cursor,
       forward: this.forward,
       limit: this.limit
     }}
 
     if (this.userId) {
-      msg.userId = this.userId;
+      msg.topicMessagesList.userId = this.userId;
     } else if (this.room) {
-      msg.room = this.room;
+      msg.topicMessagesList.room = this.room;
     } else if (this.groupId) {
-      msg.groupId = this.groupId;
+      msg.topicMessagesList.groupId = this.groupId;
     }
 
     return msg;
