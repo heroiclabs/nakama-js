@@ -149,14 +149,14 @@ export class Client {
         if (message.heartbeat) {
           this.serverTimestamp = message.heartbeat
         } else if (message.topicMessage) {
-          message.topicMessage.data = JSON.parse(atob(message.topicMessage.data))
+          message.topicMessage.data = JSON.parse(message.topicMessage.data)
           this.ontopicmessage(message.topicMessage);
         } else if (message.topicPresence) {
           this.ontopicpresence(message.topicPresence);
         } else if (message.liveNotifications) {
           message.liveNotifications.notifications.forEach(function(notification) {
             // translate base64 into json object
-            notification.content = JSON.parse(atob(notification.content));
+            notification.content = JSON.parse(notification.content);
             this.onnotification(notification);
           });
         } else {
@@ -181,7 +181,7 @@ export class Client {
         } else if (message.users) {
           message.users.users.forEach(function(user) {
             // translate base64 into json object
-            user.metadata = JSON.parse(atob(user.metadata));
+            user.metadata = JSON.parse(user.metadata);
           })
           p.resolve(message.users.users);
         } else if (message.storageData) {
@@ -191,7 +191,7 @@ export class Client {
         } else if (message.friends) {
           message.friends.friends.forEach(function(friend) {
             // translate base64 into json object
-            friend.user.metadata = JSON.parse(atob(friend.user.metadata));
+            friend.user.metadata = JSON.parse(friend.user.metadata);
           });
           p.resolve(message.friends);
         } else if (message.topics) {
@@ -201,34 +201,34 @@ export class Client {
         } else if (message.topicMessages) {
           message.topicMessages.messages.forEach(function(message) {
             // translate base64 into json object
-            message.data = JSON.parse(atob(message.data));
+            message.data = JSON.parse(message.data);
           });
           p.resolve(message.topicMessages);
         } else if (message.groups) {
           message.groups.groups.forEach(function(group) {
             // translate base64 into json object
-            group.metadata = JSON.parse(atob(group.metadata));
+            group.metadata = JSON.parse(group.metadata);
           });
           p.resolve(message.groups);
         } else if (message.groupsSelf) {
           message.groupsSelf.groupsSelf.forEach(function(groupSelf) {
             // translate base64 into json object
-            groupSelf.group.metadata = JSON.parse(atob(groupSelf.group.metadata));
+            groupSelf.group.metadata = JSON.parse(groupSelf.group.metadata);
           });
           p.resolve(message.groupsSelf);
         } else if (message.groupUsers) {
           message.groupUsers.users.forEach(function(groupUser) {
             // translate base64 into json object
-            groupUser.user.metadata = JSON.parse(atob(groupUser.user.metadata));
+            groupUser.user.metadata = JSON.parse(groupUser.user.metadata);
           });
           p.resolve(message.groupUsers);
         } else if (message.rpc) {
-          message.rpc.payload = message.rpc.payload ? JSON.parse(atob(message.rpc.payload)) : null;
+          message.rpc.payload = message.rpc.payload ? JSON.parse(message.rpc.payload) : null;
           p.resolve(message.rpc);
         } else if (message.notifications) {
           message.notifications.notifications.forEach(function(notification) {
             // translate base64 into json object
-            notification.content = JSON.parse(atob(notification.content));
+            notification.content = JSON.parse(notification.content);
           });
           p.resolve(message.notifications);
         } else {
@@ -459,7 +459,7 @@ export class SelfUpdateRequest {
         location: this.location,
         lang: this.lang,
         avatarUrl: this.avatarUrl,
-        metadata: this.metadata ? btoa(JSON.stringify(this.metadata)) : btoa("{}")
+        metadata: this.metadata ? JSON.stringify(this.metadata) : "{}"
       }
     }
   }
@@ -537,8 +537,8 @@ export class StorageWriteRequest {
       bucket: bucket,
       collection: collection,
       record: record,
-      value: value ? btoa(JSON.stringify(value)) : btoa("{}"),
-      version: version ? btoa(version) : null,
+      value: value ? JSON.stringify(value) : "{}",
+      version: version ? version : null,
       permissionRead: permissionRead,
       permissionWrite: permissionWrite
     })
@@ -588,7 +588,7 @@ export class StorageUpdateRequest {
         bucket: bucket,
         collection: collection,
         record: record,
-        version: version ? btoa(version) : null,
+        version: version ? version : null,
       },
       permissionRead: permissionRead,
       permissionWrite: permissionWrite,
@@ -601,7 +601,7 @@ export class StorageUpdateRequest {
     return {
       op: 0,
       path: path,
-      value: btoa(JSON.stringify(value))
+      value: JSON.stringify(value)
     };
   }
 
@@ -609,7 +609,7 @@ export class StorageUpdateRequest {
     return {
       op: 1,
       path: path,
-      value: btoa(JSON.stringify(value))
+      value: JSON.stringify(value)
     };
   }
 
@@ -625,7 +625,7 @@ export class StorageUpdateRequest {
     return {
       op: 3,
       path: path,
-      value: btoa(JSON.stringify(value))
+      value: JSON.stringify(value)
     };
   }
 
@@ -633,7 +633,7 @@ export class StorageUpdateRequest {
     return {
       op: 4,
       path: path,
-      value: btoa(JSON.stringify(value))
+      value: JSON.stringify(value)
     };
   }
 
@@ -664,7 +664,7 @@ export class StorageUpdateRequest {
     return {
       op: 9,
       path: path,
-      value: btoa(JSON.stringify(value))
+      value: JSON.stringify(value)
     };
   }
 
@@ -672,7 +672,7 @@ export class StorageUpdateRequest {
     return {
       op: 10,
       path: path,
-      value: btoa(JSON.stringify(value))
+      value: JSON.stringify(value)
     };
   }
 
@@ -680,7 +680,7 @@ export class StorageUpdateRequest {
     return {
       op: 11,
       path: path,
-      value: btoa(JSON.stringify(value)),
+      value: JSON.stringify(value),
       assert: assertValue
     };
   }
@@ -792,7 +792,7 @@ export class TopicMessageSendRequest {
   build_() {
     return {topicMessageSend: {
       topic: this.topic,
-      data: btoa(JSON.stringify(this.data))
+      data: JSON.stringify(this.data)
     }}
   }
 }
@@ -840,7 +840,7 @@ export class GroupsCreateRequest {
       avatarUrl: avatarUrl,
       lang: lang,
       "private": privateGroup,
-      metadata: metadata ? btoa(JSON.stringify(metadata)) : btoa("{}"),
+      metadata: metadata ? JSON.stringify(metadata) : "{}",
     })
   }
 
@@ -862,7 +862,7 @@ export class GroupsUpdateRequest {
       avatarUrl: avatarUrl,
       lang: lang,
       "private": privateGroup,
-      metadata: metadata ? btoa(JSON.stringify(metadata)) : btoa("{}"),
+      metadata: metadata ? JSON.stringify(metadata) : "{}",
     })
   }
 
@@ -1060,7 +1060,7 @@ export class RpcRequest {
   build_() {
     return {rpc: {
       id: this.id,
-      payload: this.payload ? btoa(JSON.stringify(this.payload)) : null
+      payload: this.payload ? JSON.stringify(this.payload) : null
     }}
   }
 }
