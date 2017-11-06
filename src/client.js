@@ -974,17 +974,20 @@ export class GroupsLeaveRequest {
 
 export class GroupUsersAddRequest {
   constructor() {
-    this.groupIds = [];
-    this.userIds = [];
+    this.adds = [];
+  }
+
+  add(groupId, userId) {
+    this.adds.push({groupId: groupId, userId: userId});
   }
 
   build_() {
     var msg = {groupUsersAdd: {groupUsers: []}}
-    this.groupIds.forEach(function(id) {
-      msg.groupUsersAdd.groupUsers.push({groupId: id})
-    });
-    this.userIds.forEach(function(id) {
-      msg.groupUsersAdd.groupUsers.push({userId: id})
+    this.adds.forEach(function(add) {
+      msg.groupUsersAdd.groupUsers.push({
+        groupId: add.groupId,
+        userId: add.userId,
+      })
     });
     return msg
   }
@@ -992,17 +995,20 @@ export class GroupUsersAddRequest {
 
 export class GroupUsersKickRequest {
   constructor() {
-    this.groupIds = [];
-    this.userIds = [];
+    this.kicks = [];
+  }
+
+  kick(groupId, userId) {
+    this.kicks.push({groupId: groupId, userId: userId});
   }
 
   build_() {
     var msg = {groupUsersKick: {groupUsers: []}}
-    this.groupIds.forEach(function(id) {
-      msg.groupUsersKick.groupUsers.push({groupId: id})
-    });
-    this.userIds.forEach(function(id) {
-      msg.groupUsersKick.groupUsers.push({userId: id})
+    this.kicks.forEach(function(kick) {
+      msg.groupUsersKick.groupUsers.push({
+        groupId: kick.groupId,
+        userId: kick.userId
+      })
     });
     return msg
   }
@@ -1010,17 +1016,20 @@ export class GroupUsersKickRequest {
 
 export class GroupUsersPromoteRequest {
   constructor() {
-    this.groupIds = [];
-    this.userIds = [];
+    this.promotes = [];
+  }
+
+  promote(groupId, userId) {
+    this.promotes.push({groupId: groupId, userId: userId});
   }
 
   build_() {
     var msg = {groupUsersPromote: {groupUsers: []}}
-    this.groupIds.forEach(function(id) {
-      msg.groupUsersPromote.groupUsers.push({groupId: id})
-    });
-    this.userIds.forEach(function(id) {
-      msg.groupUsersPromote.groupUsers.push({userId: id})
+    this.promotes.forEach(function(promote) {
+      msg.groupUsersPromote.groupUsers.push({
+        groupId: promote.groupId,
+        userId: promote.userId
+      })
     });
     return msg
   }
