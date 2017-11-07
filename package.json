@@ -1,0 +1,31 @@
+{
+  "name": "nakama-js",
+  "version": "0.1.0",
+  "description": "JavaScript client for Nakama server.",
+  "main": "dist/nakama-js.cjs.js",
+  "module": "dist/nakama-js.esm.js",
+  "browser": "dist/nakama-js.umd.js",
+  "repository": "https://github.com/heroiclabs/nakama-js",
+  "author": [
+    "Chris Molozian <chris@heroiclabs.com>",
+    "Andrei Mihu <andrei@heroiclabs.com>",
+    "Mo Firouz <mo@heroiclabs.com>"
+  ],
+  "license": "Apache-2.0",
+  "private": false,
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "rollup": "^0.50.0",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-commonjs": "^8.2.4",
+    "rollup-plugin-node-resolve": "^3.0.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
+  },
+  "files": [
+    "dist"
+  ]
+}
