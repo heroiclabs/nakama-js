@@ -224,7 +224,7 @@ export class Client {
           p.resolve(message.groupUsers);
         } else if (message.rpc) {
           message.rpc.payload = message.rpc.payload ? JSON.parse(message.rpc.payload) : null;
-          p.resolve(message.rpc);
+          p.resolve({id: message.rcp.id, payload: message.rpc.payload});
         } else if (message.notifications) {
           message.notifications.notifications.forEach(function(notification) {
             // translate base64 into json object
