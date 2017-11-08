@@ -49,5 +49,5 @@ $> yarn run build
 ## For releases
 
 ```shell
-$> yarn run build && yarn publish
+$> yarn run build && yarn publish --access=public
 ```
