@@ -1,13 +1,19 @@
 {
-  "name": "nakama-js",
+  "name": "@heroiclabs/nakama-js",
   "version": "0.1.0",
   "description": "JavaScript client for Nakama server.",
+  "keywords": ["realtime", "realtime chat", "nakama", "game server"],
+  "homepage": "https://heroiclabs.com",
+  "bugs": "https://github.com/heroiclabs/nakama-js/issues",
   "main": "dist/nakama-js.cjs.js",
   "module": "dist/nakama-js.esm.js",
   "browser": "dist/nakama-js.umd.js",
-  "repository": "https://github.com/heroiclabs/nakama-js",
-  "author": [
-    "Chris Molozian <chris@heroiclabs.com>",
+  "repository": {
+    "url": "https://github.com/heroiclabs/nakama-js",
+    "type": "git"
+  },
+  "author": "Chris Molozian <chris@heroiclabs.com>",
+  "contributors": [
     "Andrei Mihu <andrei@heroiclabs.com>",
     "Mo Firouz <mo@heroiclabs.com>"
   ],
