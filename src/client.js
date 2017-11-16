@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import base64 from 'base-64';
+
 const VERSION = '0.1.0';
 const DEFAULT_SERVER_KEY = 'defaultkey';
 const DEFAULT_HOST = '127.0.0.1';
@@ -125,14 +127,10 @@ export class Client {
     searchParams.append("lang", this.lang);
     searchParams.append("format", "json");
 
-    const url = new URL(window.location.href);
-    url.protocol = (this.ssl) ? 'wss' : 'ws';
-    url.hostname = this.host;
-    url.port = this.port;
-    url.search = searchParams.toString();
-    url.pathname = '/api';
+    const protocol = (this.ssl) ? 'wss' : 'ws';
+    const url = `${protocol}://${this.host}:${this.port}/api?format=json&lang=${this.lang}&token=${session.token_}`
 
-    this.socket_ = new WebSocket(url.toString());
+    this.socket_ = new WebSocket(url);
     this.socket_.onclose = (event) => {
       this.ondisconnect(event);
       this.socket_ = null;
@@ -224,7 +222,7 @@ export class Client {
           p.resolve(message.groupUsers);
         } else if (message.rpc) {
           message.rpc.payload = message.rpc.payload ? JSON.parse(message.rpc.payload) : null;
-          p.resolve({id: message.rcp.id, payload: message.rpc.payload});
+          p.resolve({id: message.rpc.id, payload: message.rpc.payload});
         } else if (message.notifications) {
           message.notifications.notifications.forEach(function(notification) {
             // translate base64 into json object
@@ -289,23 +287,21 @@ export class Client {
   authenticate_(request, path) {
     const message = request.message_;
     message["collationId"] = uuidv4();
-    const url = new URL(window.location.href);
-    url.protocol = (this.ssl) ? 'https' : 'http';
-    url.hostname = this.host;
-    url.port = this.port;
-    url.pathname = path;
+
+    const protocol = (this.ssl) ? 'https' : 'http';
+    const url = `${protocol}://${this.host}:${this.port}${path}`
 
     if (this.verbose && window.console) {
-      console.log("AuthenticateRequest: %s, %o", url.toString(), message);
+      console.log("AuthenticateRequest: %s, %o", url, message);
     }
 
     var verbose = this.verbose;
-    return fetch(url.toString(), {
+    return fetch(url, {
       "method": "POST",
       "body": JSON.stringify(message),
       "headers": {
         "Accept-Language": this.lang,
-        "Authorization": 'Basic ' + btoa(this.serverKey + ':'),
+        "Authorization": 'Basic ' + base64.encode(this.serverKey + ':'),
         "Content-Type": 'application/json',
         "Accept": 'application/json',
         "User-Agent": `nakama/${VERSION}`
@@ -353,7 +349,7 @@ export class Session {
     if (parts.length != 3) {
       throw 'jwt is not valid.';
     }
-    const decoded = JSON.parse(atob(parts[1]));
+    const decoded = JSON.parse(base64.decode(parts[1]));
     const expiresAt = Math.floor(parseInt(decoded['exp']) * 1000);
 
     return new Session(Date.now(), expiresAt, decoded['han'], decoded['uid'], jwt);
