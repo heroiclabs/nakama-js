@@ -13,6 +13,9 @@
   ],
   "license": "Apache-2.0",
   "private": false,
+  "dependencies": {
+    "base-64": "^0.1.0"
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
