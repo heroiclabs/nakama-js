@@ -98,6 +98,9 @@ export class Client {
   ontopicmessage(message) {}
   ontopicpresence(presenceUpdate) {}
   onnotification(notification) {}
+  onmatchmakematched(match) {}
+  onmatchdata(matchdata) {}
+  onmatchpresence(presenceUpdate) {}
 
   login(request) {
     return this.authenticate_(request, '/user/login');
@@ -157,6 +160,13 @@ export class Client {
             notification.content = JSON.parse(notification.content);
             this.onnotification(notification);
           });
+        } else if (message.matchmakeMatched) {
+          this.onmatchmakematched(message.matchmakeMatched);
+        } else if (message.matchData) {
+          message.matchData.data = JSON.parse(base64.decode(message.matchData.data));
+          this.onmatchdata(message.matchData);
+        } else if (message.matchPresence) {
+          this.onmatchpresence(message.matchPresence);
         } else {
           if (window.console) {
             console.error("Unrecognized message received: %o", message);
@@ -229,6 +239,12 @@ export class Client {
             notification.content = JSON.parse(notification.content);
           });
           p.resolve(message.notifications);
+        } else if (message.matchmakeTicket) {
+          p.resolve(message.matchmakeTicket);
+        } else if (message.match) {
+          p.resolve(message.match);
+        } else if (message.matches) {
+          p.resolve(message.matches);
         } else {
           // if the object has properties, other than the collationId, log a warning
           if (window.console && Object.keys(message).length > 1) {
@@ -1067,5 +1083,154 @@ export class RpcRequest {
       id: this.id,
       payload: this.payload ? JSON.stringify(this.payload) : null
     }}
+  }
+}
+
+export class MatchmakeAddRequest {
+  constructor(requiredCount) {
+    this.requiredCount = requiredCount;
+    this.filters = [];
+    this.properties = [];
+  }
+
+  addTermFilter(name, termSet, matchAllTerms) {
+    this.filters.push({
+      name: name,
+      term: {
+        terms: termSet,
+        matchAllTerms: matchAllTerms
+      }
+    });
+    return this;
+  }
+
+  addRangeFilter(name, lowerbound, upperbound) {
+    this.filters.push({
+      name: name,
+      range: {
+        lowerBound: lowerbound,
+        upperBound: upperbound
+      }
+    });
+    return this;
+  }
+
+  addCheckFilter(name, value) {
+    this.filters.push({
+      name: name,
+      check: value
+    });
+    return this;
+  }
+
+  addStringSetProperty(key, termSet) {
+    this.properties.push({
+      key: key,
+      stringSet: termSet
+    });
+    return this;
+  }
+
+  addIntegerProperty(key, integerValue) {
+    this.properties.push({
+      key: key,
+      intValue: integerValue
+    });
+    return this;
+  }
+
+  addBooleanProperty(key, boolValue) {
+    this.properties.push({
+      key: key,
+      boolValue: boolValue
+    });
+    return this;
+  }
+
+  build_() {
+    return {
+      matchmakeAdd: {
+        requiredCount: this.requiredCount,
+        filters: this.filters,
+        properties: this.properties
+      }
+    };
+  }
+}
+
+export class MatchmakeRemoveRequest {
+  constructor(ticket) {
+    this.ticket = ticket;
+  }
+
+  build_() {
+    return {matchmakeRemove: {ticket: this.ticket}};
+  }
+}
+
+export class MatchCreateRequest {
+  constructor() {}
+
+  build_() {
+    return {
+      matchCreate: {}
+    }
+  }
+}
+
+export class MatchesJoinRequest {
+  constructor() {
+    this.matchIds = [];
+    this.tokens = [];
+  }
+
+  build_() {
+    var msg = {
+      matchesJoin: {matches: []}
+    };
+
+    this.matchIds.forEach(function(id) {
+      msg.matchesJoin.matches.push({matchId: id});
+    });
+
+    this.tokens.forEach(function(token) {
+      msg.matchesJoin.matches.push({token: token});
+    });
+
+    return msg;
+  }
+}
+
+export class MatchesLeaveRequest {
+  constructor() {
+    this.matchIds = [];
+  }
+
+  build_() {
+    return {
+      matchesLeave: {
+        matchIds: this.matchIds
+      }
+    };
+  }
+}
+
+export class MatchDataSendRequest {
+  constructor() {
+    this.matchId = null;
+    this.presence = null; //UserPresence
+    this.opCode = 0;
+    this.data = null;
+  }
+
+  build_() {
+    return {
+      matchDataSend: {
+        matchId: matchId,
+        presence: presence,
+        opCode: opCode,
+        data: base64.encode(JSON.stringify(data))
+      }
+    };
   }
 }
