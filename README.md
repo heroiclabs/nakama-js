@@ -9,7 +9,7 @@ This client implements the protocol and all features available in the server. It
 
 ## Usage
 
-You can add the client to your project with `yarn add nakama-js`. This will add the dependency to your `package.json`. You can also use NPM or Bower to download and add the dependency to your project.
+You can add the client to your project with `yarn add @heroiclabs/nakama-js`. This will add the dependency to your `package.json`. You can also use NPM or Bower to download and add the dependency to your project.
 
 We have a guide which covers how to use the client with lots of code examples:
 

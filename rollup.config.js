@@ -13,7 +13,9 @@ export default [
       "format": "umd"
     },
     "plugins": [
-      resolve(),
+      resolve({
+        "main": true
+      }),
       commonjs(),
       babel({
         "exclude": [
@@ -34,6 +36,10 @@ export default [
       }
     ],
     "plugins": [
+      resolve({
+        "main": true
+      }),
+      commonjs(),
       babel({
         "exclude": [
           "node_modules/**"
