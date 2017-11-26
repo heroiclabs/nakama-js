@@ -30,6 +30,7 @@
       var userId = null;
       var topicId = null;
       var groupId = null;
+      var leaderboardId = "js-test";
 
       var request = nakamajs.AuthenticateRequest.email("hello@world.com", "password");
       client.login(request).then(function(session) {
@@ -132,6 +133,20 @@
         req.groups.push(groupId);
         return client.send(req);
       }).then(function() {
+        var req = new nakamajs.LeaderboardRecordWriteRequest();
+        req.set(leaderboardId, 100, {});
+        return client.send(req);
+      }).then(function(records) {
+        console.log("Leaderboard Writes: %o", records);
+        var req = new nakamajs.LeaderboardRecordsListRequest();
+        req.leaderboardId = leaderboardId;
+        return client.send(req);
+      }).then (function(records) {
+        console.log("Leaderboard Records: %o", records);
+        var req = new nakamajs.LeaderboardsListRequest();
+        return client.send(req);
+      }).then(function(leaderboards) {
+        console.log("Leaderboards List", leaderboards)
         var req = new nakamajs.NotificationsListRequest();
         return client.send(req);
       }).then(function(result) {
