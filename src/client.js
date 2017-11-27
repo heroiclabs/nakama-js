@@ -156,7 +156,6 @@ export class Client {
           this.ontopicpresence(message.topicPresence);
         } else if (message.liveNotifications) {
           message.liveNotifications.notifications.forEach(function(notification) {
-            // translate base64 into json object
             notification.content = JSON.parse(notification.content);
             this.onnotification(notification);
           });
@@ -188,7 +187,6 @@ export class Client {
           p.resolve(message.self);
         } else if (message.users) {
           message.users.users.forEach(function(user) {
-            // translate base64 into json object
             user.metadata = JSON.parse(user.metadata);
           })
           p.resolve(message.users.users);
@@ -198,7 +196,6 @@ export class Client {
           p.resolve(message.storageKeys);
         } else if (message.friends) {
           message.friends.friends.forEach(function(friend) {
-            // translate base64 into json object
             friend.user.metadata = JSON.parse(friend.user.metadata);
           });
           p.resolve(message.friends);
@@ -208,25 +205,21 @@ export class Client {
           p.resolve(message.topicMessageAck);
         } else if (message.topicMessages) {
           message.topicMessages.messages.forEach(function(message) {
-            // translate base64 into json object
             message.data = JSON.parse(message.data);
           });
           p.resolve(message.topicMessages);
         } else if (message.groups) {
           message.groups.groups.forEach(function(group) {
-            // translate base64 into json object
             group.metadata = JSON.parse(group.metadata);
           });
           p.resolve(message.groups);
         } else if (message.groupsSelf) {
           message.groupsSelf.groupsSelf.forEach(function(groupSelf) {
-            // translate base64 into json object
             groupSelf.group.metadata = JSON.parse(groupSelf.group.metadata);
           });
           p.resolve(message.groupsSelf);
         } else if (message.groupUsers) {
           message.groupUsers.users.forEach(function(groupUser) {
-            // translate base64 into json object
             groupUser.user.metadata = JSON.parse(groupUser.user.metadata);
           });
           p.resolve(message.groupUsers);
@@ -235,7 +228,6 @@ export class Client {
           p.resolve({id: message.rpc.id, payload: message.rpc.payload});
         } else if (message.notifications) {
           message.notifications.notifications.forEach(function(notification) {
-            // translate base64 into json object
             notification.content = JSON.parse(notification.content);
           });
           p.resolve(message.notifications);
@@ -245,6 +237,16 @@ export class Client {
           p.resolve(message.match);
         } else if (message.matches) {
           p.resolve(message.matches);
+        } else if (message.leaderboards) {
+          message.leaderboards.leaderboards.forEach(function(leaderboard) {
+            leaderboard.metadata = JSON.parse(leaderboard.metadata);
+          });
+          p.resolve(message.leaderboards);
+        } else if (message.leaderboardRecords) {
+          message.leaderboardRecords.records.forEach(function(record) {
+            record.metadata = JSON.parse(record.metadata);
+          });
+          p.resolve(message.leaderboardRecords);
         } else {
           // if the object has properties, other than the collationId, log a warning
           if (window.console && Object.keys(message).length > 1) {
@@ -1232,5 +1234,142 @@ export class MatchDataSendRequest {
         data: base64.encode(JSON.stringify(data))
       }
     };
+  }
+}
+
+export class LeaderboardsListRequest {
+  constructor() {
+    this.filterLeaderboardIds = [];
+    this.limit = null;
+    this.cursor = null;
+  }
+
+  build_() {
+    var msg = {leaderboardsList: {
+      filterLeaderboardId: [],
+      limit: this.limit,
+      cursor: this.cursor
+    }};
+
+    this.filterLeaderboardIds.forEach(function(id) {
+      msg.leaderboardsList.filterLeaderboardId.push(id);
+    });
+    return msg
+  }
+}
+
+export class LeaderboardRecordsFetchRequest {
+  constructor() {
+    this.leaderboardIds = [];
+    this.limit = null;
+    this.cursor = null;
+  }
+
+  build_() {
+    var msg = {leaderboardRecordsFetch: {
+      leaderboardIds: [],
+      limit: this.limit,
+      cursor: this.cursor
+    }};
+
+    this.leaderboardIds.forEach(function(id) {
+      msg.leaderboardRecordsFetch.leaderboardIds.push(id);
+    });
+    return msg
+  }
+}
+
+export class LeaderboardRecordsListRequest {
+  constructor() {
+    this.leaderboardId = null;
+    this.limit = null;
+    this.cursor = null;
+
+    // only set one of the followings
+    this.lang = null;
+    this.location = null;
+    this.timezone = null;
+    this.ownerId = null;
+    this.ownerIds = [];
+  }
+
+  build_() {
+    var msg = {leaderboardRecordsList: {
+      leaderboardId: this.leaderboardId,
+      limit: this.limit,
+      cursor: this.cursor
+    }};
+
+    if (this.lang) {
+      msg.leaderboardRecordsList.lang = this.lang;
+    } else if (this.location) {
+      msg.leaderboardRecordsList.location = this.createdAt;
+    } else if (this.timezone) {
+      msg.leaderboardRecordsList.count = this.count;
+    } else if (this.ownerId) {
+      msg.leaderboardRecordsList.ownerId = this.ownerId;
+    } else if (this.ownerIds.length > 0) {
+      msg.leaderboardRecordsList.ownerIds = {ownerIds: this.ownerIds};
+    }
+
+    return msg
+  }
+}
+
+export class LeaderboardRecordWriteRequest {
+  constructor() {
+    this.records = [];
+  }
+
+  set(leaderboardId, value, metadata, location, timezone) {
+    var record = {
+      leaderboardId: leaderboardId,
+      "set": value,
+      metadata: JSON.stringify(metadata),
+      location: location,
+      timezone: timezone
+    };
+
+    this.records.push(record);
+  }
+
+  best(leaderboardId, value, metadata, location, timezone) {
+    var record = {
+      leaderboardId: leaderboardId,
+      best: value,
+      metadata: JSON.stringify(metadata),
+      location: location,
+      timezone: timezone
+    };
+
+    this.records.push(record);
+  }
+
+  decrement(leaderboardId, value, metadata, location, timezone) {
+    var record = {
+      leaderboardId: leaderboardId,
+      decr: value,
+      metadata: JSON.stringify(metadata),
+      location: location,
+      timezone: timezone
+    };
+
+    this.records.push(record);
+  }
+
+  increment(leaderboardId, value, metadata, location, timezone) {
+    var record = {
+      leaderboardId: leaderboardId,
+      incr: value,
+      metadata: JSON.stringify(metadata),
+      location: location,
+      timezone: timezone
+    };
+
+    this.records.push(record);
+  }
+
+  build_() {
+    return {leaderboardRecordsWrite: {records: this.records}};
   }
 }
