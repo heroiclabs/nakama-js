@@ -10,28 +10,22 @@
     <script>
       var client = new nakamajs.Client("defaultkey");
       client.verbose = false;
-
       client.ondisconnect = function(event) {
         console.log("Client disconnected: %o", event);
       }
-
       client.ontopicmessage = function(message) {
         console.log("Received topic message: %o", message);
       }
-
       client.ontopicpresence = function(presence) {
         console.log("Received topic presence: %o", presence);
       }
-
       client.onnotification = function(notification) {
         console.log("Received notification: %o", notification);
       }
-
       var userId = null;
       var topicId = null;
       var groupId = null;
       var leaderboardId = "js-test";
-
       var request = nakamajs.AuthenticateRequest.email("hello@world.com", "password");
       client.login(request).then(function(session) {
         return client.connect(session);
@@ -53,7 +47,6 @@
       }).then(function(result) {
         console.log("Result: %o", result);
         userId = result.self.user.id;
-
         var req = new nakamajs.UnlinkRequest();
         req.custom = "nakama-js-custom-link";
         return client.send(req);
@@ -93,7 +86,6 @@
       }).then(function(topics) {
         console.log("Topics: %o", topics);
         topicId = topics.topics[0].topic;
-
         var req = new nakamajs.TopicMessageSendRequest();
         req.topic = topicId;
         req.data = {"message": "hello-world"};
@@ -115,7 +107,6 @@
       }).then(function(groups) {
         console.log("Groups: %o", groups);
         groupId = groups.groups[0].id;
-
         var req = new nakamajs.GroupsListRequest();
         req.lang = "js";
         return client.send(req);
