@@ -9,7 +9,7 @@ export default function GroupsFetchRequest({
       groupsFetch: {
         groups: [
           ...groupIds.map((groupId) => ({groupId})),
-          ...groupIds.names((name) => ({name})),
+          ...names.map((name) => ({name})),
         ],
       },
     };
