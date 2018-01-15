@@ -1,6 +1,7 @@
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import babel from 'rollup-plugin-babel';
+import rootImport from 'rollup-plugin-root-import';
 import packagejson from './package.json';
 
 export default [
@@ -21,7 +22,11 @@ export default [
         "exclude": [
           "node_modules/**"
         ]
-      })
+      }),
+      rootImport({
+        useEntry: 'prepend',
+        extensions: '.js'
+      }),
     ]
   }, {
     // Build commonjs and ES modules.
@@ -44,7 +49,11 @@ export default [
         "exclude": [
           "node_modules/**"
         ]
-      })
+      }),
+      rootImport({
+        useEntry: 'prepend',
+        extensions: '.js'
+      }),
     ]
   }
 ];
