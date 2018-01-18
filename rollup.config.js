@@ -27,7 +27,10 @@ export default [
         useEntry: 'prepend',
         extensions: '.js'
       }),
-    ]
+    ],
+    "moduleContext": {
+      [require.resolve('whatwg-fetch')]: 'window'
+    }
   }, {
     // Build commonjs and ES modules.
     "input": "src/index.js",
@@ -54,6 +57,9 @@ export default [
         useEntry: 'prepend',
         extensions: '.js'
       }),
-    ]
+    ],
+    "moduleContext": {
+      [require.resolve('whatwg-fetch')]: 'window'
+    }
   }
 ];
