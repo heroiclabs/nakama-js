@@ -18,6 +18,9 @@
  * JavaScript client for Nakama server.
  */
 
+// include fetch polyfill
+import 'whatwg-fetch';
+
 export {default as Client} from '/Client';
 export {default as Session} from '/Session';
 export * from '/protocol/requests';
