@@ -3,7 +3,7 @@ import MatchDataResponse from './responses/MatchDataResponse';
 
 export default function MatchDataSendRequest({
   matchId,
-  presence,
+  presences,
   opCode,
   data,
 } = {}) {
@@ -11,7 +11,7 @@ export default function MatchDataSendRequest({
     return {
       matchDataSend: {
         matchId,
-        presence,
+        presences,
         opCode,
         data: base64.encode(JSON.stringify(data)),
       },
@@ -26,18 +26,18 @@ export default function MatchDataSendRequest({
       matchId = val;
     },
 
-    get presence() {
-      return presence;
+    get presences() {
+      return presences;
     },
-    set presence(val) {
-      presence = val;
+    set presences(val) {
+      presences = val;
     },
 
     get opCode() {
-      return presence;
+      return opCode;
     },
     set opCode(val) {
-      presence = val;
+      opCode = val;
     },
 
     get data() {
