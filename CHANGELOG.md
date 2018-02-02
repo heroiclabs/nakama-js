@@ -3,7 +3,13 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
-## [Unreleased]
+## [0.4.0] - 2018-02-02
+### Changed
+- Re-structure project for wider browser compatibility.
+- Use a polyfill for window.fetch support.
+
+### Fixed
+- Fix bug in MatchDataSendRequest message.
 
 ## [0.3.0] - 2017-11-27
 ### Added
