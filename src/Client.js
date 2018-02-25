@@ -58,11 +58,6 @@ export default class Client {
       });
     }
 
-    const searchParams = new URLSearchParams();
-    searchParams.append("token", session.token_);
-    searchParams.append("lang", this.lang);
-    searchParams.append("format", "json");
-
     const protocol = (this.ssl) ? 'wss' : 'ws';
     const url = `${protocol}://${this.host}:${this.port}/api?format=json&lang=${this.lang}&token=${session.token_}`
 
