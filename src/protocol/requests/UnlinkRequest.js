@@ -6,11 +6,11 @@ export default function UnlinkRequest({
   email,
 } = {}) {
   function build_() {
-    if (custom) return {link: {custom}};
-    if (device) return {link: {device}};
-    if (facebook) return {link: {facebook}};
-    if (google) return {link: {google}};
-    if (email) return {link: {email}};
+    if (custom) return {unlink: {custom}};
+    if (device) return {unlink: {device}};
+    if (facebook) return {unlink: {facebook}};
+    if (google) return {unlink: {google}};
+    if (email) return {unlink: {email}};
   }
 
   return {
