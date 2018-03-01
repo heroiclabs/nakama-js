@@ -1,7 +1,7 @@
 {
   "name": "@heroiclabs/nakama-js",
-  "version": "0.4.0",
-  "description": "JavaScript client for Nakama server.",
+  "version": "2.0.0",
+  "description": "JavaScript client for Nakama server written in TypeScript.",
   "keywords": [
     "realtime",
     "realtime chat",
@@ -13,10 +13,7 @@
   "main": "dist/nakama-js.cjs.js",
   "module": "dist/nakama-js.esm.js",
   "browser": "dist/nakama-js.umd.js",
-  "repository": {
-    "url": "https://github.com/heroiclabs/nakama-js",
-    "type": "git"
-  },
+  "repository": "https://github.com/heroiclabs/nakama-js",
   "author": "Chris Molozian <chris@heroiclabs.com>",
   "contributors": [
     "Andrei Mihu <andrei@heroiclabs.com>",
@@ -24,24 +21,28 @@
   ],
   "license": "Apache-2.0",
   "private": false,
-  "dependencies": {
-    "base-64": "^0.1.0",
-    "whatwg-fetch": "^2.0.3"
-  },
-  "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "rollup": "^0.50.0",
-    "rollup-plugin-babel": "^3.0.2",
-    "rollup-plugin-commonjs": "^8.2.4",
-    "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-root-import": "^0.2.2"
-  },
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w"
+    "dev": "rollup -c -w",
+    "test": "jest"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "src"
+  ],
+  "devDependencies": {
+    "chalk": "^2.3.0",
+    "jest": "^22.1.4",
+    "jest-environment-node": "^22.1.4",
+    "mkdirp": "^0.5.1",
+    "puppeteer": "^1.0.0",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.55.1",
+    "rollup-plugin-typescript2": "^0.10.0",
+    "typescript": "^2.6.2"
+  },
+  "dependencies": {
+    "Base64": "^1.0.1",
+    "whatwg-fetch": "^2.0.3"
+  }
 }
