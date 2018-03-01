@@ -15,6 +15,6 @@ The TypeScript generator available with swagger-codegen depends on Node's `"url"
 
 The only dependencies with the generated code is implicit usage of `"fetch"` which can be resolved with a polyfill and `"Base64"`.
 
-### Limitations
+### Limitations
 
 The code generator has __only__ been checked against the Swagger specification generated for Nakama server. YMMV.
