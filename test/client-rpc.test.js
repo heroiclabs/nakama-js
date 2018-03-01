@@ -63,7 +63,7 @@ describe('RPC Tests', () => {
       const client = new nakamajs.Client();
       return client.authenticateCustom({ id: customid })
         .then(session => {
-          return client.rpcFunc(rpcid, request, session);
+          return client.rpcFunc(session, rpcid, request);
         });
     }, customid, rpcid, request);
 
@@ -71,4 +71,16 @@ describe('RPC Tests', () => {
     expect(rpcResult.payload).not.toBeNull();
     expect(rpcResult.payload).toEqual(request);
   });
+
+  it('should send rpc with httpKey', async() => {
+    const rpcid = "clientrpc_post";
+    const httpKey = "defaultkey";
+
+    const rpcResult = await page.evaluate((rpcid, httpKey) => {
+      const client = new nakamajs.Client();
+      return client.rpcFunc2(rpcid, null, httpKey);
+    }, rpcid, httpKey);
+
+    expect(rpcResult).not.toBeNull();
+  })
 }, TIMEOUT);
