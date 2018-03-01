@@ -60,4 +60,57 @@ describe('User Tests', () => {
     expect(account.user.metadata).not.toBeNull();
     expect(account.user.metadata).toBe("{}");
   });
+
+  it('should update current user account', async () => {
+    const customid = generateid();
+    const displayName = "display";
+    const avatar = "avatar";
+    const lang = "fa";
+    const loc = "california";
+
+    const account = await page.evaluate((customid, displayName, avatar, lang, loc) => {
+      const client = new nakamajs.Client();
+      return client.authenticateCustom({ id: customid })
+        .then(session => {
+          return client.updateAccount({
+            displayName: displayName,
+            avatarUrl: avatar,
+            langTag: lang,
+            location: loc
+          }, session).then(bool => {
+            return client.getAccount(session);
+          });
+        })
+    }, customid, displayName, avatar, lang, loc);
+
+    expect(account).not.toBeNull();
+    expect(account.user.display_name).not.toBeNull();
+    expect(account.user.display_name).toBe(displayName);
+    expect(account.user.avatar_url).not.toBeNull();
+    expect(account.user.avatar_url).toBe(avatar);
+    expect(account.user.lang_tag).not.toBeNull();
+    expect(account.user.lang_tag).toBe(lang);
+    expect(account.user.location).not.toBeNull();
+    expect(account.user.location).toBe(loc);
+  });
+
+  it('should return two users', async () => {
+    const customid = generateid();
+    const customid2 = generateid();
+
+    const users = await page.evaluate((customid, customid2) => {
+      const client = new nakamajs.Client();
+      return client.authenticateCustom({ id: customid })
+        .then(session1 => {
+          return client.authenticateCustom({ id: customid2 })
+            .then(session2 => {
+              return client.getUsers([session1.userId, session2.userId], [], [], session2);
+            });
+        });
+    }, customid, customid2);
+
+    expect(users).not.toBeNull();
+    expect(users[0]).not.toBeNull();
+    expect(users[1]).not.toBeNull();
+  });
 }, TIMEOUT);
