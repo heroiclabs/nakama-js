@@ -1,65 +1,26 @@
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import babel from 'rollup-plugin-babel';
-import rootImport from 'rollup-plugin-root-import';
 import packagejson from './package.json';
+import typescript from 'rollup-plugin-typescript2';
 
-export default [
-  {
-    // Build a UMD module for browsers.
-    "input": "src/index.js",
-    "name": "nakamajs",
-    "output": {
+export default {
+  "input": "./src/index.ts",
+  "output": [{
+      "file": packagejson.main,
+      "format": "cjs",
+      "name": "nakamajs",
+    }, {
       "file": packagejson.browser,
-      "format": "umd"
-    },
-    "plugins": [
-      resolve({
-        "main": true
-      }),
-      commonjs(),
-      babel({
-        "exclude": [
-          "node_modules/**"
-        ]
-      }),
-      rootImport({
-        useEntry: 'prepend',
-        extensions: '.js'
-      }),
-    ],
-    "moduleContext": {
-      [require.resolve('whatwg-fetch')]: 'window'
+      "format": "umd",
+      "name": "nakamajs",
+    }, {
+      "file": packagejson.module,
+      "format": "es",
+      "name": "nakamajs",
     }
-  }, {
-    // Build commonjs and ES modules.
-    "input": "src/index.js",
-    "output": [
-      {
-        "file": packagejson.main,
-        "format": "cjs"
-      }, {
-        "file": packagejson.module,
-        "format": "es"
-      }
-    ],
-    "plugins": [
-      resolve({
-        "main": true
-      }),
-      commonjs(),
-      babel({
-        "exclude": [
-          "node_modules/**"
-        ]
-      }),
-      rootImport({
-        useEntry: 'prepend',
-        extensions: '.js'
-      }),
-    ],
-    "moduleContext": {
-      [require.resolve('whatwg-fetch')]: 'window'
-    }
-  }
-];
+  ],
+  "plugins": [
+    typescript()
+  ],
+  "moduleContext": {
+    [require.resolve('whatwg-fetch')]: "window"
+  },
+};
