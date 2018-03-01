@@ -11,6 +11,7 @@
   "homepage": "https://heroiclabs.com",
   "bugs": "https://github.com/heroiclabs/nakama-js/issues",
   "main": "dist/nakama-js.cjs.js",
+  "types": "dist/index.d.ts",
   "module": "dist/nakama-js.esm.js",
   "browser": "dist/nakama-js.umd.js",
   "repository": "https://github.com/heroiclabs/nakama-js",
@@ -39,6 +40,7 @@
     "rimraf": "^2.6.2",
     "rollup": "^0.55.1",
     "rollup-plugin-typescript2": "^0.10.0",
+    "typedoc": "^0.10.0",
     "typescript": "^2.6.2"
   },
   "dependencies": {
