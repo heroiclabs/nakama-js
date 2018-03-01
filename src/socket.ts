@@ -46,7 +46,7 @@ export interface Socket {
 /** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
 export class DefaultSocket implements Socket {
   private socket?: WebSocket;
-  readonly cIds: { [key: string]: PromiseExecutor };
+  private readonly cIds: { [key: string]: PromiseExecutor };
 
   constructor(
       readonly session: Session,
