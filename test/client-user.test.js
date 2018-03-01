@@ -72,12 +72,12 @@ describe('User Tests', () => {
       const client = new nakamajs.Client();
       return client.authenticateCustom({ id: customid })
         .then(session => {
-          return client.updateAccount({
+          return client.updateAccount(session, {
             displayName: displayName,
             avatarUrl: avatar,
             langTag: lang,
             location: loc
-          }, session).then(bool => {
+          }).then(bool => {
             return client.getAccount(session);
           });
         })
@@ -104,7 +104,7 @@ describe('User Tests', () => {
         .then(session1 => {
           return client.authenticateCustom({ id: customid2 })
             .then(session2 => {
-              return client.getUsers([session1.userId, session2.userId], [], [], session2);
+              return client.getUsers(session2, [session1.userId, session2.userId], [], []);
             });
         });
     }, customid, customid2);

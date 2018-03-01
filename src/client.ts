@@ -44,8 +44,6 @@ export class Client {
   private apiClient: any;
   // The server configuration.
   private configuration: ConfigurationParameters;
-  // The client session.
-  private session?: Session;
 
   constructor(
       readonly serverkey = DEFAULT_SERVER_KEY,
@@ -63,8 +61,8 @@ export class Client {
   }
 
   /** Add friends by ID or username to a user's account. */
-  // addFriends(ids?: Array<string>, usernames?: Array<string>, session?: Session): Promise<boolean> {
-  //   this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  // addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
+  //   this.configuration.bearerToken = (session && session.token);
   //   return this.apiClient.addFriends(ids, usernames).then((response: ProtobufEmpty) => {
   //     return Promise.resolve(response != undefined);
   //   });
@@ -73,206 +71,200 @@ export class Client {
   /** Authenticate a user with a custom id against the server. */
   authenticateCustom(request: ApiAccountCustom): Promise<Session> {
     return this.apiClient.authenticateCustom(request).then((apiSession: ApiSession): Session => {
-      const sessionObj = Session.restore(apiSession.token || "");
-      this.session = sessionObj;
-      return sessionObj;
+      return Session.restore(apiSession.token || "");
     });
   }
 
   /** Authenticate a user with a device id against the server. */
   authenticateDevice(request: ApiAccountDevice): Promise<Session> {
     return this.apiClient.authenticateDevice(request).then((apiSession: ApiSession): Session => {
-      const sessionObj = Session.restore(apiSession.token || "");
-      this.session = sessionObj;
-      return sessionObj;
+      return Session.restore(apiSession.token || "");
     });
   }
 
   /** Authenticate a user with an email+password against the server. */
   authenticateEmail(request: ApiAccountEmail): Promise<Session> {
     return this.apiClient.authenticateEmail(request).then((apiSession: ApiSession): Session => {
-      const sessionObj = Session.restore(apiSession.token || "");
-      this.session = sessionObj;
-      return sessionObj;
+      return Session.restore(apiSession.token || "");
     });
   }
 
   /** Authenticate a user with a Facebook OAuth token against the server. */
   authenticateFacebook(request: ApiAccountFacebook): Promise<Session> {
     return this.apiClient.authenticateFacebook(request).then((apiSession: ApiSession): Session => {
-      const sessionObj = Session.restore(apiSession.token || "");
-      this.session = sessionObj;
-      return sessionObj;
+      return Session.restore(apiSession.token || "");
     });
   }
 
   /** Authenticate a user with Google against the server. */
   authenticateGoogle(request: ApiAccountGoogle): Promise<Session> {
     return this.apiClient.authenticateGoogle(request).then((apiSession: ApiSession): Session => {
-      const sessionObj = Session.restore(apiSession.token || "");
-      this.session = sessionObj;
-      return sessionObj;
+      return Session.restore(apiSession.token || "");
     });
   }
 
   /** Block one or more users by ID or username. */
-  // blockFriends(ids?: Array<string>, usernames?: Array<string>, session?: Session): Promise<boolean> {
-  //   this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  // blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
+  //   this.configuration.bearerToken = (session && session.token);
   //   return this.apiClient.blockFriends(ids, usernames).then((response: ProtobufEmpty) => {
   //     return Promise.resolve(response != undefined);
   //   });
   // }
 
   /** A socket created with the client's configuration. */
-  createSocket(session?: Session): Socket {
+  createSocket(session: Session): Socket {
     return {
       session: session
     };
   }
 
   /** Delete one or more users by ID or username. */
-  // deleteFriends(ids?: Array<string>, usernames?: Array<string>, session?: Session): Promise<boolean> {
-  //   this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  // deleteFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
+  //   this.configuration.bearerToken = (session && session.token);
   //   return this.apiClient.deleteFriends(ids, usernames).then((response: ProtobufEmpty) => {
   //     return Promise.resolve(response != undefined);
   //   });
   // }
 
   /** Delete one or more notifications */
-  // deleteNotifications(ids?: Array<string>, session?: Session): Promise<boolean> {
-  //   this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  // deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean> {
+  //   this.configuration.bearerToken = (session && session.token);
   //   return this.apiClient.deleteNotifications(ids).then((response: ProtobufEmpty) => {
   //     return Promise.resolve(response != undefined);
   //   });
   // }
 
   /** Fetch the current user's account. */
-  getAccount(session?: Session): Promise<ApiAccount> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  getAccount(session: Session): Promise<ApiAccount> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.getAccount();
   }
 
   /** Import Facebook friends and add them to a user's account. */
-  importFacebookFriends(request: ApiAccountFacebook, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.importFacebookFriends(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Fetch zero or more users by ID and/or username. */
-  getUsers(ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>, session?: Session): Promise<ApiUsers> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<ApiUsers> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.getUsers(ids, usernames, facebookIds);
   }
 
   /** Add a custom ID to the social profiles on the current user's account. */
-  linkCustom(request: ApiAccountCustom, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  linkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkCustom(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Add a device ID to the social profiles on the current user's account. */
-  linkDevice(request: ApiAccountDevice, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  linkDevice(session: Session, request: ApiAccountDevice): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkDevice(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Add an email+password to the social profiles on the current user's account. */
-  linkEmail(request: ApiAccountEmail, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  linkEmail(session: Session, request: ApiAccountEmail): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkEmail(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Add Facebook to the social profiles on the current user's account. */
-  linkFacebook(request: ApiAccountFacebook, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkFacebook(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Add Google to the social profiles on the current user's account. */
-  linkGoogle(request: ApiAccountGoogle, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkGoogle(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** List all friends for the current user. */
-  listFriends(session?: Session): Promise<ApiFriends> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  listFriends(session: Session): Promise<ApiFriends> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.listFriends();
   }
 
   /** Fetch list of notifications. */
-  listNotifications(limit?: string, cacheableCursor?: string, session?: Session): Promise<ApiUsers> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  listNotifications(session: Session, limit?: string, cacheableCursor?: string): Promise<ApiUsers> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.listNotifications(limit, cacheableCursor);
   }
 
   /** Execute a Lua function on the server. */
-  rpcFunc(id: string, input: object, session?: Session): Promise<ApiRpc> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  rpcFunc(session: Session, id: string, input: object): Promise<ApiRpc> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.rpcFunc(id, JSON.stringify(input));
   }
 
   /** Execute a Lua function on the server. */
-  rpcFunc2(id: string, session?: Session): Promise<ApiRpc> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
-    return this.apiClient.rpcFunc2(id);
+  rpcFunc2(id: string, session?: Session, httpKey?: string): Promise<ApiRpc> {
+    if (!httpKey || httpKey == "") {
+      this.configuration.bearerToken = (session && session.token);
+    } else {
+      this.configuration.bearerToken = undefined;
+    }
+    return this.apiClient.rpcFunc2(id, null, httpKey);
   }
 
   /** Remove custom ID from the social profiles on the current user's account. */
-  unlinkCustom(request: ApiAccountCustom, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  unlinkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkCustom(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Remove a device ID from the social profiles on the current user's account. */
-  unlinkDevice(request: ApiAccountDevice, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  unlinkDevice(session: Session, request: ApiAccountDevice): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkDevice(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Remove an email+password from the social profiles on the current user's account. */
-  unlinkEmail(request: ApiAccountEmail, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  unlinkEmail(session: Session, request: ApiAccountEmail): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkEmail(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Remove Facebook from the social profiles on the current user's account. */
-  unlinkFacebook(request: ApiAccountFacebook, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkFacebook(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Remove Google from the social profiles on the current user's account. */
-  unlinkGoogle(request: ApiAccountGoogle, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkGoogle(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Update fields in the current user's account. */
-  updateAccount(request: ApiUpdateAccountRequest, session?: Session): Promise<boolean> {
-    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+  updateAccount(session: Session, request: ApiUpdateAccountRequest): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
     return this.apiClient.updateAccount(request).then((response: ProtobufEmpty) => {
       return Promise.resolve(response != undefined);
     });

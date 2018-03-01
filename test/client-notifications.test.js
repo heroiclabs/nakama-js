@@ -44,9 +44,9 @@ describe('Notifications Tests', () => {
       const client = new nakamajs.Client();
       return client.authenticateCustom({ id: customid })
         .then(session => {
-          return client.rpcFunc("send_notification", {"user_id": session.userId}, session)
+          return client.rpcFunc(session, "send_notification", {"user_id": session.userId})
             .then(result => {
-              return client.listNotifications("1", "", session);
+              return client.listNotifications(session, "1", "");
             });
         });
     }, customid);

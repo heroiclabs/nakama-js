@@ -45,7 +45,7 @@ describe('Link / Unlink Tests', () => {
       const client = new nakamajs.Client();
       return client.authenticateCustom({ id: customid })
         .then(session => {
-          return client.linkDevice({ id: deviceid }, session)
+          return client.linkDevice(session, { id: deviceid })
             .then(bool => {
               return client.getAccount(session);
             });
@@ -65,9 +65,9 @@ describe('Link / Unlink Tests', () => {
       const client = new nakamajs.Client();
       return client.authenticateCustom({ id: customid })
         .then(session => {
-          return client.linkDevice({ id: deviceid }, session)
+          return client.linkDevice(session, { id: deviceid })
             .then(bool => {
-              return client.unlinkDevice( {id: deviceid }, session)
+              return client.unlinkDevice(session, {id: deviceid })
                 .then(bool => {
                   return client.getAccount(session);
                 })
