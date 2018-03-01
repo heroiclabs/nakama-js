@@ -32,7 +32,7 @@ import {
 } from "./api.gen";
 
 import { Session } from "./session";
-import { Socket } from "./socket";
+import { DefaultSocket, Socket } from "./socket";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = "7349";
@@ -113,9 +113,7 @@ export class Client {
 
   /** A socket created with the client's configuration. */
   createSocket(session: Session): Socket {
-    return {
-      session: session
-    };
+    return new DefaultSocket(session, this.host, this.port, this.useSSL, this.verbose);
   }
 
   /** Delete one or more users by ID or username. */
@@ -207,13 +205,13 @@ export class Client {
   }
 
   /** Execute a Lua function on the server. */
-  rpcFunc(session: Session, id: string, input: object): Promise<ApiRpc> {
+  rpc(session: Session, id: string, input: object): Promise<ApiRpc> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.rpcFunc(id, JSON.stringify(input));
   }
 
   /** Execute a Lua function on the server. */
-  rpcFunc2(id: string, session?: Session, httpKey?: string): Promise<ApiRpc> {
+  rpcGet(id: string, session?: Session, httpKey?: string): Promise<ApiRpc> {
     if (!httpKey || httpKey == "") {
       this.configuration.bearerToken = (session && session.token);
     } else {
