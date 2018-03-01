@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Nakama JS Browser Test</title>
+  </head>
+  <body>
+    <script src="../dist/nakama-js.umd.js"></script>
+    <script>
+      var client = new nakamajs.Client("defaultkey", "127.0.0.1", "7349", false);
+      client.authenticateCustom({ id: "" })
+        .then(session => console.log(session))
+        .catch(err => console.error(err));
+    </script>
+  </body>
+</html>
