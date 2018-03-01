@@ -40,16 +40,14 @@ describe('RPC Tests', () => {
   it('should connect', async () => {
     const customid = generateid();
 
-    expect.assertions(1);
-    await page.evaluate(async (customid) => {
+    // TODO update
+    const session = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
       const socket = await client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.createSocket(session);
+        .then(activeSession => {
+          return client.createSocket(activeSession);
         });
-      socket.onconnect(() => {
-      });
-      socket.connect();
+      return await socket.connect().then(_activeSession => socket.disconnect());
     }, customid);
   });
 
@@ -63,12 +61,10 @@ describe('RPC Tests', () => {
         .then(session => {
           return client.createSocket(session);
         });
-      socket.onconnect(() => {
-      });
-      socket.connect().then(() => {
+      return await socket.connect().then((_activeSession) => {
         // TODO replace with type
-        socket.send({ id: "clientrpc", payload: { "hello": "world" } });
-      });
+        socket.send({ id: "clientrpc.rpc", payload: { "hello": "world" } });
+      }).then(_activeSession => socket.disconnect());
     }, customid);
   });
 }, TIMEOUT);

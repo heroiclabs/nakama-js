@@ -14,5 +14,155 @@
  * limitations under the License.
  */
 
+import { ApiNotification } from "./api.gen";
+import { Session } from "./session";
+
+/** Stores function references for resolve/reject with a DOM Promise. */
+interface PromiseExecutor {
+  resolve: (value?: any) => void;
+  reject: (reason?: any) => void;
+}
+
+/** Reports an error received from a socket message. */
+export interface SocketError {
+  // The error code.
+  code: number;
+  // A message in English to help developers debug the response.
+  message: string;
+}
+
+/** A socket connection to Nakama server. */
 export interface Socket {
+  // Connect to the server.
+  connect(session: Session): Promise<Session>;
+  // Disconnect from the server.
+  disconnect(fireDisconnectEvent: boolean): void;
+  // Handle disconnect events received from the socket.
+  ondisconnect: (evt: Event) => void;
+  // Receive notifications from the socket.
+  onnotification: (notification: ApiNotification) => void;
+}
+
+/** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
+export class DefaultSocket implements Socket {
+  private socket?: WebSocket;
+  readonly cIds: { [key: string]: PromiseExecutor };
+
+  constructor(
+      readonly session: Session,
+      readonly host: string,
+      readonly port: string,
+      readonly useSSL: boolean = false,
+      public verbose: boolean = false) {
+    this.cIds = {};
+  }
+
+  generatecid(): string {
+    return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
+  }
+
+  connect(session?: Session): Promise<Session> {
+    const activeSession = session || this.session;
+
+    if (this.socket != undefined) {
+      return Promise.resolve(activeSession);
+    }
+
+    const scheme = (this.useSSL) ? "wss://" : "ws://";
+    const url = `${scheme}${this.host}:${this.port}/ws?lang=en&token=${encodeURIComponent(activeSession.token)}`;
+    const socket = new WebSocket(url);
+    this.socket = socket;
+
+    socket.onclose = (evt: Event) => {
+      this.ondisconnect(evt);
+      this.socket = undefined;
+    }
+
+    socket.onmessage = (evt: MessageEvent) => {
+      const message = JSON.parse(evt.data);
+      if (this.verbose && window && window.console) {
+        console.log("Response: %o", message);
+      }
+
+      // Inbound message from server.
+      if (message.cid == undefined) {
+        if (message.notifications) {
+          message.notifications.notifications.forEach((n: any) => this.onnotification(n));
+        } else {
+          if (this.verbose && window && window.console) {
+            console.log("Unrecognized message received: %o", message);
+          }
+        }
+      } else {
+        const executor = this.cIds[message.cid];
+        if (!executor) {
+          if (this.verbose && window && window.console) {
+            console.error("No promise executor for message: %o", message);
+          }
+          return;
+        }
+        delete this.cIds[message.cid];
+
+        if (message.error) {
+          executor.reject(<SocketError>message.error);
+        } else {
+          executor.resolve(message);
+        }
+      }
+    }
+
+    return new Promise((resolve, reject) => {
+      socket.onopen = (evt: Event) => {
+        if (this.verbose && window && window.console) {
+          console.log(evt);
+        }
+        resolve(activeSession);
+      }
+      socket.onerror = (evt: Event) => {
+        reject(evt);
+        socket.close();
+        this.socket = undefined;
+      }
+    });
+  }
+
+  disconnect(fireDisconnectEvent: boolean = true) {
+    if (this.socket != undefined) {
+      this.socket.close();
+    }
+    if (fireDisconnectEvent) {
+      this.ondisconnect(<Event>{});
+    }
+  }
+
+  ondisconnect(evt: Event) {
+    if (this.verbose && window && window.console) {
+      console.log(evt);
+    }
+  }
+
+  onnotification(notification: ApiNotification) {
+    if (this.verbose && window && window.console) {
+      console.log(notification);
+    }
+  }
+
+  send(message: any) {
+    return new Promise((resolve, reject) => {
+      if (this.socket == undefined) {
+        reject("Socket connection has not been established yet.");
+      } else {
+        const cid = this.generatecid();
+        this.cIds[cid] = {
+          resolve: resolve,
+          reject: reject
+        };
+        this.socket.send(JSON.stringify(message));
+      }
+
+      if (this.verbose && window && window.console) {
+        console.log("Sent message: %o", message);
+      }
+    });
+  }
 }
