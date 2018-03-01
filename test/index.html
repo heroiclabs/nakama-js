@@ -9,7 +9,7 @@
     <script src="../dist/nakama-js.umd.js"></script>
     <script>
       var client = new nakamajs.Client("defaultkey", "127.0.0.1", "7349", false);
-      client.authenticateCustom({ id: "" })
+      client.authenticateCustom({ id: "someuniqueidentifier" })
         .then(session => console.log(session))
         .catch(err => console.error(err));
     </script>
