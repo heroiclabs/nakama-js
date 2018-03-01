@@ -17,10 +17,16 @@
 import {
   ApiAccount,
   ApiAccountCustom,
+  ApiAccountDevice,
+  ApiAccountEmail,
+  ApiAccountFacebook,
+  ApiAccountGoogle,
   ApiSession,
   ApiRpc,
+  ApiUpdateAccountRequest,
   ConfigurationParameters,
   NakamaApi,
+  ProtobufEmpty,
 } from "./api.gen";
 
 import { Session } from "./session";
@@ -63,6 +69,42 @@ export class Client {
     });
   }
 
+  /** Authenticate a user with a device id against the server. */
+  authenticateDevice(request: ApiAccountDevice): Promise<Session> {
+    return this.apiClient.authenticateDevice(request).then((apiSession: ApiSession): Session => {
+      const sessionObj = Session.restore(apiSession.token || "");
+      this.session = sessionObj;
+      return sessionObj;
+    });
+  }
+
+  /** Authenticate a user with an email+password against the server. */
+  authenticateEmail(request: ApiAccountEmail): Promise<Session> {
+    return this.apiClient.authenticateEmail(request).then((apiSession: ApiSession): Session => {
+      const sessionObj = Session.restore(apiSession.token || "");
+      this.session = sessionObj;
+      return sessionObj;
+    });
+  }
+
+  /** Authenticate a user with a Facebook OAuth token against the server. */
+  authenticateFacebook(request: ApiAccountFacebook): Promise<Session> {
+    return this.apiClient.authenticateFacebook(request).then((apiSession: ApiSession): Session => {
+      const sessionObj = Session.restore(apiSession.token || "");
+      this.session = sessionObj;
+      return sessionObj;
+    });
+  }
+
+  /** Authenticate a user with Google against the server. */
+  authenticateGoogle(request: ApiAccountGoogle): Promise<Session> {
+    return this.apiClient.authenticateGoogle(request).then((apiSession: ApiSession): Session => {
+      const sessionObj = Session.restore(apiSession.token || "");
+      this.session = sessionObj;
+      return sessionObj;
+    });
+  }
+
   /** A socket created with the client's configuration. */
   createSocket(session?: Session): Socket {
     return {
@@ -86,5 +128,13 @@ export class Client {
   rpcFunc2(id: string, session?: Session): Promise<ApiRpc> {
     this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
     return this.apiClient.rpcFunc2(id);
+  }
+
+  /** Update fields in the current user's account. */
+  updateAccount(request: ApiUpdateAccountRequest, session?: Session): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token) || (this.session && this.session.token);
+    return this.apiClient.updateAccount(request).then((response: ProtobufEmpty) => {
+      return Promise.resolve(response != undefined);
+    });
   }
 }
