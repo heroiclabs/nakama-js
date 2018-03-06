@@ -1,7 +1,23 @@
 import { ApiNotification, ApiRpc } from "./api.gen";
 import { Session } from "./session";
+export interface StreamData {
+    stream: {};
+    streamPresence: {};
+    data: string;
+}
+export interface StreamPresenceEvent {
+    stream: {};
+    joins: [{}];
+    leaves: [{}];
+}
 export interface CreateMatch {
     matchCreate: {};
+}
+export interface JoinMatch {
+    matchJoin: {
+        matchId: string;
+        token: string;
+    };
 }
 export interface Rpc {
     rpc: ApiRpc;
@@ -11,6 +27,8 @@ export interface Socket {
     disconnect(fireDisconnectEvent: boolean): void;
     ondisconnect: (evt: Event) => void;
     onnotification: (notification: ApiNotification) => void;
+    onstreampresence: (streamPresence: StreamPresenceEvent) => void;
+    onstreamdata: (streamData: StreamData) => void;
 }
 export interface SocketError {
     code: number;
@@ -29,5 +47,7 @@ export declare class DefaultSocket implements Socket {
     disconnect(fireDisconnectEvent?: boolean): void;
     ondisconnect(evt: Event): void;
     onnotification(notification: ApiNotification): void;
-    send(message: CreateMatch | Rpc): Promise<{}>;
+    onstreampresence(streamPresence: StreamPresenceEvent): void;
+    onstreamdata(streamData: StreamData): void;
+    send(message: CreateMatch | JoinMatch | Rpc): Promise<{}>;
 }

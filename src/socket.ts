@@ -23,9 +23,31 @@ interface PromiseExecutor {
   reject: (reason?: any) => void;
 }
 
+/** Stream data. */
+export interface StreamData {
+  stream: {},
+  streamPresence: {}
+  data: string
+}
+
+/** Presence updates. */
+export interface StreamPresenceEvent {
+  stream: {},
+  joins: [{}],
+  leaves: [{}]
+}
+
 /** Create a multiplayer match. */
 export interface CreateMatch {
   matchCreate: {}
+}
+
+/** Join a multiplayer match. */
+export interface JoinMatch {
+  matchJoin: {
+    matchId: string,
+    token: string
+  }
 }
 
 /** Execute an Lua function on the server. */
@@ -43,6 +65,10 @@ export interface Socket {
   ondisconnect: (evt: Event) => void;
   // Receive notifications from the socket.
   onnotification: (notification: ApiNotification) => void;
+  // Receive presence updates.
+  onstreampresence: (streamPresence: StreamPresenceEvent) => void;
+  // Receive stream data.
+  onstreamdata: (streamData: StreamData) => void;
 }
 
 /** Reports an error received from a socket message. */
@@ -95,6 +121,10 @@ export class DefaultSocket implements Socket {
       if (message.cid == undefined) {
         if (message.notifications) {
           message.notifications.notifications.forEach((n: any) => this.onnotification(n));
+        } else if (message.streamPresenceEvent) {
+          this.onstreampresence(<StreamPresenceEvent>message.streamPresenceEvent);
+        } else if (message.streamData) {
+          this.onstreamdata(<StreamData>message.streamData);
         } else {
           if (this.verbose && window && window.console) {
             console.log("Unrecognized message received: %o", message);
@@ -154,7 +184,19 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  send(message: CreateMatch | Rpc) {
+  onstreampresence(streamPresence: StreamPresenceEvent) {
+    if (this.verbose && window && window.console) {
+      console.log(streamPresence);
+    }
+  }
+
+  onstreamdata(streamData: StreamData) {
+    if (this.verbose && window && window.console) {
+      console.log(streamData);
+    }
+  }
+
+  send(message: CreateMatch | JoinMatch | Rpc) {
     return new Promise((resolve, reject) => {
       if (this.socket == undefined) {
         reject("Socket connection has not been established yet.");
