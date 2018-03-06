@@ -22,7 +22,7 @@ const generateid = () => {
   return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
 };
 
-describe('RPC Tests', () => {
+describe('Socket Message Tests', () => {
   let page;
 
   beforeAll(async () => {
@@ -43,28 +43,65 @@ describe('RPC Tests', () => {
     // TODO update
     const session = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      const socket = await client.authenticateCustom({ id: customid })
-        .then(activeSession => {
-          return client.createSocket(activeSession);
+      await client.authenticateCustom({ id: customid })
+        .then(session => {
+          const socket = client.createSocket();
+          return socket.connect(session).then(_session => {
+            socket.disconnect();
+          });
         });
-      return await socket.connect().then(_activeSession => socket.disconnect());
     }, customid);
+  });
+
+  it('should create match', async () => {
+    const customid = generateid();
+
+    const response = await page.evaluate((customid) => {
+      const client = new nakamajs.Client();
+      const socket = client.createSocket(false, false);
+      return client.authenticateCustom({ id: customid })
+        .then(session => {
+          return socket.connect(session);
+        })
+        .then(session => {
+          return socket.send({ matchCreate: {} });
+        });
+    }, customid);
+
+    expect(response).not.toBeNull();
+    expect(response.cid).not.toBeNull();
+    expect(response.match).not.toBeNull();
+    expect(response.match.matchId).not.toBeNull();
+    expect(response.match.presences).toHaveLength(1);
+    expect(response.match.self).not.toBeNull();
+    expect(response.match.self.sessionId).not.toBeNull();
+    expect(response.match.self.userId).not.toBeNull();
+    expect(response.match.self.username).not.toBeNull();
   });
 
   it('should send rpc', async () => {
     const customid = generateid();
+    const ID = "clientrpc.rpc";
+    const PAYLOAD = JSON.stringify({ "hello": "world" });
 
-    expect.assertions(1);
-    await page.evaluate(async (customid) => {
+    const response = await page.evaluate((customid, id, payload) => {
       const client = new nakamajs.Client();
-      const socket = await client.authenticateCustom({ id: customid })
+      const socket = client.createSocket(false, false);
+      return client.authenticateCustom({ id: customid })
         .then(session => {
-          return client.createSocket(session);
+          return socket.connect(session);
+        })
+        .then(session => {
+          return socket.send({ rpc: { id: id, payload: payload } });
         });
-      return await socket.connect().then((_activeSession) => {
-        // TODO replace with type
-        socket.send({ id: "clientrpc.rpc", payload: { "hello": "world" } });
-      }).then(_activeSession => socket.disconnect());
-    }, customid);
+    }, customid, ID, PAYLOAD);
+
+    expect(response).not.toBeNull();
+    expect(response.cid).not.toBeNull();
+    expect(response.rpc).not.toBeNull();
+    expect(response.rpc.id).not.toBeNull();
+    expect(response.rpc.id).toBe(ID);
+    expect(response.rpc.payload).not.toBeNull();
+    expect(response.rpc.payload).toBe(PAYLOAD);
   });
 }, TIMEOUT);

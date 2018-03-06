@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiNotification } from "./api.gen";
+import { ApiNotification, ApiRpc } from "./api.gen";
 import { Session } from "./session";
 
 /** Stores function references for resolve/reject with a DOM Promise. */
@@ -23,12 +23,14 @@ interface PromiseExecutor {
   reject: (reason?: any) => void;
 }
 
-/** Reports an error received from a socket message. */
-export interface SocketError {
-  // The error code.
-  code: number;
-  // A message in English to help developers debug the response.
-  message: string;
+/** Create a multiplayer match. */
+export interface CreateMatch {
+  matchCreate: {}
+}
+
+/** Execute an Lua function on the server. */
+export interface Rpc {
+  rpc: ApiRpc
 }
 
 /** A socket connection to Nakama server. */
@@ -43,13 +45,20 @@ export interface Socket {
   onnotification: (notification: ApiNotification) => void;
 }
 
+/** Reports an error received from a socket message. */
+export interface SocketError {
+  // The error code.
+  code: number;
+  // A message in English to help developers debug the response.
+  message: string;
+}
+
 /** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
 export class DefaultSocket implements Socket {
   private socket?: WebSocket;
   private readonly cIds: { [key: string]: PromiseExecutor };
 
   constructor(
-      readonly session: Session,
       readonly host: string,
       readonly port: string,
       readonly useSSL: boolean = false,
@@ -61,15 +70,13 @@ export class DefaultSocket implements Socket {
     return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
   }
 
-  connect(session?: Session): Promise<Session> {
-    const activeSession = session || this.session;
-
+  connect(session: Session): Promise<Session> {
     if (this.socket != undefined) {
-      return Promise.resolve(activeSession);
+      return Promise.resolve(session);
     }
 
     const scheme = (this.useSSL) ? "wss://" : "ws://";
-    const url = `${scheme}${this.host}:${this.port}/ws?lang=en&token=${encodeURIComponent(activeSession.token)}`;
+    const url = `${scheme}${this.host}:${this.port}/ws?lang=en&token=${encodeURIComponent(session.token)}`;
     const socket = new WebSocket(url);
     this.socket = socket;
 
@@ -116,7 +123,7 @@ export class DefaultSocket implements Socket {
         if (this.verbose && window && window.console) {
           console.log(evt);
         }
-        resolve(activeSession);
+        resolve(session);
       }
       socket.onerror = (evt: Event) => {
         reject(evt);
@@ -147,7 +154,7 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  send(message: any) {
+  send(message: CreateMatch | Rpc) {
     return new Promise((resolve, reject) => {
       if (this.socket == undefined) {
         reject("Socket connection has not been established yet.");
@@ -157,6 +164,8 @@ export class DefaultSocket implements Socket {
           resolve: resolve,
           reject: reject
         };
+        // Add id for promise executor.
+        (<any>message).cid = cid;
         this.socket.send(JSON.stringify(message));
       }
 
@@ -165,4 +174,4 @@ export class DefaultSocket implements Socket {
       }
     });
   }
-}
+};

@@ -3,6 +3,7 @@ export interface ConfigurationParameters {
     username?: string;
     password?: string;
     bearerToken?: string;
+    timeoutMs?: number;
 }
 export interface CreateGroupsRequestNewGroup {
     avatarUrl?: string;
@@ -50,6 +51,11 @@ export interface ApiAccountSteam {
 export interface ApiCreateGroupsRequest {
     groups?: Array<CreateGroupsRequestNewGroup>;
 }
+export interface ApiDeleteStorageObjectId {
+    collection?: string;
+    key?: string;
+    version?: string;
+}
 export interface ApiFriend {
     state?: number;
     user?: ApiUser;
@@ -59,7 +65,7 @@ export interface ApiFriends {
 }
 export interface ApiGroup {
     avatarUrl?: string;
-    count?: string;
+    count?: number;
     createTime?: string;
     creatorId?: string;
     description?: string;
@@ -69,13 +75,12 @@ export interface ApiGroup {
     name?: string;
     private?: boolean;
     updateTime?: string;
-    utcOffsetMs?: string;
 }
 export interface ApiGroups {
     groups?: Array<ApiGroup>;
 }
 export interface ApiNotification {
-    code?: string;
+    code?: number;
     content?: string;
     createTime?: string;
     id?: string;
@@ -87,6 +92,14 @@ export interface ApiNotificationList {
     cacheableCursor?: string;
     notifications?: Array<ApiNotification>;
 }
+export interface ApiReadStorageObjectId {
+    collection?: string;
+    key?: string;
+    userId?: string;
+}
+export interface ApiReadStorageObjectsRequest {
+    objectIds?: Array<ApiReadStorageObjectId>;
+}
 export interface ApiRpc {
     httpKey?: string;
     id?: string;
@@ -95,6 +108,32 @@ export interface ApiRpc {
 export interface ApiSession {
     token?: string;
     udpToken?: string;
+}
+export interface ApiStorageObject {
+    collection?: string;
+    createTime?: string;
+    key?: string;
+    permissionRead?: number;
+    permissionWrite?: number;
+    updateTime?: string;
+    userId?: string;
+    value?: string;
+    version?: string;
+}
+export interface ApiStorageObjectAck {
+    collection?: string;
+    key?: string;
+    version?: string;
+}
+export interface ApiStorageObjectAcks {
+    acks?: Array<ApiStorageObjectAck>;
+}
+export interface ApiStorageObjectList {
+    cursor?: string;
+    objects?: Array<ApiStorageObject>;
+}
+export interface ApiStorageObjects {
+    objects?: Array<ApiStorageObject>;
 }
 export interface ApiUpdateAccountRequest {
     avatarUrl?: string;
@@ -108,6 +147,7 @@ export interface ApiUser {
     avatarUrl?: string;
     createTime?: string;
     displayName?: string;
+    edgeCount?: number;
     facebookId?: string;
     gamecenterId?: string;
     googleId?: string;
@@ -124,10 +164,24 @@ export interface ApiUser {
 export interface ApiUsers {
     users?: Array<ApiUser>;
 }
+export interface ApiWriteStorageObject {
+    collection?: string;
+    key?: string;
+    permissionRead?: number;
+    permissionWrite?: number;
+    value?: string;
+    version?: string;
+}
+export interface ApiWriteStorageObjectsRequest {
+    objects?: Array<ApiWriteStorageObject>;
+}
 export interface ProtobufBoolValue {
     value?: boolean;
 }
 export interface ProtobufEmpty {
+}
+export interface ProtobufInt32Value {
+    value?: number;
 }
 export interface ProtobufStringValue {
     value?: string;
@@ -164,8 +218,13 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     importFacebookFriends(body: ApiAccountFacebook, options?: any): Promise<ProtobufEmpty>;
     createGroup(body: ApiCreateGroupsRequest, options?: any): Promise<ApiGroups>;
     deleteNotifications(options?: any): Promise<ProtobufEmpty>;
-    listNotifications(limit?: string | undefined, cacheableCursor?: string | undefined, options?: any): Promise<ApiNotificationList>;
+    listNotifications(limit?: number | undefined, cacheableCursor?: string | undefined, options?: any): Promise<ApiNotificationList>;
     rpcFunc2(id: string, payload?: string | undefined, httpKey?: string | undefined, options?: any): Promise<ApiRpc>;
     rpcFunc(id: string, body: string, options?: any): Promise<ApiRpc>;
+    deleteStorageObjects(options?: any): Promise<ProtobufEmpty>;
+    readStorageObjects(body: ApiReadStorageObjectsRequest, options?: any): Promise<ApiStorageObjects>;
+    writeStorageObjects(body: ApiWriteStorageObjectsRequest, options?: any): Promise<ApiStorageObjectAcks>;
+    listStorageObjects(collection: string, userId?: string | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiStorageObjectList>;
+    listStorageObjects2(collection: string, userId: string, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiStorageObjectList>;
     getUsers(ids?: string[] | undefined, usernames?: string[] | undefined, facebookIds?: string[] | undefined, options?: any): Promise<ApiUsers>;
 };
