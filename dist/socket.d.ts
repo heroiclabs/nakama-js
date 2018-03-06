@@ -10,6 +10,11 @@ export interface StreamPresenceEvent {
     joins: [{}];
     leaves: [{}];
 }
+export interface MatchPresenceEvent {
+    matchId: string;
+    joins: [{}];
+    leaves: [{}];
+}
 export interface CreateMatch {
     matchCreate: {};
 }
@@ -17,6 +22,19 @@ export interface JoinMatch {
     matchJoin: {
         matchId: string;
         token: string;
+    };
+}
+export interface LeaveMatch {
+    matchLeave: {
+        matchId: string;
+    };
+}
+export interface MatchData {
+    matchDataSend: {
+        matchId: string;
+        opCode: number;
+        data: {};
+        presence: [{}];
     };
 }
 export interface Rpc {
@@ -27,6 +45,8 @@ export interface Socket {
     disconnect(fireDisconnectEvent: boolean): void;
     ondisconnect: (evt: Event) => void;
     onnotification: (notification: ApiNotification) => void;
+    onmatchdata: (matchData: MatchData) => void;
+    onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
     onstreampresence: (streamPresence: StreamPresenceEvent) => void;
     onstreamdata: (streamData: StreamData) => void;
 }
@@ -47,7 +67,9 @@ export declare class DefaultSocket implements Socket {
     disconnect(fireDisconnectEvent?: boolean): void;
     ondisconnect(evt: Event): void;
     onnotification(notification: ApiNotification): void;
+    onmatchdata(matchData: MatchData): void;
+    onmatchpresence(matchPresence: MatchPresenceEvent): void;
     onstreampresence(streamPresence: StreamPresenceEvent): void;
     onstreamdata(streamData: StreamData): void;
-    send(message: CreateMatch | JoinMatch | Rpc): Promise<{}>;
+    send(message: CreateMatch | JoinMatch | LeaveMatch | MatchData | Rpc): Promise<{}>;
 }

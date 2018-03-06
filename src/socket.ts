@@ -37,6 +37,13 @@ export interface StreamPresenceEvent {
   leaves: [{}]
 }
 
+/** Match presence updates. */
+export interface MatchPresenceEvent {
+  matchId: string,
+  joins: [{}],
+  leaves: [{}]
+}
+
 /** Create a multiplayer match. */
 export interface CreateMatch {
   matchCreate: {}
@@ -47,6 +54,23 @@ export interface JoinMatch {
   matchJoin: {
     matchId: string,
     token: string
+  }
+}
+
+/** Leave a multiplayer match. */
+export interface LeaveMatch {
+  matchLeave: {
+    matchId: string
+  }
+}
+
+/** Leave a multiplayer match. */
+export interface MatchData {
+  matchDataSend: {
+    matchId: string,
+    opCode: number,
+    data: {},
+    presence: [{}]
   }
 }
 
@@ -65,7 +89,11 @@ export interface Socket {
   ondisconnect: (evt: Event) => void;
   // Receive notifications from the socket.
   onnotification: (notification: ApiNotification) => void;
-  // Receive presence updates.
+  // Receive match data updates.
+  onmatchdata: (matchData: MatchData) => void;
+  // Receive match presence updates.
+  onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
+  // Receive stream presence updates.
   onstreampresence: (streamPresence: StreamPresenceEvent) => void;
   // Receive stream data.
   onstreamdata: (streamData: StreamData) => void;
@@ -121,6 +149,11 @@ export class DefaultSocket implements Socket {
       if (message.cid == undefined) {
         if (message.notifications) {
           message.notifications.notifications.forEach((n: any) => this.onnotification(n));
+        } else if (message.matchData) {
+          message.matchData.data = JSON.parse(atob(message.matchData.data));
+          this.onmatchdata(message.matchData);
+        } else if (message.matchedPresenceEvent) {
+          this.onmatchpresence(<MatchPresenceEvent>message.matchPresenceEvent);
         } else if (message.streamPresenceEvent) {
           this.onstreampresence(<StreamPresenceEvent>message.streamPresenceEvent);
         } else if (message.streamData) {
@@ -184,6 +217,18 @@ export class DefaultSocket implements Socket {
     }
   }
 
+  onmatchdata(matchData: MatchData) {
+    if (this.verbose && window && window.console) {
+      console.log(matchData);
+    }
+  }
+
+  onmatchpresence(matchPresence: MatchPresenceEvent) {
+    if (this.verbose && window && window.console) {
+      console.log(matchPresence);
+    }
+  }
+
   onstreampresence(streamPresence: StreamPresenceEvent) {
     if (this.verbose && window && window.console) {
       console.log(streamPresence);
@@ -196,19 +241,27 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  send(message: CreateMatch | JoinMatch | Rpc) {
+  send(message: CreateMatch | JoinMatch | LeaveMatch | MatchData | Rpc) {
     return new Promise((resolve, reject) => {
       if (this.socket == undefined) {
         reject("Socket connection has not been established yet.");
       } else {
-        const cid = this.generatecid();
-        this.cIds[cid] = {
-          resolve: resolve,
-          reject: reject
-        };
-        // Add id for promise executor.
-        (<any>message).cid = cid;
-        this.socket.send(JSON.stringify(message));
+        if ((<MatchData>message).matchDataSend) {
+          var m = <MatchData>message;
+          m.matchDataSend.data = btoa(JSON.stringify(m.matchDataSend.data));
+          this.socket.send(JSON.stringify(m));
+          resolve();
+        } else {
+          const cid = this.generatecid();
+          this.cIds[cid] = {
+            resolve: resolve,
+            reject: reject
+          };
+
+          // Add id for promise executor.
+          (<any>message).cid = cid;
+          this.socket.send(JSON.stringify(message));
+        }
       }
 
       if (this.verbose && window && window.console) {

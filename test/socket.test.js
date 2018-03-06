@@ -53,60 +53,6 @@ describe('Socket Message Tests', () => {
     }, customid);
   });
 
-  it('should create match', async () => {
-    const customid = generateid();
-
-    const response = await page.evaluate((customid) => {
-      const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        })
-        .then(session => {
-          return socket.send({ matchCreate: {} });
-        });
-    }, customid);
-
-    expect(response).not.toBeNull();
-    expect(response.cid).not.toBeNull();
-    expect(response.match).not.toBeNull();
-    expect(response.match.matchId).not.toBeNull();
-    expect(response.match.presences).toHaveLength(1);
-    expect(response.match.self).not.toBeNull();
-    expect(response.match.self.sessionId).not.toBeNull();
-    expect(response.match.self.userId).not.toBeNull();
-    expect(response.match.self.username).not.toBeNull();
-  });
-
-  it('should join a match', async () => {
-    const customid = generateid();
-
-    const response = await page.evaluate((customid) => {
-      const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        })
-        .then(session => {
-          return socket.send({ matchCreate: {} }).then(match => {
-            return socket.send({ matchJoin: {matchId: match.match.matchId}})
-          });
-        });
-    }, customid);
-
-    expect(response).not.toBeNull();
-    expect(response.cid).not.toBeNull();
-    expect(response.match).not.toBeNull();
-    expect(response.match.matchId).not.toBeNull();
-    expect(response.match.presences).toHaveLength(1);
-    expect(response.match.self).not.toBeNull();
-    expect(response.match.self.sessionId).not.toBeNull();
-    expect(response.match.self.userId).not.toBeNull();
-    expect(response.match.self.username).not.toBeNull();
-  });
-
   it('should send rpc', async () => {
     const customid = generateid();
     const ID = "clientrpc.rpc";

@@ -8,10 +8,15 @@
   <body>
     <script src="../dist/nakama-js.umd.js"></script>
     <script>
-      var client = new nakamajs.Client("defaultkey", "127.0.0.1", "7349", false);
+      const client = new nakamajs.Client();
+      const socket = client.createSocket(false, true);
       client.authenticateCustom({ id: "someuniqueidentifier" })
-        .then(session => console.log(session))
-        .catch(err => console.error(err));
+        .then(session => {
+          return socket.connect(session);
+        })
+        .then(session => {
+
+        })
     </script>
   </body>
 </html>
