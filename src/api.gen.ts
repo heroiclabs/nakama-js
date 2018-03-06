@@ -8,6 +8,7 @@ export interface ConfigurationParameters {
   username?: string;
   password?: string;
   bearerToken?: string;
+  timeoutMs?: number;
 }
 /** A group to create. */
 export interface CreateGroupsRequestNewGroup {
@@ -91,6 +92,15 @@ export interface ApiCreateGroupsRequest {
   // The Group objects to create.
   groups?: Array<CreateGroupsRequestNewGroup>;
 }
+/** Storage objects to delete. */
+export interface ApiDeleteStorageObjectId {
+  // The collection which stores the object.
+  collection?: string;
+  // The key of the object within the collection.
+  key?: string;
+  // The version hash of the object.
+  version?: string;
+}
 /** A friend of a user. */
 export interface ApiFriend {
   // The friend status.
@@ -108,7 +118,7 @@ export interface ApiGroup {
   // A URL for an avatar image.
   avatarUrl?: string;
   // The current count of all members in the group.
-  count?: string;
+  count?: number;
   // The UNIX time when the group was created.
   createTime?: string;
   // The id of the user who created the group.
@@ -127,8 +137,6 @@ export interface ApiGroup {
   private?: boolean;
   // The UNIX time when the group was last updated.
   updateTime?: string;
-  // The UTC offset in milliseconds.
-  utcOffsetMs?: string;
 }
 /** A collection of zero or more groups. */
 export interface ApiGroups {
@@ -138,7 +146,7 @@ export interface ApiGroups {
 /** A notification in the server. */
 export interface ApiNotification {
   // Category code for this notification.
-  code?: string;
+  code?: number;
   // Content of the notification in JSON.
   content?: string;
   // The UNIX time when the notification was created.
@@ -159,6 +167,20 @@ export interface ApiNotificationList {
   // Collection of notifications.
   notifications?: Array<ApiNotification>;
 }
+/** Storage objects to get. */
+export interface ApiReadStorageObjectId {
+  // The collection which stores the object.
+  collection?: string;
+  // The key of the object within the collection.
+  key?: string;
+  // The user owner of the object.
+  userId?: string;
+}
+/** Batch get storage objects. */
+export interface ApiReadStorageObjectsRequest {
+  // Batch of storage objects.
+  objectIds?: Array<ApiReadStorageObjectId>;
+}
 /** Execute an Lua function on the server. */
 export interface ApiRpc {
   // The authentication key used when executed as a non-client HTTP request.
@@ -174,6 +196,53 @@ export interface ApiSession {
   token?: string;
   // rUDP specific authentication credentials.
   udpToken?: string;
+}
+/** An object within the storage engine. */
+export interface ApiStorageObject {
+  // The collection which stores the object.
+  collection?: string;
+  // The UNIX time when the object was created.
+  createTime?: string;
+  // The key of the object within the collection.
+  key?: string;
+  // The read access permissions for the object.
+  permissionRead?: number;
+  // The write access permissions for the object.
+  permissionWrite?: number;
+  // The UNIX time when the object was last updated.
+  updateTime?: string;
+  // The user owner of the object.
+  userId?: string;
+  // The value of the object.
+  value?: string;
+  // The version hash of the object.
+  version?: string;
+}
+/** A storage acknowledgement. */
+export interface ApiStorageObjectAck {
+  // The collection which stores the object.
+  collection?: string;
+  // The key of the object within the collection.
+  key?: string;
+  // The version hash of the object.
+  version?: string;
+}
+/** Batch of acknowledgements for the storage object write. */
+export interface ApiStorageObjectAcks {
+  // Batch of storage write acknowledgements.
+  acks?: Array<ApiStorageObjectAck>;
+}
+/** List of storage objects. */
+export interface ApiStorageObjectList {
+  // The cursor associated with the query a page of results.
+  cursor?: string;
+  // The list of storage objects.
+  objects?: Array<ApiStorageObject>;
+}
+/** Batch of storage objects. */
+export interface ApiStorageObjects {
+  // The batch of storage objects.
+  objects?: Array<ApiStorageObject>;
 }
 /** Update a user's account details. */
 export interface ApiUpdateAccountRequest {
@@ -198,6 +267,8 @@ export interface ApiUser {
   createTime?: string;
   // The display name of the user.
   displayName?: string;
+  // Number of related edges to this user.
+  edgeCount?: number;
   // The Facebook id in the user's account.
   facebookId?: string;
   // The Apple Game Center in of the user's account.
@@ -228,6 +299,26 @@ export interface ApiUsers {
   // The User objects.
   users?: Array<ApiUser>;
 }
+/** The object to store. */
+export interface ApiWriteStorageObject {
+  // The collection to store the object.
+  collection?: string;
+  // The key for the object within the collection.
+  key?: string;
+  // The read access permissions for the object.
+  permissionRead?: number;
+  // The write access permissions for the object.
+  permissionWrite?: number;
+  // The value of the object.
+  value?: string;
+  // The version hash of the object to check. Possible values are: ["", "*", "#hash#"].
+  version?: string;
+}
+/** Write objects to the storage engine. */
+export interface ApiWriteStorageObjectsRequest {
+  // The objects to store on the server.
+  objects?: Array<ApiWriteStorageObject>;
+}
 /** Wrapper message for `bool`.
 
 The JSON representation for `BoolValue` is JSON `true` and `false`. */
@@ -242,6 +333,13 @@ export interface ProtobufBoolValue {
 The JSON representation for `Empty` is empty JSON object `{}`. */
 export interface ProtobufEmpty {
 }
+/** Wrapper message for `int32`.
+
+The JSON representation for `Int32Value` is JSON number. */
+export interface ProtobufInt32Value {
+  // The int32 value.
+  value?: number;
+}
 /** Wrapper message for `string`.
 
 The JSON representation for `StringValue` is JSON string. */
@@ -255,6 +353,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
   bearerToken: "",
   password: "",
   username: "",
+  timeoutMs: 5000,
 }) => {
   return {
     /** A healthcheck which load balancers can use to check the service. */
@@ -264,27 +363,43 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "GET" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Fetch the current user's account. */
     getAccount(options: any = {}): Promise<ApiAccount> {
@@ -293,27 +408,43 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "GET" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Update fields in the current user's account. */
     updateAccount(body: ApiUpdateAccountRequest, options: any = {}): Promise<ProtobufEmpty> {
@@ -325,28 +456,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "PUT" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "PUT" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Authenticate a user with a custom id against the server. */
     authenticateCustom(body: ApiAccountCustom, options: any = {}): Promise<ApiSession> {
@@ -358,28 +505,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Authenticate a user with a device id against the server. */
     authenticateDevice(body: ApiAccountDevice, options: any = {}): Promise<ApiSession> {
@@ -391,28 +554,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Authenticate a user with an email+password against the server. */
     authenticateEmail(body: ApiAccountEmail, options: any = {}): Promise<ApiSession> {
@@ -424,28 +603,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Authenticate a user with a Facebook OAuth token against the server. */
     authenticateFacebook(body: ApiAccountFacebook, options: any = {}): Promise<ApiSession> {
@@ -457,28 +652,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Authenticate a user with Apple's GameCenter against the server. */
     authenticateGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<ApiSession> {
@@ -490,28 +701,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Authenticate a user with Google against the server. */
     authenticateGoogle(body: ApiAccountGoogle, options: any = {}): Promise<ApiSession> {
@@ -523,28 +750,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Authenticate a user with Steam against the server. */
     authenticateSteam(body: ApiAccountSteam, options: any = {}): Promise<ApiSession> {
@@ -556,28 +799,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Add a custom ID to the social profiles on the current user's account. */
     linkCustom(body: ApiAccountCustom, options: any = {}): Promise<ProtobufEmpty> {
@@ -589,28 +848,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Add a device ID to the social profiles on the current user's account. */
     linkDevice(body: ApiAccountDevice, options: any = {}): Promise<ProtobufEmpty> {
@@ -622,28 +897,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Add an email+password to the social profiles on the current user's account. */
     linkEmail(body: ApiAccountEmail, options: any = {}): Promise<ProtobufEmpty> {
@@ -655,28 +946,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Add Facebook to the social profiles on the current user's account. */
     linkFacebook(body: ApiAccountFacebook, options: any = {}): Promise<ProtobufEmpty> {
@@ -688,28 +995,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Add Apple's GameCenter to the social profiles on the current user's account. */
     linkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<ProtobufEmpty> {
@@ -721,28 +1044,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Add Google to the social profiles on the current user's account. */
     linkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<ProtobufEmpty> {
@@ -754,28 +1093,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Add Steam to the social profiles on the current user's account. */
     linkSteam(body: ApiAccountSteam, options: any = {}): Promise<ProtobufEmpty> {
@@ -787,28 +1142,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Remove the custom ID from the social profiles on the current user's account. */
     unlinkCustom(body: ApiAccountCustom, options: any = {}): Promise<ProtobufEmpty> {
@@ -820,28 +1191,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Remove the device ID from the social profiles on the current user's account. */
     unlinkDevice(body: ApiAccountDevice, options: any = {}): Promise<ProtobufEmpty> {
@@ -853,28 +1240,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Remove the email+password from the social profiles on the current user's account. */
     unlinkEmail(body: ApiAccountEmail, options: any = {}): Promise<ProtobufEmpty> {
@@ -886,28 +1289,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Remove Facebook from the social profiles on the current user's account. */
     unlinkFacebook(body: ApiAccountFacebook, options: any = {}): Promise<ProtobufEmpty> {
@@ -919,28 +1338,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Remove Apple's GameCenter from the social profiles on the current user's account. */
     unlinkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<ProtobufEmpty> {
@@ -952,28 +1387,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Remove Google from the social profiles on the current user's account. */
     unlinkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<ProtobufEmpty> {
@@ -985,28 +1436,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Remove Steam from the social profiles on the current user's account. */
     unlinkSteam(body: ApiAccountSteam, options: any = {}): Promise<ProtobufEmpty> {
@@ -1018,28 +1485,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Delete one or more users by ID or username. */
     deleteFriends(options: any = {}): Promise<ProtobufEmpty> {
@@ -1048,27 +1531,43 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "DELETE" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** List all friends for the current user. */
     listFriends(options: any = {}): Promise<ApiFriends> {
@@ -1077,27 +1576,43 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "GET" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Add friends by ID or username to a user's account. */
     addFriends(options: any = {}): Promise<ProtobufEmpty> {
@@ -1106,27 +1621,43 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Block one or more users by ID or username. */
     blockFriends(options: any = {}): Promise<ProtobufEmpty> {
@@ -1135,27 +1666,43 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Import Facebook friends and add them to a user's account. */
     importFacebookFriends(body: ApiAccountFacebook, options: any = {}): Promise<ProtobufEmpty> {
@@ -1167,28 +1714,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Create one or more new groups with the current user as the owner. */
     createGroup(body: ApiCreateGroupsRequest, options: any = {}): Promise<ApiGroups> {
@@ -1200,28 +1763,44 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Delete one or more users by ID or username. */
     deleteNotifications(options: any = {}): Promise<ProtobufEmpty> {
@@ -1230,30 +1809,46 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "DELETE" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Fetch list of notifications. */
-    listNotifications(limit?: string, cacheableCursor?: string, options: any = {}): Promise<ApiNotificationList> {
+    listNotifications(limit?: number, cacheableCursor?: string, options: any = {}): Promise<ApiNotificationList> {
       const urlPath = "/v2/notification";
 
       const queryParams = {
@@ -1261,27 +1856,43 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         cacheable_cursor: cacheableCursor,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "GET" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Execute a Lua function on the server. */
     rpcFunc2(id: string, payload?: string, httpKey?: string, options: any = {}): Promise<ApiRpc> {
@@ -1296,27 +1907,43 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         http_key: httpKey,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "GET" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Execute a Lua function on the server. */
     rpcFunc(id: string, body: string, options: any = {}): Promise<ApiRpc> {
@@ -1332,28 +1959,294 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "POST" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Delete one or more objects by ID or username. */
+    deleteStorageObjects(options: any = {}): Promise<ProtobufEmpty> {
+      const urlPath = "/v2/storage";
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Get storage objects. */
+    readStorageObjects(body: ApiReadStorageObjectsRequest, options: any = {}): Promise<ApiStorageObjects> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/storage";
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Write objects into the storage engine. */
+    writeStorageObjects(body: ApiWriteStorageObjectsRequest, options: any = {}): Promise<ApiStorageObjectAcks> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/storage";
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "PUT" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** List collections of storage objects. */
+    listStorageObjects(collection: string, userId?: string, limit?: number, cursor?: string, options: any = {}): Promise<ApiStorageObjectList> {
+      if (collection === null || collection === undefined) {
+        throw new Error("'collection' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/storage/{collection}"
+         .replace("{collection}", encodeURIComponent(String(collection)));
+
+      const queryParams = {
+        user_id: userId,
+        limit: limit,
+        cursor: cursor,
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** List collections of storage objects. */
+    listStorageObjects2(collection: string, userId: string, limit?: number, cursor?: string, options: any = {}): Promise<ApiStorageObjectList> {
+      if (collection === null || collection === undefined) {
+        throw new Error("'collection' is a required parameter but is null or undefined.");
+      }
+      if (userId === null || userId === undefined) {
+        throw new Error("'userId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/storage/{collection}/{user_id}"
+         .replace("{collection}", encodeURIComponent(String(collection)))
+         .replace("{user_id}", encodeURIComponent(String(userId)));
+
+      const queryParams = {
+        limit: limit,
+        cursor: cursor,
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     /** Fetch zero or more users by ID and/or username. */
     getUsers(ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>, options: any = {}): Promise<ApiUsers> {
@@ -1365,27 +2258,43 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         facebook_ids: facebookIds,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "GET" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
   };
 };

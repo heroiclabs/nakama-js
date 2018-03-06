@@ -42,6 +42,8 @@ describe('Client Tests', () => {
     expect(client.host).toBe("127.0.0.1");
     expect(client.port).toBe("7349");
     expect(client.useSSL).toBe(false);
+    expect(client.timeout).toBe(7000);
+    expect(client.verbose).toBe(false);
   });
 
   it('should create object with configuration', async () => {
@@ -49,15 +51,30 @@ describe('Client Tests', () => {
     const HOST = "127.0.0.2";
     const PORT = "8080";
     const SSL = true;
+    const TIMEOUT = 8000;
+    const VERBOSE = true;
 
-    const client = await page.evaluate((SERVER_KEY, HOST, PORT, SSL) => {
-      return new nakamajs.Client(SERVER_KEY, HOST, PORT, SSL);
-    }, SERVER_KEY, HOST, PORT, SSL);
+    const client = await page.evaluate((SERVER_KEY, HOST, PORT, SSL, TIMEOUT, VERBOSE) => {
+      return new nakamajs.Client(SERVER_KEY, HOST, PORT, SSL, TIMEOUT, VERBOSE);
+    }, SERVER_KEY, HOST, PORT, SSL, TIMEOUT, VERBOSE);
 
     expect(client).not.toBeNull();
     expect(client.serverkey).toBe(SERVER_KEY);
     expect(client.host).toBe(HOST);
     expect(client.port).toBe(PORT);
     expect(client.useSSL).toBe(SSL);
-  });    
+    expect(client.timeout).toBe(TIMEOUT);
+    expect(client.verbose).toBe(VERBOSE);
+  });  
+
+  it('should obey timeout configuration option', async () => {
+    const err = await page.evaluate(() => {
+      const client = new nakamajs.Client("defaultkey", "127.0.0.1", "7349", false, 0);
+      return client.authenticateCustom({ "id": "timeoutuseridentifier" })
+          .catch(err => err);
+    });
+
+    expect(err).not.toBeNull();
+    expect(err).toBe("Request timed out.");
+  });  
 }, TIMEOUT);

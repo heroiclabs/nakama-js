@@ -44,7 +44,7 @@ describe('Notifications Tests', () => {
       const client = new nakamajs.Client();
       return client.authenticateCustom({ id: customid })
         .then(session => {
-          return client.rpcFunc(session, "send_notification", {"user_id": session.userId})
+          return client.rpc(session, "clientrpc.send_notification", {"user_id": session.userId})
             .then(result => {
               return client.listNotifications(session, "1", "");
             });

@@ -35,6 +35,7 @@ export interface ConfigurationParameters {
   username?: string;
   password?: string;
   bearerToken?: string;
+  timeoutMs?: number;
 }
 
 {{- range $classname, $definition := .Definitions}}
@@ -71,6 +72,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
   bearerToken: "",
   password: "",
   username: "",
+  timeoutMs: 5000,
 }) => {
   return {
   {{- range $url, $path := .Paths}}
@@ -89,6 +91,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       {{- end}}
     {{- else if eq $parameter.Type "array"}}
     {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: Array<{{$parameter.Items.Type}}>,
+    {{- else if eq $parameter.Type "integer"}}
+    {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: number,
     {{- else}}
     {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Type}},
     {{- end}}
@@ -119,18 +123,29 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       {{- end}}
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
-      	.map(k => encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]))
-      	.join("&");
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        })
+        .join("");
 
-      const fetchOptions = {...{ method: "{{- $method | uppercase}}" }, ...options};
-      const authorization = (configuration.bearerToken)
-          ? "Bearer " + configuration.bearerToken
-          : "Basic " + btoa(configuration.username + ":" + configuration.password);
+      const fetchOptions = {...{ method: "{{- $method | uppercase}}" /*, keepalive: true */ }, ...options};
       const headers = {
         "Accept": "application/json",
-        "Authorization": authorization,
         "Content-Type": "application/json",
       } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
       fetchOptions.headers = {...headers, ...options.headers};
 
       {{- range $parameter := $operation.Parameters}}
@@ -140,13 +155,18 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       {{- end}}
       {{- end}}
 
-      return fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      });
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
     },
     {{- end}}
   {{- end}}

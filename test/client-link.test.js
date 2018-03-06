@@ -67,10 +67,9 @@ describe('Link / Unlink Tests', () => {
         .then(session => {
           return client.linkDevice(session, { id: deviceid })
             .then(bool => {
-              return client.unlinkDevice(session, {id: deviceid })
-                .then(bool => {
-                  return client.getAccount(session);
-                })
+              return client.unlinkDevice(session, {id: deviceid });
+            }).then(bool => {
+              return client.getAccount(session);
             });
         });
     }, customid, deviceid);

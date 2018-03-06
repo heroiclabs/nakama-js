@@ -37,25 +37,37 @@ import { DefaultSocket, Socket } from "./socket";
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = "7349";
 const DEFAULT_SERVER_KEY = "defaultkey";
+const DEFAULT_TIMEOUT_MS = 7000;
+
+/** Response for an RPC function executed on the server. */
+export interface RpcResponse {
+  // The identifier of the function.
+  id?: string;
+  // The payload of the function which must be a JSON object.
+  payload?: object;
+}
 
 /** A client for Nakama server. */
 export class Client {
   // The low level API client for Nakama server.
-  private apiClient: any;
+  private readonly apiClient: any;
   // The server configuration.
-  private configuration: ConfigurationParameters;
+  private readonly configuration: ConfigurationParameters;
 
   constructor(
       readonly serverkey = DEFAULT_SERVER_KEY,
       readonly host = DEFAULT_HOST,
       readonly port = DEFAULT_PORT,
       public useSSL = false,
+      public timeout = DEFAULT_TIMEOUT_MS,
       public verbose = false) {
     const scheme = (useSSL) ? "https://" : "http://";
     const basePath = `${scheme}${host}:${port}`;
     this.configuration = {
+      basePath: basePath,
       username: serverkey,
-      basePath: basePath
+      password: "",
+      timeoutMs: timeout,
     };
     this.apiClient = NakamaApi(this.configuration);
   }
@@ -112,8 +124,8 @@ export class Client {
   // }
 
   /** A socket created with the client's configuration. */
-  createSocket(session: Session): Socket {
-    return new DefaultSocket(session, this.host, this.port, this.useSSL, this.verbose);
+  createSocket(useSSL = false, verbose: boolean = false): Socket {
+    return new DefaultSocket(this.host, this.port, useSSL, verbose);
   }
 
   /** Delete one or more users by ID or username. */
@@ -142,7 +154,7 @@ export class Client {
   importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.importFacebookFriends(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
 
@@ -156,7 +168,7 @@ export class Client {
   linkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkCustom(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
 
@@ -164,7 +176,7 @@ export class Client {
   linkDevice(session: Session, request: ApiAccountDevice): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkDevice(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
 
@@ -172,7 +184,7 @@ export class Client {
   linkEmail(session: Session, request: ApiAccountEmail): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkEmail(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
 
@@ -180,7 +192,7 @@ export class Client {
   linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkFacebook(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
 
@@ -188,7 +200,7 @@ export class Client {
   linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkGoogle(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
 
@@ -199,32 +211,45 @@ export class Client {
   }
 
   /** Fetch list of notifications. */
-  listNotifications(session: Session, limit?: string, cacheableCursor?: string): Promise<ApiUsers> {
+  listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<ApiUsers> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.listNotifications(limit, cacheableCursor);
   }
 
   /** Execute a Lua function on the server. */
-  rpc(session: Session, id: string, input: object): Promise<ApiRpc> {
+  rpc(session: Session, id: string, input: object): Promise<RpcResponse> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.rpcFunc(id, JSON.stringify(input));
+    return this.apiClient.rpcFunc(id, JSON.stringify(input)).then((response: ApiRpc) => {
+      return Promise.resolve({
+        id: response.id,
+        payload: (!response.payload) ? null : JSON.parse(response.payload)
+      });
+    });
   }
 
   /** Execute a Lua function on the server. */
-  rpcGet(id: string, session?: Session, httpKey?: string): Promise<ApiRpc> {
+  rpcGet(id: string, session?: Session, httpKey?: string): Promise<RpcResponse> {
     if (!httpKey || httpKey == "") {
       this.configuration.bearerToken = (session && session.token);
     } else {
+      // When a HTTP key is used we should not use basicauth or bearer auth.
+      this.configuration.username = undefined;
       this.configuration.bearerToken = undefined;
     }
-    return this.apiClient.rpcFunc2(id, null, httpKey);
+    return this.apiClient.rpcFunc2(id, null, httpKey).then((response: ApiRpc) => {
+      this.configuration.username = this.serverkey;
+      return Promise.resolve({
+        id: response.id,
+        payload: (!response.payload) ? null : JSON.parse(response.payload)
+      });
+    }).catch((_err: any) => this.configuration.username = this.serverkey);
   }
 
   /** Remove custom ID from the social profiles on the current user's account. */
   unlinkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkCustom(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
 
@@ -232,7 +257,7 @@ export class Client {
   unlinkDevice(session: Session, request: ApiAccountDevice): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkDevice(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
 
@@ -240,7 +265,7 @@ export class Client {
   unlinkEmail(session: Session, request: ApiAccountEmail): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkEmail(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
 
@@ -248,7 +273,7 @@ export class Client {
   unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkFacebook(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
 
@@ -256,7 +281,7 @@ export class Client {
   unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkGoogle(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
 
@@ -264,7 +289,7 @@ export class Client {
   updateAccount(session: Session, request: ApiUpdateAccountRequest): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.updateAccount(request).then((response: ProtobufEmpty) => {
-      return Promise.resolve(response != undefined);
+      return response !== undefined;
     });
   }
-}
+};

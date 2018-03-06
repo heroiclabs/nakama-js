@@ -80,7 +80,7 @@ describe('User Tests', () => {
           }).then(bool => {
             return client.getAccount(session);
           });
-        })
+        });
     }, customid, displayName, avatar, lang, loc);
 
     expect(account).not.toBeNull();
@@ -104,7 +104,7 @@ describe('User Tests', () => {
         .then(session1 => {
           return client.authenticateCustom({ id: customid2 })
             .then(session2 => {
-              return client.getUsers(session2, [session1.userId, session2.userId], [], []);
+              return client.getUsers(session2, [session1.userId], [session2.username], []);
             });
         });
     }, customid, customid2);
@@ -112,5 +112,19 @@ describe('User Tests', () => {
     expect(users).not.toBeNull();
     expect(users[0]).not.toBeNull();
     expect(users[1]).not.toBeNull();
+  });
+
+  it('should return no users', async () => {
+    const customid = generateid();
+
+    const response = await page.evaluate((customid) => {
+      const client = new nakamajs.Client();
+      return client.authenticateCustom({ id: customid })
+        .then(session => {
+          return client.getUsers(session, [], [], []);
+        });
+    }, customid);
+
+    expect(response).not.toBeNull();
   });
 }, TIMEOUT);
