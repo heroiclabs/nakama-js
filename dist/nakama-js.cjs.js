@@ -2487,6 +2487,13 @@ var DefaultSocket = (function () {
                 if (message.notifications) {
                     message.notifications.notifications.forEach(function (n) { return _this.onnotification(n); });
                 }
+                else if (message.matchData) {
+                    message.matchData.data = JSON.parse(atob(message.matchData.data));
+                    _this.onmatchdata(message.matchData);
+                }
+                else if (message.matchedPresenceEvent) {
+                    _this.onmatchpresence(message.matchPresenceEvent);
+                }
                 else if (message.streamPresenceEvent) {
                     _this.onstreampresence(message.streamPresenceEvent);
                 }
@@ -2549,6 +2556,16 @@ var DefaultSocket = (function () {
             console.log(notification);
         }
     };
+    DefaultSocket.prototype.onmatchdata = function (matchData) {
+        if (this.verbose && window && window.console) {
+            console.log(matchData);
+        }
+    };
+    DefaultSocket.prototype.onmatchpresence = function (matchPresence) {
+        if (this.verbose && window && window.console) {
+            console.log(matchPresence);
+        }
+    };
     DefaultSocket.prototype.onstreampresence = function (streamPresence) {
         if (this.verbose && window && window.console) {
             console.log(streamPresence);
@@ -2566,13 +2583,21 @@ var DefaultSocket = (function () {
                 reject("Socket connection has not been established yet.");
             }
             else {
-                var cid = _this.generatecid();
-                _this.cIds[cid] = {
-                    resolve: resolve,
-                    reject: reject
-                };
-                message.cid = cid;
-                _this.socket.send(JSON.stringify(message));
+                if (message.matchDataSend) {
+                    var m = message;
+                    m.matchDataSend.data = btoa(JSON.stringify(m.matchDataSend.data));
+                    _this.socket.send(JSON.stringify(m));
+                    resolve();
+                }
+                else {
+                    var cid = _this.generatecid();
+                    _this.cIds[cid] = {
+                        resolve: resolve,
+                        reject: reject
+                    };
+                    message.cid = cid;
+                    _this.socket.send(JSON.stringify(message));
+                }
             }
             if (_this.verbose && window && window.console) {
                 console.log("Sent message: %o", message);
