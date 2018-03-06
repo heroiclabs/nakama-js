@@ -228,7 +228,7 @@ export class Client {
   }
 
   /** Execute a Lua function on the server. */
-  rpcGet(id: string, session?: Session, httpKey?: string): Promise<RpcResponse> {
+  rpcGet(id: string, session?: Session, httpKey?: string, input?: object): Promise<RpcResponse> {
     if (!httpKey || httpKey == "") {
       this.configuration.bearerToken = (session && session.token);
     } else {
@@ -236,13 +236,17 @@ export class Client {
       this.configuration.username = undefined;
       this.configuration.bearerToken = undefined;
     }
-    return this.apiClient.rpcFunc2(id, null, httpKey).then((response: ApiRpc) => {
-      this.configuration.username = this.serverkey;
-      return Promise.resolve({
-        id: response.id,
-        payload: (!response.payload) ? null : JSON.parse(response.payload)
+    return this.apiClient.rpcFunc2(id, input && JSON.stringify(input) || "", httpKey)
+      .then((response: ApiRpc) => {
+        this.configuration.username = this.serverkey;
+        return Promise.resolve({
+          id: response.id,
+          payload: (!response.payload) ? null : JSON.parse(response.payload)
+        });
+      }).catch((err: any) => {
+        this.configuration.username = this.serverkey;
+        throw err;
       });
-    }).catch((_err: any) => this.configuration.username = this.serverkey);
   }
 
   /** Remove custom ID from the social profiles on the current user's account. */

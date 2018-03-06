@@ -32,7 +32,7 @@ export declare class Client {
     listFriends(session: Session): Promise<ApiFriends>;
     listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<ApiUsers>;
     rpc(session: Session, id: string, input: object): Promise<RpcResponse>;
-    rpcGet(id: string, session?: Session, httpKey?: string): Promise<RpcResponse>;
+    rpcGet(id: string, session?: Session, httpKey?: string, input?: object): Promise<RpcResponse>;
     unlinkCustom(session: Session, request: ApiAccountCustom): Promise<boolean>;
     unlinkDevice(session: Session, request: ApiAccountDevice): Promise<boolean>;
     unlinkEmail(session: Session, request: ApiAccountEmail): Promise<boolean>;

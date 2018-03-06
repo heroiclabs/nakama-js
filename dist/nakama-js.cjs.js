@@ -2685,7 +2685,7 @@ var Client = (function () {
             });
         });
     };
-    Client.prototype.rpcGet = function (id, session, httpKey) {
+    Client.prototype.rpcGet = function (id, session, httpKey, input) {
         var _this = this;
         if (!httpKey || httpKey == "") {
             this.configuration.bearerToken = (session && session.token);
@@ -2694,13 +2694,17 @@ var Client = (function () {
             this.configuration.username = undefined;
             this.configuration.bearerToken = undefined;
         }
-        return this.apiClient.rpcFunc2(id, null, httpKey).then(function (response) {
+        return this.apiClient.rpcFunc2(id, input && JSON.stringify(input) || "", httpKey)
+            .then(function (response) {
             _this.configuration.username = _this.serverkey;
             return Promise.resolve({
                 id: response.id,
                 payload: (!response.payload) ? null : JSON.parse(response.payload)
             });
-        }).catch(function (_err) { return _this.configuration.username = _this.serverkey; });
+        }).catch(function (err) {
+            _this.configuration.username = _this.serverkey;
+            throw err;
+        });
     };
     Client.prototype.unlinkCustom = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
