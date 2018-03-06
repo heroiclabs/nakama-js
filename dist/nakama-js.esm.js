@@ -2483,6 +2483,12 @@ var DefaultSocket = (function () {
                 if (message.notifications) {
                     message.notifications.notifications.forEach(function (n) { return _this.onnotification(n); });
                 }
+                else if (message.streamPresenceEvent) {
+                    _this.onstreampresence(message.streamPresenceEvent);
+                }
+                else if (message.streamData) {
+                    _this.onstreamdata(message.streamData);
+                }
                 else {
                     if (_this.verbose && window && window.console) {
                         console.log("Unrecognized message received: %o", message);
@@ -2537,6 +2543,16 @@ var DefaultSocket = (function () {
     DefaultSocket.prototype.onnotification = function (notification) {
         if (this.verbose && window && window.console) {
             console.log(notification);
+        }
+    };
+    DefaultSocket.prototype.onstreampresence = function (streamPresence) {
+        if (this.verbose && window && window.console) {
+            console.log(streamPresence);
+        }
+    };
+    DefaultSocket.prototype.onstreamdata = function (streamData) {
+        if (this.verbose && window && window.console) {
+            console.log(streamData);
         }
     };
     DefaultSocket.prototype.send = function (message) {
