@@ -22,6 +22,7 @@ import {
   ApiAccountFacebook,
   ApiAccountGoogle,
   ApiFriends,
+  ApiMatchList,
   ApiSession,
   ApiRpc,
   ApiUpdateAccountRequest,
@@ -208,6 +209,12 @@ export class Client {
   listFriends(session: Session): Promise<ApiFriends> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.listFriends();
+  }
+
+  /** Fetch list of running matches. */
+  listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize);
   }
 
   /** Fetch list of notifications. */

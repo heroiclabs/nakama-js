@@ -155,4 +155,30 @@ describe('Match Tests', () => {
     expect(response.data).toEqual(PAYLOAD);
   });
 
+  it('should create authoritative match, list matches', async () => {
+    const customid = generateid();
+    const ID = "clientrpc.create_authoritative_match";
+
+    const response = await page.evaluate((customid, id) => {
+      const client = new nakamajs.Client();
+      const socket = client.createSocket(false, false);
+      var session = null;
+      return client.authenticateCustom({ id: customid })
+        .then(ses => {
+          session = ses;
+          return socket.connect(ses);
+        }).then(session => {
+          return socket.send({ rpc: { id: id } });
+        }).then(result => {
+          return client.listMatches(session, 1, true)
+        });
+    }, customid, ID);
+
+    expect(response).not.toBeNull();
+    expect(response.matches).not.toBeNull();
+    expect(response.matches).toHaveLength(1);
+    expect(response.matches[0].matchId).not.toBeNull();
+    expect(response.matches[0].authoritative).toBe(true);
+  });
+
 }, TIMEOUT);

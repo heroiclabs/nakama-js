@@ -608,7 +608,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -650,7 +652,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -695,7 +699,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -741,7 +747,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -787,7 +795,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -833,7 +843,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -879,7 +891,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -925,7 +939,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -971,7 +987,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1017,7 +1035,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1063,7 +1083,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1109,7 +1131,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1155,7 +1179,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1201,7 +1227,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1247,7 +1275,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1293,7 +1323,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1339,7 +1371,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1385,7 +1419,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1431,7 +1467,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1477,7 +1515,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1523,7 +1563,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1569,7 +1611,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1615,7 +1659,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1661,7 +1707,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1704,7 +1752,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1746,7 +1796,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1788,7 +1840,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1830,7 +1884,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1875,7 +1931,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1921,7 +1979,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -1952,6 +2012,56 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
+        listMatches: function (limit, authoritative, label, minSize, maxSize, options) {
+            if (options === void 0) { options = {}; }
+            var urlPath = "/v2/match";
+            var queryParams = {
+                limit: limit,
+                authoritative: authoritative,
+                label: label,
+                min_size: minSize,
+                max_size: maxSize,
+            };
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "GET" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
         deleteNotifications: function (options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/notification";
@@ -1964,7 +2074,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -2009,7 +2121,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -2058,7 +2172,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -2107,7 +2223,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -2150,7 +2268,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -2195,7 +2315,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -2241,7 +2363,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -2292,7 +2416,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -2345,7 +2471,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -2391,7 +2519,9 @@ var NakamaApi = function (configuration) {
                     }, "");
                 }
                 else {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
                 }
             })
                 .join("");
@@ -2708,6 +2838,10 @@ var Client = (function () {
     Client.prototype.listFriends = function (session) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.listFriends();
+    };
+    Client.prototype.listMatches = function (session, limit, authoritative, label, minSize, maxSize) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize);
     };
     Client.prototype.listNotifications = function (session, limit, cacheableCursor) {
         this.configuration.bearerToken = (session && session.token);

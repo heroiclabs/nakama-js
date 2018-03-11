@@ -143,6 +143,22 @@ export interface ApiGroups {
   // The Group objects.
   groups?: Array<ApiGroup>;
 }
+/** Represents a realtime match. */
+export interface ApiMatch {
+  // True if it's an server-managed authoritative match, false otherwise.
+  authoritative?: boolean;
+  // Match label, if any.
+  label?: string;
+  // The ID of the match, can be used to join.
+  matchId?: string;
+  // Current number of users in the match.
+  size?: number;
+}
+/** A list of realtime matches. */
+export interface ApiMatchList {
+  // A number of matches corresponding to a list operation.
+  matches?: Array<ApiMatch>;
+}
 /** A notification in the server. */
 export interface ApiNotification {
   // Category code for this notification.
@@ -369,7 +385,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -414,7 +432,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -462,7 +482,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -511,7 +533,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -560,7 +584,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -609,7 +635,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -658,7 +686,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -707,7 +737,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -756,7 +788,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -805,7 +839,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -854,7 +890,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -903,7 +941,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -952,7 +992,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1001,7 +1043,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1050,7 +1094,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1099,7 +1145,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1148,7 +1196,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1197,7 +1247,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1246,7 +1298,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1295,7 +1349,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1344,7 +1400,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1393,7 +1451,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1442,7 +1502,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1491,7 +1553,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1537,7 +1601,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1582,7 +1648,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1627,7 +1695,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1672,7 +1742,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1720,7 +1792,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1769,7 +1843,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1802,6 +1878,58 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
+    /** Fetch list of running matches. */
+    listMatches(limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, options: any = {}): Promise<ApiMatchList> {
+      const urlPath = "/v2/match";
+
+      const queryParams = {
+        limit: limit,
+        authoritative: authoritative,
+        label: label,
+        min_size: minSize,
+        max_size: maxSize,
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
     /** Delete one or more users by ID or username. */
     deleteNotifications(options: any = {}): Promise<ProtobufEmpty> {
       const urlPath = "/v2/notification";
@@ -1815,7 +1943,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1862,7 +1992,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1913,7 +2045,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -1965,7 +2099,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -2011,7 +2147,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -2059,7 +2197,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -2108,7 +2248,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -2161,7 +2303,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -2216,7 +2360,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");
@@ -2264,7 +2410,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");

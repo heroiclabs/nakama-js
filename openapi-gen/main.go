@@ -129,7 +129,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
               return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
             }, "");
           } else {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
           }
         })
         .join("");

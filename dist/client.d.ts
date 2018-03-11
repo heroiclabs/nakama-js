@@ -1,4 +1,4 @@
-import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiFriends, ApiUpdateAccountRequest, ApiUsers } from "./api.gen";
+import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiFriends, ApiMatchList, ApiUpdateAccountRequest, ApiUsers } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
 export interface RpcResponse {
@@ -30,6 +30,7 @@ export declare class Client {
     linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
     listFriends(session: Session): Promise<ApiFriends>;
+    listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList>;
     listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<ApiUsers>;
     rpc(session: Session, id: string, input: object): Promise<RpcResponse>;
     rpcGet(id: string, session?: Session, httpKey?: string, input?: object): Promise<RpcResponse>;
