@@ -79,6 +79,15 @@ export interface ApiGroup {
 export interface ApiGroups {
     groups?: Array<ApiGroup>;
 }
+export interface ApiMatch {
+    authoritative?: boolean;
+    label?: string;
+    matchId?: string;
+    size?: number;
+}
+export interface ApiMatchList {
+    matches?: Array<ApiMatch>;
+}
 export interface ApiNotification {
     code?: number;
     content?: string;
@@ -217,6 +226,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     blockFriends(options?: any): Promise<ProtobufEmpty>;
     importFacebookFriends(body: ApiAccountFacebook, options?: any): Promise<ProtobufEmpty>;
     createGroup(body: ApiCreateGroupsRequest, options?: any): Promise<ApiGroups>;
+    listMatches(limit?: number | undefined, authoritative?: boolean | undefined, label?: string | undefined, minSize?: number | undefined, maxSize?: number | undefined, options?: any): Promise<ApiMatchList>;
     deleteNotifications(options?: any): Promise<ProtobufEmpty>;
     listNotifications(limit?: number | undefined, cacheableCursor?: string | undefined, options?: any): Promise<ApiNotificationList>;
     rpcFunc2(id: string, payload?: string | undefined, httpKey?: string | undefined, options?: any): Promise<ApiRpc>;
