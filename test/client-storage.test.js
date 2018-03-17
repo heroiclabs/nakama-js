@@ -58,7 +58,7 @@ describe('Link / Unlink Tests', () => {
               objectIds: [{
                 "collection": collection,
                 "key": key,
-                "userId": session.userId
+                "user_id": session.userId
               }]
             })
           });
@@ -71,8 +71,8 @@ describe('Link / Unlink Tests', () => {
     expect(result.objects[0].collection).toBe(collection);
     expect(result.objects[0].key).toBe(key);
     expect(result.objects[0].value).toEqual(value);
-    expect(result.objects[0].permissionRead).toBe(1);
-    expect(result.objects[0].permissionWrite).toBe(1);
+    expect(result.objects[0].permission_read).toBe(1);
+    expect(result.objects[0].permission_write).toBe(1);
     expect(result.objects[0].version).not.toBeNull();
   });
 

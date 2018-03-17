@@ -6,19 +6,19 @@ export interface ConfigurationParameters {
     timeoutMs?: number;
 }
 export interface CreateGroupsRequestNewGroup {
-    avatarUrl?: string;
+    avatar_url?: string;
     description?: string;
-    langTag?: string;
+    lang_tag?: string;
     metadata?: string;
     name?: string;
     private?: boolean;
 }
 export interface ApiAccount {
-    customId?: string;
+    custom_id?: string;
     devices?: Array<ApiAccountDevice>;
     email?: string;
     user?: ApiUser;
-    verifyTime?: string;
+    verify_time?: string;
     wallet?: string;
 }
 export interface ApiAccountCustom {
@@ -35,12 +35,12 @@ export interface ApiAccountFacebook {
     token?: string;
 }
 export interface ApiAccountGameCenter {
-    bundleId?: string;
-    playerId?: string;
-    publicKeyUrl?: string;
+    bundle_id?: string;
+    player_id?: string;
+    public_key_url?: string;
     salt?: string;
     signature?: string;
-    timestampSeconds?: string;
+    timestamp_seconds?: string;
 }
 export interface ApiAccountGoogle {
     token?: string;
@@ -57,7 +57,7 @@ export interface ApiDeleteStorageObjectId {
     version?: string;
 }
 export interface ApiDeleteStorageObjectsRequest {
-    objectIds?: Array<ApiDeleteStorageObjectId>;
+    object_ids?: Array<ApiDeleteStorageObjectId>;
 }
 export interface ApiFriend {
     state?: number;
@@ -67,17 +67,17 @@ export interface ApiFriends {
     friends?: Array<ApiFriend>;
 }
 export interface ApiGroup {
-    avatarUrl?: string;
+    avatar_url?: string;
     count?: number;
-    createTime?: string;
-    creatorId?: string;
+    create_time?: string;
+    creator_id?: string;
     description?: string;
     id?: string;
-    langTag?: string;
+    lang_tag?: string;
     metadata?: string;
     name?: string;
     private?: boolean;
-    updateTime?: string;
+    update_time?: string;
 }
 export interface ApiGroups {
     groups?: Array<ApiGroup>;
@@ -85,7 +85,7 @@ export interface ApiGroups {
 export interface ApiMatch {
     authoritative?: boolean;
     label?: string;
-    matchId?: string;
+    match_id?: string;
     size?: number;
 }
 export interface ApiMatchList {
@@ -94,49 +94,49 @@ export interface ApiMatchList {
 export interface ApiNotification {
     code?: number;
     content?: string;
-    createTime?: string;
+    create_time?: string;
     id?: string;
     persistent?: boolean;
-    senderId?: string;
+    sender_id?: string;
     subject?: string;
 }
 export interface ApiNotificationList {
-    cacheableCursor?: string;
+    cacheable_cursor?: string;
     notifications?: Array<ApiNotification>;
 }
 export interface ApiReadStorageObjectId {
     collection?: string;
     key?: string;
-    userId?: string;
+    user_id?: string;
 }
 export interface ApiReadStorageObjectsRequest {
-    objectIds?: Array<ApiReadStorageObjectId>;
+    object_ids?: Array<ApiReadStorageObjectId>;
 }
 export interface ApiRpc {
-    httpKey?: string;
+    http_key?: string;
     id?: string;
     payload?: string;
 }
 export interface ApiSession {
     created?: boolean;
     token?: string;
-    udpToken?: string;
+    udp_token?: string;
 }
 export interface ApiStorageObject {
     collection?: string;
-    createTime?: string;
+    create_time?: string;
     key?: string;
-    permissionRead?: number;
-    permissionWrite?: number;
-    updateTime?: string;
-    userId?: string;
+    permission_read?: number;
+    permission_write?: number;
+    update_time?: string;
+    user_id?: string;
     value?: string;
     version?: string;
 }
 export interface ApiStorageObjectAck {
     collection?: string;
     key?: string;
-    userId?: string;
+    user_id?: string;
     version?: string;
 }
 export interface ApiStorageObjectAcks {
@@ -150,29 +150,29 @@ export interface ApiStorageObjects {
     objects?: Array<ApiStorageObject>;
 }
 export interface ApiUpdateAccountRequest {
-    avatarUrl?: string;
-    displayName?: string;
-    langTag?: string;
+    avatar_url?: string;
+    display_name?: string;
+    lang_tag?: string;
     location?: string;
     timezone?: string;
     username?: string;
 }
 export interface ApiUser {
-    avatarUrl?: string;
-    createTime?: string;
-    displayName?: string;
-    edgeCount?: number;
-    facebookId?: string;
-    gamecenterId?: string;
-    googleId?: string;
+    avatar_url?: string;
+    create_time?: string;
+    display_name?: string;
+    edge_count?: number;
+    facebook_id?: string;
+    gamecenter_id?: string;
+    google_id?: string;
     id?: string;
-    langTag?: string;
+    lang_tag?: string;
     location?: string;
     metadata?: string;
     online?: boolean;
-    steamId?: string;
+    steam_id?: string;
     timezone?: string;
-    updateTime?: string;
+    update_time?: string;
     username?: string;
 }
 export interface ApiUsers {
@@ -181,8 +181,8 @@ export interface ApiUsers {
 export interface ApiWriteStorageObject {
     collection?: string;
     key?: string;
-    permissionRead?: number;
-    permissionWrite?: number;
+    permission_read?: number;
+    permission_write?: number;
     value?: string;
     version?: string;
 }

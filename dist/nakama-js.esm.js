@@ -2617,18 +2617,18 @@ var DefaultSocket = (function () {
                 if (message.notifications) {
                     message.notifications.notifications.forEach(function (n) { return _this.onnotification(n); });
                 }
-                else if (message.matchData) {
-                    message.matchData.data = JSON.parse(atob(message.matchData.data));
-                    _this.onmatchdata(message.matchData);
+                else if (message.match_data) {
+                    message.match_data.data = JSON.parse(atob(message.match_data.data));
+                    _this.onmatchdata(message.match_data);
                 }
-                else if (message.matchedPresenceEvent) {
-                    _this.onmatchpresence(message.matchPresenceEvent);
+                else if (message.matched_presence_event) {
+                    _this.onmatchpresence(message.matched_presence_event);
                 }
-                else if (message.streamPresenceEvent) {
-                    _this.onstreampresence(message.streamPresenceEvent);
+                else if (message.stream_presence_event) {
+                    _this.onstreampresence(message.stream_presence_event);
                 }
-                else if (message.streamData) {
-                    _this.onstreamdata(message.streamData);
+                else if (message.stream_data) {
+                    _this.onstreamdata(message.stream_data);
                 }
                 else {
                     if (_this.verbose && window && window.console) {
@@ -2713,9 +2713,9 @@ var DefaultSocket = (function () {
                 reject("Socket connection has not been established yet.");
             }
             else {
-                if (message.matchDataSend) {
+                if (message.match_data_send) {
                     var m = message;
-                    m.matchDataSend.data = btoa(JSON.stringify(m.matchDataSend.data));
+                    m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
                     _this.socket.send(JSON.stringify(m));
                     resolve();
                 }
@@ -2868,13 +2868,13 @@ var Client = (function () {
                 result.objects.push({
                     collection: o.collection,
                     key: o.key,
-                    permissionRead: o.permissionRead,
-                    permissionWrite: o.permissionWrite,
+                    permission_read: o.permission_read,
+                    permission_write: o.permission_write,
                     value: o.value ? JSON.parse(o.value) : undefined,
                     version: o.version,
-                    userId: o.userId,
-                    createTime: o.createTime,
-                    updateTime: o.updateTime
+                    user_id: o.user_id,
+                    create_time: o.create_time,
+                    update_time: o.update_time
                 });
             });
             return Promise.resolve(result);
@@ -2884,18 +2884,17 @@ var Client = (function () {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.readStorageObjects(request).then(function (response) {
             var result = { objects: [] };
-            console.log("response %o", response);
             response.objects.forEach(function (o) {
                 result.objects.push({
                     collection: o.collection,
                     key: o.key,
-                    permissionRead: o.permissionRead,
-                    permissionWrite: o.permissionWrite,
+                    permission_read: o.permission_read,
+                    permission_write: o.permission_write,
                     value: o.value ? JSON.parse(o.value) : undefined,
                     version: o.version,
-                    userId: o.userId,
-                    createTime: o.createTime,
-                    updateTime: o.updateTime
+                    user_id: o.user_id,
+                    create_time: o.create_time,
+                    update_time: o.update_time
                 });
             });
             return Promise.resolve(result);
@@ -2974,8 +2973,8 @@ var Client = (function () {
             request.objects.push({
                 collection: o.collection,
                 key: o.key,
-                permissionRead: o.permissionRead,
-                permissionWrite: o.permissionWrite,
+                permission_read: o.permission_read,
+                permission_write: o.permission_write,
                 value: JSON.stringify(o.value),
                 version: o.version
             });

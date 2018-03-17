@@ -8,19 +8,19 @@ export interface RpcResponse {
 export interface WriteStorageObject {
     collection?: string;
     key?: string;
-    permissionRead?: number;
-    permissionWrite?: number;
+    permission_read?: number;
+    permission_write?: number;
     value?: object;
     version?: string;
 }
 export interface StorageObject {
     collection?: string;
-    createTime?: string;
+    create_time?: string;
     key?: string;
-    permissionRead?: number;
-    permissionWrite?: number;
-    updateTime?: string;
-    userId?: string;
+    permission_read?: number;
+    permission_write?: number;
+    update_time?: string;
+    user_id?: string;
     value?: object;
     version?: string;
 }

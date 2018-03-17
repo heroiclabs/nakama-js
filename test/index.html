@@ -10,30 +10,11 @@
     <script>
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, true);
-      const collection = "testcollection";
-      const key = "testkey";
-      const value = {"hello": "world"};
-
       client.authenticateCustom({ id: "someuniqueidentifier" })
         .then(session => {
-          return client.writeStorageObjects(session,[
-            {
-              "collection": collection,
-              "key": key,
-              "value": value
-            }
-          ]).then(acks => {
-            console.log("acks %o", acks);
-            return client.readStorageObjects(session, {
-              objectIds: [{
-                "collection": collection,
-                "key": key,
-                "userId": session.userId
-              }]
-            })
-          });
-        }).then(objects => {
-          console.log("objects %o", objects);
+          return socket.connect(session);
+        })
+        .then(session => {
         })
     </script>
   </body>
