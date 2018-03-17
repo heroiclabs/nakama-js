@@ -56,6 +56,9 @@ export interface ApiDeleteStorageObjectId {
     key?: string;
     version?: string;
 }
+export interface ApiDeleteStorageObjectsRequest {
+    objectIds?: Array<ApiDeleteStorageObjectId>;
+}
 export interface ApiFriend {
     state?: number;
     user?: ApiUser;
@@ -115,6 +118,7 @@ export interface ApiRpc {
     payload?: string;
 }
 export interface ApiSession {
+    created?: boolean;
     token?: string;
     udpToken?: string;
 }
@@ -132,6 +136,7 @@ export interface ApiStorageObject {
 export interface ApiStorageObjectAck {
     collection?: string;
     key?: string;
+    userId?: string;
     version?: string;
 }
 export interface ApiStorageObjectAcks {
@@ -231,9 +236,9 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     listNotifications(limit?: number | undefined, cacheableCursor?: string | undefined, options?: any): Promise<ApiNotificationList>;
     rpcFunc2(id: string, payload?: string | undefined, httpKey?: string | undefined, options?: any): Promise<ApiRpc>;
     rpcFunc(id: string, body: string, options?: any): Promise<ApiRpc>;
-    deleteStorageObjects(options?: any): Promise<ProtobufEmpty>;
     readStorageObjects(body: ApiReadStorageObjectsRequest, options?: any): Promise<ApiStorageObjects>;
     writeStorageObjects(body: ApiWriteStorageObjectsRequest, options?: any): Promise<ApiStorageObjectAcks>;
+    deleteStorageObjects(body: ApiDeleteStorageObjectsRequest, options?: any): Promise<ProtobufEmpty>;
     listStorageObjects(collection: string, userId?: string | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiStorageObjectList>;
     listStorageObjects2(collection: string, userId: string, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiStorageObjectList>;
     getUsers(ids?: string[] | undefined, usernames?: string[] | undefined, facebookIds?: string[] | undefined, options?: any): Promise<ApiUsers>;

@@ -101,6 +101,11 @@ export interface ApiDeleteStorageObjectId {
   // The version hash of the object.
   version?: string;
 }
+/** Batch delete storage objects. */
+export interface ApiDeleteStorageObjectsRequest {
+  // Batch of storage objects.
+  objectIds?: Array<ApiDeleteStorageObjectId>;
+}
 /** A friend of a user. */
 export interface ApiFriend {
   // The friend status.
@@ -208,6 +213,8 @@ export interface ApiRpc {
 }
 /** A user's session used to authenticate messages. */
 export interface ApiSession {
+  // True if the corresponding account was just created, false otherwise.
+  created?: boolean;
   // Authentication credentials.
   token?: string;
   // rUDP specific authentication credentials.
@@ -240,6 +247,8 @@ export interface ApiStorageObjectAck {
   collection?: string;
   // The key of the object within the collection.
   key?: string;
+  // The owner of the object.
+  userId?: string;
   // The version hash of the object.
   version?: string;
 }
@@ -2134,53 +2143,6 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
-    /** Delete one or more objects by ID or username. */
-    deleteStorageObjects(options: any = {}): Promise<ProtobufEmpty> {
-      const urlPath = "/v2/storage";
-
-      const queryParams = {
-      } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
-
-      const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
-
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
-        ),
-      ]);
-    },
     /** Get storage objects. */
     readStorageObjects(body: ApiReadStorageObjectsRequest, options: any = {}): Promise<ApiStorageObjects> {
       if (body === null || body === undefined) {
@@ -2283,7 +2245,58 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
-    /** List collections of storage objects. */
+    /** Delete one or more objects by ID or username. */
+    deleteStorageObjects(body: ApiDeleteStorageObjectsRequest, options: any = {}): Promise<ProtobufEmpty> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/storage/delete";
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "PUT" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** List publicly readable storage objects in a given collection. */
     listStorageObjects(collection: string, userId?: string, limit?: number, cursor?: string, options: any = {}): Promise<ApiStorageObjectList> {
       if (collection === null || collection === undefined) {
         throw new Error("'collection' is a required parameter but is null or undefined.");
@@ -2337,7 +2350,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
-    /** List collections of storage objects. */
+    /** List publicly readable storage objects in a given collection. */
     listStorageObjects2(collection: string, userId: string, limit?: number, cursor?: string, options: any = {}): Promise<ApiStorageObjectList> {
       if (collection === null || collection === undefined) {
         throw new Error("'collection' is a required parameter but is null or undefined.");

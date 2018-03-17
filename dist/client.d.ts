@@ -1,9 +1,35 @@
-import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiFriends, ApiMatchList, ApiUpdateAccountRequest, ApiUsers } from "./api.gen";
+import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiDeleteStorageObjectsRequest, ApiFriends, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUsers } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
 export interface RpcResponse {
     id?: string;
     payload?: object;
+}
+export interface WriteStorageObject {
+    collection?: string;
+    key?: string;
+    permissionRead?: number;
+    permissionWrite?: number;
+    value?: object;
+    version?: string;
+}
+export interface StorageObject {
+    collection?: string;
+    createTime?: string;
+    key?: string;
+    permissionRead?: number;
+    permissionWrite?: number;
+    updateTime?: string;
+    userId?: string;
+    value?: object;
+    version?: string;
+}
+export interface StorageObjectList {
+    cursor?: string;
+    objects: Array<StorageObject>;
+}
+export interface StorageObjects {
+    objects: Array<StorageObject>;
 }
 export declare class Client {
     readonly serverkey: string;
@@ -21,6 +47,7 @@ export declare class Client {
     authenticateFacebook(request: ApiAccountFacebook): Promise<Session>;
     authenticateGoogle(request: ApiAccountGoogle): Promise<Session>;
     createSocket(useSSL?: boolean, verbose?: boolean): Socket;
+    deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean>;
     getAccount(session: Session): Promise<ApiAccount>;
     importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<ApiUsers>;
@@ -32,6 +59,8 @@ export declare class Client {
     listFriends(session: Session): Promise<ApiFriends>;
     listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList>;
     listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<ApiUsers>;
+    listStorageObjects(session: Session, collection: string, userId?: string, limit?: number, cursor?: string): Promise<StorageObjectList>;
+    readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects>;
     rpc(session: Session, id: string, input: object): Promise<RpcResponse>;
     rpcGet(id: string, session?: Session, httpKey?: string, input?: object): Promise<RpcResponse>;
     unlinkCustom(session: Session, request: ApiAccountCustom): Promise<boolean>;
@@ -40,4 +69,5 @@ export declare class Client {
     unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
     updateAccount(session: Session, request: ApiUpdateAccountRequest): Promise<boolean>;
+    writeStorageObjects(session: Session, objects: Array<WriteStorageObject>): Promise<ApiStorageObjectAcks>;
 }

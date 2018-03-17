@@ -21,12 +21,18 @@ import {
   ApiAccountEmail,
   ApiAccountFacebook,
   ApiAccountGoogle,
+  ApiDeleteStorageObjectsRequest,
   ApiFriends,
   ApiMatchList,
   ApiSession,
+  ApiReadStorageObjectsRequest,
   ApiRpc,
+  ApiStorageObjectAcks,
+  ApiStorageObjectList,
+  ApiStorageObjects,
   ApiUpdateAccountRequest,
   ApiUsers,
+  ApiWriteStorageObjectsRequest,
   ConfigurationParameters,
   NakamaApi,
   ProtobufEmpty,
@@ -46,6 +52,58 @@ export interface RpcResponse {
   id?: string;
   // The payload of the function which must be a JSON object.
   payload?: object;
+}
+
+// The object to store.
+export interface WriteStorageObject {
+  // The collection to store the object.
+  collection?: string;
+  // The key for the object within the collection.
+  key?: string;
+  // The read access permissions for the object.
+  permission_read?: number;
+  // The write access permissions for the object.
+  permission_write?: number;
+  // The value of the object.
+  value?: object;
+  // The version hash of the object to check. Possible values are: ["", "*", "#hash#"].
+  version?: string;
+}
+
+// An object within the storage engine.
+export interface StorageObject {
+  // The collection which stores the object.
+  collection?: string;
+  // The UNIX time when the object was created.
+  create_time?: string;
+  // The key of the object within the collection.
+  key?: string;
+  // The read access permissions for the object.
+  permission_read?: number;
+  // The write access permissions for the object.
+  permission_write?: number;
+  // The UNIX time when the object was last updated.
+  update_time?: string;
+  // The user owner of the object.
+  user_id?: string;
+  // The value of the object.
+  value?: object;
+  // The version hash of the object.
+  version?: string;
+}
+
+// List of storage objects.
+export interface StorageObjectList {
+  // The cursor associated with the query a page of results.
+  cursor?: string;
+  // The list of storage objects.
+  objects: Array<StorageObject>;
+}
+
+// Batch of storage objects.
+export interface StorageObjects {
+  // The batch of storage objects.
+  objects: Array<StorageObject>;
 }
 
 /** A client for Nakama server. */
@@ -145,6 +203,14 @@ export class Client {
   //   });
   // }
 
+  /** Delete one or more storage objects */
+  deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.deleteStorageObjects(request).then((response: ProtobufEmpty) => {
+      return Promise.resolve(response != undefined);
+    });
+  }
+
   /** Fetch the current user's account. */
   getAccount(session: Session): Promise<ApiAccount> {
     this.configuration.bearerToken = (session && session.token);
@@ -221,6 +287,55 @@ export class Client {
   listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<ApiUsers> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.listNotifications(limit, cacheableCursor);
+  }
+
+  /** List storage objects. */
+  listStorageObjects(session: Session, collection: string, userId?: string, limit?: number, cursor?: string): Promise<StorageObjectList> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.listStorageObjects(collection, userId, limit, cursor).then((response: ApiStorageObjectList) => {
+      var result: StorageObjectList = {
+        objects: [],
+        cursor: response.cursor
+      };
+
+      response.objects!.forEach(o => {
+        result.objects.push({
+          collection: o.collection,
+          key: o.key,
+          permission_read: o.permission_read,
+          permission_write: o.permission_write,
+          value: o.value ? JSON.parse(o.value) : undefined,
+          version: o.version,
+          user_id: o.user_id,
+          create_time: o.create_time,
+          update_time: o.update_time
+        })
+      });
+      return Promise.resolve(result);
+    });
+  }
+
+  /** Fetch storage objects. */
+  readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.readStorageObjects(request).then((response: ApiStorageObjects) => {
+      var result: StorageObjects = {objects: []};
+
+      response.objects!.forEach(o => {
+        result.objects.push({
+          collection: o.collection,
+          key: o.key,
+          permission_read: o.permission_read,
+          permission_write: o.permission_write,
+          value: o.value ? JSON.parse(o.value) : undefined,
+          version: o.version,
+          user_id: o.user_id,
+          create_time: o.create_time,
+          update_time: o.update_time
+        })
+      });
+      return Promise.resolve(result);
+    });
   }
 
   /** Execute a Lua function on the server. */
@@ -302,5 +417,24 @@ export class Client {
     return this.apiClient.updateAccount(request).then((response: ProtobufEmpty) => {
       return response !== undefined;
     });
+  }
+
+  /** Write storage objects. */
+  writeStorageObjects(session: Session, objects: Array<WriteStorageObject>): Promise<ApiStorageObjectAcks> {
+    this.configuration.bearerToken = (session && session.token);
+
+    var request: ApiWriteStorageObjectsRequest = {objects: []};
+    objects.forEach(o => {
+      request.objects!.push({
+        collection: o.collection,
+        key: o.key,
+        permission_read: o.permission_read,
+        permission_write: o.permission_write,
+        value: JSON.stringify(o.value),
+        version: o.version
+      })
+    })
+
+    return this.apiClient.writeStorageObjects(request);
   }
 };
