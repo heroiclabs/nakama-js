@@ -49,6 +49,20 @@ describe('Authenticate Tests', () => {
     expect(session.token).not.toBeNull();
   });
 
+  it('should authenticate with custom id twice', async () => {
+    const customid = "someuniquecustomid";
+
+    const session = await page.evaluate((customid) => {
+      const client = new nakamajs.Client();
+      return client.authenticateCustom({ id: customid }).then(session => {
+        return client.authenticateCustom({ id: customid });
+      });
+    }, customid);
+
+    expect(session).not.toBeNull();
+    expect(session.token).not.toBeNull();
+  });
+
   it('should fail authenticate with custom id', async () => {
     const promise = page.evaluate(() => {
       const client = new nakamajs.Client();
