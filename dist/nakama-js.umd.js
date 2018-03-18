@@ -2870,13 +2870,16 @@ var Client = (function () {
                 objects: [],
                 cursor: response.cursor
             };
+            if (response.objects == null) {
+                return Promise.resolve(result);
+            }
             response.objects.forEach(function (o) {
                 result.objects.push({
                     collection: o.collection,
                     key: o.key,
                     permission_read: o.permission_read,
                     permission_write: o.permission_write,
-                    value: o.value ? JSON.parse(o.value) : undefined,
+                    value: o.value ? JSON.parse(o.value) : null,
                     version: o.version,
                     user_id: o.user_id,
                     create_time: o.create_time,
@@ -2890,13 +2893,16 @@ var Client = (function () {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.readStorageObjects(request).then(function (response) {
             var result = { objects: [] };
+            if (response.objects == null) {
+                return Promise.resolve(result);
+            }
             response.objects.forEach(function (o) {
                 result.objects.push({
                     collection: o.collection,
                     key: o.key,
                     permission_read: o.permission_read,
                     permission_write: o.permission_write,
-                    value: o.value ? JSON.parse(o.value) : undefined,
+                    value: o.value ? JSON.parse(o.value) : null,
                     version: o.version,
                     user_id: o.user_id,
                     create_time: o.create_time,

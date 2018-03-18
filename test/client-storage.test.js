@@ -55,7 +55,7 @@ describe('Link / Unlink Tests', () => {
             }
           ]).then(acks => {
             return client.readStorageObjects(session, {
-              objectIds: [{
+              object_ids: [{
                 "collection": collection,
                 "key": key,
                 "user_id": session.userId
@@ -72,6 +72,80 @@ describe('Link / Unlink Tests', () => {
     expect(result.objects[0].key).toBe(key);
     expect(result.objects[0].value).toEqual(value);
     expect(result.objects[0].permission_read).toBe(1);
+    expect(result.objects[0].permission_write).toBe(1);
+    expect(result.objects[0].version).not.toBeNull();
+  });
+
+  it('should write and delete storage', async () => {
+    const customid = generateid();
+    const collection = "testcollection";
+    const key = "testkey";
+    const value = {"hello": "world"};
+
+    const result = await page.evaluate((customid, collection, key, value) => {
+      const client = new nakamajs.Client();
+      return client.authenticateCustom({ id: customid })
+        .then(session => {
+          return client.writeStorageObjects(session,[
+            {
+              "collection": collection,
+              "key": key,
+              "value": value
+            }
+          ]).then(acks => {
+            return client.deleteStorageObjects(session, {
+              object_ids: [{
+                "collection": collection,
+                "key": key
+              }]
+            })
+          }).then(bool => {
+            return client.readStorageObjects(session, {
+              object_ids: [{
+                "collection": collection,
+                "key": key,
+                "user_id": session.userId
+              }]
+            })
+          });
+        })
+    }, customid, collection, key, value);
+
+    expect(result).not.toBeNull();
+    expect(result.objects.length).toBe(0);
+  });
+
+  it('should write and list storage', async () => {
+    const customid = generateid();
+    const collection = "testcollection";
+    const key = "testkey";
+    const value = {"hello": "world"};
+
+    const result = await page.evaluate((customid, collection, key, value) => {
+      const client = new nakamajs.Client();
+      return client.authenticateCustom({ id: customid })
+        .then(session => {
+          return client.writeStorageObjects(session,[
+            {
+              "collection": collection,
+              "key": key,
+              "value": value,
+              "permission_read": 2,
+              "permission_write": 1
+            }
+          ]).then(bool => {
+            return client.listStorageObjects(session, collection, session.userId)
+          });
+        })
+    }, customid, collection, key, value);
+
+    expect(result).not.toBeNull();
+    expect(result.objects.length).toBe(1);
+    expect(result.objects[0]).not.toBeNull();
+    expect(result.objects[0].collection).toBe(collection);
+    expect(result.objects[0].key).toBe(key);
+    expect(result.objects[0].value).toEqual(value);
+    expect(result.objects[0].permission_read).toBe(2);
     expect(result.objects[0].permission_write).toBe(1);
     expect(result.objects[0].version).not.toBeNull();
   });
