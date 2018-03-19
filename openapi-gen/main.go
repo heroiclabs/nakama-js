@@ -42,26 +42,25 @@ export interface ConfigurationParameters {
 /** {{$definition.Description}} */
 export interface {{$classname | title}} {
   {{- range $fieldname, $property := $definition.Properties}}
-  {{- $camelcase := $fieldname | camelCase}}
   // {{$property.Description}}
   {{- if eq $property.Type "integer"}}
-  {{$camelcase}}?: number;
+  {{$fieldname}}?: number;
   {{- else if eq $property.Type "boolean"}}
-  {{$camelcase}}?: boolean;
+  {{$fieldname}}?: boolean;
   {{- else if eq $property.Type "array"}}
     {{- if eq $property.Items.Type "string"}}
-  {{$camelcase}}?: Array<string>;
+  {{$fieldname}}?: Array<string>;
     {{- else if eq $property.Items.Type "integer"}}
-  {{$camelcase}}?: Array<number>;
+  {{$fieldname}}?: Array<number>;
     {{- else if eq $property.Items.Type "boolean"}}
-  {{$camelcase}}?: Array<boolean>;
+  {{$fieldname}}?: Array<boolean>;
     {{- else}}
-  {{$camelcase}}?: Array<{{$property.Items.Ref | cleanRef}}>;
+  {{$fieldname}}?: Array<{{$property.Items.Ref | cleanRef}}>;
     {{- end}}
   {{- else if eq $property.Type "string"}}
-  {{$camelcase}}?: string;
+  {{$fieldname}}?: string;
   {{- else}}
-  {{$camelcase}}?: {{$property.Ref | cleanRef}};
+  {{$fieldname}}?: {{$property.Ref | cleanRef}};
   {{- end}}
   {{- end}}
 }

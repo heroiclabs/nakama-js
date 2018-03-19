@@ -2,7 +2,7 @@ import { ApiNotification, ApiRpc } from "./api.gen";
 import { Session } from "./session";
 export interface StreamData {
     stream: {};
-    streamPresence: {};
+    stream_presence: {};
     data: string;
 }
 export interface StreamPresenceEvent {
@@ -11,28 +11,28 @@ export interface StreamPresenceEvent {
     leaves: [{}];
 }
 export interface MatchPresenceEvent {
-    matchId: string;
+    match_id: string;
     joins: [{}];
     leaves: [{}];
 }
 export interface CreateMatch {
-    matchCreate: {};
+    match_create: {};
 }
 export interface JoinMatch {
-    matchJoin: {
-        matchId: string;
+    match_join: {
+        match_id: string;
         token: string;
     };
 }
 export interface LeaveMatch {
-    matchLeave: {
-        matchId: string;
+    match_leave: {
+        match_id: string;
     };
 }
 export interface MatchData {
-    matchDataSend: {
-        matchId: string;
-        opCode: number;
+    match_data_send: {
+        match_id: string;
+        op_code: number;
         data: {};
         presence: [{}];
     };
