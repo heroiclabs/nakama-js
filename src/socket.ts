@@ -26,7 +26,7 @@ interface PromiseExecutor {
 /** Stream data. */
 export interface StreamData {
   stream: {},
-  streamPresence: {}
+  stream_presence: {}
   data: string
 }
 
@@ -39,36 +39,36 @@ export interface StreamPresenceEvent {
 
 /** Match presence updates. */
 export interface MatchPresenceEvent {
-  matchId: string,
+  match_id: string,
   joins: [{}],
   leaves: [{}]
 }
 
 /** Create a multiplayer match. */
 export interface CreateMatch {
-  matchCreate: {}
+  match_create: {}
 }
 
 /** Join a multiplayer match. */
 export interface JoinMatch {
-  matchJoin: {
-    matchId: string,
+  match_join: {
+    match_id: string,
     token: string
   }
 }
 
 /** Leave a multiplayer match. */
 export interface LeaveMatch {
-  matchLeave: {
-    matchId: string
+  match_leave: {
+    match_id: string
   }
 }
 
 /** Leave a multiplayer match. */
 export interface MatchData {
-  matchDataSend: {
-    matchId: string,
-    opCode: number,
+  match_data_send: {
+    match_id: string,
+    op_code: number,
     data: {},
     presence: [{}]
   }
@@ -149,15 +149,15 @@ export class DefaultSocket implements Socket {
       if (message.cid == undefined) {
         if (message.notifications) {
           message.notifications.notifications.forEach((n: any) => this.onnotification(n));
-        } else if (message.matchData) {
-          message.matchData.data = JSON.parse(atob(message.matchData.data));
-          this.onmatchdata(message.matchData);
-        } else if (message.matchedPresenceEvent) {
-          this.onmatchpresence(<MatchPresenceEvent>message.matchPresenceEvent);
-        } else if (message.streamPresenceEvent) {
-          this.onstreampresence(<StreamPresenceEvent>message.streamPresenceEvent);
-        } else if (message.streamData) {
-          this.onstreamdata(<StreamData>message.streamData);
+        } else if (message.match_data) {
+          message.match_data.data = JSON.parse(atob(message.match_data.data));
+          this.onmatchdata(message.match_data);
+        } else if (message.matched_presence_event) {
+          this.onmatchpresence(<MatchPresenceEvent>message.matched_presence_event);
+        } else if (message.stream_presence_event) {
+          this.onstreampresence(<StreamPresenceEvent>message.stream_presence_event);
+        } else if (message.stream_data) {
+          this.onstreamdata(<StreamData>message.stream_data);
         } else {
           if (this.verbose && window && window.console) {
             console.log("Unrecognized message received: %o", message);
@@ -246,9 +246,9 @@ export class DefaultSocket implements Socket {
       if (this.socket == undefined) {
         reject("Socket connection has not been established yet.");
       } else {
-        if ((<MatchData>message).matchDataSend) {
+        if ((<MatchData>message).match_data_send) {
           var m = <MatchData>message;
-          m.matchDataSend.data = btoa(JSON.stringify(m.matchDataSend.data));
+          m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
           this.socket.send(JSON.stringify(m));
           resolve();
         } else {

@@ -2262,50 +2262,6 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        deleteStorageObjects: function (options) {
-            if (options === void 0) { options = {}; }
-            var urlPath = "/v2/storage";
-            var queryParams = {};
-            var urlQuery = "?" + Object.keys(queryParams)
-                .map(function (k) {
-                if (queryParams[k] instanceof Array) {
-                    return queryParams[k].reduce(function (prev, curr) {
-                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                    }, "");
-                }
-                else {
-                    if (queryParams[k] != null) {
-                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                    }
-                }
-            })
-                .join("");
-            var fetchOptions = __assign({ method: "DELETE" }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
-            if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
-            }
-            else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-            }
-            fetchOptions.headers = __assign({}, headers, options.headers);
-            return Promise.race([
-                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        return response.json();
-                    }
-                    else {
-                        throw response;
-                    }
-                }),
-                new Promise(function (_, reject) {
-                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                }),
-            ]);
-        },
         readStorageObjects: function (body, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
@@ -2360,6 +2316,54 @@ var NakamaApi = function (configuration) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/storage";
+            var queryParams = {};
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "PUT" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            fetchOptions.body = JSON.stringify(body || {});
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
+        deleteStorageObjects: function (body, options) {
+            if (options === void 0) { options = {}; }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/storage/delete";
             var queryParams = {};
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
@@ -2619,18 +2623,18 @@ var DefaultSocket = (function () {
                 if (message.notifications) {
                     message.notifications.notifications.forEach(function (n) { return _this.onnotification(n); });
                 }
-                else if (message.matchData) {
-                    message.matchData.data = JSON.parse(atob(message.matchData.data));
-                    _this.onmatchdata(message.matchData);
+                else if (message.match_data) {
+                    message.match_data.data = JSON.parse(atob(message.match_data.data));
+                    _this.onmatchdata(message.match_data);
                 }
-                else if (message.matchedPresenceEvent) {
-                    _this.onmatchpresence(message.matchPresenceEvent);
+                else if (message.matched_presence_event) {
+                    _this.onmatchpresence(message.matched_presence_event);
                 }
-                else if (message.streamPresenceEvent) {
-                    _this.onstreampresence(message.streamPresenceEvent);
+                else if (message.stream_presence_event) {
+                    _this.onstreampresence(message.stream_presence_event);
                 }
-                else if (message.streamData) {
-                    _this.onstreamdata(message.streamData);
+                else if (message.stream_data) {
+                    _this.onstreamdata(message.stream_data);
                 }
                 else {
                     if (_this.verbose && window && window.console) {
@@ -2715,9 +2719,9 @@ var DefaultSocket = (function () {
                 reject("Socket connection has not been established yet.");
             }
             else {
-                if (message.matchDataSend) {
+                if (message.match_data_send) {
                     var m = message;
-                    m.matchDataSend.data = btoa(JSON.stringify(m.matchDataSend.data));
+                    m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
                     _this.socket.send(JSON.stringify(m));
                     resolve();
                 }
@@ -2797,6 +2801,12 @@ var Client = (function () {
         if (verbose === void 0) { verbose = false; }
         return new DefaultSocket(this.host, this.port, useSSL, verbose);
     };
+    Client.prototype.deleteStorageObjects = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.deleteStorageObjects(request).then(function (response) {
+            return Promise.resolve(response != undefined);
+        });
+    };
     Client.prototype.getAccount = function (session) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.getAccount();
@@ -2852,6 +2862,55 @@ var Client = (function () {
     Client.prototype.listNotifications = function (session, limit, cacheableCursor) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.listNotifications(limit, cacheableCursor);
+    };
+    Client.prototype.listStorageObjects = function (session, collection, userId, limit, cursor) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.listStorageObjects(collection, userId, limit, cursor).then(function (response) {
+            var result = {
+                objects: [],
+                cursor: response.cursor
+            };
+            if (response.objects == null) {
+                return Promise.resolve(result);
+            }
+            response.objects.forEach(function (o) {
+                result.objects.push({
+                    collection: o.collection,
+                    key: o.key,
+                    permission_read: o.permission_read,
+                    permission_write: o.permission_write,
+                    value: o.value ? JSON.parse(o.value) : null,
+                    version: o.version,
+                    user_id: o.user_id,
+                    create_time: o.create_time,
+                    update_time: o.update_time
+                });
+            });
+            return Promise.resolve(result);
+        });
+    };
+    Client.prototype.readStorageObjects = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.readStorageObjects(request).then(function (response) {
+            var result = { objects: [] };
+            if (response.objects == null) {
+                return Promise.resolve(result);
+            }
+            response.objects.forEach(function (o) {
+                result.objects.push({
+                    collection: o.collection,
+                    key: o.key,
+                    permission_read: o.permission_read,
+                    permission_write: o.permission_write,
+                    value: o.value ? JSON.parse(o.value) : null,
+                    version: o.version,
+                    user_id: o.user_id,
+                    create_time: o.create_time,
+                    update_time: o.update_time
+                });
+            });
+            return Promise.resolve(result);
+        });
     };
     Client.prototype.rpc = function (session, id, input) {
         this.configuration.bearerToken = (session && session.token);
@@ -2918,6 +2977,21 @@ var Client = (function () {
         return this.apiClient.updateAccount(request).then(function (response) {
             return response !== undefined;
         });
+    };
+    Client.prototype.writeStorageObjects = function (session, objects) {
+        this.configuration.bearerToken = (session && session.token);
+        var request = { objects: [] };
+        objects.forEach(function (o) {
+            request.objects.push({
+                collection: o.collection,
+                key: o.key,
+                permission_read: o.permission_read,
+                permission_write: o.permission_write,
+                value: JSON.stringify(o.value),
+                version: o.version
+            });
+        });
+        return this.apiClient.writeStorageObjects(request);
     };
     return Client;
 }());
