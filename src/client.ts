@@ -42,7 +42,7 @@ import { Session } from "./session";
 import { DefaultSocket, Socket } from "./socket";
 
 const DEFAULT_HOST = "127.0.0.1";
-const DEFAULT_PORT = "7349";
+const DEFAULT_PORT = "7350";
 const DEFAULT_SERVER_KEY = "defaultkey";
 const DEFAULT_TIMEOUT_MS = 7000;
 
