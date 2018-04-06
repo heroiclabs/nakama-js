@@ -2738,7 +2738,7 @@ var DefaultSocket = (function () {
 }());
 
 var DEFAULT_HOST = "127.0.0.1";
-var DEFAULT_PORT = "7349";
+var DEFAULT_PORT = "7350";
 var DEFAULT_SERVER_KEY = "defaultkey";
 var DEFAULT_TIMEOUT_MS = 7000;
 var Client = (function () {
