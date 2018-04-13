@@ -24,6 +24,8 @@ import {
   ApiChannelMessageList,
   ApiDeleteStorageObjectsRequest,
   ApiFriends,
+  ApiLeaderboardRecord,
+  ApiLeaderboardRecordList,
   ApiMatchList,
   ApiSession,
   ApiReadStorageObjectsRequest,
@@ -53,6 +55,54 @@ export interface RpcResponse {
   id?: string;
   // The payload of the function which must be a JSON object.
   payload?: object;
+}
+
+/** Represents a complete leaderboard record with all scores and associated metadata. */
+export interface LeaderboardRecord {
+  // The UNIX time when the leaderboard record was created.
+  create_time?: string;
+  // The UNIX time when the leaderboard record expires.
+  expiry_time?: string;
+  // The ID of the leaderboard this score belongs to.
+  leaderboard_id?: string;
+  // Metadata.
+  metadata?: object;
+  // The number of submissions to this score record.
+  num_score?: number;
+  // The ID of the score owner, usually a user or group.
+  owner_id?: string;
+  // The rank of this record.
+  rank?: number;
+  // The score value.
+  score?: number;
+  // An optional subscore value.
+  subscore?: number;
+  // The UNIX time when the leaderboard record was updated.
+  update_time?: string;
+  // The username of the score owner, if the owner is a user.
+  username?: string;
+}
+
+/** A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records. */
+export interface LeaderboardRecordList {
+  // The cursor to send when retireving the next page, if any.
+  next_cursor?: string;
+  // A batched set of leaderobard records belonging to specified owners.
+  owner_records?: Array<LeaderboardRecord>;
+  // The cursor to send when retrieving the previous page, if any.
+  prev_cursor?: string;
+  // A list of leaderboard records.
+  records?: Array<LeaderboardRecord>;
+}
+
+/** Record values to write. */
+export interface WriteLeaderboardRecord {
+  // Optional record metadata.
+  metadata?: object;
+  // The score value to submit.
+  score?: string;
+  // An optional secondary value.
+  subscore?: string;
 }
 
 // The object to store.
@@ -395,6 +445,55 @@ export class Client {
     return this.apiClient.listFriends();
   }
 
+  /** List leaderboard records */
+  listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<LeaderboardRecordList> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor).then((response: ApiLeaderboardRecordList) => {
+      var list: LeaderboardRecordList = {
+        next_cursor: response.next_cursor,
+        prev_cursor: response.prev_cursor,
+        owner_records: [],
+        records: []
+      };
+
+      if (response.owner_records != null) {
+        response.owner_records!.forEach(o => {
+          list.owner_records!.push({
+            expiry_time: o.expiry_time,
+            leaderboard_id: o.leaderboard_id,
+            metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+            num_score: o.num_score,
+            owner_id: o.owner_id,
+            rank: Number(o.rank),
+            score: Number(o.score),
+            subscore: Number(o.subscore),
+            update_time: o.update_time,
+            username: o.username
+          })
+        })
+      }
+
+      if (response.records != null) {
+        response.records!.forEach(o => {
+          list.records!.push({
+            expiry_time: o.expiry_time,
+            leaderboard_id: o.leaderboard_id,
+            metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+            num_score: o.num_score,
+            owner_id: o.owner_id,
+            rank: Number(o.rank),
+            score: Number(o.score),
+            subscore: Number(o.subscore),
+            update_time: o.update_time,
+            username: o.username
+          })
+        })
+      }
+
+      return Promise.resolve(list);
+    });
+  }
+
   /** Fetch list of running matches. */
   listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList> {
     this.configuration.bearerToken = (session && session.token);
@@ -542,6 +641,28 @@ export class Client {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.updateAccount(request).then((response: ProtobufEmpty) => {
       return response !== undefined;
+    });
+  }
+
+  /** Write a record to a leaderboard. */
+  writeLeaderboardRecord(session: Session, leaderboardId: string, request: WriteLeaderboardRecord): Promise<LeaderboardRecord> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.writeLeaderboardRecord(leaderboardId, {
+      metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
+      score: request.score,
+      subscore: request.subscore
+    }).then((response: ApiLeaderboardRecord) => {
+      return Promise.resolve({
+        expiry_time: response.expiry_time,
+        leaderboard_id: response.leaderboard_id,
+        metadata: response.metadata ? JSON.parse(response.metadata) : undefined,
+        num_score: response.num_score,
+        owner_id: response.owner_id,
+        score: Number(response.score),
+        subscore: Number(response.subscore),
+        update_time: response.update_time,
+        username: response.username
+      });
     });
   }
 
