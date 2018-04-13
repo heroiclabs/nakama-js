@@ -3172,6 +3172,50 @@ var Client = (function () {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.listFriends();
     };
+    Client.prototype.listLeaderboardRecords = function (session, leaderboardId, ownerIds, limit, cursor) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor).then(function (response) {
+            var list = {
+                next_cursor: response.next_cursor,
+                prev_cursor: response.prev_cursor,
+                owner_records: [],
+                records: []
+            };
+            if (response.owner_records != null) {
+                response.owner_records.forEach(function (o) {
+                    list.owner_records.push({
+                        expiry_time: o.expiry_time,
+                        leaderboard_id: o.leaderboard_id,
+                        metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                        num_score: o.num_score,
+                        owner_id: o.owner_id,
+                        rank: Number(o.rank),
+                        score: Number(o.score),
+                        subscore: Number(o.subscore),
+                        update_time: o.update_time,
+                        username: o.username
+                    });
+                });
+            }
+            if (response.records != null) {
+                response.records.forEach(function (o) {
+                    list.records.push({
+                        expiry_time: o.expiry_time,
+                        leaderboard_id: o.leaderboard_id,
+                        metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                        num_score: o.num_score,
+                        owner_id: o.owner_id,
+                        rank: Number(o.rank),
+                        score: Number(o.score),
+                        subscore: Number(o.subscore),
+                        update_time: o.update_time,
+                        username: o.username
+                    });
+                });
+            }
+            return Promise.resolve(list);
+        });
+    };
     Client.prototype.listMatches = function (session, limit, authoritative, label, minSize, maxSize) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize);
@@ -3293,6 +3337,26 @@ var Client = (function () {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.updateAccount(request).then(function (response) {
             return response !== undefined;
+        });
+    };
+    Client.prototype.writeLeaderboardRecord = function (session, leaderboardId, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.writeLeaderboardRecord(leaderboardId, {
+            metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
+            score: request.score,
+            subscore: request.subscore
+        }).then(function (response) {
+            return Promise.resolve({
+                expiry_time: response.expiry_time,
+                leaderboard_id: response.leaderboard_id,
+                metadata: response.metadata ? JSON.parse(response.metadata) : undefined,
+                num_score: response.num_score,
+                owner_id: response.owner_id,
+                score: Number(response.score),
+                subscore: Number(response.subscore),
+                update_time: response.update_time,
+                username: response.username
+            });
         });
     };
     Client.prototype.writeStorageObjects = function (session, objects) {
