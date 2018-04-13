@@ -5,6 +5,30 @@ export interface RpcResponse {
     id?: string;
     payload?: object;
 }
+export interface LeaderboardRecord {
+    create_time?: string;
+    expiry_time?: string;
+    leaderboard_id?: string;
+    metadata?: object;
+    num_score?: number;
+    owner_id?: string;
+    rank?: number;
+    score?: number;
+    subscore?: number;
+    update_time?: string;
+    username?: string;
+}
+export interface LeaderboardRecordList {
+    next_cursor?: string;
+    owner_records?: Array<LeaderboardRecord>;
+    prev_cursor?: string;
+    records?: Array<LeaderboardRecord>;
+}
+export interface WriteLeaderboardRecord {
+    metadata?: object;
+    score?: string;
+    subscore?: string;
+}
 export interface WriteStorageObject {
     collection?: string;
     key?: string;
@@ -76,6 +100,7 @@ export declare class Client {
     linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
     listFriends(session: Session): Promise<ApiFriends>;
+    listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<LeaderboardRecordList>;
     listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList>;
     listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<ApiUsers>;
     listStorageObjects(session: Session, collection: string, userId?: string, limit?: number, cursor?: string): Promise<StorageObjectList>;
@@ -88,5 +113,6 @@ export declare class Client {
     unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
     updateAccount(session: Session, request: ApiUpdateAccountRequest): Promise<boolean>;
+    writeLeaderboardRecord(session: Session, leaderboardId: string, request: WriteLeaderboardRecord): Promise<LeaderboardRecord>;
     writeStorageObjects(session: Session, objects: Array<WriteStorageObject>): Promise<ApiStorageObjectAcks>;
 }
