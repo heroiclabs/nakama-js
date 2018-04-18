@@ -94,6 +94,22 @@ describe('User Tests', () => {
     expect(account.user.location).toBe(loc);
   });
 
+  it('should update current user with same username', async () => {
+    const customid = generateid();
+
+    const account = await page.evaluate(async (customid) => {
+      const client = new nakamajs.Client();
+      const session = await client.authenticateCustom({ id: customid });
+      const success = await client.updateAccount(session, {
+        username: session.username
+      });
+      return client.getAccount(session);
+    }, customid);
+
+    expect(account).not.toBeNull();
+    expect(account.custom_id).toBe(customid);
+  });
+
   it('should return two users', async () => {
     const customid = generateid();
     const customid2 = generateid();
