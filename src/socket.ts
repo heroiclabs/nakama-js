@@ -44,6 +44,33 @@ export interface MatchPresenceEvent {
   leaves: [{}]
 }
 
+/** Start a matchmaking process. */
+export interface MatchmakerAdd {
+  matchmaker_add: {
+    min_count: number,
+    max_count: number,
+    query: string,
+    string_properties: {},
+    numeric_properties: {}
+  }
+}
+
+/** Cancel a matchmaking process. */
+export interface MatchmakerRemove {
+  matchmaker_remove: {
+    ticket: string
+  }
+}
+
+/** Matchmaking result. */
+export interface MatchmakerMatched {
+  ticket: string,
+  match_id: string,
+  token: string,
+  users: [{}],
+  self: {}
+}
+
 /** Create a multiplayer match. */
 export interface CreateMatch {
   match_create: {}
@@ -93,6 +120,8 @@ export interface Socket {
   onmatchdata: (matchData: MatchData) => void;
   // Receive match presence updates.
   onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
+  // Receive matchmaking results.
+  onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
   // Receive stream presence updates.
   onstreampresence: (streamPresence: StreamPresenceEvent) => void;
   // Receive stream data.
@@ -152,8 +181,10 @@ export class DefaultSocket implements Socket {
         } else if (message.match_data) {
           message.match_data.data = JSON.parse(atob(message.match_data.data));
           this.onmatchdata(message.match_data);
-        } else if (message.matched_presence_event) {
-          this.onmatchpresence(<MatchPresenceEvent>message.matched_presence_event);
+        } else if (message.match_presence_event) {
+          this.onmatchpresence(<MatchPresenceEvent>message.match_presence_event);
+        } else if (message.matchmaker_matched) {
+          this.onmatchmakermatched(<MatchmakerMatched>message.matchmaker_matched);
         } else if (message.stream_presence_event) {
           this.onstreampresence(<StreamPresenceEvent>message.stream_presence_event);
         } else if (message.stream_data) {
@@ -229,6 +260,12 @@ export class DefaultSocket implements Socket {
     }
   }
 
+  onmatchmakermatched(matchmakerMatched: MatchmakerMatched) {
+    if (this.verbose && window && window.console) {
+      console.log(matchmakerMatched);
+    }
+  }
+
   onstreampresence(streamPresence: StreamPresenceEvent) {
     if (this.verbose && window && window.console) {
       console.log(streamPresence);
@@ -241,7 +278,7 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  send(message: CreateMatch | JoinMatch | LeaveMatch | MatchData | Rpc) {
+  send(message: CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc) {
     return new Promise((resolve, reject) => {
       if (this.socket == undefined) {
         reject("Socket connection has not been established yet.");

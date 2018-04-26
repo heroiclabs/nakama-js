@@ -15,6 +15,27 @@ export interface MatchPresenceEvent {
     joins: [{}];
     leaves: [{}];
 }
+export interface MatchmakerAdd {
+    matchmaker_add: {
+        min_count: number;
+        max_count: number;
+        query: string;
+        string_properties: {};
+        numeric_properties: {};
+    };
+}
+export interface MatchmakerRemove {
+    matchmaker_remove: {
+        ticket: string;
+    };
+}
+export interface MatchmakerMatched {
+    ticket: string;
+    match_id: string;
+    token: string;
+    users: [{}];
+    self: {};
+}
 export interface CreateMatch {
     match_create: {};
 }
@@ -47,6 +68,7 @@ export interface Socket {
     onnotification: (notification: ApiNotification) => void;
     onmatchdata: (matchData: MatchData) => void;
     onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
+    onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
     onstreampresence: (streamPresence: StreamPresenceEvent) => void;
     onstreamdata: (streamData: StreamData) => void;
 }
@@ -69,7 +91,8 @@ export declare class DefaultSocket implements Socket {
     onnotification(notification: ApiNotification): void;
     onmatchdata(matchData: MatchData): void;
     onmatchpresence(matchPresence: MatchPresenceEvent): void;
+    onmatchmakermatched(matchmakerMatched: MatchmakerMatched): void;
     onstreampresence(streamPresence: StreamPresenceEvent): void;
     onstreamdata(streamData: StreamData): void;
-    send(message: CreateMatch | JoinMatch | LeaveMatch | MatchData | Rpc): Promise<{}>;
+    send(message: CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc): Promise<{}>;
 }
