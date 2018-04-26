@@ -25,6 +25,15 @@ export interface CreateGroupsRequestNewGroup {
   // Mark a group as private where only admins can accept members.
   private?: boolean;
 }
+/** Record values to write. */
+export interface WriteLeaderboardRecordRequestLeaderboardRecordWrite {
+  // Optional record metadata.
+  metadata?: string;
+  // The score value to submit.
+  score?: string;
+  // An optional secondary value.
+  subscore?: string;
+}
 /** A user with additional account details. Always the current user. */
 export interface ApiAccount {
   // The custom id in the user's account.
@@ -87,6 +96,38 @@ export interface ApiAccountSteam {
   // The account token received from Steam to access their profile API.
   token?: string;
 }
+/** A message sent on a channel. */
+export interface ApiChannelMessage {
+  // The channel this message belongs to.
+  channel_id?: string;
+  // The code representing a message type or category.
+  code?: number;
+  // The content payload.
+  content?: string;
+  // The UNIX time when the message was created.
+  create_time?: string;
+  // The unique ID of this message.
+  message_id?: string;
+  // True if the message was persisted to the channel's history, false otherwise.
+  persistent?: boolean;
+  // Another message ID reference, if any.
+  reference_id?: string;
+  // Message sender, usually a user ID.
+  sender_id?: string;
+  // The UNIX time when the message was last updated.
+  update_time?: string;
+  // The username of the message sender, if any.
+  username?: string;
+}
+/** A list of channel messages, usually a result of a list operation. */
+export interface ApiChannelMessageList {
+  // A list of messages.
+  messages?: Array<ApiChannelMessage>;
+  // The cursor to send when retireving the next page, if any.
+  next_cursor?: string;
+  // The cursor to send when retrieving the previous page, if any.
+  prev_cursor?: string;
+}
 /** Create one or more groups with the current user as owner. */
 export interface ApiCreateGroupsRequest {
   // The Group objects to create.
@@ -147,6 +188,42 @@ export interface ApiGroup {
 export interface ApiGroups {
   // The Group objects.
   groups?: Array<ApiGroup>;
+}
+/** Represents a complete leaderboard record with all scores and associated metadata. */
+export interface ApiLeaderboardRecord {
+  // The UNIX time when the leaderboard record was created.
+  create_time?: string;
+  // The UNIX time when the leaderboard record expires.
+  expiry_time?: string;
+  // The ID of the leaderboard this score belongs to.
+  leaderboard_id?: string;
+  // Metadata.
+  metadata?: string;
+  // The number of submissions to this score record.
+  num_score?: number;
+  // The ID of the score owner, usually a user or group.
+  owner_id?: string;
+  // The rank of this record.
+  rank?: string;
+  // The score value.
+  score?: string;
+  // An optional subscore value.
+  subscore?: string;
+  // The UNIX time when the leaderboard record was updated.
+  update_time?: string;
+  // The username of the score owner, if the owner is a user.
+  username?: string;
+}
+/** A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records. */
+export interface ApiLeaderboardRecordList {
+  // The cursor to send when retireving the next page, if any.
+  next_cursor?: string;
+  // A batched set of leaderobard records belonging to specified owners.
+  owner_records?: Array<ApiLeaderboardRecord>;
+  // The cursor to send when retrieving the previous page, if any.
+  prev_cursor?: string;
+  // A list of leaderboard records.
+  records?: Array<ApiLeaderboardRecord>;
 }
 /** Represents a realtime match. */
 export interface ApiMatch {
@@ -1597,6 +1674,57 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
+    /** List a channel's message history. */
+    listChannelMessages(channelId?: string, limit?: number, forward?: boolean, cursor?: string, options: any = {}): Promise<ApiChannelMessageList> {
+      const urlPath = "/v2/channel";
+
+      const queryParams = {
+        channel_id: channelId,
+        limit: limit,
+        forward: forward,
+        cursor: cursor,
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
     /** Delete one or more users by ID or username. */
     deleteFriends(options: any = {}): Promise<ProtobufEmpty> {
       const urlPath = "/v2/friend";
@@ -1842,6 +1970,166 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/group";
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Delete a leaderboard record. */
+    deleteLeaderboardRecord(leaderboardId: string, options: any = {}): Promise<ProtobufEmpty> {
+      if (leaderboardId === null || leaderboardId === undefined) {
+        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/leaderboard/{leaderboard_id}"
+         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** List leaderboard records */
+    listLeaderboardRecords(leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, options: any = {}): Promise<ApiLeaderboardRecordList> {
+      if (leaderboardId === null || leaderboardId === undefined) {
+        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/leaderboard/{leaderboard_id}"
+         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+
+      const queryParams = {
+        owner_ids: ownerIds,
+        limit: limit,
+        cursor: cursor,
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Write a record to a leaderboard. */
+    writeLeaderboardRecord(leaderboardId: string, body: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options: any = {}): Promise<ApiLeaderboardRecord> {
+      if (leaderboardId === null || leaderboardId === undefined) {
+        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/leaderboard/{leaderboard_id}"
+         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
 
       const queryParams = {
       } as any;
