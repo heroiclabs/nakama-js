@@ -23,6 +23,70 @@ interface PromiseExecutor {
   reject: (reason?: any) => void;
 }
 
+/** A response fron a channel join operation. */
+export interface Channel {
+  id: string,
+  presences: [{}],
+  self: {}
+}
+
+/** Join a realtime chat channel. */
+export interface ChannelJoin {
+  target: string,
+  type: number,
+  persistence: boolean,
+  hidden: boolean
+}
+
+/** Leave a realtime chat channel. */
+export interface ChannelLeave {
+  channel_id: string
+}
+
+/** An incoming message on a realtime chat channel. */
+export interface ChannelMessage {
+  channel_id: string,
+  message_id: string,
+  code: number,
+  sender_id: string,
+  username: string,
+  content: object,
+  reference_id: string,
+  create_time: string,
+  update_time: string,
+  persistent: boolean
+}
+
+/** An acknowledgement received in response to sending a message on a chat channel. */
+export interface ChannelMessageAck {
+  channel_id: string,
+  message_id: string,
+  username: string,
+  create_time: string,
+  update_time: string,
+  persistence: boolean
+}
+
+/** Send a message to a realtime chat channel. */
+export interface ChannelMessageSend {
+  channel_id: string,
+  content: object,
+}
+
+/** Update a message previously sent to a realtime chat channel. */
+export interface ChannelMessageUpdate {
+  channel_id: string,
+  message_id: string,
+  content: object
+}
+
+/** Presence update for a particular realtime chat channel. */
+export interface ChannelPresenceEvent {
+  channel_id: string,
+  joins: [{}],
+  leaves: [{}]
+}
+
 /** Stream data. */
 export interface StreamData {
   stream: {},
@@ -97,6 +161,10 @@ export interface Socket {
   onstreampresence: (streamPresence: StreamPresenceEvent) => void;
   // Receive stream data.
   onstreamdata: (streamData: StreamData) => void;
+  // Receive channel message.
+  onchannelmessage: (channelMessage: ChannelMessage) => void;
+  // Receive channel presence updates.
+  onchannelpresence: (channelPresence: ChannelPresenceEvent) => void;
 }
 
 /** Reports an error received from a socket message. */
@@ -151,6 +219,7 @@ export class DefaultSocket implements Socket {
           message.notifications.notifications.forEach((n: any) => this.onnotification(n));
         } else if (message.match_data) {
           message.match_data.data = JSON.parse(atob(message.match_data.data));
+          message.match_data.op_code = parseInt(message.match_data.op_code);
           this.onmatchdata(message.match_data);
         } else if (message.matched_presence_event) {
           this.onmatchpresence(<MatchPresenceEvent>message.matched_presence_event);
@@ -158,6 +227,11 @@ export class DefaultSocket implements Socket {
           this.onstreampresence(<StreamPresenceEvent>message.stream_presence_event);
         } else if (message.stream_data) {
           this.onstreamdata(<StreamData>message.stream_data);
+        } else if (message.channel_message) {
+          message.channel_message.content = JSON.parse(message.channel_message.content);
+          this.onchannelmessage(<ChannelMessage>message.channel_message);
+        } else if (message.channel_presence_event) {
+          this.onchannelpresence(<ChannelPresenceEvent>message.channel_presence_event);
         } else {
           if (this.verbose && window && window.console) {
             console.log("Unrecognized message received: %o", message);
@@ -241,17 +315,36 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  send(message: CreateMatch | JoinMatch | LeaveMatch | MatchData | Rpc) {
+  onchannelmessage(channelMessage: ChannelMessage) {
+    if (this.verbose && window && window.console) {
+      console.log(channelMessage);
+    }
+  }
+
+  onchannelpresence(channelPresence: ChannelPresenceEvent) {
+    if (this.verbose && window && window.console) {
+      console.log(channelPresence);
+    }
+  }
+
+  send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | CreateMatch | JoinMatch | LeaveMatch | MatchData | Rpc) {
+    var m = <any>message;
     return new Promise((resolve, reject) => {
       if (this.socket == undefined) {
         reject("Socket connection has not been established yet.");
       } else {
-        if ((<MatchData>message).match_data_send) {
-          var m = <MatchData>message;
+        if (m.match_data_send) {
           m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
+          m.match_data_send.op_code = m.match_data_send.op_code.toString();
           this.socket.send(JSON.stringify(m));
           resolve();
         } else {
+          if (m.channel_message_send) {
+            m.channel_message_send.content = JSON.stringify(m.channel_message_send.content);
+          } else if (m.channel_message_update) {
+            m.channel_message_update.content = JSON.stringify(m.channel_message_update.content);
+          }
+
           const cid = this.generatecid();
           this.cIds[cid] = {
             resolve: resolve,
@@ -259,13 +352,13 @@ export class DefaultSocket implements Socket {
           };
 
           // Add id for promise executor.
-          (<any>message).cid = cid;
-          this.socket.send(JSON.stringify(message));
+          m.cid = cid;
+          this.socket.send(JSON.stringify(m));
         }
       }
 
       if (this.verbose && window && window.console) {
-        console.log("Sent message: %o", message);
+        console.log("Sent message: %o", m);
       }
     });
   }

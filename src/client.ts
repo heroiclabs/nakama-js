@@ -21,6 +21,7 @@ import {
   ApiAccountEmail,
   ApiAccountFacebook,
   ApiAccountGoogle,
+  ApiChannelMessageList,
   ApiDeleteStorageObjectsRequest,
   ApiFriends,
   ApiMatchList,
@@ -104,6 +105,40 @@ export interface StorageObjectList {
 export interface StorageObjects {
   // The batch of storage objects.
   objects: Array<StorageObject>;
+}
+
+/** A message sent on a channel. */
+export interface ChannelMessage {
+  // The channel this message belongs to.
+  channel_id?: string;
+  // The code representing a message type or category.
+  code?: number;
+  // The content payload.
+  content?: object;
+  // The UNIX time when the message was created.
+  create_time?: string;
+  // The unique ID of this message.
+  message_id?: string;
+  // True if the message was persisted to the channel's history, false otherwise.
+  persistent?: boolean;
+  // Another message ID reference, if any.
+  reference_id?: string;
+  // Message sender, usually a user ID.
+  sender_id?: string;
+  // The UNIX time when the message was last updated.
+  update_time?: string;
+  // The username of the message sender, if any.
+  username?: string;
+}
+
+/** A list of channel messages, usually a result of a list operation. */
+export interface ChannelMessageList {
+  // A list of messages.
+  messages?: Array<ChannelMessage>;
+  // The cursor to send when retireving the next page, if any.
+  next_cursor?: string;
+  // The cursor to send when retrieving the previous page, if any.
+  prev_cursor?: string;
 }
 
 /** A client for Nakama server. */
@@ -229,6 +264,38 @@ export class Client {
   getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<ApiUsers> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.getUsers(ids, usernames, facebookIds);
+  }
+
+  /** List a channel's message history. */
+  listChannelMessages(session: Session, channelId?: string, limit?: number, forward?: boolean, cursor?: string): Promise<ChannelMessageList> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then((response: ApiChannelMessageList) => {
+      var result: ChannelMessageList = {
+        messages: [],
+        next_cursor: response.next_cursor,
+        prev_cursor: response.prev_cursor
+      };
+
+      if (response.messages == null) {
+        return Promise.resolve(result);
+      }
+
+      response.messages!.forEach(m => {
+        result.messages!.push({
+          channel_id: m.channel_id,
+          code: m.code,
+          create_time: m.create_time,
+          message_id: m.message_id,
+          persistent: m.persistent,
+          reference_id: m.reference_id,
+          sender_id: m.sender_id,
+          update_time: m.update_time,
+          username: m.username,
+          content: m.content ? JSON.parse(m.content) : null
+        })
+      });
+      return Promise.resolve(result);
+    });
   }
 
   /** Add a custom ID to the social profiles on the current user's account. */

@@ -31,6 +31,23 @@ export interface StorageObjectList {
 export interface StorageObjects {
     objects: Array<StorageObject>;
 }
+export interface ChannelMessage {
+    channel_id?: string;
+    code?: number;
+    content?: object;
+    create_time?: string;
+    message_id?: string;
+    persistent?: boolean;
+    reference_id?: string;
+    sender_id?: string;
+    update_time?: string;
+    username?: string;
+}
+export interface ChannelMessageList {
+    messages?: Array<ChannelMessage>;
+    next_cursor?: string;
+    prev_cursor?: string;
+}
 export declare class Client {
     readonly serverkey: string;
     readonly host: string;
@@ -51,6 +68,7 @@ export declare class Client {
     getAccount(session: Session): Promise<ApiAccount>;
     importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<ApiUsers>;
+    listChannelMessages(session: Session, channelId?: string, limit?: number, forward?: boolean, cursor?: string): Promise<ChannelMessageList>;
     linkCustom(session: Session, request: ApiAccountCustom): Promise<boolean>;
     linkDevice(session: Session, request: ApiAccountDevice): Promise<boolean>;
     linkEmail(session: Session, request: ApiAccountEmail): Promise<boolean>;
