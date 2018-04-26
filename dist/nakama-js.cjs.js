@@ -1744,6 +1744,55 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
+        listChannelMessages: function (channelId, limit, forward, cursor, options) {
+            if (options === void 0) { options = {}; }
+            var urlPath = "/v2/channel";
+            var queryParams = {
+                channel_id: channelId,
+                limit: limit,
+                forward: forward,
+                cursor: cursor,
+            };
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "GET" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
         deleteFriends: function (options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/friend";
@@ -1974,6 +2023,158 @@ var NakamaApi = function (configuration) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group";
+            var queryParams = {};
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "POST" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            fetchOptions.body = JSON.stringify(body || {});
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
+        deleteLeaderboardRecord: function (leaderboardId, options) {
+            if (options === void 0) { options = {}; }
+            if (leaderboardId === null || leaderboardId === undefined) {
+                throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/leaderboard/{leaderboard_id}"
+                .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+            var queryParams = {};
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "DELETE" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
+        listLeaderboardRecords: function (leaderboardId, ownerIds, limit, cursor, options) {
+            if (options === void 0) { options = {}; }
+            if (leaderboardId === null || leaderboardId === undefined) {
+                throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/leaderboard/{leaderboard_id}"
+                .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+            var queryParams = {
+                owner_ids: ownerIds,
+                limit: limit,
+                cursor: cursor,
+            };
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "GET" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
+        writeLeaderboardRecord: function (leaderboardId, body, options) {
+            if (options === void 0) { options = {}; }
+            if (leaderboardId === null || leaderboardId === undefined) {
+                throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+            }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/leaderboard/{leaderboard_id}"
+                .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
             var queryParams = {};
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
@@ -2623,6 +2824,7 @@ var DefaultSocket = (function () {
                 }
                 else if (message.match_data) {
                     message.match_data.data = JSON.parse(atob(message.match_data.data));
+                    message.match_data.op_code = parseInt(message.match_data.op_code);
                     _this.onmatchdata(message.match_data);
                 }
                 else if (message.matched_presence_event) {
@@ -2633,6 +2835,13 @@ var DefaultSocket = (function () {
                 }
                 else if (message.stream_data) {
                     _this.onstreamdata(message.stream_data);
+                }
+                else if (message.channel_message) {
+                    message.channel_message.content = JSON.parse(message.channel_message.content);
+                    _this.onchannelmessage(message.channel_message);
+                }
+                else if (message.channel_presence_event) {
+                    _this.onchannelpresence(message.channel_presence_event);
                 }
                 else {
                     if (_this.verbose && window && window.console) {
@@ -2710,31 +2919,48 @@ var DefaultSocket = (function () {
             console.log(streamData);
         }
     };
+    DefaultSocket.prototype.onchannelmessage = function (channelMessage) {
+        if (this.verbose && window && window.console) {
+            console.log(channelMessage);
+        }
+    };
+    DefaultSocket.prototype.onchannelpresence = function (channelPresence) {
+        if (this.verbose && window && window.console) {
+            console.log(channelPresence);
+        }
+    };
     DefaultSocket.prototype.send = function (message) {
         var _this = this;
+        var m = message;
         return new Promise(function (resolve, reject) {
             if (_this.socket == undefined) {
                 reject("Socket connection has not been established yet.");
             }
             else {
-                if (message.match_data_send) {
-                    var m = message;
+                if (m.match_data_send) {
                     m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
+                    m.match_data_send.op_code = m.match_data_send.op_code.toString();
                     _this.socket.send(JSON.stringify(m));
                     resolve();
                 }
                 else {
+                    if (m.channel_message_send) {
+                        m.channel_message_send.content = JSON.stringify(m.channel_message_send.content);
+                    }
+                    else if (m.channel_message_update) {
+                        m.channel_message_update.content = JSON.stringify(m.channel_message_update.content);
+                    }
                     var cid = _this.generatecid();
                     _this.cIds[cid] = {
                         resolve: resolve,
                         reject: reject
                     };
-                    message.cid = cid;
-                    _this.socket.send(JSON.stringify(message));
+                    m.cid = cid;
+                    _this.socket.send(JSON.stringify(m));
                 }
             }
             if (_this.verbose && window && window.console) {
-                console.log("Sent message: %o", message);
+                console.log("Sent message: %o", m);
             }
         });
     };
@@ -2818,6 +3044,34 @@ var Client = (function () {
     Client.prototype.getUsers = function (session, ids, usernames, facebookIds) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.getUsers(ids, usernames, facebookIds);
+    };
+    Client.prototype.listChannelMessages = function (session, channelId, limit, forward, cursor) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then(function (response) {
+            var result = {
+                messages: [],
+                next_cursor: response.next_cursor,
+                prev_cursor: response.prev_cursor
+            };
+            if (response.messages == null) {
+                return Promise.resolve(result);
+            }
+            response.messages.forEach(function (m) {
+                result.messages.push({
+                    channel_id: m.channel_id,
+                    code: m.code,
+                    create_time: m.create_time,
+                    message_id: m.message_id,
+                    persistent: m.persistent,
+                    reference_id: m.reference_id,
+                    sender_id: m.sender_id,
+                    update_time: m.update_time,
+                    username: m.username,
+                    content: m.content ? JSON.parse(m.content) : null
+                });
+            });
+            return Promise.resolve(result);
+        });
     };
     Client.prototype.linkCustom = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
