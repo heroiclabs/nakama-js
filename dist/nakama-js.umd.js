@@ -2829,8 +2829,11 @@ var DefaultSocket = (function () {
                     message.match_data.op_code = parseInt(message.match_data.op_code);
                     _this.onmatchdata(message.match_data);
                 }
-                else if (message.matched_presence_event) {
-                    _this.onmatchpresence(message.matched_presence_event);
+                else if (message.match_presence_event) {
+                    _this.onmatchpresence(message.match_presence_event);
+                }
+                else if (message.matchmaker_matched) {
+                    _this.onmatchmakermatched(message.matchmaker_matched);
                 }
                 else if (message.stream_presence_event) {
                     _this.onstreampresence(message.stream_presence_event);
@@ -2891,6 +2894,16 @@ var DefaultSocket = (function () {
             this.ondisconnect({});
         }
     };
+    DefaultSocket.prototype.onchannelmessage = function (channelMessage) {
+        if (this.verbose && window && window.console) {
+            console.log(channelMessage);
+        }
+    };
+    DefaultSocket.prototype.onchannelpresence = function (channelPresence) {
+        if (this.verbose && window && window.console) {
+            console.log(channelPresence);
+        }
+    };
     DefaultSocket.prototype.ondisconnect = function (evt) {
         if (this.verbose && window && window.console) {
             console.log(evt);
@@ -2911,6 +2924,11 @@ var DefaultSocket = (function () {
             console.log(matchPresence);
         }
     };
+    DefaultSocket.prototype.onmatchmakermatched = function (matchmakerMatched) {
+        if (this.verbose && window && window.console) {
+            console.log(matchmakerMatched);
+        }
+    };
     DefaultSocket.prototype.onstreampresence = function (streamPresence) {
         if (this.verbose && window && window.console) {
             console.log(streamPresence);
@@ -2919,16 +2937,6 @@ var DefaultSocket = (function () {
     DefaultSocket.prototype.onstreamdata = function (streamData) {
         if (this.verbose && window && window.console) {
             console.log(streamData);
-        }
-    };
-    DefaultSocket.prototype.onchannelmessage = function (channelMessage) {
-        if (this.verbose && window && window.console) {
-            console.log(channelMessage);
-        }
-    };
-    DefaultSocket.prototype.onchannelpresence = function (channelPresence) {
-        if (this.verbose && window && window.console) {
-            console.log(channelPresence);
         }
     };
     DefaultSocket.prototype.send = function (message) {
