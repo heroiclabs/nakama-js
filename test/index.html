@@ -11,12 +11,12 @@
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, true);
       const customid = "someuniqueidentifier";
+
       client.authenticateCustom({ id: customid })
         .then(session => {
           return socket.connect(session);
-        })
-        .then(session => {
-        })
+        }).then(session => {
+        });
     </script>
   </body>
 </html>

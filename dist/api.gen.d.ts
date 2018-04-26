@@ -13,6 +13,11 @@ export interface CreateGroupsRequestNewGroup {
     name?: string;
     private?: boolean;
 }
+export interface WriteLeaderboardRecordRequestLeaderboardRecordWrite {
+    metadata?: string;
+    score?: string;
+    subscore?: string;
+}
 export interface ApiAccount {
     custom_id?: string;
     devices?: Array<ApiAccountDevice>;
@@ -48,6 +53,23 @@ export interface ApiAccountGoogle {
 export interface ApiAccountSteam {
     token?: string;
 }
+export interface ApiChannelMessage {
+    channel_id?: string;
+    code?: number;
+    content?: string;
+    create_time?: string;
+    message_id?: string;
+    persistent?: boolean;
+    reference_id?: string;
+    sender_id?: string;
+    update_time?: string;
+    username?: string;
+}
+export interface ApiChannelMessageList {
+    messages?: Array<ApiChannelMessage>;
+    next_cursor?: string;
+    prev_cursor?: string;
+}
 export interface ApiCreateGroupsRequest {
     groups?: Array<CreateGroupsRequestNewGroup>;
 }
@@ -81,6 +103,25 @@ export interface ApiGroup {
 }
 export interface ApiGroups {
     groups?: Array<ApiGroup>;
+}
+export interface ApiLeaderboardRecord {
+    create_time?: string;
+    expiry_time?: string;
+    leaderboard_id?: string;
+    metadata?: string;
+    num_score?: number;
+    owner_id?: string;
+    rank?: string;
+    score?: string;
+    subscore?: string;
+    update_time?: string;
+    username?: string;
+}
+export interface ApiLeaderboardRecordList {
+    next_cursor?: string;
+    owner_records?: Array<ApiLeaderboardRecord>;
+    prev_cursor?: string;
+    records?: Array<ApiLeaderboardRecord>;
 }
 export interface ApiMatch {
     authoritative?: boolean;
@@ -225,12 +266,16 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     unlinkGameCenter(body: ApiAccountGameCenter, options?: any): Promise<ProtobufEmpty>;
     unlinkGoogle(body: ApiAccountGoogle, options?: any): Promise<ProtobufEmpty>;
     unlinkSteam(body: ApiAccountSteam, options?: any): Promise<ProtobufEmpty>;
+    listChannelMessages(channelId?: string | undefined, limit?: number | undefined, forward?: boolean | undefined, cursor?: string | undefined, options?: any): Promise<ApiChannelMessageList>;
     deleteFriends(options?: any): Promise<ProtobufEmpty>;
     listFriends(options?: any): Promise<ApiFriends>;
     addFriends(options?: any): Promise<ProtobufEmpty>;
     blockFriends(options?: any): Promise<ProtobufEmpty>;
     importFacebookFriends(body: ApiAccountFacebook, options?: any): Promise<ProtobufEmpty>;
     createGroup(body: ApiCreateGroupsRequest, options?: any): Promise<ApiGroups>;
+    deleteLeaderboardRecord(leaderboardId: string, options?: any): Promise<ProtobufEmpty>;
+    listLeaderboardRecords(leaderboardId: string, ownerIds?: string[] | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiLeaderboardRecordList>;
+    writeLeaderboardRecord(leaderboardId: string, body: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
     listMatches(limit?: number | undefined, authoritative?: boolean | undefined, label?: string | undefined, minSize?: number | undefined, maxSize?: number | undefined, options?: any): Promise<ApiMatchList>;
     deleteNotifications(options?: any): Promise<ProtobufEmpty>;
     listNotifications(limit?: number | undefined, cacheableCursor?: string | undefined, options?: any): Promise<ApiNotificationList>;
