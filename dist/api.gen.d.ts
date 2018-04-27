@@ -60,7 +60,6 @@ export interface ApiChannelMessage {
     create_time?: string;
     message_id?: string;
     persistent?: boolean;
-    reference_id?: string;
     sender_id?: string;
     update_time?: string;
     username?: string;

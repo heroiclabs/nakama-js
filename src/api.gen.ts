@@ -110,8 +110,6 @@ export interface ApiChannelMessage {
   message_id?: string;
   // True if the message was persisted to the channel's history, false otherwise.
   persistent?: boolean;
-  // Another message ID reference, if any.
-  reference_id?: string;
   // Message sender, usually a user ID.
   sender_id?: string;
   // The UNIX time when the message was last updated.

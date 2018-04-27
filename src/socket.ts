@@ -51,7 +51,6 @@ export interface ChannelMessage {
   sender_id: string,
   username: string,
   content: object,
-  reference_id: string,
   create_time: string,
   update_time: string,
   persistent: boolean
@@ -61,6 +60,7 @@ export interface ChannelMessage {
 export interface ChannelMessageAck {
   channel_id: string,
   message_id: string,
+  code: number,
   username: string,
   create_time: string,
   update_time: string,
@@ -78,6 +78,12 @@ export interface ChannelMessageUpdate {
   channel_id: string,
   message_id: string,
   content: object
+}
+
+/** Remove a message previously sent to a realtime chat channel. */
+export interface ChannelMessageRemove {
+  channel_id: string,
+  message_id: string
 }
 
 /** Presence update for a particular realtime chat channel. */
