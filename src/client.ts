@@ -238,6 +238,58 @@ export class Client {
   //   });
   // }
 
+  deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+
+    const urlPath = "/v2/notification";
+
+    const queryParams = {
+      ids: ids
+    } as any;
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        }
+      })
+      .join("");
+
+    const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }} as any;
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
+
+    if (this.configuration.bearerToken) {
+      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+    } else if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
+
+    fetchOptions.headers = {...headers};
+
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+      ),
+    ]).then((response: ProtobufEmpty) => {
+      return Promise.resolve(response != undefined);
+    });
+  }
+
   /** Delete one or more storage objects */
   deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);

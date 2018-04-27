@@ -64,6 +64,7 @@ export declare class Client {
     authenticateFacebook(request: ApiAccountFacebook): Promise<Session>;
     authenticateGoogle(request: ApiAccountGoogle): Promise<Session>;
     createSocket(useSSL?: boolean, verbose?: boolean): Socket;
+    deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean>;
     deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean>;
     getAccount(session: Session): Promise<ApiAccount>;
     importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean>;
