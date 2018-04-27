@@ -3033,6 +3033,55 @@ var Client = (function () {
         if (verbose === void 0) { verbose = false; }
         return new DefaultSocket(this.host, this.port, useSSL, verbose);
     };
+    Client.prototype.deleteNotifications = function (session, ids) {
+        var _this = this;
+        this.configuration.bearerToken = (session && session.token);
+        var urlPath = "/v2/notification";
+        var queryParams = {
+            ids: ids
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "DELETE" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (response) {
+            return Promise.resolve(response != undefined);
+        });
+    };
     Client.prototype.deleteStorageObjects = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.deleteStorageObjects(request).then(function (response) {
