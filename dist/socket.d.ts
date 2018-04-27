@@ -6,13 +6,17 @@ export interface Channel {
     self: {};
 }
 export interface ChannelJoin {
-    target: string;
-    type: number;
-    persistence: boolean;
-    hidden: boolean;
+    channel_join: {
+        target: string;
+        type: number;
+        persistence: boolean;
+        hidden: boolean;
+    };
 }
 export interface ChannelLeave {
-    channel_id: string;
+    channel_leave: {
+        channel_id: string;
+    };
 }
 export interface ChannelMessage {
     channel_id: string;
@@ -35,17 +39,23 @@ export interface ChannelMessageAck {
     persistence: boolean;
 }
 export interface ChannelMessageSend {
-    channel_id: string;
-    content: object;
+    channel_message_send: {
+        channel_id: string;
+        content: object;
+    };
 }
 export interface ChannelMessageUpdate {
-    channel_id: string;
-    message_id: string;
-    content: object;
+    channel_message_update: {
+        channel_id: string;
+        message_id: string;
+        content: object;
+    };
 }
 export interface ChannelMessageRemove {
-    channel_id: string;
-    message_id: string;
+    channel_message_remove: {
+        channel_id: string;
+        message_id: string;
+    };
 }
 export interface ChannelPresenceEvent {
     channel_id: string;
@@ -150,5 +160,5 @@ export declare class DefaultSocket implements Socket {
     onmatchmakermatched(matchmakerMatched: MatchmakerMatched): void;
     onstreampresence(streamPresence: StreamPresenceEvent): void;
     onstreamdata(streamData: StreamData): void;
-    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc): Promise<{}>;
+    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc): Promise<{}>;
 }
