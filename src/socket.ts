@@ -32,15 +32,19 @@ export interface Channel {
 
 /** Join a realtime chat channel. */
 export interface ChannelJoin {
-  target: string,
-  type: number,
-  persistence: boolean,
-  hidden: boolean
+  channel_join: {
+    target: string,
+    type: number,
+    persistence: boolean,
+    hidden: boolean
+  }
 }
 
 /** Leave a realtime chat channel. */
 export interface ChannelLeave {
-  channel_id: string
+  channel_leave: {
+    channel_id: string
+  }
 }
 
 /** An incoming message on a realtime chat channel. */
@@ -69,21 +73,27 @@ export interface ChannelMessageAck {
 
 /** Send a message to a realtime chat channel. */
 export interface ChannelMessageSend {
-  channel_id: string,
-  content: object,
+  channel_message_send: {
+    channel_id: string,
+    content: object
+  }
 }
 
 /** Update a message previously sent to a realtime chat channel. */
 export interface ChannelMessageUpdate {
-  channel_id: string,
-  message_id: string,
-  content: object
+  channel_message_update: {
+    channel_id: string,
+    message_id: string,
+    content: object
+  }
 }
 
 /** Remove a message previously sent to a realtime chat channel. */
 export interface ChannelMessageRemove {
-  channel_id: string,
-  message_id: string
+  channel_message_remove: {
+    channel_id: string,
+    message_id: string
+  }
 }
 
 /** Presence update for a particular realtime chat channel. */
@@ -370,7 +380,7 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc) {
+  send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc) {
     var m = <any>message;
     return new Promise((resolve, reject) => {
       if (this.socket == undefined) {
