@@ -3116,7 +3116,6 @@ var Client = (function () {
                     create_time: m.create_time,
                     message_id: m.message_id,
                     persistent: m.persistent,
-                    reference_id: m.reference_id,
                     sender_id: m.sender_id,
                     update_time: m.update_time,
                     username: m.username,

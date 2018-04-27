@@ -39,7 +39,7 @@ describe('Channel Tests', () => {
 
   it('should join a channel', async () => {
     const customid = generateid();
-    const channelid = "room-test-js";
+    const channelid = generateid();
 
     const response = await page.evaluate((customid, channelid) => {
       const client = new nakamajs.Client();
@@ -69,7 +69,7 @@ describe('Channel Tests', () => {
 
   it('should join a room, then leave it', async () => {
     const customid = generateid();
-    const channelid = "room-test-js";
+    const channelid = generateid();
 
     const response = await page.evaluate((customid, channelid) => {
       const client = new nakamajs.Client();
@@ -97,7 +97,7 @@ describe('Channel Tests', () => {
 
   it('should join a room, then send message, receive message', async () => {
     const customid = generateid();
-    const channelid = "room-test-js";
+    const channelid = generateid();
     const payload = { "hello": "world" };
 
     const response = await page.evaluate((customid, channelid, payload) => {
@@ -145,7 +145,7 @@ describe('Channel Tests', () => {
 
   it('should join a room, then send message, update message, then list messages', async () => {
     const customid = generateid();
-    const channelid = "room-test-js";
+    const channelid = generateid();
     const payload = { "hello": "world" };
     const updatedPayload = { "hello": "world2" };
 
@@ -183,19 +183,54 @@ describe('Channel Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response.messages).not.toBeNull();
-    expect(response.messages.length).toBeGreaterThan(0);
+    expect(response.messages.length).toBe(1);
 
-    var foundUpdatedMessage = false;
     response.messages.forEach(message => {
-      if (message.code == 1) { //chat update
-        foundUpdatedMessage = true;
-        expect(message.content).toEqual(updatedPayload);
-        expect(message.code).toEqual(1);
-        expect(message.persistent).toBe(true);
-      }
+      expect(message.content).toEqual(updatedPayload);
+      expect(message.code).toEqual(0);
+      expect(message.persistent).toBe(true);
     })
+  });
 
-    expect(foundUpdatedMessage).toBe(true);
+  it('should join a room, then send message, remove message, then list messages', async () => {
+    const customid = generateid();
+    const channelid = generateid();
+    const payload = { "hello": "world" };
+
+    const response = await page.evaluate((customid, channelid, payload) => {
+
+      const client = new nakamajs.Client();
+      const socket = client.createSocket(false, false);
+
+      return client.authenticateCustom({ id: customid })
+        .then(session => {
+          return socket.connect(session);
+        }).then(session => {
+          return socket.send({ channel_join: {
+            type: 1, //1 = room, 2 = Direct Message 3 = Group
+            target: channelid,
+            persistence: true,
+            hidden: false
+          }}).then(channel => {
+            return socket.send({channel_message_send: {
+              channel_id: channel.channel.id,
+              content: payload
+            }})
+          }).then(ack => {
+            return socket.send({ channel_message_remove: {
+              channel_id: ack.channel_message_ack.channel_id,
+              message_id: ack.channel_message_ack.message_id
+            }})
+          }).then(ack => {
+            return client.listChannelMessages(session, ack.channel_message_ack.channel_id, 10)
+          })
+        });
+
+    }, customid, channelid, payload);
+
+    expect(response).not.toBeNull();
+    expect(response.messages).not.toBeNull();
+    expect(response.messages.length).toBe(0);
   });
 
 }, TIMEOUT);

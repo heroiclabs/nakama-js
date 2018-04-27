@@ -21,7 +21,6 @@ export interface ChannelMessage {
     sender_id: string;
     username: string;
     content: object;
-    reference_id: string;
     create_time: string;
     update_time: string;
     persistent: boolean;
@@ -29,6 +28,7 @@ export interface ChannelMessage {
 export interface ChannelMessageAck {
     channel_id: string;
     message_id: string;
+    code: number;
     username: string;
     create_time: string;
     update_time: string;
@@ -42,6 +42,10 @@ export interface ChannelMessageUpdate {
     channel_id: string;
     message_id: string;
     content: object;
+}
+export interface ChannelMessageRemove {
+    channel_id: string;
+    message_id: string;
 }
 export interface ChannelPresenceEvent {
     channel_id: string;
