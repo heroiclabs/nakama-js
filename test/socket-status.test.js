@@ -51,19 +51,22 @@ describe('Status Tests', () => {
     }, customid);
 
     expect(response).not.toBeNull();
-    expect(response.presences.length).toEqual(1);
-    expect(response.presences[0].status).toEqual("hello-world");
   });
 
   it('should follow user2, and get status update when coming online', async () => {
     const customid1 = generateid();
     const customid2 = generateid();
 
-    const response = await page.evaluate(await (customid1, customid2) => {
+    const response = await page.evaluate(async (customid1, customid2) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
       const socket2 = client2.createSocket(false, false);
+
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket1.connect(session1);
+      await socket1.send({status_follow: {user_ids: [session2.userId]}})
 
       var promise1 = new Promise((resolve, reject) => {
         socket1.onstatuspresence = (statusPresence) => {
@@ -71,31 +74,25 @@ describe('Status Tests', () => {
         }
       });
 
-      const session1 = await client1.authenticateCustom({ id: customid1 });
-      const session2 = await client2.authenticateCustom({ id: customid2 });
-      await socket1.connect(session1);
-      await socket1.send({status_follow: {user_ids: [session2.userId]}})
-
-      const promise1 = socket2.connect(session2).then((session) => {
+      const promise2 = socket2.connect(session2).then((session) => {
         return new Promise((resolve, reject) => {
           setTimeout(reject, 5000, "did not receive match data - timed out.")
         });
-      })
+      });
 
       return Promise.race([promise1, promise2]);
     }, customid1, customid2);
 
     expect(response).not.toBeNull();
-    expect(response.status_presence_event).not.toBeNull();
-    expect(response.status_presence_event.joins.length).toEqual(1);
-    expect(response.status_presence_event.joins[0].user_id).toEqual(session2.userId);
+    expect(response).not.toBeNull();
+    expect(response.joins.length).toEqual(1);
   });
 
   it('should follow user2, and unfollow user2', async () => {
     const customid1 = generateid();
     const customid2 = generateid();
 
-    const response = await page.evaluate(await (customid1, customid2) => {
+    const response = await page.evaluate(async (customid1, customid2) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);

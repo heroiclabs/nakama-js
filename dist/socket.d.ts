@@ -24,7 +24,7 @@ export interface ChannelMessage {
     code: number;
     sender_id: string;
     username: string;
-    content: object;
+    content: {};
     create_time: string;
     update_time: string;
     persistent: boolean;
@@ -41,14 +41,14 @@ export interface ChannelMessageAck {
 export interface ChannelMessageSend {
     channel_message_send: {
         channel_id: string;
-        content: object;
+        content: {};
     };
 }
 export interface ChannelMessageUpdate {
     channel_message_update: {
         channel_id: string;
         message_id: string;
-        content: object;
+        content: {};
     };
 }
 export interface ChannelMessageRemove {
@@ -123,14 +123,31 @@ export interface MatchData {
 export interface Rpc {
     rpc: ApiRpc;
 }
+export interface Status {
+    presences: object;
+}
+export interface StatusFollow {
+    user_ids: Array<string>;
+}
+export interface StatusPresenceEvent {
+    joins: [{}];
+    leaves: [{}];
+}
+export interface StatusUnfollow {
+    user_ids: Array<string>;
+}
+export interface StatusUpdate {
+    status: string;
+}
 export interface Socket {
-    connect(session: Session): Promise<Session>;
+    connect(session: Session, createStatus: boolean): Promise<Session>;
     disconnect(fireDisconnectEvent: boolean): void;
     ondisconnect: (evt: Event) => void;
     onnotification: (notification: ApiNotification) => void;
     onmatchdata: (matchData: MatchData) => void;
     onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
     onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
+    onstatuspresence: (statusPresence: StatusPresenceEvent) => void;
     onstreampresence: (streamPresence: StreamPresenceEvent) => void;
     onstreamdata: (streamData: StreamData) => void;
     onchannelmessage: (channelMessage: ChannelMessage) => void;
@@ -149,7 +166,7 @@ export declare class DefaultSocket implements Socket {
     private readonly cIds;
     constructor(host: string, port: string, useSSL?: boolean, verbose?: boolean);
     generatecid(): string;
-    connect(session: Session): Promise<Session>;
+    connect(session: Session, createStatus?: boolean): Promise<Session>;
     disconnect(fireDisconnectEvent?: boolean): void;
     onchannelmessage(channelMessage: ChannelMessage): void;
     onchannelpresence(channelPresence: ChannelPresenceEvent): void;
@@ -158,7 +175,8 @@ export declare class DefaultSocket implements Socket {
     onmatchdata(matchData: MatchData): void;
     onmatchpresence(matchPresence: MatchPresenceEvent): void;
     onmatchmakermatched(matchmakerMatched: MatchmakerMatched): void;
+    onstatuspresence(statusPresence: StatusPresenceEvent): void;
     onstreampresence(streamPresence: StreamPresenceEvent): void;
     onstreamdata(streamData: StreamData): void;
-    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc): Promise<{}>;
+    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<{}>;
 }

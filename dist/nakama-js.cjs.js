@@ -2800,13 +2800,14 @@ var DefaultSocket = (function () {
     DefaultSocket.prototype.generatecid = function () {
         return __spread(Array(30)).map(function () { return Math.random().toString(36)[3]; }).join('');
     };
-    DefaultSocket.prototype.connect = function (session) {
+    DefaultSocket.prototype.connect = function (session, createStatus) {
         var _this = this;
+        if (createStatus === void 0) { createStatus = true; }
         if (this.socket != undefined) {
             return Promise.resolve(session);
         }
         var scheme = (this.useSSL) ? "wss://" : "ws://";
-        var url = "" + scheme + this.host + ":" + this.port + "/ws?lang=en&token=" + encodeURIComponent(session.token);
+        var url = "" + scheme + this.host + ":" + this.port + "/ws?lang=en&status=" + encodeURIComponent(createStatus.toString()) + "&token=" + encodeURIComponent(session.token);
         var socket = new WebSocket(url);
         this.socket = socket;
         socket.onclose = function (evt) {
@@ -2832,6 +2833,9 @@ var DefaultSocket = (function () {
                 }
                 else if (message.matchmaker_matched) {
                     _this.onmatchmakermatched(message.matchmaker_matched);
+                }
+                else if (message.status_presence_event) {
+                    _this.onstatuspresence(message.status_presence_event);
                 }
                 else if (message.stream_presence_event) {
                     _this.onstreampresence(message.stream_presence_event);
@@ -2925,6 +2929,11 @@ var DefaultSocket = (function () {
     DefaultSocket.prototype.onmatchmakermatched = function (matchmakerMatched) {
         if (this.verbose && window && window.console) {
             console.log(matchmakerMatched);
+        }
+    };
+    DefaultSocket.prototype.onstatuspresence = function (statusPresence) {
+        if (this.verbose && window && window.console) {
+            console.log(statusPresence);
         }
     };
     DefaultSocket.prototype.onstreampresence = function (streamPresence) {

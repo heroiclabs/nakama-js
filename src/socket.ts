@@ -228,6 +228,8 @@ export interface Socket {
   onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
   // Receive matchmaking results.
   onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
+  // Receive status presence updates.
+  onstatuspresence: (statusPresence: StatusPresenceEvent) => void;
   // Receive stream presence updates.
   onstreampresence: (streamPresence: StreamPresenceEvent) => void;
   // Receive stream data.
@@ -236,8 +238,6 @@ export interface Socket {
   onchannelmessage: (channelMessage: ChannelMessage) => void;
   // Receive channel presence updates.
   onchannelpresence: (channelPresence: ChannelPresenceEvent) => void;
-  // Receive status presence updates.
-  onstatuspresence: (statusPresence: StatusPresenceEvent) => void;
 }
 
 /** Reports an error received from a socket message. */
@@ -298,6 +298,8 @@ export class DefaultSocket implements Socket {
           this.onmatchpresence(<MatchPresenceEvent>message.match_presence_event);
         } else if (message.matchmaker_matched) {
           this.onmatchmakermatched(<MatchmakerMatched>message.matchmaker_matched);
+        } else if (message.status_presence_event) {
+          this.onstatuspresence(<StatusPresenceEvent>message.status_presence_event);
         } else if (message.stream_presence_event) {
           this.onstreampresence(<StreamPresenceEvent>message.stream_presence_event);
         } else if (message.stream_data) {
@@ -307,8 +309,6 @@ export class DefaultSocket implements Socket {
           this.onchannelmessage(<ChannelMessage>message.channel_message);
         } else if (message.channel_presence_event) {
           this.onchannelpresence(<ChannelPresenceEvent>message.channel_presence_event);
-        } else if (message.status_presence_event) {
-          this.onstatuspresence(<StatusPresenceEvent>message.status_presence_event);
         } else {
           if (this.verbose && window && window.console) {
             console.log("Unrecognized message received: %o", message);
@@ -398,6 +398,12 @@ export class DefaultSocket implements Socket {
     }
   }
 
+  onstatuspresence(statusPresence: StatusPresenceEvent) {
+    if (this.verbose && window && window.console) {
+      console.log(statusPresence);
+    }
+  }
+
   onstreampresence(streamPresence: StreamPresenceEvent) {
     if (this.verbose && window && window.console) {
       console.log(streamPresence);
@@ -410,13 +416,7 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  onstatuspresence(statusPresence: StatusPresenceEvent) {
-    if (this.verbose && window && window.console) {
-      console.log(statusPresence);
-    }
-  }
-
-  send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow| StatusUpdate) {
+  send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate) {
     var m = <any>message;
     return new Promise((resolve, reject) => {
       if (this.socket == undefined) {
