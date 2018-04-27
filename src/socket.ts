@@ -54,7 +54,7 @@ export interface ChannelMessage {
   code: number,
   sender_id: string,
   username: string,
-  content: object,
+  content: {},
   create_time: string,
   update_time: string,
   persistent: boolean
@@ -75,7 +75,7 @@ export interface ChannelMessageAck {
 export interface ChannelMessageSend {
   channel_message_send: {
     channel_id: string,
-    content: object
+    content: {}
   }
 }
 
@@ -84,7 +84,7 @@ export interface ChannelMessageUpdate {
   channel_message_update: {
     channel_id: string,
     message_id: string,
-    content: object
+    content: {}
   }
 }
 
@@ -186,10 +186,36 @@ export interface Rpc {
   rpc: ApiRpc
 }
 
+/** A snapshot of statuses for some set of users. */
+export interface Status {
+  presences: object
+}
+
+/** Start receiving status updates for some set of users. */
+export interface StatusFollow {
+  user_ids: Array<string>
+}
+
+/** A batch of status updates for a given user. */
+export interface StatusPresenceEvent {
+  joins: [{}],
+  leaves: [{}]
+}
+
+/** Stop receiving status updates for some set of users. */
+export interface StatusUnfollow {
+  user_ids: Array<string>
+}
+
+/** Set the user's own status. */
+export interface StatusUpdate {
+  status: string
+}
+
 /** A socket connection to Nakama server. */
 export interface Socket {
   // Connect to the server.
-  connect(session: Session): Promise<Session>;
+  connect(session: Session, createStatus: boolean): Promise<Session>;
   // Disconnect from the server.
   disconnect(fireDisconnectEvent: boolean): void;
   // Handle disconnect events received from the socket.
@@ -202,6 +228,8 @@ export interface Socket {
   onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
   // Receive matchmaking results.
   onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
+  // Receive status presence updates.
+  onstatuspresence: (statusPresence: StatusPresenceEvent) => void;
   // Receive stream presence updates.
   onstreampresence: (streamPresence: StreamPresenceEvent) => void;
   // Receive stream data.
@@ -237,13 +265,13 @@ export class DefaultSocket implements Socket {
     return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
   }
 
-  connect(session: Session): Promise<Session> {
+  connect(session: Session, createStatus: boolean = true): Promise<Session> {
     if (this.socket != undefined) {
       return Promise.resolve(session);
     }
 
     const scheme = (this.useSSL) ? "wss://" : "ws://";
-    const url = `${scheme}${this.host}:${this.port}/ws?lang=en&token=${encodeURIComponent(session.token)}`;
+    const url = `${scheme}${this.host}:${this.port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(session.token)}`;
     const socket = new WebSocket(url);
     this.socket = socket;
 
@@ -270,6 +298,8 @@ export class DefaultSocket implements Socket {
           this.onmatchpresence(<MatchPresenceEvent>message.match_presence_event);
         } else if (message.matchmaker_matched) {
           this.onmatchmakermatched(<MatchmakerMatched>message.matchmaker_matched);
+        } else if (message.status_presence_event) {
+          this.onstatuspresence(<StatusPresenceEvent>message.status_presence_event);
         } else if (message.stream_presence_event) {
           this.onstreampresence(<StreamPresenceEvent>message.stream_presence_event);
         } else if (message.stream_data) {
@@ -368,6 +398,12 @@ export class DefaultSocket implements Socket {
     }
   }
 
+  onstatuspresence(statusPresence: StatusPresenceEvent) {
+    if (this.verbose && window && window.console) {
+      console.log(statusPresence);
+    }
+  }
+
   onstreampresence(streamPresence: StreamPresenceEvent) {
     if (this.verbose && window && window.console) {
       console.log(streamPresence);
@@ -380,7 +416,7 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc) {
+  send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate) {
     var m = <any>message;
     return new Promise((resolve, reject) => {
       if (this.socket == undefined) {
