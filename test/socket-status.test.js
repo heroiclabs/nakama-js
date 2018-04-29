@@ -66,7 +66,7 @@ describe('Status Tests', () => {
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket1.connect(session1);
-      await socket1.send({status_follow: {user_ids: [session2.userId]}})
+      await socket1.send({status_follow: {user_ids: [session2.user_id]}})
 
       var promise1 = new Promise((resolve, reject) => {
         socket1.onstatuspresence = (statusPresence) => {
@@ -100,8 +100,8 @@ describe('Status Tests', () => {
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket1.connect(session1);
-      await socket1.send({status_follow: {user_ids: [session2.userId]}})
-      return socket1.send({status_unfollow: {user_ids: [session2.userId]}})
+      await socket1.send({status_follow: {user_ids: [session2.user_id]}})
+      return socket1.send({status_unfollow: {user_ids: [session2.user_id]}})
     }, customid1, customid2);
 
     expect(response).not.toBeNull();

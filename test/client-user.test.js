@@ -120,7 +120,7 @@ describe('User Tests', () => {
         .then(session1 => {
           return client.authenticateCustom({ id: customid2 })
             .then(session2 => {
-              return client.getUsers(session2, [session1.userId], [session2.username], []);
+              return client.getUsers(session2, [session1.user_id], [session2.username], []);
             });
         });
     }, customid, customid2);

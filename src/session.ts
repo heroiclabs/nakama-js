@@ -17,14 +17,14 @@
 export class Session {
   private constructor(
     readonly token: string,
-    readonly createdAt: number,
-    readonly expiresAt: number,
+    readonly created_at: number,
+    readonly expires_at: number,
     readonly username: string,
-    readonly userId: string) {
+    readonly user_id: string) {
   }
 
   isexpired(currenttime: number): boolean {
-    return (this.expiresAt - currenttime) < 0;
+    return (this.expires_at - currenttime) < 0;
   }
 
   static restore(jwt: string): Session {
