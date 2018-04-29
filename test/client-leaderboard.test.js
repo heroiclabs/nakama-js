@@ -129,38 +129,6 @@ describe('Leaderboard Tests', () => {
     expect(result.metadata.key).toBe("value");
   });
 
-  it('should create leaderboard with Decr operator and write record', async () => {
-    const customid = generateid();
-    const rpcid = "clientrpc.create_leaderboard"
-    const operator = "decr"
-    const score = {
-      score: 10,
-      subscore: 9,
-      metadata: {"key": "value"}
-    };
-
-    const result = await page.evaluate((customid, rpcid, operator, score) => {
-      const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.rpc(session, rpcid, {"operator": operator}).then(result => {
-            var leaderboardId = result.payload.leaderboard_id;
-            return client.writeLeaderboardRecord(session, leaderboardId, score).then(record => {
-              score.score = 1;
-              score.subscore = 8;
-              return client.writeLeaderboardRecord(session, leaderboardId, score)
-            })
-          });
-        })
-    }, customid, rpcid, operator, score);
-
-    expect(result).not.toBeNull();
-    expect(result.score).toBe(9);
-    expect(result.subscore).toBe(1);
-    expect(result.metadata).not.toBeNull();
-    expect(result.metadata.key).toBe("value");
-  });
-
   it('should create leaderboard with Set operator and then list leaderboard records', async () => {
     const customid = generateid();
     const rpcid = "clientrpc.create_leaderboard"
