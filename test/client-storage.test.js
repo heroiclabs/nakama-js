@@ -58,7 +58,7 @@ describe('Link / Unlink Tests', () => {
               object_ids: [{
                 "collection": collection,
                 "key": key,
-                "user_id": session.userId
+                "user_id": session.user_id
               }]
             })
           });
@@ -104,7 +104,7 @@ describe('Link / Unlink Tests', () => {
               object_ids: [{
                 "collection": collection,
                 "key": key,
-                "user_id": session.userId
+                "user_id": session.user_id
               }]
             })
           });
@@ -134,7 +134,7 @@ describe('Link / Unlink Tests', () => {
               "permission_write": 1
             }
           ]).then(bool => {
-            return client.listStorageObjects(session, collection, session.userId)
+            return client.listStorageObjects(session, collection, session.user_id)
           });
         })
     }, customid, collection, key, value);

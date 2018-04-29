@@ -45,10 +45,10 @@ describe('Session Tests', () => {
       const expiredJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTY5MTA5NzMsInVpZCI6ImY0MTU4ZjJiLTgwZjMtNDkyNi05NDZiLWE4Y2NmYzE2NTQ5MCIsInVzbiI6InZUR2RHSHl4dmwifQ.gzLaMQPaj5wEKoskOSALIeJLOYXEVFoPx3KY0Jm1EVU";
       return nakamajs.Session.restore(expiredJwt);
     });
-    
+
     expect(session.username).not.toBeNull();
     expect(session.username).toBe("vTGdGHyxvl");
-    expect(session.userId).not.toBeNull();
-    expect(session.userId).toBe("f4158f2b-80f3-4926-946b-a8ccfc165490");
+    expect(session.user_id).not.toBeNull();
+    expect(session.user_id).toBe("f4158f2b-80f3-4926-946b-a8ccfc165490");
   });
 }, TIMEOUT);
