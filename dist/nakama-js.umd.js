@@ -2766,15 +2766,15 @@ var NakamaApi = function (configuration) {
 };
 
 var Session = (function () {
-    function Session(token, createdAt, expiresAt, username, userId) {
+    function Session(token, created_at, expires_at, username, user_id) {
         this.token = token;
-        this.createdAt = createdAt;
-        this.expiresAt = expiresAt;
+        this.created_at = created_at;
+        this.expires_at = expires_at;
         this.username = username;
-        this.userId = userId;
+        this.user_id = user_id;
     }
     Session.prototype.isexpired = function (currenttime) {
-        return (this.expiresAt - currenttime) < 0;
+        return (this.expires_at - currenttime) < 0;
     };
     Session.restore = function (jwt) {
         var createdAt = Math.floor(new Date().getTime() / 1000);

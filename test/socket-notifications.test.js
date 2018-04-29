@@ -44,7 +44,7 @@ describe('Notifications Tests', () => {
       const client = new nakamajs.Client();
       return client.authenticateCustom({ id: customid })
         .then(session => {
-          return client.rpc(session, "clientrpc.send_notification", {"user_id": session.userId})
+          return client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id})
             .then(result => {
               return client.listNotifications(session, "1", "");
             });
@@ -61,7 +61,7 @@ describe('Notifications Tests', () => {
     const response = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
       const session = await client.authenticateCustom({ id: customid });
-      const rpcSuccess = await client.rpc(session, "clientrpc.send_notification", {"user_id": session.userId});
+      const rpcSuccess = await client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id});
       const notificationsList = await client.listNotifications(session, "1", "");
 
       var notificationsDelete = []
