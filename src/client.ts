@@ -27,6 +27,7 @@ import {
   ApiLeaderboardRecord,
   ApiLeaderboardRecordList,
   ApiMatchList,
+  ApiNotificationList,
   ApiSession,
   ApiReadStorageObjectsRequest,
   ApiRpc,
@@ -189,6 +190,32 @@ export interface ChannelMessageList {
   next_cursor?: string;
   // The cursor to send when retrieving the previous page, if any.
   prev_cursor?: string;
+}
+
+/** A notification in the server. */
+export interface Notification {
+  // Category code for this notification.
+  code?: number;
+  // Content of the notification in JSON.
+  content?: {};
+  // The UNIX time when the notification was created.
+  create_time?: string;
+  // ID of the Notification.
+  id?: string;
+  // True if this notification was persisted to the database.
+  persistent?: boolean;
+  // ID of the sender, if a user. Otherwise 'null'.
+  sender_id?: string;
+  // Subject of the notification.
+  subject?: string;
+}
+
+/** A collection of zero or more notifications. */
+export interface NotificationList {
+  // Use this cursor to paginate notifications. Cache this to catch up to new notifications.
+  cacheable_cursor?: string;
+  // Collection of notifications.
+  notifications?: Array<Notification>;
 }
 
 /** A client for Nakama server. */
@@ -501,9 +528,31 @@ export class Client {
   }
 
   /** Fetch list of notifications. */
-  listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<ApiUsers> {
+  listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<NotificationList> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.listNotifications(limit, cacheableCursor);
+    return this.apiClient.listNotifications(limit, cacheableCursor).then((response: ApiNotificationList) => {
+      var result: NotificationList = {
+        cacheable_cursor: response.cacheable_cursor,
+        notifications: [],
+      };
+
+      if (response.notifications == null) {
+        return Promise.resolve(result);
+      }
+
+      response.notifications!.forEach(n => {
+        result.notifications!.push({
+          code: n.code,
+          create_time: n.create_time,
+          id: n.id,
+          persistent: n.persistent,
+          sender_id: n.sender_id,
+          subject: n.subject,
+          content: n.content ? JSON.parse(n.content) : undefined
+        })
+      });
+      return Promise.resolve(result);
+    });
   }
 
   /** List storage objects. */

@@ -2817,7 +2817,18 @@ var DefaultSocket = (function () {
             }
             if (message.cid == undefined) {
                 if (message.notifications) {
-                    message.notifications.notifications.forEach(function (n) { return _this.onnotification(n); });
+                    message.notifications.notifications.forEach(function (n) {
+                        var notification = {
+                            code: n.code,
+                            create_time: n.create_time,
+                            id: n.id,
+                            persistent: n.persistent,
+                            sender_id: n.sender_id,
+                            subject: n.subject,
+                            content: n.content ? JSON.parse(n.content) : undefined
+                        };
+                        _this.onnotification(notification);
+                    });
                 }
                 else if (message.match_data) {
                     message.match_data.data = JSON.parse(atob(message.match_data.data));
@@ -3218,7 +3229,27 @@ var Client = (function () {
     };
     Client.prototype.listNotifications = function (session, limit, cacheableCursor) {
         this.configuration.bearerToken = (session && session.token);
-        return this.apiClient.listNotifications(limit, cacheableCursor);
+        return this.apiClient.listNotifications(limit, cacheableCursor).then(function (response) {
+            var result = {
+                cacheable_cursor: response.cacheable_cursor,
+                notifications: [],
+            };
+            if (response.notifications == null) {
+                return Promise.resolve(result);
+            }
+            response.notifications.forEach(function (n) {
+                result.notifications.push({
+                    code: n.code,
+                    create_time: n.create_time,
+                    id: n.id,
+                    persistent: n.persistent,
+                    sender_id: n.sender_id,
+                    subject: n.subject,
+                    content: n.content ? JSON.parse(n.content) : undefined
+                });
+            });
+            return Promise.resolve(result);
+        });
     };
     Client.prototype.listStorageObjects = function (session, collection, userId, limit, cursor) {
         this.configuration.bearerToken = (session && session.token);

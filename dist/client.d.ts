@@ -72,6 +72,19 @@ export interface ChannelMessageList {
     next_cursor?: string;
     prev_cursor?: string;
 }
+export interface Notification {
+    code?: number;
+    content?: {};
+    create_time?: string;
+    id?: string;
+    persistent?: boolean;
+    sender_id?: string;
+    subject?: string;
+}
+export interface NotificationList {
+    cacheable_cursor?: string;
+    notifications?: Array<Notification>;
+}
 export declare class Client {
     readonly serverkey: string;
     readonly host: string;
@@ -102,7 +115,7 @@ export declare class Client {
     listFriends(session: Session): Promise<ApiFriends>;
     listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<LeaderboardRecordList>;
     listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList>;
-    listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<ApiUsers>;
+    listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<NotificationList>;
     listStorageObjects(session: Session, collection: string, userId?: string, limit?: number, cursor?: string): Promise<StorageObjectList>;
     readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects>;
     rpc(session: Session, id: string, input: object): Promise<RpcResponse>;
