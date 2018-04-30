@@ -1,5 +1,6 @@
-import { ApiNotification, ApiRpc } from "./api.gen";
+import { ApiRpc } from "./api.gen";
 import { Session } from "./session";
+import { Notification } from "./client";
 export interface Channel {
     id: string;
     presences: [{}];
@@ -143,7 +144,7 @@ export interface Socket {
     connect(session: Session, createStatus: boolean): Promise<Session>;
     disconnect(fireDisconnectEvent: boolean): void;
     ondisconnect: (evt: Event) => void;
-    onnotification: (notification: ApiNotification) => void;
+    onnotification: (notification: Notification) => void;
     onmatchdata: (matchData: MatchData) => void;
     onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
     onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
@@ -171,7 +172,7 @@ export declare class DefaultSocket implements Socket {
     onchannelmessage(channelMessage: ChannelMessage): void;
     onchannelpresence(channelPresence: ChannelPresenceEvent): void;
     ondisconnect(evt: Event): void;
-    onnotification(notification: ApiNotification): void;
+    onnotification(notification: Notification): void;
     onmatchdata(matchData: MatchData): void;
     onmatchpresence(matchPresence: MatchPresenceEvent): void;
     onmatchmakermatched(matchmakerMatched: MatchmakerMatched): void;

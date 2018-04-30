@@ -16,6 +16,7 @@
 
 import { ApiNotification, ApiRpc } from "./api.gen";
 import { Session } from "./session";
+import { Notification } from "./client";
 
 /** Stores function references for resolve/reject with a DOM Promise. */
 interface PromiseExecutor {
@@ -221,7 +222,7 @@ export interface Socket {
   // Handle disconnect events received from the socket.
   ondisconnect: (evt: Event) => void;
   // Receive notifications from the socket.
-  onnotification: (notification: ApiNotification) => void;
+  onnotification: (notification: Notification) => void;
   // Receive match data updates.
   onmatchdata: (matchData: MatchData) => void;
   // Receive match presence updates.
@@ -289,7 +290,18 @@ export class DefaultSocket implements Socket {
       // Inbound message from server.
       if (message.cid == undefined) {
         if (message.notifications) {
-          message.notifications.notifications.forEach((n: any) => this.onnotification(n));
+          message.notifications.notifications.forEach((n: ApiNotification) => {
+            var notification: Notification = {
+              code: n.code,
+              create_time: n.create_time,
+              id: n.id,
+              persistent: n.persistent,
+              sender_id: n.sender_id,
+              subject: n.subject,
+              content: n.content ? JSON.parse(n.content) : undefined
+            };
+            this.onnotification(notification);
+          });
         } else if (message.match_data) {
           message.match_data.data = JSON.parse(atob(message.match_data.data));
           message.match_data.op_code = parseInt(message.match_data.op_code);
@@ -374,7 +386,7 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  onnotification(notification: ApiNotification) {
+  onnotification(notification: Notification) {
     if (this.verbose && window && window.console) {
       console.log(notification);
     }
