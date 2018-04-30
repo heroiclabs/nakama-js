@@ -53,6 +53,9 @@ describe('Notifications Tests', () => {
 
     expect(notifications).not.toBeNull();
     expect(notifications.notifications[0].id).not.toBeNull();
+    expect(notifications.notifications[0].content).toEqual({reward_coins: 1000});
+    expect(notifications.notifications[0].subject).toEqual("You've unlocked level 100!");
+    expect(notifications.notifications[0].code).toEqual(1);
   });
 
   it('should rpc and delete notification', async () => {
