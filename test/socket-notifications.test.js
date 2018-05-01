@@ -65,18 +65,20 @@ describe('Notifications Tests', () => {
       const client = new nakamajs.Client();
       const session = await client.authenticateCustom({ id: customid });
       const rpcSuccess = await client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id});
-      const notificationsList = await client.listNotifications(session, "1", "");
+      const notificationsList = await client.listNotifications(session, "100", "");
 
       var notificationsDelete = []
       notificationsList.notifications.forEach((notification) => {
         notificationsDelete.push(notification.id);
       });
 
-      return client.deleteNotifications(session, notificationsDelete);
+      await client.deleteNotifications(session, notificationsDelete);
+      return client.listNotifications(session, "1", "");
     }, customid);
 
     expect(response).not.toBeNull();
-    expect(response).toBe(true);
+    expect(response.notifications).not.toBeNull();
+    expect(response.notifications.length).toEqual(0);
   });
 
 }, TIMEOUT);
