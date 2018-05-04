@@ -22,8 +22,11 @@ import {
   ApiAccountFacebook,
   ApiAccountGoogle,
   ApiChannelMessageList,
+  ApiCreateGroupRequest,
   ApiDeleteStorageObjectsRequest,
   ApiFriends,
+  ApiGroup,
+  ApiGroupUserList,
   ApiLeaderboardRecord,
   ApiLeaderboardRecordList,
   ApiMatchList,
@@ -35,7 +38,9 @@ import {
   ApiStorageObjectList,
   ApiStorageObjects,
   ApiUpdateAccountRequest,
+  ApiUpdateGroupRequest,
   ApiUsers,
+  ApiUserGroupList,
   ApiWriteStorageObjectsRequest,
   ConfigurationParameters,
   NakamaApi,
@@ -192,6 +197,104 @@ export interface ChannelMessageList {
   prev_cursor?: string;
 }
 
+/** A user in the system. */
+export interface User {
+  // A URL for an avatar image.
+  avatar_url?: string;
+  // The UNIX time when the user was created.
+  create_time?: string;
+  // The display name of the user.
+  display_name?: string;
+  // Number of related edges to this user.
+  edge_count?: number;
+  // The Facebook id in the user's account.
+  facebook_id?: string;
+  // The Apple Game Center in of the user's account.
+  gamecenter_id?: string;
+  // The Google id in the user's account.
+  google_id?: string;
+  // The id of the user's account.
+  id?: string;
+  // The language expected to be a tag which follows the BCP-47 spec.
+  lang_tag?: string;
+  // The location set by the user.
+  location?: string;
+  // Additional information stored as a JSON object.
+  metadata?: {};
+  // Indicates whether the user is currently online.
+  online?: boolean;
+  // The Steam id in the user's account.
+  steam_id?: string;
+  // The timezone set by the user.
+  timezone?: string;
+  // The UNIX time when the user was last updated.
+  update_time?: string;
+  // The username of the user's account.
+  username?: string;
+}
+
+/** A collection of zero or more users. */
+export interface Users {
+  // The User objects.
+  users?: Array<User>;
+}
+
+/** A user-role pair representing the user's role in a group. */
+export interface GroupUser {
+  // The user.
+  user?: User;
+  // Their role within the group.
+  state?: number;
+}
+
+/** A list of users belonging to a group along with their role in it. */
+export interface GroupUserList {
+  // The user-role pairs.
+  group_users?: Array<GroupUser>;
+}
+
+/** A group in the server. */
+export interface Group {
+  // A URL for an avatar image.
+  avatar_url?: string;
+  // The UNIX time when the group was created.
+  create_time?: string;
+  // The id of the user who created the group.
+  creator_id?: string;
+  // A description for the group.
+  description?: string;
+  // The current count of all members in the group.
+  edge_count?: number;
+  // The id of a group.
+  id?: string;
+  // The language expected to be a tag which follows the BCP-47 spec.
+  lang_tag?: string;
+  // The maximum number of members allowed.
+  max_count?: number;
+  // Additional information stored as a JSON object.
+  metadata?: {};
+  // The unique name of the group.
+  name?: string;
+  // Anyone can join open groups, otherwise only admins can accept members.
+  open?: boolean;
+  // The UNIX time when the group was last updated.
+  update_time?: string;
+}
+
+/** A group-role pair representing the user's groups and their role in each. */
+export interface UserGroup {
+  // The group.
+  group?: Group;
+  // The user's role within the group.
+  state?: number;
+}
+
+/** A list of groups belonging to a user along with their role in it. */
+export interface UserGroupList {
+  // The group-role pairs.
+  user_groups?: Array<UserGroup>;
+}
+
 /** A notification in the server. */
 export interface Notification {
   // Category code for this notification.
@@ -241,6 +344,14 @@ export class Client {
       timeoutMs: timeout,
     };
     this.apiClient = NakamaApi(this.configuration);
+  }
+
+  /** Add users to a group, or accept their join requests. */
+  addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.addGroupUsers(groupId, { user_ids: ids }).then((response: ProtobufEmpty) => {
+      return response !== undefined;
+    });
   }
 
   /** Add friends by ID or username to a user's account. */
@@ -294,6 +405,27 @@ export class Client {
   //   });
   // }
 
+  /** Create a new group with the current user as the creator and superadmin. */
+  createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.createGroup(request).then((response: ApiGroup) => {
+      return Promise.resolve({
+        avatar_url: response.avatar_url,
+        create_time: response.create_time,
+        creator_id: response.creator_id,
+        description: response.description,
+        edge_count: response.edge_count,
+        id: response.id,
+        lang_tag: response.lang_tag,
+        max_count: response.max_count,
+        metadata: response.metadata ? JSON.parse(response.metadata) : null,
+        name: response.name,
+        open: response.open,
+        update_time: response.update_time
+      });
+    });
+  }
+
   /** A socket created with the client's configuration. */
   createSocket(useSSL = false, verbose: boolean = false): Socket {
     return new DefaultSocket(this.host, this.port, useSSL, verbose);
@@ -307,14 +439,15 @@ export class Client {
   //   });
   // }
 
-  /** Delete one or more notifications */
-  // deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean> {
-  //   this.configuration.bearerToken = (session && session.token);
-  //   return this.apiClient.deleteNotifications(ids).then((response: ProtobufEmpty) => {
-  //     return Promise.resolve(response != undefined);
-  //   });
-  // }
+  /** Delete a group the user is part of and has permissions to delete. */
+  deleteGroup(session: Session, groupId: string): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.deleteGroup(groupId).then((response: ProtobufEmpty) => {
+      return response !== undefined;
+    });
+  }
 
+  /** Delete one or more notifications */
   deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
 
@@ -390,9 +523,63 @@ export class Client {
   }
 
   /** Fetch zero or more users by ID and/or username. */
-  getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<ApiUsers> {
+  getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<Users> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.getUsers(ids, usernames, facebookIds);
+    return this.apiClient.getUsers(ids, usernames, facebookIds).then((response: ApiUsers) => {
+      var result: Users = {
+        users: []
+      };
+
+      if (response.users == null) {
+        return Promise.resolve(result);
+      }
+
+      response.users!.forEach(u => {
+        result.users!.push({
+          avatar_url: u.avatar_url,
+          create_time: u.create_time,
+          display_name: u.display_name,
+          edge_count: u.edge_count,
+          facebook_id: u.facebook_id,
+          gamecenter_id: u.gamecenter_id,
+          google_id: u.google_id,
+          id: u.id,
+          lang_tag: u.lang_tag,
+          location: u.location,
+          online: u.online,
+          steam_id: u.steam_id,
+          timezone: u.timezone,
+          update_time: u.update_time,
+          username: u.username,
+          metadata: u.metadata ? JSON.parse(u.metadata) : null
+        })
+      });
+      return Promise.resolve(result);
+    });
+  }
+
+  /** Join a group that's open, or send a request to join a group that is closed. */
+  joinGroup(session: Session, groupId: string): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.joinGroup(groupId, {}).then((response: ProtobufEmpty) => {
+      return response !== undefined;
+    });
+  }
+
+  /** Kick users from a group, or decline their join requests. */
+  kickGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.kickGroupUsers(groupId, { user_ids: ids }).then((response: ProtobufEmpty) => {
+      return response !== undefined;
+    });
+  }
+
+  /** Leave a group the user is part of. */
+  leaveGroup(session: Session, groupId: string): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.leaveGroup(groupId, {}).then((response: ProtobufEmpty) => {
+      return response !== undefined;
+    });
   }
 
   /** List a channel's message history. */
@@ -420,6 +607,80 @@ export class Client {
           update_time: m.update_time,
           username: m.username,
           content: m.content ? JSON.parse(m.content) : null
+        })
+      });
+      return Promise.resolve(result);
+    });
+  }
+
+  /** List a group's users. */
+  listGroupUsers(session: Session, groupId: string): Promise<GroupUserList> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.listGroupUsers(groupId).then((response: ApiGroupUserList) => {
+      var result: GroupUserList = {
+        group_users: []
+      };
+
+      if (response.group_users == null) {
+        return Promise.resolve(result);
+      }
+
+      response.group_users!.forEach(gu => {
+        result.group_users!.push({
+          user: {
+            avatar_url: gu.user!.avatar_url,
+            create_time: gu.user!.create_time,
+            display_name: gu.user!.display_name,
+            edge_count: gu.user!.edge_count,
+            facebook_id: gu.user!.facebook_id,
+            gamecenter_id: gu.user!.gamecenter_id,
+            google_id: gu.user!.google_id,
+            id: gu.user!.id,
+            lang_tag: gu.user!.lang_tag,
+            location: gu.user!.location,
+            online: gu.user!.online,
+            steam_id: gu.user!.steam_id,
+            timezone: gu.user!.timezone,
+            update_time: gu.user!.update_time,
+            username: gu.user!.username,
+            metadata: gu.user!.metadata ? JSON.parse(gu.user!.metadata!) : null
+          },
+          state: -1 // TODO gu.state
+        })
+      });
+      return Promise.resolve(result);
+    });
+  }
+
+  /** List a user's groups. */
+  listUserGroups(session: Session, userId: string): Promise<UserGroupList> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.listUserGroups(userId).then((response: ApiUserGroupList) => {
+      var result: UserGroupList = {
+        user_groups: []
+      };
+
+      if (response.user_groups == null) {
+        return Promise.resolve(result);
+      }
+
+      response.user_groups!.forEach(ug => {
+        result.user_groups!.push({
+          group: {
+            avatar_url: ug.group!.avatar_url,
+            create_time: ug.group!.create_time,
+            creator_id: ug.group!.creator_id,
+            description: ug.group!.description,
+            edge_count: ug.group!.edge_count,
+            id: ug.group!.id,
+            lang_tag: ug.group!.lang_tag,
+            max_count: ug.group!.max_count,
+            metadata: ug.group!.metadata ? JSON.parse(ug.group!.metadata!) : null,
+            name: ug.group!.name,
+            open: ug.group!.open,
+            update_time: ug.group!.update_time
+          },
+          state: -1 // TODO ug.state
         })
       });
       return Promise.resolve(result);
@@ -585,6 +846,14 @@ export class Client {
     });
   }
 
+  /** Promote users in a group to the next role up. */
+  promoteGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.promoteGroupUsers(groupId, { user_ids: ids }).then((response: ProtobufEmpty) => {
+      return response !== undefined;
+    });
+  }
+
   /** Fetch storage objects. */
   readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects> {
     this.configuration.bearerToken = (session && session.token);
@@ -689,6 +958,14 @@ export class Client {
   updateAccount(session: Session, request: ApiUpdateAccountRequest): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.updateAccount(request).then((response: ProtobufEmpty) => {
+      return response !== undefined;
+    });
+  }
+
+  /** Update a group the user is part of and has permissions to update. */
+  updateGroup(session: Session, groupId: string, request: ApiUpdateGroupRequest): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.updateGroup(groupId, request).then((response: ProtobufEmpty) => {
       return response !== undefined;
     });
   }

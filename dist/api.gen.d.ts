@@ -5,13 +5,17 @@ export interface ConfigurationParameters {
     bearerToken?: string;
     timeoutMs?: number;
 }
-export interface CreateGroupsRequestNewGroup {
-    avatar_url?: string;
-    description?: string;
-    lang_tag?: string;
-    metadata?: string;
-    name?: string;
-    private?: boolean;
+export interface GroupUserListGroupUser {
+    state?: GroupUserListGroupUserState;
+    user?: ApiUser;
+}
+export interface GroupUserListGroupUserState {
+}
+export interface UserGroupListUserGroup {
+    group?: ApiGroup;
+    state?: UserGroupListUserGroupState;
+}
+export interface UserGroupListUserGroupState {
 }
 export interface WriteLeaderboardRecordRequestLeaderboardRecordWrite {
     metadata?: string;
@@ -53,6 +57,10 @@ export interface ApiAccountGoogle {
 export interface ApiAccountSteam {
     token?: string;
 }
+export interface ApiAddGroupUsersRequest {
+    group_id?: string;
+    user_ids?: Array<string>;
+}
 export interface ApiChannelMessage {
     channel_id?: string;
     code?: number;
@@ -69,8 +77,12 @@ export interface ApiChannelMessageList {
     next_cursor?: string;
     prev_cursor?: string;
 }
-export interface ApiCreateGroupsRequest {
-    groups?: Array<CreateGroupsRequestNewGroup>;
+export interface ApiCreateGroupRequest {
+    avatar_url?: string;
+    description?: string;
+    lang_tag?: string;
+    name?: string;
+    open?: boolean;
 }
 export interface ApiDeleteStorageObjectId {
     collection?: string;
@@ -89,19 +101,27 @@ export interface ApiFriends {
 }
 export interface ApiGroup {
     avatar_url?: string;
-    count?: number;
     create_time?: string;
     creator_id?: string;
     description?: string;
+    edge_count?: number;
     id?: string;
     lang_tag?: string;
+    max_count?: number;
     metadata?: string;
     name?: string;
-    private?: boolean;
+    open?: boolean;
     update_time?: string;
 }
-export interface ApiGroups {
-    groups?: Array<ApiGroup>;
+export interface ApiGroupUserList {
+    group_users?: Array<GroupUserListGroupUser>;
+}
+export interface ApiJoinGroupRequest {
+    group_id?: string;
+}
+export interface ApiKickGroupUsersRequest {
+    group_id?: string;
+    user_ids?: Array<string>;
 }
 export interface ApiLeaderboardRecord {
     create_time?: string;
@@ -121,6 +141,9 @@ export interface ApiLeaderboardRecordList {
     owner_records?: Array<ApiLeaderboardRecord>;
     prev_cursor?: string;
     records?: Array<ApiLeaderboardRecord>;
+}
+export interface ApiLeaveGroupRequest {
+    group_id?: string;
 }
 export interface ApiMatch {
     authoritative?: boolean;
@@ -143,6 +166,10 @@ export interface ApiNotification {
 export interface ApiNotificationList {
     cacheable_cursor?: string;
     notifications?: Array<ApiNotification>;
+}
+export interface ApiPromoteGroupUsersRequest {
+    group_id?: string;
+    user_ids?: Array<string>;
 }
 export interface ApiReadStorageObjectId {
     collection?: string;
@@ -197,6 +224,14 @@ export interface ApiUpdateAccountRequest {
     timezone?: string;
     username?: string;
 }
+export interface ApiUpdateGroupRequest {
+    avatar_url?: string;
+    description?: string;
+    group_id?: string;
+    lang_tag?: string;
+    name?: string;
+    open?: boolean;
+}
 export interface ApiUser {
     avatar_url?: string;
     create_time?: string;
@@ -214,6 +249,9 @@ export interface ApiUser {
     timezone?: string;
     update_time?: string;
     username?: string;
+}
+export interface ApiUserGroupList {
+    user_groups?: Array<UserGroupListUserGroup>;
 }
 export interface ApiUsers {
     users?: Array<ApiUser>;
@@ -271,7 +309,15 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     addFriends(options?: any): Promise<ProtobufEmpty>;
     blockFriends(options?: any): Promise<ProtobufEmpty>;
     importFacebookFriends(body: ApiAccountFacebook, options?: any): Promise<ProtobufEmpty>;
-    createGroup(body: ApiCreateGroupsRequest, options?: any): Promise<ApiGroups>;
+    createGroup(body: ApiCreateGroupRequest, options?: any): Promise<ApiGroup>;
+    deleteGroup(groupId: string, options?: any): Promise<ProtobufEmpty>;
+    updateGroup(groupId: string, body: ApiUpdateGroupRequest, options?: any): Promise<ProtobufEmpty>;
+    addGroupUsers(groupId: string, body: ApiAddGroupUsersRequest, options?: any): Promise<ProtobufEmpty>;
+    joinGroup(groupId: string, body: ApiJoinGroupRequest, options?: any): Promise<ProtobufEmpty>;
+    kickGroupUsers(groupId: string, body: ApiKickGroupUsersRequest, options?: any): Promise<ProtobufEmpty>;
+    leaveGroup(groupId: string, body: ApiLeaveGroupRequest, options?: any): Promise<ProtobufEmpty>;
+    promoteGroupUsers(groupId: string, body: ApiPromoteGroupUsersRequest, options?: any): Promise<ProtobufEmpty>;
+    listGroupUsers(groupId: string, options?: any): Promise<ApiGroupUserList>;
     deleteLeaderboardRecord(leaderboardId: string, options?: any): Promise<ProtobufEmpty>;
     listLeaderboardRecords(leaderboardId: string, ownerIds?: string[] | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiLeaderboardRecordList>;
     writeLeaderboardRecord(leaderboardId: string, body: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
@@ -286,4 +332,5 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     listStorageObjects(collection: string, userId?: string | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiStorageObjectList>;
     listStorageObjects2(collection: string, userId: string, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiStorageObjectList>;
     getUsers(ids?: string[] | undefined, usernames?: string[] | undefined, facebookIds?: string[] | undefined, options?: any): Promise<ApiUsers>;
+    listUserGroups(userId: string, options?: any): Promise<ApiUserGroupList>;
 };
