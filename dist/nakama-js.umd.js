@@ -1748,9 +1748,12 @@ var NakamaApi = function (configuration) {
         },
         listChannelMessages: function (channelId, limit, forward, cursor, options) {
             if (options === void 0) { options = {}; }
-            var urlPath = "/v2/channel";
+            if (channelId === null || channelId === undefined) {
+                throw new Error("'channelId' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/channel/{channel_id}"
+                .replace("{channel_id}", encodeURIComponent(String(channelId)));
             var queryParams = {
-                channel_id: channelId,
                 limit: limit,
                 forward: forward,
                 cursor: cursor,
@@ -3713,7 +3716,7 @@ var Client = (function () {
                         username: gu.user.username,
                         metadata: gu.user.metadata ? JSON.parse(gu.user.metadata) : null
                     },
-                    state: -1
+                    state: gu.state
                 });
             });
             return Promise.resolve(result);
@@ -3744,7 +3747,7 @@ var Client = (function () {
                         open: ug.group.open,
                         update_time: ug.group.update_time
                     },
-                    state: -1
+                    state: ug.state
                 });
             });
             return Promise.resolve(result);
@@ -3782,7 +3785,38 @@ var Client = (function () {
     };
     Client.prototype.listFriends = function (session) {
         this.configuration.bearerToken = (session && session.token);
-        return this.apiClient.listFriends();
+        return this.apiClient.listFriends().then(function (response) {
+            var result = {
+                friends: []
+            };
+            if (response.friends == null) {
+                return Promise.resolve(result);
+            }
+            response.friends.forEach(function (f) {
+                result.friends.push({
+                    user: {
+                        avatar_url: f.user.avatar_url,
+                        create_time: f.user.create_time,
+                        display_name: f.user.display_name,
+                        edge_count: f.user.edge_count,
+                        facebook_id: f.user.facebook_id,
+                        gamecenter_id: f.user.gamecenter_id,
+                        google_id: f.user.google_id,
+                        id: f.user.id,
+                        lang_tag: f.user.lang_tag,
+                        location: f.user.location,
+                        online: f.user.online,
+                        steam_id: f.user.steam_id,
+                        timezone: f.user.timezone,
+                        update_time: f.user.update_time,
+                        username: f.user.username,
+                        metadata: f.user.metadata ? JSON.parse(f.user.metadata) : null
+                    },
+                    state: f.state
+                });
+            });
+            return Promise.resolve(result);
+        });
     };
     Client.prototype.listLeaderboardRecords = function (session, leaderboardId, ownerIds, limit, cursor) {
         this.configuration.bearerToken = (session && session.token);

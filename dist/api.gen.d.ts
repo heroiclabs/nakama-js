@@ -6,16 +6,12 @@ export interface ConfigurationParameters {
     timeoutMs?: number;
 }
 export interface GroupUserListGroupUser {
-    state?: GroupUserListGroupUserState;
+    state?: number;
     user?: ApiUser;
-}
-export interface GroupUserListGroupUserState {
 }
 export interface UserGroupListUserGroup {
     group?: ApiGroup;
-    state?: UserGroupListUserGroupState;
-}
-export interface UserGroupListUserGroupState {
+    state?: number;
 }
 export interface WriteLeaderboardRecordRequestLeaderboardRecordWrite {
     metadata?: string;
@@ -303,7 +299,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     unlinkGameCenter(body: ApiAccountGameCenter, options?: any): Promise<ProtobufEmpty>;
     unlinkGoogle(body: ApiAccountGoogle, options?: any): Promise<ProtobufEmpty>;
     unlinkSteam(body: ApiAccountSteam, options?: any): Promise<ProtobufEmpty>;
-    listChannelMessages(channelId?: string | undefined, limit?: number | undefined, forward?: boolean | undefined, cursor?: string | undefined, options?: any): Promise<ApiChannelMessageList>;
+    listChannelMessages(channelId: string, limit?: number | undefined, forward?: boolean | undefined, cursor?: string | undefined, options?: any): Promise<ApiChannelMessageList>;
     deleteFriends(options?: any): Promise<ProtobufEmpty>;
     listFriends(options?: any): Promise<ApiFriends>;
     addFriends(options?: any): Promise<ProtobufEmpty>;

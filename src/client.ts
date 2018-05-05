@@ -239,6 +239,20 @@ export interface Users {
   users?: Array<User>;
 }
 
+/** A friend of a user. */
+export interface Friend {
+  // The friend status.
+  state?: number;
+  // The user object.
+  user?: User;
+}
+
+/** A collection of zero or more friends of the user. */
+export interface Friends {
+  // The Friend objects.
+  friends?: Array<Friend>;
+}
+
 /** A user-role pair representing the user's role in a group. */
 export interface GroupUser {
   // The user.
@@ -583,7 +597,7 @@ export class Client {
   }
 
   /** List a channel's message history. */
-  listChannelMessages(session: Session, channelId?: string, limit?: number, forward?: boolean, cursor?: string): Promise<ChannelMessageList> {
+  listChannelMessages(session: Session, channelId: string, limit?: number, forward?: boolean, cursor?: string): Promise<ChannelMessageList> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then((response: ApiChannelMessageList) => {
       var result: ChannelMessageList = {
@@ -645,7 +659,7 @@ export class Client {
             username: gu.user!.username,
             metadata: gu.user!.metadata ? JSON.parse(gu.user!.metadata!) : null
           },
-          state: -1 // TODO gu.state
+          state: gu.state
         })
       });
       return Promise.resolve(result);
@@ -680,7 +694,7 @@ export class Client {
             open: ug.group!.open,
             update_time: ug.group!.update_time
           },
-          state: -1 // TODO ug.state
+          state: ug.state
         })
       });
       return Promise.resolve(result);
@@ -728,9 +742,42 @@ export class Client {
   }
 
   /** List all friends for the current user. */
-  listFriends(session: Session): Promise<ApiFriends> {
+  listFriends(session: Session): Promise<Friends> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.listFriends();
+    return this.apiClient.listFriends().then((response: ApiFriends) => {
+      var result: Friends = {
+        friends: []
+      };
+
+      if (response.friends == null) {
+        return Promise.resolve(result);
+      }
+
+      response.friends!.forEach(f => {
+        result.friends!.push({
+          user: {
+            avatar_url: f.user!.avatar_url,
+            create_time: f.user!.create_time,
+            display_name: f.user!.display_name,
+            edge_count: f.user!.edge_count,
+            facebook_id: f.user!.facebook_id,
+            gamecenter_id: f.user!.gamecenter_id,
+            google_id: f.user!.google_id,
+            id: f.user!.id,
+            lang_tag: f.user!.lang_tag,
+            location: f.user!.location,
+            online: f.user!.online,
+            steam_id: f.user!.steam_id,
+            timezone: f.user!.timezone,
+            update_time: f.user!.update_time,
+            username: f.user!.username,
+            metadata: f.user!.metadata ? JSON.parse(f.user!.metadata!) : null
+          },
+          state: f.state
+        })
+      });
+      return Promise.resolve(result);
+    });
   }
 
   /** List leaderboard records */

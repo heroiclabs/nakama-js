@@ -1,4 +1,4 @@
-import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiFriends, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
+import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
 export interface RpcResponse {
@@ -93,6 +93,13 @@ export interface User {
 export interface Users {
     users?: Array<User>;
 }
+export interface Friend {
+    state?: number;
+    user?: User;
+}
+export interface Friends {
+    friends?: Array<Friend>;
+}
 export interface GroupUser {
     user?: User;
     state?: number;
@@ -161,7 +168,7 @@ export declare class Client {
     joinGroup(session: Session, groupId: string): Promise<boolean>;
     kickGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     leaveGroup(session: Session, groupId: string): Promise<boolean>;
-    listChannelMessages(session: Session, channelId?: string, limit?: number, forward?: boolean, cursor?: string): Promise<ChannelMessageList>;
+    listChannelMessages(session: Session, channelId: string, limit?: number, forward?: boolean, cursor?: string): Promise<ChannelMessageList>;
     listGroupUsers(session: Session, groupId: string): Promise<GroupUserList>;
     listUserGroups(session: Session, userId: string): Promise<UserGroupList>;
     linkCustom(session: Session, request: ApiAccountCustom): Promise<boolean>;
@@ -169,7 +176,7 @@ export declare class Client {
     linkEmail(session: Session, request: ApiAccountEmail): Promise<boolean>;
     linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
-    listFriends(session: Session): Promise<ApiFriends>;
+    listFriends(session: Session): Promise<Friends>;
     listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<LeaderboardRecordList>;
     listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList>;
     listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<NotificationList>;

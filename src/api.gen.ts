@@ -13,34 +13,16 @@ export interface ConfigurationParameters {
 /** A single user-role pair. */
 export interface GroupUserListGroupUser {
   // Their relationship to the group.
-  state?: GroupUserListGroupUserState;
+  state?: number;
   // User.
   user?: ApiUser;
-}
-/** The group role status.
-
- - STATE_UNSPECIFIED: Default case. Assumed as SUPERADMIN state.
- - SUPERADMIN: The user is a superadmin with full control of the group.
- - ADMIN: The user is an admin with additional privileges.
- - MEMBER: The user is a regular member.
- - JOIN_REQUEST: The user has requested to join the group */
-export interface GroupUserListGroupUserState {
 }
 /** A single group-role pair. */
 export interface UserGroupListUserGroup {
   // Group.
   group?: ApiGroup;
   // The user's relationship to the group.
-  state?: UserGroupListUserGroupState;
-}
-/** The group role status.
-
- - STATE_UNSPECIFIED: Default case. Assumed as SUPERADMIN state.
- - SUPERADMIN: The user is a superadmin with full control of the group.
- - ADMIN: The user is an admin with additional privileges.
- - MEMBER: The user is a regular member.
- - JOIN_REQUEST: The user has requested to join the group */
-export interface UserGroupListUserGroupState {
+  state?: number;
 }
 /** Record values to write. */
 export interface WriteLeaderboardRecordRequestLeaderboardRecordWrite {
@@ -1751,11 +1733,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** List a channel's message history. */
-    listChannelMessages(channelId?: string, limit?: number, forward?: boolean, cursor?: string, options: any = {}): Promise<ApiChannelMessageList> {
-      const urlPath = "/v2/channel";
+    listChannelMessages(channelId: string, limit?: number, forward?: boolean, cursor?: string, options: any = {}): Promise<ApiChannelMessageList> {
+      if (channelId === null || channelId === undefined) {
+        throw new Error("'channelId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/channel/{channel_id}"
+         .replace("{channel_id}", encodeURIComponent(String(channelId)));
 
       const queryParams = {
-        channel_id: channelId,
         limit: limit,
         forward: forward,
         cursor: cursor,
