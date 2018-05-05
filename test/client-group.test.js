@@ -398,6 +398,68 @@ describe('Group Tests', () => {
     expect(result.user_groups[0].group.edge_count).toBe(2);
   });
 
+  it('should create open, join, leave, then list user groups and see count affected', async () => {
+    const customid1 = generateid();
+    const customid2 = generateid();
+    const group_name = generateid();
+
+    const result = await page.evaluate((customid1, customid2, group_name) => {
+      const client1 = new nakamajs.Client();
+      return client1.authenticateCustom({ id: customid1 })
+        .then(session1 => {
+          return client1.createGroup(session1, { name: group_name, open: true })
+            .then(group => {
+              const client2 = new nakamajs.Client();
+              return client2.authenticateCustom({ id: customid2 })
+                .then(session2 => {
+                  return client2.joinGroup(session2, group.id)
+                    .then(result => {
+                      return client2.leaveGroup(session2, group.id);
+                    })
+                    .then(result => {
+                      return client1.listUserGroups(session1, session1.user_id);
+                    });
+                });
+            });
+        });
+    }, customid1, customid2, group_name);
+
+    expect(result).not.toBeNull();
+    expect(result.user_groups.length).toBe(1);
+    expect(result.user_groups[0].group.edge_count).toBe(1);
+  });
+
+  it('should create closed, request to join, leave, then list user groups and see count unaffected', async () => {
+    const customid1 = generateid();
+    const customid2 = generateid();
+    const group_name = generateid();
+
+    const result = await page.evaluate((customid1, customid2, group_name) => {
+      const client1 = new nakamajs.Client();
+      return client1.authenticateCustom({ id: customid1 })
+        .then(session1 => {
+          return client1.createGroup(session1, { name: group_name, open: false })
+            .then(group => {
+              const client2 = new nakamajs.Client();
+              return client2.authenticateCustom({ id: customid2 })
+                .then(session2 => {
+                  return client2.joinGroup(session2, group.id)
+                    .then(result => {
+                      return client2.leaveGroup(session2, group.id);
+                    })
+                    .then(result => {
+                      return client1.listUserGroups(session1, session1.user_id);
+                    });
+                });
+            });
+        });
+    }, customid1, customid2, group_name);
+
+    expect(result).not.toBeNull();
+    expect(result.user_groups.length).toBe(1);
+    expect(result.user_groups[0].group.edge_count).toBe(1);
+  });
+
   it('should create closed, request to join, add, then list group users', async () => {
     const customid1 = generateid();
     const customid2 = generateid();
