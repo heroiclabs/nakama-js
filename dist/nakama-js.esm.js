@@ -3269,6 +3269,9 @@ var DefaultSocket = (function () {
             _this.ondisconnect(evt);
             _this.socket = undefined;
         };
+        socket.onerror = function (evt) {
+            _this.onerror(evt);
+        };
         socket.onmessage = function (evt) {
             var message = JSON.parse(evt.data);
             if (_this.verbose && window && window.console) {
@@ -3362,6 +3365,16 @@ var DefaultSocket = (function () {
             this.ondisconnect({});
         }
     };
+    DefaultSocket.prototype.ondisconnect = function (evt) {
+        if (this.verbose && window && window.console) {
+            console.log(evt);
+        }
+    };
+    DefaultSocket.prototype.onerror = function (evt) {
+        if (this.verbose && window && window.console) {
+            console.log(evt);
+        }
+    };
     DefaultSocket.prototype.onchannelmessage = function (channelMessage) {
         if (this.verbose && window && window.console) {
             console.log(channelMessage);
@@ -3370,11 +3383,6 @@ var DefaultSocket = (function () {
     DefaultSocket.prototype.onchannelpresence = function (channelPresence) {
         if (this.verbose && window && window.console) {
             console.log(channelPresence);
-        }
-    };
-    DefaultSocket.prototype.ondisconnect = function (evt) {
-        if (this.verbose && window && window.console) {
-            console.log(evt);
         }
     };
     DefaultSocket.prototype.onnotification = function (notification) {

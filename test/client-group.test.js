@@ -718,11 +718,15 @@ describe('Group Tests', () => {
             })
             .then(result => {
               return client2.promoteGroupUsers(session2, group.id, [session3.user_id]);
+            })
+            .then(result => {
+              return client1.listGroupUsers(session1, group.id);
             });
         });
     }, customid1, customid2, customid3, group_name);
 
     expect(result).not.toBeNull();
+    expect(result.group_users).not.toBeNull();
     expect(result.group_users.length).toBe(3);
   });
 
