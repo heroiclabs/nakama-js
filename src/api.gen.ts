@@ -10,20 +10,19 @@ export interface ConfigurationParameters {
   bearerToken?: string;
   timeoutMs?: number;
 }
-/** A group to create. */
-export interface CreateGroupsRequestNewGroup {
-  // A URL for an avatar image.
-  avatar_url?: string;
-  // A description for the group.
-  description?: string;
-  // The language expected to be a tag which follows the BCP-47 spec.
-  lang_tag?: string;
-  // Additional information stored as a JSON object.
-  metadata?: string;
-  // A unique name for the group.
-  name?: string;
-  // Mark a group as private where only admins can accept members.
-  private?: boolean;
+/** A single user-role pair. */
+export interface GroupUserListGroupUser {
+  // Their relationship to the group.
+  state?: number;
+  // User.
+  user?: ApiUser;
+}
+/** A single group-role pair. */
+export interface UserGroupListUserGroup {
+  // Group.
+  group?: ApiGroup;
+  // The user's relationship to the group.
+  state?: number;
 }
 /** Record values to write. */
 export interface WriteLeaderboardRecordRequestLeaderboardRecordWrite {
@@ -96,6 +95,13 @@ export interface ApiAccountSteam {
   // The account token received from Steam to access their profile API.
   token?: string;
 }
+/** Add users to a group. */
+export interface ApiAddGroupUsersRequest {
+  // The group to add users to.
+  group_id?: string;
+  // The users to add.
+  user_ids?: Array<string>;
+}
 /** A message sent on a channel. */
 export interface ApiChannelMessage {
   // The channel this message belongs to.
@@ -126,10 +132,18 @@ export interface ApiChannelMessageList {
   // The cursor to send when retrieving the previous page, if any.
   prev_cursor?: string;
 }
-/** Create one or more groups with the current user as owner. */
-export interface ApiCreateGroupsRequest {
-  // The Group objects to create.
-  groups?: Array<CreateGroupsRequestNewGroup>;
+/** Create a group with the current user as owner. */
+export interface ApiCreateGroupRequest {
+  // A URL for an avatar image.
+  avatar_url?: string;
+  // A description for the group.
+  description?: string;
+  // The language expected to be a tag which follows the BCP-47 spec.
+  lang_tag?: string;
+  // A unique name for the group.
+  name?: string;
+  // Mark a group as open or not where only admins can accept members.
+  open?: boolean;
 }
 /** Storage objects to delete. */
 export interface ApiDeleteStorageObjectId {
@@ -161,31 +175,45 @@ export interface ApiFriends {
 export interface ApiGroup {
   // A URL for an avatar image.
   avatar_url?: string;
-  // The current count of all members in the group.
-  count?: number;
   // The UNIX time when the group was created.
   create_time?: string;
   // The id of the user who created the group.
   creator_id?: string;
   // A description for the group.
   description?: string;
+  // The current count of all members in the group.
+  edge_count?: number;
   // The id of a group.
   id?: string;
   // The language expected to be a tag which follows the BCP-47 spec.
   lang_tag?: string;
+  // The maximum number of members allowed.
+  max_count?: number;
   // Additional information stored as a JSON object.
   metadata?: string;
   // The unique name of the group.
   name?: string;
-  // Mark a group as private where only admins can accept members.
-  private?: boolean;
+  // Anyone can join open groups, otherwise only admins can accept members.
+  open?: boolean;
   // The UNIX time when the group was last updated.
   update_time?: string;
 }
-/** A collection of zero or more groups. */
-export interface ApiGroups {
-  // The Group objects.
-  groups?: Array<ApiGroup>;
+/** A list of users belonging to a group, along with their role. */
+export interface ApiGroupUserList {
+  // User-role pairs for a group.
+  group_users?: Array<GroupUserListGroupUser>;
+}
+/** Immediately join an open group, or request to join a closed one. */
+export interface ApiJoinGroupRequest {
+  // The group ID to join.
+  group_id?: string;
+}
+/** Kick a set of users from a group. */
+export interface ApiKickGroupUsersRequest {
+  // The group ID to kick from.
+  group_id?: string;
+  // The users to kick.
+  user_ids?: Array<string>;
 }
 /** Represents a complete leaderboard record with all scores and associated metadata. */
 export interface ApiLeaderboardRecord {
@@ -222,6 +250,11 @@ export interface ApiLeaderboardRecordList {
   prev_cursor?: string;
   // A list of leaderboard records.
   records?: Array<ApiLeaderboardRecord>;
+}
+/** Leave a group. */
+export interface ApiLeaveGroupRequest {
+  // The group ID to leave.
+  group_id?: string;
 }
 /** Represents a realtime match. */
 export interface ApiMatch {
@@ -262,6 +295,13 @@ export interface ApiNotificationList {
   cacheable_cursor?: string;
   // Collection of notifications.
   notifications?: Array<ApiNotification>;
+}
+/** Promote a set of users in a group to the next role up. */
+export interface ApiPromoteGroupUsersRequest {
+  // The group ID to promote in.
+  group_id?: string;
+  // The users to promote.
+  user_ids?: Array<string>;
 }
 /** Storage objects to get. */
 export interface ApiReadStorageObjectId {
@@ -359,6 +399,21 @@ export interface ApiUpdateAccountRequest {
   // The username of the user's account.
   username?: string;
 }
+/** Update fields in a given group. */
+export interface ApiUpdateGroupRequest {
+  // Avatar URL.
+  avatar_url?: string;
+  // Description string.
+  description?: string;
+  // The ID of the group to update.
+  group_id?: string;
+  // Lang tag.
+  lang_tag?: string;
+  // Name.
+  name?: string;
+  // Open is true if anyone should be allowed to join, or false if joins must be approved by a group admin.
+  open?: boolean;
+}
 /** A user in the server. */
 export interface ApiUser {
   // A URL for an avatar image.
@@ -393,6 +448,11 @@ export interface ApiUser {
   update_time?: string;
   // The username of the user's account.
   username?: string;
+}
+/** A list of groups belonging to a user, along with the user's role in each group. */
+export interface ApiUserGroupList {
+  // Group-role pairs for a user.
+  user_groups?: Array<UserGroupListUserGroup>;
 }
 /** A collection of zero or more users. */
 export interface ApiUsers {
@@ -1673,11 +1733,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** List a channel's message history. */
-    listChannelMessages(channelId?: string, limit?: number, forward?: boolean, cursor?: string, options: any = {}): Promise<ApiChannelMessageList> {
-      const urlPath = "/v2/channel";
+    listChannelMessages(channelId: string, limit?: number, forward?: boolean, cursor?: string, options: any = {}): Promise<ApiChannelMessageList> {
+      if (channelId === null || channelId === undefined) {
+        throw new Error("'channelId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/channel/{channel_id}"
+         .replace("{channel_id}", encodeURIComponent(String(channelId)));
 
       const queryParams = {
-        channel_id: channelId,
         limit: limit,
         forward: forward,
         cursor: cursor,
@@ -1962,8 +2025,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
-    /** Create one or more new groups with the current user as the owner. */
-    createGroup(body: ApiCreateGroupsRequest, options: any = {}): Promise<ApiGroups> {
+    /** Create a new group with the current user as the owner. */
+    createGroup(body: ApiCreateGroupRequest, options: any = {}): Promise<ApiGroup> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1999,6 +2062,438 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Delete one or more groups by ID. */
+    deleteGroup(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+      if (groupId === null || groupId === undefined) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{group_id}"
+         .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Update fields in a given group. */
+    updateGroup(groupId: string, body: ApiUpdateGroupRequest, options: any = {}): Promise<ProtobufEmpty> {
+      if (groupId === null || groupId === undefined) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{group_id}"
+         .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "PUT" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Add users to a group. */
+    addGroupUsers(groupId: string, body: ApiAddGroupUsersRequest, options: any = {}): Promise<ProtobufEmpty> {
+      if (groupId === null || groupId === undefined) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{group_id}/add"
+         .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Immediately join an open group, or request to join a closed one. */
+    joinGroup(groupId: string, body: ApiJoinGroupRequest, options: any = {}): Promise<ProtobufEmpty> {
+      if (groupId === null || groupId === undefined) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{group_id}/join"
+         .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Kick a set of users from a group. */
+    kickGroupUsers(groupId: string, body: ApiKickGroupUsersRequest, options: any = {}): Promise<ProtobufEmpty> {
+      if (groupId === null || groupId === undefined) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{group_id}/kick"
+         .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Leave a group the user is a member of. */
+    leaveGroup(groupId: string, body: ApiLeaveGroupRequest, options: any = {}): Promise<ProtobufEmpty> {
+      if (groupId === null || groupId === undefined) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{group_id}/leave"
+         .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Promote a set of users in a group to the next role up. */
+    promoteGroupUsers(groupId: string, body: ApiPromoteGroupUsersRequest, options: any = {}): Promise<ProtobufEmpty> {
+      if (groupId === null || groupId === undefined) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{group_id}/promote"
+         .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** List all users that are part of a group. */
+    listGroupUsers(groupId: string, options: any = {}): Promise<ApiGroupUserList> {
+      if (groupId === null || groupId === undefined) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{group_id}/user"
+         .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -2701,6 +3196,57 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ids: ids,
         usernames: usernames,
         facebook_ids: facebookIds,
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** List groups the current user belongs to. */
+    listUserGroups(userId: string, options: any = {}): Promise<ApiUserGroupList> {
+      if (userId === null || userId === undefined) {
+        throw new Error("'userId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/user/{user_id}/group"
+         .replace("{user_id}", encodeURIComponent(String(userId)));
+
+      const queryParams = {
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {

@@ -221,6 +221,8 @@ export interface Socket {
   disconnect(fireDisconnectEvent: boolean): void;
   // Handle disconnect events received from the socket.
   ondisconnect: (evt: Event) => void;
+  // Handle error events received from the socket.
+  onerror: (evt: Event) => void;
   // Receive notifications from the socket.
   onnotification: (notification: Notification) => void;
   // Receive match data updates.
@@ -279,6 +281,10 @@ export class DefaultSocket implements Socket {
     socket.onclose = (evt: Event) => {
       this.ondisconnect(evt);
       this.socket = undefined;
+    }
+
+    socket.onerror = (evt: Event) => {
+      this.onerror(evt);
     }
 
     socket.onmessage = (evt: MessageEvent) => {
@@ -368,6 +374,18 @@ export class DefaultSocket implements Socket {
     }
   }
 
+  ondisconnect(evt: Event) {
+    if (this.verbose && window && window.console) {
+      console.log(evt);
+    }
+  }
+
+  onerror(evt: Event) {
+    if (this.verbose && window && window.console) {
+      console.log(evt);
+    }
+  }
+
   onchannelmessage(channelMessage: ChannelMessage) {
     if (this.verbose && window && window.console) {
       console.log(channelMessage);
@@ -377,12 +395,6 @@ export class DefaultSocket implements Socket {
   onchannelpresence(channelPresence: ChannelPresenceEvent) {
     if (this.verbose && window && window.console) {
       console.log(channelPresence);
-    }
-  }
-
-  ondisconnect(evt: Event) {
-    if (this.verbose && window && window.console) {
-      console.log(evt);
     }
   }
 

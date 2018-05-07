@@ -144,6 +144,7 @@ export interface Socket {
     connect(session: Session, createStatus: boolean): Promise<Session>;
     disconnect(fireDisconnectEvent: boolean): void;
     ondisconnect: (evt: Event) => void;
+    onerror: (evt: Event) => void;
     onnotification: (notification: Notification) => void;
     onmatchdata: (matchData: MatchData) => void;
     onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
@@ -169,9 +170,10 @@ export declare class DefaultSocket implements Socket {
     generatecid(): string;
     connect(session: Session, createStatus?: boolean): Promise<Session>;
     disconnect(fireDisconnectEvent?: boolean): void;
+    ondisconnect(evt: Event): void;
+    onerror(evt: Event): void;
     onchannelmessage(channelMessage: ChannelMessage): void;
     onchannelpresence(channelPresence: ChannelPresenceEvent): void;
-    ondisconnect(evt: Event): void;
     onnotification(notification: Notification): void;
     onmatchdata(matchData: MatchData): void;
     onmatchpresence(matchPresence: MatchPresenceEvent): void;
