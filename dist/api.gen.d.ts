@@ -109,6 +109,10 @@ export interface ApiGroup {
     open?: boolean;
     update_time?: string;
 }
+export interface ApiGroupList {
+    cursor?: string;
+    groups?: Array<ApiGroup>;
+}
 export interface ApiGroupUserList {
     group_users?: Array<GroupUserListGroupUser>;
 }
@@ -305,6 +309,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     addFriends(options?: any): Promise<ProtobufEmpty>;
     blockFriends(options?: any): Promise<ProtobufEmpty>;
     importFacebookFriends(body: ApiAccountFacebook, options?: any): Promise<ProtobufEmpty>;
+    listGroups(name?: string | undefined, cursor?: string | undefined, limit?: number | undefined, options?: any): Promise<ApiGroupList>;
     createGroup(body: ApiCreateGroupRequest, options?: any): Promise<ApiGroup>;
     deleteGroup(groupId: string, options?: any): Promise<ProtobufEmpty>;
     updateGroup(groupId: string, body: ApiUpdateGroupRequest, options?: any): Promise<ProtobufEmpty>;

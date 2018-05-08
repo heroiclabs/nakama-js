@@ -2022,6 +2022,54 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
+        listGroups: function (name, cursor, limit, options) {
+            if (options === void 0) { options = {}; }
+            var urlPath = "/v2/group";
+            var queryParams = {
+                name: name,
+                cursor: cursor,
+                limit: limit,
+            };
+            var urlQuery = "?" + Object.keys(queryParams)
+                .map(function (k) {
+                if (queryParams[k] instanceof Array) {
+                    return queryParams[k].reduce(function (prev, curr) {
+                        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                    }, "");
+                }
+                else {
+                    if (queryParams[k] != null) {
+                        return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                    }
+                }
+            })
+                .join("");
+            var fetchOptions = __assign({ method: "GET" }, options);
+            var headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            if (configuration.bearerToken) {
+                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+            }
+            else if (configuration.username) {
+                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+            fetchOptions.headers = __assign({}, headers, options.headers);
+            return Promise.race([
+                fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    }
+                    else {
+                        throw response;
+                    }
+                }),
+                new Promise(function (_, reject) {
+                    return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
+                }),
+            ]);
+        },
         createGroup: function (body, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
@@ -3756,6 +3804,35 @@ var Client = (function () {
                         update_time: ug.group.update_time
                     },
                     state: ug.state
+                });
+            });
+            return Promise.resolve(result);
+        });
+    };
+    Client.prototype.listGroups = function (session, name, cursor, limit) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.listGroups(name, cursor, limit).then(function (response) {
+            var result = {
+                groups: []
+            };
+            if (response.groups == null) {
+                return Promise.resolve(result);
+            }
+            result.cursor = response.cursor;
+            response.groups.forEach(function (ug) {
+                result.groups.push({
+                    avatar_url: ug.avatar_url,
+                    create_time: ug.create_time,
+                    creator_id: ug.creator_id,
+                    description: ug.description,
+                    edge_count: ug.edge_count,
+                    id: ug.id,
+                    lang_tag: ug.lang_tag,
+                    max_count: ug.max_count,
+                    metadata: ug.metadata ? JSON.parse(ug.metadata) : null,
+                    name: ug.name,
+                    open: ug.open,
+                    update_time: ug.update_time
                 });
             });
             return Promise.resolve(result);

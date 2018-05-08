@@ -121,6 +121,10 @@ export interface Group {
     open?: boolean;
     update_time?: string;
 }
+export interface GroupList {
+    cursor?: string;
+    groups?: Array<Group>;
+}
 export interface UserGroup {
     group?: Group;
     state?: number;
@@ -171,6 +175,7 @@ export declare class Client {
     listChannelMessages(session: Session, channelId: string, limit?: number, forward?: boolean, cursor?: string): Promise<ChannelMessageList>;
     listGroupUsers(session: Session, groupId: string): Promise<GroupUserList>;
     listUserGroups(session: Session, userId: string): Promise<UserGroupList>;
+    listGroups(session: Session, name?: string, cursor?: string, limit?: number): Promise<UserGroupList>;
     linkCustom(session: Session, request: ApiAccountCustom): Promise<boolean>;
     linkDevice(session: Session, request: ApiAccountDevice): Promise<boolean>;
     linkEmail(session: Session, request: ApiAccountEmail): Promise<boolean>;
