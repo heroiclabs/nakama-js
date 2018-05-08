@@ -26,6 +26,7 @@ import {
   ApiDeleteStorageObjectsRequest,
   ApiFriends,
   ApiGroup,
+  ApiGroupList,
   ApiGroupUserList,
   ApiLeaderboardRecord,
   ApiLeaderboardRecordList,
@@ -293,6 +294,14 @@ export interface Group {
   open?: boolean;
   // The UNIX time when the group was last updated.
   update_time?: string;
+}
+
+/** One or more groups returned from a listing operation. */
+export interface GroupList {
+  // A cursor used to get the next page.
+  cursor?: string;
+  // One or more groups.
+  groups?: Array<Group>;
 }
 
 /** A group-role pair representing the user's groups and their role in each. */
@@ -696,6 +705,39 @@ export class Client {
           },
           state: ug.state
         })
+      });
+      return Promise.resolve(result);
+    });
+  }
+
+  /** List groups based on given filters. */
+  listGroups(session: Session, name?: string, cursor?: string, limit?: number): Promise<UserGroupList> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.listGroups(name, cursor, limit).then((response: ApiGroupList) => {
+      var result: GroupList = {
+        groups: []
+      };
+
+      if (response.groups == null) {
+        return Promise.resolve(result);
+      }
+
+      result.cursor = response.cursor;
+      response.groups!.forEach(ug => {
+        result.groups!.push({
+          avatar_url: ug!.avatar_url,
+          create_time: ug!.create_time,
+          creator_id: ug!.creator_id,
+          description: ug!.description,
+          edge_count: ug!.edge_count,
+          id: ug!.id,
+          lang_tag: ug!.lang_tag,
+          max_count: ug!.max_count,
+          metadata: ug!.metadata ? JSON.parse(ug!.metadata!) : null,
+          name: ug!.name,
+          open: ug!.open,
+          update_time: ug!.update_time
+        });
       });
       return Promise.resolve(result);
     });

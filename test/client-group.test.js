@@ -730,4 +730,24 @@ describe('Group Tests', () => {
     expect(result.group_users.length).toBe(3);
   });
 
+  it('should create, list group', async () => {
+    const customid1 = generateid();
+    const group_name = generateid();
+
+    const result = await page.evaluate(async (customid1, group_name) => {
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+
+      return client1.createGroup(session1, { name: group_name, open: true })
+        .then(group => {
+          return client1.listGroups(session1, "%" + group_name + "%")
+        });
+    }, customid1, group_name);
+
+    expect(result).not.toBeNull();
+    expect(result.groups).not.toBeNull();
+    expect(result.groups.length).toBe(1);
+    expect(result.cursor).not.toBeNull();
+  });
+
 }, TIMEOUT);

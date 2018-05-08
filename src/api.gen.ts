@@ -198,6 +198,13 @@ export interface ApiGroup {
   // The UNIX time when the group was last updated.
   update_time?: string;
 }
+/** One or more groups returned from a listing operation. */
+export interface ApiGroupList {
+  // A cursor used to get the next page.
+  cursor?: string;
+  // One or more groups.
+  groups?: Array<ApiGroup>;
+}
 /** A list of users belonging to a group, along with their role. */
 export interface ApiGroupUserList {
   // User-role pairs for a group.
@@ -2011,6 +2018,56 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** List groups based on given filters. */
+    listGroups(name?: string, cursor?: string, limit?: number, options: any = {}): Promise<ApiGroupList> {
+      const urlPath = "/v2/group";
+
+      const queryParams = {
+        name: name,
+        cursor: cursor,
+        limit: limit,
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
