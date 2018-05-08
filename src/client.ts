@@ -711,7 +711,7 @@ export class Client {
   }
 
   /** List groups based on given filters. */
-  listGroups(session: Session, name?: string, cursor?: string, limit?: number): Promise<UserGroupList> {
+  listGroups(session: Session, name?: string, cursor?: string, limit?: number): Promise<GroupList> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.listGroups(name, cursor, limit).then((response: ApiGroupList) => {
       var result: GroupList = {
