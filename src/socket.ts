@@ -268,7 +268,7 @@ export class DefaultSocket implements Socket {
     return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
   }
 
-  connect(session: Session, createStatus: boolean = true): Promise<Session> {
+  connect(session: Session, createStatus: boolean = false): Promise<Session> {
     if (this.socket != undefined) {
       return Promise.resolve(session);
     }
