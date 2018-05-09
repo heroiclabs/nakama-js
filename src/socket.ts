@@ -309,7 +309,7 @@ export class DefaultSocket implements Socket {
             this.onnotification(notification);
           });
         } else if (message.match_data) {
-          message.match_data.data = JSON.parse(atob(message.match_data.data));
+          message.match_data.data = message.match_data.data != null ? JSON.parse(atob(message.match_data.data)) : null;
           message.match_data.op_code = parseInt(message.match_data.op_code);
           this.onmatchdata(message.match_data);
         } else if (message.match_presence_event) {
