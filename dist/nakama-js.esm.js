@@ -3305,7 +3305,7 @@ var DefaultSocket = (function () {
     };
     DefaultSocket.prototype.connect = function (session, createStatus) {
         var _this = this;
-        if (createStatus === void 0) { createStatus = true; }
+        if (createStatus === void 0) { createStatus = false; }
         if (this.socket != undefined) {
             return Promise.resolve(session);
         }
@@ -3341,7 +3341,7 @@ var DefaultSocket = (function () {
                     });
                 }
                 else if (message.match_data) {
-                    message.match_data.data = JSON.parse(atob(message.match_data.data));
+                    message.match_data.data = message.match_data.data != null ? JSON.parse(atob(message.match_data.data)) : null;
                     message.match_data.op_code = parseInt(message.match_data.op_code);
                     _this.onmatchdata(message.match_data);
                 }
