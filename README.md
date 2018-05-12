@@ -18,7 +18,7 @@ You'll need to setup the server and database before you can connect with the cli
 2. Import the client into your project. It's available on NPM and can be also be added to a project with Bower or other package managers.
 
     ```shell
-    yarn add @heroiclabs/nakama-js
+    yarn add "@heroiclabs/nakama-js"
     ```
 
     You'll now see the code in the "node_modules" folder and package listed in your "package.json".
@@ -92,7 +92,7 @@ const secure = false; // enable if server is run with an SSL certificate
 const trace = false;
 const socket = client.createSocket(secure, trace);
 socket.ondisconnect = (evt) => {
-	console.info("Disconnected", evt);
+    console.info("Disconnected", evt);
 };
 
 const session = await socket.connect(session);
@@ -103,22 +103,22 @@ There's many messages for chat, realtime, status events, notifications, etc. whi
 
 ```js
 socket.onchannelmessage = (message) => {
-	console.info("Message received from channel", message.channel_id);
-	console.info("Received message", message);
+    console.info("Message received from channel", message.channel_id);
+    console.info("Received message", message);
 };
 
 const roomname = "mychannel";
 const channel = await socket.send({ channel_join: {
-	type: 1, // 1 = room, 2 = Direct Message, 3 = Group
-	target: roomname,
-	persistence: false,
-	hidden: false
+    type: 1, // 1 = room, 2 = Direct Message, 3 = Group
+    target: roomname,
+    persistence: false,
+    hidden: false
 } });
 
 const message = { "hello": "world" };
 socket.send({ channel_message_send: {
-	channel_id: channel.channel.id,
-	content: message
+    channel_id: channel.channel.id,
+    content: message
 } });
 ```
 
