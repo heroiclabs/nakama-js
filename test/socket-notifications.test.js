@@ -40,15 +40,15 @@ describe('Notifications Tests', () => {
   it('should rpc and list notifications', async () => {
     const customid = generateid();
 
-    const notifications = await page.evaluate((customid) => {
+    const notifications = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id})
-            .then(result => {
-              return client.listNotifications(session, "1", "");
-            });
-        });
+      const session = await client.authenticateCustom({ id: customid });
+      await client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id});
+      await client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id});
+      var notificationList = await client.listNotifications(session, "1", "");
+      var notificationList = await client.listNotifications(session, "1", notificationList.cacheable_cursor);
+
+      return notificationList;
     }, customid);
 
     expect(notifications).not.toBeNull();
