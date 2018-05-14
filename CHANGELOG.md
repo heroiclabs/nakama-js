@@ -3,6 +3,8 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [Unreleased]
+
 ## [2.0.0] - 2018-05-14
 ### Added
 - New browser headless test suite with Puppeteer.
