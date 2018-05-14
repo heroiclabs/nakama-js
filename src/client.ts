@@ -372,18 +372,109 @@ export class Client {
   /** Add users to a group, or accept their join requests. */
   addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.addGroupUsers(groupId, { user_ids: ids }).then((response: ProtobufEmpty) => {
-      return response !== undefined;
+
+    const urlPath = "/v2/group/" + groupId + "/add";
+
+    const queryParams = {
+      user_ids: ids
+    } as any;
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        }
+      })
+      .join("");
+
+    const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }} as any;
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
+
+    if (this.configuration.bearerToken) {
+      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+    } else if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
+
+    fetchOptions.headers = {...headers};
+
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+      ),
+    ]).then((response: ProtobufEmpty) => {
+      return Promise.resolve(response != undefined);
     });
   }
 
   /** Add friends by ID or username to a user's account. */
-  // addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
-  //   this.configuration.bearerToken = (session && session.token);
-  //   return this.apiClient.addFriends(ids, usernames).then((response: ProtobufEmpty) => {
-  //     return Promise.resolve(response != undefined);
-  //   });
-  // }
+  addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+
+    const urlPath = "/v2/friend";
+
+    const queryParams = {
+      ids: ids,
+      usernames: usernames
+    } as any;
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        }
+      })
+      .join("");
+
+    const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }} as any;
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
+
+    if (this.configuration.bearerToken) {
+      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+    } else if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
+
+    fetchOptions.headers = {...headers};
+
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+      ),
+    ]).then((response: ProtobufEmpty) => {
+      return Promise.resolve(response != undefined);
+    });
+  }
 
   /** Authenticate a user with a custom id against the server. */
   authenticateCustom(request: ApiAccountCustom): Promise<Session> {
@@ -421,12 +512,58 @@ export class Client {
   }
 
   /** Block one or more users by ID or username. */
-  // blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
-  //   this.configuration.bearerToken = (session && session.token);
-  //   return this.apiClient.blockFriends(ids, usernames).then((response: ProtobufEmpty) => {
-  //     return Promise.resolve(response != undefined);
-  //   });
-  // }
+  blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+
+    const urlPath = "/v2/friend/block";
+
+    const queryParams = {
+      ids: ids,
+      usernames: usernames
+    } as any;
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        }
+      })
+      .join("");
+
+    const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }} as any;
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
+
+    if (this.configuration.bearerToken) {
+      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+    } else if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
+
+    fetchOptions.headers = {...headers};
+
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+      ),
+    ]).then((response: ProtobufEmpty) => {
+      return Promise.resolve(response != undefined);
+    });
+  }
 
   /** Create a new group with the current user as the creator and superadmin. */
   createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group> {
@@ -455,12 +592,58 @@ export class Client {
   }
 
   /** Delete one or more users by ID or username. */
-  // deleteFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
-  //   this.configuration.bearerToken = (session && session.token);
-  //   return this.apiClient.deleteFriends(ids, usernames).then((response: ProtobufEmpty) => {
-  //     return Promise.resolve(response != undefined);
-  //   });
-  // }
+  deleteFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+
+    const urlPath = "/v2/friend";
+
+    const queryParams = {
+      ids: ids,
+      usernames: usernames
+    } as any;
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        }
+      })
+      .join("");
+
+    const fetchOptions = {...{ method: "DELETE" /*, keepalive: true */ }} as any;
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
+
+    if (this.configuration.bearerToken) {
+      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+    } else if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
+
+    fetchOptions.headers = {...headers};
+
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+      ),
+    ]).then((response: ProtobufEmpty) => {
+      return Promise.resolve(response != undefined);
+    });
+  }
 
   /** Delete a group the user is part of and has permissions to delete. */
   deleteGroup(session: Session, groupId: string): Promise<boolean> {
@@ -592,8 +775,53 @@ export class Client {
   /** Kick users from a group, or decline their join requests. */
   kickGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.kickGroupUsers(groupId, { user_ids: ids }).then((response: ProtobufEmpty) => {
-      return response !== undefined;
+
+    const urlPath = "/v2/group/" + groupId + "/kick";
+
+    const queryParams = {
+      user_ids: ids
+    } as any;
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        }
+      })
+      .join("");
+
+    const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }} as any;
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
+
+    if (this.configuration.bearerToken) {
+      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+    } else if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
+
+    fetchOptions.headers = {...headers};
+
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+      ),
+    ]).then((response: ProtobufEmpty) => {
+      return Promise.resolve(response != undefined);
     });
   }
 
@@ -938,8 +1166,53 @@ export class Client {
   /** Promote users in a group to the next role up. */
   promoteGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.promoteGroupUsers(groupId, { user_ids: ids }).then((response: ProtobufEmpty) => {
-      return response !== undefined;
+
+    const urlPath = "/v2/group/" + groupId + "/promote";
+
+    const queryParams = {
+      user_ids: ids
+    } as any;
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+          }
+        }
+      })
+      .join("");
+
+    const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }} as any;
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
+
+    if (this.configuration.bearerToken) {
+      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+    } else if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
+
+    fetchOptions.headers = {...headers};
+
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+      ),
+    ]).then((response: ProtobufEmpty) => {
+      return Promise.resolve(response != undefined);
     });
   }
 

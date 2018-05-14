@@ -156,13 +156,16 @@ export declare class Client {
     private readonly configuration;
     constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number, verbose?: boolean);
     addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
+    addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     authenticateCustom(request: ApiAccountCustom): Promise<Session>;
     authenticateDevice(request: ApiAccountDevice): Promise<Session>;
     authenticateEmail(request: ApiAccountEmail): Promise<Session>;
     authenticateFacebook(request: ApiAccountFacebook): Promise<Session>;
     authenticateGoogle(request: ApiAccountGoogle): Promise<Session>;
+    blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group>;
     createSocket(useSSL?: boolean, verbose?: boolean): Socket;
+    deleteFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     deleteGroup(session: Session, groupId: string): Promise<boolean>;
     deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean>;
     deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean>;

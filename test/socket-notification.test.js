@@ -22,7 +22,7 @@ const generateid = () => {
   return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
 };
 
-describe('Notifications Tests', () => {
+describe('Notification Tests', () => {
   let page;
 
   beforeAll(async () => {

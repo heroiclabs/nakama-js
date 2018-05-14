@@ -1798,10 +1798,13 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        deleteFriends: function (options) {
+        deleteFriends: function (ids, usernames, options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/friend";
-            var queryParams = {};
+            var queryParams = {
+                ids: ids,
+                usernames: usernames,
+            };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -2218,13 +2221,10 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        addGroupUsers: function (groupId, body, options) {
+        addGroupUsers: function (groupId, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
-            }
-            if (body === null || body === undefined) {
-                throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/add"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
@@ -2255,7 +2255,6 @@ var NakamaApi = function (configuration) {
                 headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
             }
             fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
             return Promise.race([
                 fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
                     if (response.status >= 200 && response.status < 300) {
@@ -2270,13 +2269,10 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        joinGroup: function (groupId, body, options) {
+        joinGroup: function (groupId, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
-            }
-            if (body === null || body === undefined) {
-                throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/join"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
@@ -2307,7 +2303,6 @@ var NakamaApi = function (configuration) {
                 headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
             }
             fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
             return Promise.race([
                 fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
                     if (response.status >= 200 && response.status < 300) {
@@ -2322,13 +2317,10 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        kickGroupUsers: function (groupId, body, options) {
+        kickGroupUsers: function (groupId, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
-            }
-            if (body === null || body === undefined) {
-                throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/kick"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
@@ -2359,7 +2351,6 @@ var NakamaApi = function (configuration) {
                 headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
             }
             fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
             return Promise.race([
                 fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
                     if (response.status >= 200 && response.status < 300) {
@@ -2374,13 +2365,10 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        leaveGroup: function (groupId, body, options) {
+        leaveGroup: function (groupId, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
-            }
-            if (body === null || body === undefined) {
-                throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/leave"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
@@ -2411,7 +2399,6 @@ var NakamaApi = function (configuration) {
                 headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
             }
             fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
             return Promise.race([
                 fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
                     if (response.status >= 200 && response.status < 300) {
@@ -2426,13 +2413,10 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        promoteGroupUsers: function (groupId, body, options) {
+        promoteGroupUsers: function (groupId, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
-            }
-            if (body === null || body === undefined) {
-                throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/promote"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
@@ -2463,7 +2447,6 @@ var NakamaApi = function (configuration) {
                 headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
             }
             fetchOptions.headers = __assign({}, headers, options.headers);
-            fetchOptions.body = JSON.stringify(body || {});
             return Promise.race([
                 fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
                     if (response.status >= 200 && response.status < 300) {
@@ -2728,10 +2711,12 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        deleteNotifications: function (options) {
+        deleteNotifications: function (ids, options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/notification";
-            var queryParams = {};
+            var queryParams = {
+                ids: ids,
+            };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
                 if (queryParams[k] instanceof Array) {
@@ -3541,9 +3526,102 @@ var Client = (function () {
         this.apiClient = NakamaApi(this.configuration);
     }
     Client.prototype.addGroupUsers = function (session, groupId, ids) {
+        var _this = this;
         this.configuration.bearerToken = (session && session.token);
-        return this.apiClient.addGroupUsers(groupId, { user_ids: ids }).then(function (response) {
-            return response !== undefined;
+        var urlPath = "/v2/group/" + groupId + "/add";
+        var queryParams = {
+            user_ids: ids
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (response) {
+            return Promise.resolve(response != undefined);
+        });
+    };
+    Client.prototype.addFriends = function (session, ids, usernames) {
+        var _this = this;
+        this.configuration.bearerToken = (session && session.token);
+        var urlPath = "/v2/friend";
+        var queryParams = {
+            ids: ids,
+            usernames: usernames
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (response) {
+            return Promise.resolve(response != undefined);
         });
     };
     Client.prototype.authenticateCustom = function (request) {
@@ -3571,6 +3649,56 @@ var Client = (function () {
             return Session.restore(apiSession.token || "");
         });
     };
+    Client.prototype.blockFriends = function (session, ids, usernames) {
+        var _this = this;
+        this.configuration.bearerToken = (session && session.token);
+        var urlPath = "/v2/friend/block";
+        var queryParams = {
+            ids: ids,
+            usernames: usernames
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (response) {
+            return Promise.resolve(response != undefined);
+        });
+    };
     Client.prototype.createGroup = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.createGroup(request).then(function (response) {
@@ -3594,6 +3722,56 @@ var Client = (function () {
         if (useSSL === void 0) { useSSL = false; }
         if (verbose === void 0) { verbose = false; }
         return new DefaultSocket(this.host, this.port, useSSL, verbose);
+    };
+    Client.prototype.deleteFriends = function (session, ids, usernames) {
+        var _this = this;
+        this.configuration.bearerToken = (session && session.token);
+        var urlPath = "/v2/friend";
+        var queryParams = {
+            ids: ids,
+            usernames: usernames
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "DELETE" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (response) {
+            return Promise.resolve(response != undefined);
+        });
     };
     Client.prototype.deleteGroup = function (session, groupId) {
         this.configuration.bearerToken = (session && session.token);
@@ -3705,9 +3883,52 @@ var Client = (function () {
         });
     };
     Client.prototype.kickGroupUsers = function (session, groupId, ids) {
+        var _this = this;
         this.configuration.bearerToken = (session && session.token);
-        return this.apiClient.kickGroupUsers(groupId, { user_ids: ids }).then(function (response) {
-            return response !== undefined;
+        var urlPath = "/v2/group/" + groupId + "/kick";
+        var queryParams = {
+            user_ids: ids
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (response) {
+            return Promise.resolve(response != undefined);
         });
     };
     Client.prototype.leaveGroup = function (session, groupId) {
@@ -4002,9 +4223,52 @@ var Client = (function () {
         });
     };
     Client.prototype.promoteGroupUsers = function (session, groupId, ids) {
+        var _this = this;
         this.configuration.bearerToken = (session && session.token);
-        return this.apiClient.promoteGroupUsers(groupId, { user_ids: ids }).then(function (response) {
-            return response !== undefined;
+        var urlPath = "/v2/group/" + groupId + "/promote";
+        var queryParams = {
+            user_ids: ids
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (response) {
+            return Promise.resolve(response != undefined);
         });
     };
     Client.prototype.readStorageObjects = function (session, request) {

@@ -95,13 +95,6 @@ export interface ApiAccountSteam {
   // The account token received from Steam to access their profile API.
   token?: string;
 }
-/** Add users to a group. */
-export interface ApiAddGroupUsersRequest {
-  // The group to add users to.
-  group_id?: string;
-  // The users to add.
-  user_ids?: Array<string>;
-}
 /** A message sent on a channel. */
 export interface ApiChannelMessage {
   // The channel this message belongs to.
@@ -210,18 +203,6 @@ export interface ApiGroupUserList {
   // User-role pairs for a group.
   group_users?: Array<GroupUserListGroupUser>;
 }
-/** Immediately join an open group, or request to join a closed one. */
-export interface ApiJoinGroupRequest {
-  // The group ID to join.
-  group_id?: string;
-}
-/** Kick a set of users from a group. */
-export interface ApiKickGroupUsersRequest {
-  // The group ID to kick from.
-  group_id?: string;
-  // The users to kick.
-  user_ids?: Array<string>;
-}
 /** Represents a complete leaderboard record with all scores and associated metadata. */
 export interface ApiLeaderboardRecord {
   // The UNIX time when the leaderboard record was created.
@@ -257,11 +238,6 @@ export interface ApiLeaderboardRecordList {
   prev_cursor?: string;
   // A list of leaderboard records.
   records?: Array<ApiLeaderboardRecord>;
-}
-/** Leave a group. */
-export interface ApiLeaveGroupRequest {
-  // The group ID to leave.
-  group_id?: string;
 }
 /** Represents a realtime match. */
 export interface ApiMatch {
@@ -302,13 +278,6 @@ export interface ApiNotificationList {
   cacheable_cursor?: string;
   // Collection of notifications.
   notifications?: Array<ApiNotification>;
-}
-/** Promote a set of users in a group to the next role up. */
-export interface ApiPromoteGroupUsersRequest {
-  // The group ID to promote in.
-  group_id?: string;
-  // The users to promote.
-  user_ids?: Array<string>;
 }
 /** Storage objects to get. */
 export interface ApiReadStorageObjectId {
@@ -486,33 +455,12 @@ export interface ApiWriteStorageObjectsRequest {
   // The objects to store on the server.
   objects?: Array<ApiWriteStorageObject>;
 }
-/** Wrapper message for `bool`.
-
-The JSON representation for `BoolValue` is JSON `true` and `false`. */
-export interface ProtobufBoolValue {
-  // The bool value.
-  value?: boolean;
-}
 /** service Foo {
       rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);
     }
 
 The JSON representation for `Empty` is empty JSON object `{}`. */
 export interface ProtobufEmpty {
-}
-/** Wrapper message for `int32`.
-
-The JSON representation for `Int32Value` is JSON number. */
-export interface ProtobufInt32Value {
-  // The int32 value.
-  value?: number;
-}
-/** Wrapper message for `string`.
-
-The JSON representation for `StringValue` is JSON string. */
-export interface ProtobufStringValue {
-  // The string value.
-  value?: string;
 }
 
 export const NakamaApi = (configuration: ConfigurationParameters = {
@@ -1794,10 +1742,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Delete one or more users by ID or username. */
-    deleteFriends(options: any = {}): Promise<ProtobufEmpty> {
+    deleteFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<ProtobufEmpty> {
       const urlPath = "/v2/friend";
 
       const queryParams = {
+        ids: ids,
+        usernames: usernames,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -2240,12 +2190,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Add users to a group. */
-    addGroupUsers(groupId: string, body: ApiAddGroupUsersRequest, options: any = {}): Promise<ProtobufEmpty> {
+    addGroupUsers(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/group/{group_id}/add"
          .replace("{group_id}", encodeURIComponent(String(groupId)));
@@ -2279,7 +2226,6 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       }
 
       fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -2295,12 +2241,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Immediately join an open group, or request to join a closed one. */
-    joinGroup(groupId: string, body: ApiJoinGroupRequest, options: any = {}): Promise<ProtobufEmpty> {
+    joinGroup(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/group/{group_id}/join"
          .replace("{group_id}", encodeURIComponent(String(groupId)));
@@ -2334,7 +2277,6 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       }
 
       fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -2350,12 +2292,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Kick a set of users from a group. */
-    kickGroupUsers(groupId: string, body: ApiKickGroupUsersRequest, options: any = {}): Promise<ProtobufEmpty> {
+    kickGroupUsers(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/group/{group_id}/kick"
          .replace("{group_id}", encodeURIComponent(String(groupId)));
@@ -2389,7 +2328,6 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       }
 
       fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -2405,12 +2343,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Leave a group the user is a member of. */
-    leaveGroup(groupId: string, body: ApiLeaveGroupRequest, options: any = {}): Promise<ProtobufEmpty> {
+    leaveGroup(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/group/{group_id}/leave"
          .replace("{group_id}", encodeURIComponent(String(groupId)));
@@ -2444,7 +2379,6 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       }
 
       fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -2460,12 +2394,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Promote a set of users in a group to the next role up. */
-    promoteGroupUsers(groupId: string, body: ApiPromoteGroupUsersRequest, options: any = {}): Promise<ProtobufEmpty> {
+    promoteGroupUsers(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/group/{group_id}/promote"
          .replace("{group_id}", encodeURIComponent(String(groupId)));
@@ -2499,7 +2430,6 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       }
 
       fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = JSON.stringify(body || {});
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -2777,11 +2707,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
-    /** Delete one or more users by ID or username. */
-    deleteNotifications(options: any = {}): Promise<ProtobufEmpty> {
+    /** Delete one or more notifications for the current user. */
+    deleteNotifications(ids?: Array<string>, options: any = {}): Promise<ProtobufEmpty> {
       const urlPath = "/v2/notification";
 
       const queryParams = {
+        ids: ids,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {

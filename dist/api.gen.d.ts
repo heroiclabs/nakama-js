@@ -53,10 +53,6 @@ export interface ApiAccountGoogle {
 export interface ApiAccountSteam {
     token?: string;
 }
-export interface ApiAddGroupUsersRequest {
-    group_id?: string;
-    user_ids?: Array<string>;
-}
 export interface ApiChannelMessage {
     channel_id?: string;
     code?: number;
@@ -116,13 +112,6 @@ export interface ApiGroupList {
 export interface ApiGroupUserList {
     group_users?: Array<GroupUserListGroupUser>;
 }
-export interface ApiJoinGroupRequest {
-    group_id?: string;
-}
-export interface ApiKickGroupUsersRequest {
-    group_id?: string;
-    user_ids?: Array<string>;
-}
 export interface ApiLeaderboardRecord {
     create_time?: string;
     expiry_time?: string;
@@ -141,9 +130,6 @@ export interface ApiLeaderboardRecordList {
     owner_records?: Array<ApiLeaderboardRecord>;
     prev_cursor?: string;
     records?: Array<ApiLeaderboardRecord>;
-}
-export interface ApiLeaveGroupRequest {
-    group_id?: string;
 }
 export interface ApiMatch {
     authoritative?: boolean;
@@ -166,10 +152,6 @@ export interface ApiNotification {
 export interface ApiNotificationList {
     cacheable_cursor?: string;
     notifications?: Array<ApiNotification>;
-}
-export interface ApiPromoteGroupUsersRequest {
-    group_id?: string;
-    user_ids?: Array<string>;
 }
 export interface ApiReadStorageObjectId {
     collection?: string;
@@ -267,16 +249,7 @@ export interface ApiWriteStorageObject {
 export interface ApiWriteStorageObjectsRequest {
     objects?: Array<ApiWriteStorageObject>;
 }
-export interface ProtobufBoolValue {
-    value?: boolean;
-}
 export interface ProtobufEmpty {
-}
-export interface ProtobufInt32Value {
-    value?: number;
-}
-export interface ProtobufStringValue {
-    value?: string;
 }
 export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     healthcheck(options?: any): Promise<ProtobufEmpty>;
@@ -304,7 +277,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     unlinkGoogle(body: ApiAccountGoogle, options?: any): Promise<ProtobufEmpty>;
     unlinkSteam(body: ApiAccountSteam, options?: any): Promise<ProtobufEmpty>;
     listChannelMessages(channelId: string, limit?: number | undefined, forward?: boolean | undefined, cursor?: string | undefined, options?: any): Promise<ApiChannelMessageList>;
-    deleteFriends(options?: any): Promise<ProtobufEmpty>;
+    deleteFriends(ids?: string[] | undefined, usernames?: string[] | undefined, options?: any): Promise<ProtobufEmpty>;
     listFriends(options?: any): Promise<ApiFriends>;
     addFriends(options?: any): Promise<ProtobufEmpty>;
     blockFriends(options?: any): Promise<ProtobufEmpty>;
@@ -313,17 +286,17 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     createGroup(body: ApiCreateGroupRequest, options?: any): Promise<ApiGroup>;
     deleteGroup(groupId: string, options?: any): Promise<ProtobufEmpty>;
     updateGroup(groupId: string, body: ApiUpdateGroupRequest, options?: any): Promise<ProtobufEmpty>;
-    addGroupUsers(groupId: string, body: ApiAddGroupUsersRequest, options?: any): Promise<ProtobufEmpty>;
-    joinGroup(groupId: string, body: ApiJoinGroupRequest, options?: any): Promise<ProtobufEmpty>;
-    kickGroupUsers(groupId: string, body: ApiKickGroupUsersRequest, options?: any): Promise<ProtobufEmpty>;
-    leaveGroup(groupId: string, body: ApiLeaveGroupRequest, options?: any): Promise<ProtobufEmpty>;
-    promoteGroupUsers(groupId: string, body: ApiPromoteGroupUsersRequest, options?: any): Promise<ProtobufEmpty>;
+    addGroupUsers(groupId: string, options?: any): Promise<ProtobufEmpty>;
+    joinGroup(groupId: string, options?: any): Promise<ProtobufEmpty>;
+    kickGroupUsers(groupId: string, options?: any): Promise<ProtobufEmpty>;
+    leaveGroup(groupId: string, options?: any): Promise<ProtobufEmpty>;
+    promoteGroupUsers(groupId: string, options?: any): Promise<ProtobufEmpty>;
     listGroupUsers(groupId: string, options?: any): Promise<ApiGroupUserList>;
     deleteLeaderboardRecord(leaderboardId: string, options?: any): Promise<ProtobufEmpty>;
     listLeaderboardRecords(leaderboardId: string, ownerIds?: string[] | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiLeaderboardRecordList>;
     writeLeaderboardRecord(leaderboardId: string, body: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
     listMatches(limit?: number | undefined, authoritative?: boolean | undefined, label?: string | undefined, minSize?: number | undefined, maxSize?: number | undefined, options?: any): Promise<ApiMatchList>;
-    deleteNotifications(options?: any): Promise<ProtobufEmpty>;
+    deleteNotifications(ids?: string[] | undefined, options?: any): Promise<ProtobufEmpty>;
     listNotifications(limit?: number | undefined, cacheableCursor?: string | undefined, options?: any): Promise<ApiNotificationList>;
     rpcFunc2(id: string, payload?: string | undefined, httpKey?: string | undefined, options?: any): Promise<ApiRpc>;
     rpcFunc(id: string, body: string, options?: any): Promise<ApiRpc>;
