@@ -28,7 +28,7 @@ You'll need to setup the server and database before you can connect with the cli
     ```js
     // <script src="path/to/nakama-js.umd.js"></script>
     var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350);
-    client.ssl = false;	// enable if server is run with an SSL certificate
+    client.ssl = false; // enable if server is run with an SSL certificate
     ```
 
 ## Usage

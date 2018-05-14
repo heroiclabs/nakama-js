@@ -3,6 +3,16 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [2.0.0] - 2018-05-14
+### Added
+- New browser headless test suite with Puppeteer.
+
+### Changed
+- All source code now written in TypeScript.
+- Rewrite client and socket model for Nakama 2.0.
+
+---
+
 ## [0.4.0] - 2018-02-02
 ### Changed
 - Re-structure project for wider browser compatibility.
