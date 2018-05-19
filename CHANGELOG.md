@@ -3,7 +3,12 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
-## [Unreleased]
+## [2.0.1] - 2018-05-19
+### Added
+- Authenticate functions for Steam and Game Center.
+
+### Fixed
+- Usernames can be passed into account create with register.
 
 ## [2.0.0] - 2018-05-14
 ### Added
