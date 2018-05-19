@@ -3,7 +3,7 @@ Nakama JavaScript client
 
 > JavaScript client for Nakama server written in TypeScript. For browser and React Native projects.
 
-[Nakama](https://github.com/heroiclabs/nakama) is an open-source server designed to power modern games and apps. Features include user accounts, chat, social, matchmaker, realtime multiplayer, and [much more](https://heroiclabs.com).
+[Nakama](https://github.com/heroiclabs/nakama) is an open-source server designed to power modern games and apps. Features include user accounts, chat, social, matchmaker, realtime multiplayer, and much [more](https://heroiclabs.com).
 
 This client implements the full API and socket options with the server. It's written in TypeScript with minimal dependencies to be compatible with all modern browsers and React Native.
 
@@ -15,7 +15,7 @@ You'll need to setup the server and database before you can connect with the cli
 
 1. Install and run the servers. Follow these [instructions](https://heroiclabs.com/docs/install-docker-quickstart).
 
-2. Import the client into your project. It's available on NPM and can be also be added to a project with Bower or other package managers.
+2. Import the client into your project. It's [available on NPM](https://www.npmjs.com/package/@heroiclabs/nakama-js) and can be also be added to a project with Bower or other package managers.
 
     ```shell
     yarn add "@heroiclabs/nakama-js"
@@ -33,7 +33,7 @@ You'll need to setup the server and database before you can connect with the cli
 
 ## Usage
 
-The client object has many methods to execute various features in the server and also create sockets to open connections with the server.
+The client object has many methods to execute various features in the server or open realtime socket connections with the server.
 
 ### Authenticate
 
@@ -72,7 +72,7 @@ if (session.isexpired(Date.now() / 1000)) {
 
 ### Requests
 
-The client includes lots of builtin APIs for various features of the game server. These can be accessed with the methods which return Promise objects. It is also possible to call RPC functions for custom logic registered with the server as well as with a socket object.
+The client includes lots of builtin APIs for various features of the game server. These can be accessed with the methods which return Promise objects. It can also call custom logic as RPC functions on the server. These can also be executed with a socket object.
 
 All requests are sent with a session object which authorizes the client.
 
