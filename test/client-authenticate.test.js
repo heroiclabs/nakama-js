@@ -37,6 +37,31 @@ describe('Authenticate Tests', () => {
     await page.goto("about:blank");
   }, TIMEOUT);
 
+  it('should authenticate with email', async () => {
+    const email = generateid() + "@example.com";
+    const password = generateid()
+
+    const session = await page.evaluate((email, password) => {
+      const client = new nakamajs.Client();
+      return client.authenticateEmail({ email: email, password: password });
+    }, email, password);
+
+    expect(session).not.toBeNull();
+    expect(session.token).not.toBeNull();
+  });
+
+  it('should authenticate with device id', async () => {
+    const deviceid = generateid();
+
+    const session = await page.evaluate((deviceid) => {
+      const client = new nakamajs.Client();
+      return client.authenticateDevice({ id: deviceid });
+    }, deviceid);
+
+    expect(session).not.toBeNull();
+    expect(session.token).not.toBeNull();
+  });
+
   it('should authenticate with custom id', async () => {
     const customid = generateid();
 
@@ -47,6 +72,17 @@ describe('Authenticate Tests', () => {
 
     expect(session).not.toBeNull();
     expect(session.token).not.toBeNull();
+  });
+
+  it('should fail to authenticate with new custom id', async () => {
+    const customid = generateid();
+
+    const promise = await page.evaluate((customid) => {
+      const client = new nakamajs.Client();
+      return client.authenticateCustom({ id: customid, create: false });
+    }, customid);
+
+    await expect(promise).rejects.not.toBeNull();
   });
 
   it('should authenticate with custom id twice', async () => {

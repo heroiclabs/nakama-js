@@ -1,6 +1,47 @@
-import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
+import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
+export interface AccountCustom {
+    username?: string;
+    create?: boolean;
+    id?: string;
+}
+export interface AccountDevice {
+    username?: string;
+    create?: boolean;
+    id?: string;
+}
+export interface AccountEmail {
+    username?: string;
+    create?: boolean;
+    email?: string;
+    password?: string;
+}
+export interface AccountFacebook {
+    username?: string;
+    create?: boolean;
+    token?: string;
+}
+export interface AccountGameCenter {
+    username?: string;
+    create?: boolean;
+    bundle_id?: string;
+    player_id?: string;
+    public_key_url?: string;
+    salt?: string;
+    signature?: string;
+    timestamp_seconds?: string;
+}
+export interface AccountGoogle {
+    username?: string;
+    create?: boolean;
+    token?: string;
+}
+export interface AccountSteam {
+    username?: string;
+    create?: boolean;
+    token?: string;
+}
 export interface RpcResponse {
     id?: string;
     payload?: object;
@@ -157,11 +198,13 @@ export declare class Client {
     constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number, verbose?: boolean);
     addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
-    authenticateCustom(request: ApiAccountCustom): Promise<Session>;
-    authenticateDevice(request: ApiAccountDevice): Promise<Session>;
-    authenticateEmail(request: ApiAccountEmail): Promise<Session>;
-    authenticateFacebook(request: ApiAccountFacebook): Promise<Session>;
-    authenticateGoogle(request: ApiAccountGoogle): Promise<Session>;
+    authenticateCustom(request: AccountCustom): Promise<Session>;
+    authenticateDevice(request: AccountDevice): Promise<Session>;
+    authenticateEmail(request: AccountEmail): Promise<Session>;
+    authenticateFacebook(request: AccountFacebook): Promise<Session>;
+    authenticateGoogle(request: AccountGoogle): Promise<Session>;
+    authenticateGameCenter(request: AccountGameCenter): Promise<Session>;
+    authenticateSteam(request: AccountSteam): Promise<Session>;
     blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group>;
     createSocket(useSSL?: boolean, verbose?: boolean): Socket;
@@ -184,6 +227,8 @@ export declare class Client {
     linkEmail(session: Session, request: ApiAccountEmail): Promise<boolean>;
     linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
+    linkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean>;
+    linkSteam(session: Session, request: ApiAccountSteam): Promise<boolean>;
     listFriends(session: Session): Promise<Friends>;
     listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<LeaderboardRecordList>;
     listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList>;
@@ -198,6 +243,8 @@ export declare class Client {
     unlinkEmail(session: Session, request: ApiAccountEmail): Promise<boolean>;
     unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
+    unlinkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean>;
+    unlinkSteam(session: Session, request: ApiAccountSteam): Promise<boolean>;
     updateAccount(session: Session, request: ApiUpdateAccountRequest): Promise<boolean>;
     updateGroup(session: Session, groupId: string, request: ApiUpdateGroupRequest): Promise<boolean>;
     writeLeaderboardRecord(session: Session, leaderboardId: string, request: WriteLeaderboardRecord): Promise<LeaderboardRecord>;

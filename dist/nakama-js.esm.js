@@ -3619,27 +3619,373 @@ var Client = (function () {
         });
     };
     Client.prototype.authenticateCustom = function (request) {
-        return this.apiClient.authenticateCustom(request).then(function (apiSession) {
+        var _this = this;
+        var urlPath = "/v2/account/authenticate/custom";
+        var queryParams = {
+            username: request.username,
+            create: request.create
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        fetchOptions.body = JSON.stringify({
+            id: request.id
+        });
+        console.log;
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
         });
     };
     Client.prototype.authenticateDevice = function (request) {
-        return this.apiClient.authenticateDevice(request).then(function (apiSession) {
+        var _this = this;
+        var urlPath = "/v2/account/authenticate/device";
+        var queryParams = {
+            username: request.username,
+            create: request.create
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        fetchOptions.body = JSON.stringify({
+            id: request.id
+        });
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
         });
     };
     Client.prototype.authenticateEmail = function (request) {
-        return this.apiClient.authenticateEmail(request).then(function (apiSession) {
+        var _this = this;
+        var urlPath = "/v2/account/authenticate/email";
+        var queryParams = {
+            username: request.username,
+            create: request.create
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        fetchOptions.body = JSON.stringify({
+            email: request.email,
+            password: request.password
+        });
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
         });
     };
     Client.prototype.authenticateFacebook = function (request) {
-        return this.apiClient.authenticateFacebook(request).then(function (apiSession) {
+        var _this = this;
+        var urlPath = "/v2/account/authenticate/facebook";
+        var queryParams = {
+            username: request.username,
+            create: request.create
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        fetchOptions.body = JSON.stringify({
+            token: request.token
+        });
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
         });
     };
     Client.prototype.authenticateGoogle = function (request) {
-        return this.apiClient.authenticateGoogle(request).then(function (apiSession) {
+        var _this = this;
+        var urlPath = "/v2/account/authenticate/google";
+        var queryParams = {
+            username: request.username,
+            create: request.create
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        fetchOptions.body = JSON.stringify({
+            token: request.token
+        });
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (apiSession) {
+            return Session.restore(apiSession.token || "");
+        });
+    };
+    Client.prototype.authenticateGameCenter = function (request) {
+        var _this = this;
+        var urlPath = "/v2/account/authenticate/gamecenter";
+        var queryParams = {
+            username: request.username,
+            create: request.create
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        fetchOptions.body = JSON.stringify({
+            bundle_id: request.bundle_id,
+            player_id: request.player_id,
+            public_key_url: request.public_key_url,
+            salt: request.salt,
+            signature: request.signature,
+            timestamp_seconds: request.timestamp_seconds
+        });
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (apiSession) {
+            return Session.restore(apiSession.token || "");
+        });
+    };
+    Client.prototype.authenticateSteam = function (request) {
+        var _this = this;
+        var urlPath = "/v2/account/authenticate/steam";
+        var queryParams = {
+            username: request.username,
+            create: request.create
+        };
+        var urlQuery = "?" + Object.keys(queryParams)
+            .map(function (k) {
+            if (queryParams[k] instanceof Array) {
+                return queryParams[k].reduce(function (prev, curr) {
+                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            }
+            else {
+                if (queryParams[k] != null) {
+                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                }
+            }
+        })
+            .join("");
+        var fetchOptions = __assign({ method: "POST" });
+        var headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        if (this.configuration.bearerToken) {
+            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+        }
+        else if (this.configuration.username) {
+            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        fetchOptions.headers = __assign({}, headers);
+        fetchOptions.body = JSON.stringify({
+            token: request.token
+        });
+        return Promise.race([
+            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                }
+                else {
+                    throw response;
+                }
+            }),
+            new Promise(function (_, reject) {
+                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+            }),
+        ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
         });
     };
@@ -4083,6 +4429,18 @@ var Client = (function () {
             return response !== undefined;
         });
     };
+    Client.prototype.linkGameCenter = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.linkGameCenter(request).then(function (response) {
+            return response !== undefined;
+        });
+    };
+    Client.prototype.linkSteam = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.linkSteam(request).then(function (response) {
+            return response !== undefined;
+        });
+    };
     Client.prototype.listFriends = function (session) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.listFriends().then(function (response) {
@@ -4345,6 +4703,18 @@ var Client = (function () {
     Client.prototype.unlinkGoogle = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.unlinkGoogle(request).then(function (response) {
+            return response !== undefined;
+        });
+    };
+    Client.prototype.unlinkGameCenter = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.unlinkGameCenter(request).then(function (response) {
+            return response !== undefined;
+        });
+    };
+    Client.prototype.unlinkSteam = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.unlinkSteam(request).then(function (response) {
             return response !== undefined;
         });
     };
