@@ -24,60 +24,67 @@ interface PromiseExecutor {
   reject: (reason?: any) => void;
 }
 
+export interface Presence {
+  user_id: string;
+  session_id: string;
+  username: string;
+  node: string;
+}
+
 /** A response fron a channel join operation. */
 export interface Channel {
-  id: string,
-  presences: [{}],
-  self: {}
+  id: string;
+  presences: Presence[];
+  self: Presence;
 }
 
 /** Join a realtime chat channel. */
 export interface ChannelJoin {
   channel_join: {
-    target: string,
-    type: number,
-    persistence: boolean,
-    hidden: boolean
-  }
+    target: string;
+    type: number;
+    persistence: boolean;
+    hidden: boolean;
+  };
 }
 
 /** Leave a realtime chat channel. */
 export interface ChannelLeave {
   channel_leave: {
-    channel_id: string
-  }
+    channel_id: string;
+  };
 }
 
 /** An incoming message on a realtime chat channel. */
 export interface ChannelMessage {
-  channel_id: string,
-  message_id: string,
-  code: number,
-  sender_id: string,
-  username: string,
-  content: {},
-  create_time: string,
-  update_time: string,
-  persistent: boolean
+  channel_id: string;
+  message_id: string;
+  code: number;
+  sender_id: string;
+  username: string;
+  content: object;
+  create_time: string;
+  update_time: string;
+  persistent: boolean;
 }
 
 /** An acknowledgement received in response to sending a message on a chat channel. */
 export interface ChannelMessageAck {
-  channel_id: string,
-  message_id: string,
-  code: number,
-  username: string,
-  create_time: string,
-  update_time: string,
-  persistence: boolean
+  channel_id: string;
+  message_id: string;
+  code: number;
+  username: string;
+  create_time: string;
+  update_time: string;
+  persistence: boolean;
 }
 
 /** Send a message to a realtime chat channel. */
 export interface ChannelMessageSend {
   channel_message_send: {
-    channel_id: string,
-    content: {}
-  }
+    channel_id: string;
+    content: object;
+  };
 }
 
 /** Update a message previously sent to a realtime chat channel. */
@@ -85,132 +92,153 @@ export interface ChannelMessageUpdate {
   channel_message_update: {
     channel_id: string,
     message_id: string,
-    content: {}
-  }
+    content: object;
+  };
 }
 
 /** Remove a message previously sent to a realtime chat channel. */
 export interface ChannelMessageRemove {
   channel_message_remove: {
-    channel_id: string,
-    message_id: string
-  }
+    channel_id: string;
+    message_id: string;
+  };
 }
 
 /** Presence update for a particular realtime chat channel. */
 export interface ChannelPresenceEvent {
-  channel_id: string,
-  joins: [{}],
-  leaves: [{}]
+  channel_id: string;
+  joins: Presence[];
+  leaves: Presence[];
+}
+
+/** Stream identifier */
+export interface StreamId {
+  mode: number;
+  subject: string;
+  descriptor: string;
+  label: string;
 }
 
 /** Stream data. */
 export interface StreamData {
-  stream: {},
-  stream_presence: {}
-  data: string
+  stream: StreamId;
+  stream_presence: Presence;
+  data: string;
 }
 
 /** Presence updates. */
 export interface StreamPresenceEvent {
-  stream: {},
-  joins: [{}],
-  leaves: [{}]
+  stream: StreamId;
+  joins: Presence[];
+  leaves: Presence[];
 }
 
 /** Match presence updates. */
 export interface MatchPresenceEvent {
-  match_id: string,
-  joins: [{}],
-  leaves: [{}]
+  match_id: string;
+  joins: Presence[];
+  leaves: Presence[];
 }
 
 /** Start a matchmaking process. */
 export interface MatchmakerAdd {
   matchmaker_add: {
-    min_count: number,
-    max_count: number,
-    query: string,
-    string_properties: {},
-    numeric_properties: {}
-  }
+    min_count: number;
+    max_count: number;
+    query: string;
+    string_properties: Map<string, string>;
+    numeric_properties: Map<string, number>;
+  };
 }
 
 /** Cancel a matchmaking process. */
 export interface MatchmakerRemove {
   matchmaker_remove: {
-    ticket: string
-  }
+    ticket: string;
+  };
 }
 
 /** Matchmaking result. */
 export interface MatchmakerMatched {
-  ticket: string,
-  match_id: string,
-  token: string,
-  users: [{}],
-  self: {}
+  ticket: string;
+  match_id: string;
+  token: string;
+  users: Presence[];
+  self: Presence;
+}
+
+/** A realtime match */
+export interface Match {
+  match_id: string;
+  authoritative: boolean;
+  label?: string;
+  size: number;
+  presences: Match[];
+  self: Match;
 }
 
 /** Create a multiplayer match. */
 export interface CreateMatch {
-  match_create: {}
+  match_create: {};
 }
 
 /** Join a multiplayer match. */
 export interface JoinMatch {
   match_join: {
-    match_id: string,
-    token: string
-  }
+    match_id?: string;
+    token?: string;
+  };
 }
 
 /** Leave a multiplayer match. */
 export interface LeaveMatch {
   match_leave: {
-    match_id: string
-  }
+    match_id: string;
+  };
 }
 
-/** Leave a multiplayer match. */
+/** Match data */
 export interface MatchData {
-  match_data_send: {
-    match_id: string,
-    op_code: number,
-    data: {},
-    presence: [{}]
-  }
+  match_id: string;
+  op_code: number;
+  data: object;
+  presence: Presence;
+}
+
+/** Send a message contains match data. */
+export interface MatchDataSend {
+  match_data_send: MatchData;
 }
 
 /** Execute an Lua function on the server. */
 export interface Rpc {
-  rpc: ApiRpc
+  rpc: ApiRpc;
 }
 
 /** A snapshot of statuses for some set of users. */
 export interface Status {
-  presences: object
+  presences: Presence[];
 }
 
 /** Start receiving status updates for some set of users. */
 export interface StatusFollow {
-  user_ids: Array<string>
+  user_ids: string[];
 }
 
 /** A batch of status updates for a given user. */
 export interface StatusPresenceEvent {
-  joins: [{}],
-  leaves: [{}]
+  joins: Presence[];
+  leaves: Presence[];
 }
 
 /** Stop receiving status updates for some set of users. */
 export interface StatusUnfollow {
-  user_ids: Array<string>
+  user_ids: string[];
 }
 
 /** Set the user's own status. */
 export interface StatusUpdate {
-  status: string
+  status: string;
 }
 
 /** A socket connection to Nakama server. */
@@ -219,6 +247,11 @@ export interface Socket {
   connect(session: Session, createStatus: boolean): Promise<Session>;
   // Disconnect from the server.
   disconnect(fireDisconnectEvent: boolean): void;
+  // Send message to the server.
+  send(message: ChannelJoin | ChannelLeave | ChannelMessageSend |
+    ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch |
+    LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc |
+    StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
   // Handle disconnect events received from the socket.
   ondisconnect: (evt: Event) => void;
   // Handle error events received from the socket.
@@ -297,14 +330,14 @@ export class DefaultSocket implements Socket {
       if (message.cid == undefined) {
         if (message.notifications) {
           message.notifications.notifications.forEach((n: ApiNotification) => {
-            var notification: Notification = {
+            const notification: Notification = {
               code: n.code,
               create_time: n.create_time,
               id: n.id,
               persistent: n.persistent,
               sender_id: n.sender_id,
               subject: n.subject,
-              content: n.content ? JSON.parse(n.content) : undefined
+              content: n.content ? JSON.parse(n.content) : undefined,
             };
             this.onnotification(notification);
           });
@@ -366,7 +399,7 @@ export class DefaultSocket implements Socket {
   }
 
   disconnect(fireDisconnectEvent: boolean = true) {
-    if (this.socket != undefined) {
+    if (this.socket !== undefined) {
       this.socket.close();
     }
     if (fireDisconnectEvent) {
@@ -440,10 +473,13 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate) {
-    var m = <any>message;
+  send(message: ChannelJoin | ChannelLeave | ChannelMessageSend |
+    ChannelMessageUpdate | ChannelMessageRemove | CreateMatch |
+    JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove |
+    Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any> {
+    const m = message as any;
     return new Promise((resolve, reject) => {
-      if (this.socket == undefined) {
+      if (this.socket === undefined) {
         reject("Socket connection has not been established yet.");
       } else {
         if (m.match_data_send) {
@@ -459,10 +495,7 @@ export class DefaultSocket implements Socket {
           }
 
           const cid = this.generatecid();
-          this.cIds[cid] = {
-            resolve: resolve,
-            reject: reject
-          };
+          this.cIds[cid] = {resolve, reject};
 
           // Add id for promise executor.
           m.cid = cid;
