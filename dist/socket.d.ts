@@ -1,10 +1,16 @@
 import { ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";
+export interface Presence {
+    user_id: string;
+    session_id: string;
+    username: string;
+    node: string;
+}
 export interface Channel {
     id: string;
-    presences: [{}];
-    self: {};
+    presences: Presence[];
+    self: Presence;
 }
 export interface ChannelJoin {
     channel_join: {
@@ -25,7 +31,7 @@ export interface ChannelMessage {
     code: number;
     sender_id: string;
     username: string;
-    content: {};
+    content: object;
     create_time: string;
     update_time: string;
     persistent: boolean;
@@ -42,14 +48,14 @@ export interface ChannelMessageAck {
 export interface ChannelMessageSend {
     channel_message_send: {
         channel_id: string;
-        content: {};
+        content: object;
     };
 }
 export interface ChannelMessageUpdate {
     channel_message_update: {
         channel_id: string;
         message_id: string;
-        content: {};
+        content: object;
     };
 }
 export interface ChannelMessageRemove {
@@ -60,31 +66,37 @@ export interface ChannelMessageRemove {
 }
 export interface ChannelPresenceEvent {
     channel_id: string;
-    joins: [{}];
-    leaves: [{}];
+    joins: Presence[];
+    leaves: Presence[];
+}
+export interface StreamId {
+    mode: number;
+    subject: string;
+    descriptor: string;
+    label: string;
 }
 export interface StreamData {
-    stream: {};
-    stream_presence: {};
+    stream: StreamId;
+    stream_presence: Presence;
     data: string;
 }
 export interface StreamPresenceEvent {
-    stream: {};
-    joins: [{}];
-    leaves: [{}];
+    stream: StreamId;
+    joins: Presence[];
+    leaves: Presence[];
 }
 export interface MatchPresenceEvent {
     match_id: string;
-    joins: [{}];
-    leaves: [{}];
+    joins: Presence[];
+    leaves: Presence[];
 }
 export interface MatchmakerAdd {
     matchmaker_add: {
         min_count: number;
         max_count: number;
         query: string;
-        string_properties: {};
-        numeric_properties: {};
+        string_properties: Map<string, string>;
+        numeric_properties: Map<string, number>;
     };
 }
 export interface MatchmakerRemove {
@@ -96,16 +108,24 @@ export interface MatchmakerMatched {
     ticket: string;
     match_id: string;
     token: string;
-    users: [{}];
-    self: {};
+    users: Presence[];
+    self: Presence;
+}
+export interface Match {
+    match_id: string;
+    authoritative: boolean;
+    label?: string;
+    size: number;
+    presences: Match[];
+    self: Match;
 }
 export interface CreateMatch {
     match_create: {};
 }
 export interface JoinMatch {
     match_join: {
-        match_id: string;
-        token: string;
+        match_id?: string;
+        token?: string;
     };
 }
 export interface LeaveMatch {
@@ -114,28 +134,29 @@ export interface LeaveMatch {
     };
 }
 export interface MatchData {
-    match_data_send: {
-        match_id: string;
-        op_code: number;
-        data: {};
-        presence: [{}];
-    };
+    match_id: string;
+    op_code: number;
+    data: object;
+    presence: Presence;
+}
+export interface MatchDataSend {
+    match_data_send: MatchData;
 }
 export interface Rpc {
     rpc: ApiRpc;
 }
 export interface Status {
-    presences: object;
+    presences: Presence[];
 }
 export interface StatusFollow {
-    user_ids: Array<string>;
+    user_ids: string[];
 }
 export interface StatusPresenceEvent {
-    joins: [{}];
-    leaves: [{}];
+    joins: Presence[];
+    leaves: Presence[];
 }
 export interface StatusUnfollow {
-    user_ids: Array<string>;
+    user_ids: string[];
 }
 export interface StatusUpdate {
     status: string;
@@ -143,6 +164,7 @@ export interface StatusUpdate {
 export interface Socket {
     connect(session: Session, createStatus: boolean): Promise<Session>;
     disconnect(fireDisconnectEvent: boolean): void;
+    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
     ondisconnect: (evt: Event) => void;
     onerror: (evt: Event) => void;
     onnotification: (notification: Notification) => void;
@@ -181,5 +203,5 @@ export declare class DefaultSocket implements Socket {
     onstatuspresence(statusPresence: StatusPresenceEvent): void;
     onstreampresence(streamPresence: StreamPresenceEvent): void;
     onstreamdata(streamData: StreamData): void;
-    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchData | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<{}>;
+    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
 }

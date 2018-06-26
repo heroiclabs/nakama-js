@@ -3320,7 +3320,7 @@ var DefaultSocket = (function () {
                             persistent: n.persistent,
                             sender_id: n.sender_id,
                             subject: n.subject,
-                            content: n.content ? JSON.parse(n.content) : undefined
+                            content: n.content ? JSON.parse(n.content) : undefined,
                         };
                         _this.onnotification(notification);
                     });
@@ -3391,7 +3391,7 @@ var DefaultSocket = (function () {
     };
     DefaultSocket.prototype.disconnect = function (fireDisconnectEvent) {
         if (fireDisconnectEvent === void 0) { fireDisconnectEvent = true; }
-        if (this.socket != undefined) {
+        if (this.socket !== undefined) {
             this.socket.close();
         }
         if (fireDisconnectEvent) {
@@ -3457,7 +3457,7 @@ var DefaultSocket = (function () {
         var _this = this;
         var m = message;
         return new Promise(function (resolve, reject) {
-            if (_this.socket == undefined) {
+            if (_this.socket === undefined) {
                 reject("Socket connection has not been established yet.");
             }
             else {
@@ -3475,10 +3475,7 @@ var DefaultSocket = (function () {
                         m.channel_message_update.content = JSON.stringify(m.channel_message_update.content);
                     }
                     var cid = _this.generatecid();
-                    _this.cIds[cid] = {
-                        resolve: resolve,
-                        reject: reject
-                    };
+                    _this.cIds[cid] = { resolve: resolve, reject: reject };
                     m.cid = cid;
                     _this.socket.send(JSON.stringify(m));
                 }
