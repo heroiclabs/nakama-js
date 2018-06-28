@@ -149,17 +149,23 @@ export interface Status {
     presences: Presence[];
 }
 export interface StatusFollow {
-    user_ids: string[];
+    status_follow: {
+        user_ids: string[];
+    };
 }
 export interface StatusPresenceEvent {
     joins: Presence[];
     leaves: Presence[];
 }
 export interface StatusUnfollow {
-    user_ids: string[];
+    status_unfollow: {
+        user_ids: string[];
+    };
 }
 export interface StatusUpdate {
-    status: string;
+    status_update: {
+        status?: string;
+    };
 }
 export interface Socket {
     connect(session: Session, createStatus: boolean): Promise<Session>;

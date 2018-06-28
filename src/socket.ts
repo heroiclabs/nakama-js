@@ -222,7 +222,7 @@ export interface Status {
 
 /** Start receiving status updates for some set of users. */
 export interface StatusFollow {
-  user_ids: string[];
+  status_follow: {user_ids: string[];}
 }
 
 /** A batch of status updates for a given user. */
@@ -233,12 +233,12 @@ export interface StatusPresenceEvent {
 
 /** Stop receiving status updates for some set of users. */
 export interface StatusUnfollow {
-  user_ids: string[];
+  status_unfollow: {user_ids: string[];};
 }
 
 /** Set the user's own status. */
 export interface StatusUpdate {
-  status: string;
+  status_update: {status?: string;};
 }
 
 /** A socket connection to Nakama server. */
