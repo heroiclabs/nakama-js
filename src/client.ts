@@ -598,8 +598,6 @@ export class Client {
       id: request.id
     });
 
-    console.log
-
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
         if (response.status >= 200 && response.status < 300) {

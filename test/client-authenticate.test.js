@@ -77,9 +77,17 @@ describe('Authenticate Tests', () => {
   it('should fail to authenticate with new custom id', async () => {
     const customid = generateid();
 
-    const promise = await page.evaluate((customid) => {
+    const promise = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid, create: false });
+
+      return new Promise(async (resolve, reject) => {
+        try {
+          const session = await client.authenticateCustom({ id: customid, create: false });
+          resolve(session);
+        } catch (error) {
+          reject(error)
+        }
+      });
     }, customid);
 
     await expect(promise).rejects.not.toBeNull();

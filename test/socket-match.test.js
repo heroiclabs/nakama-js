@@ -55,7 +55,6 @@ describe('Match Tests', () => {
     expect(response.cid).not.toBeNull();
     expect(response.match).not.toBeNull();
     expect(response.match.match_id).not.toBeNull();
-    expect(response.match.presences).toHaveLength(1);
     expect(response.match.self).not.toBeNull();
     expect(response.match.self.session_id).not.toBeNull();
     expect(response.match.self.user_id).not.toBeNull();

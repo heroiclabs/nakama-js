@@ -3655,7 +3655,6 @@ var Client = (function () {
         fetchOptions.body = JSON.stringify({
             id: request.id
         });
-        console.log;
         return Promise.race([
             fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
                 if (response.status >= 200 && response.status < 300) {
