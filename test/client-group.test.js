@@ -41,12 +41,10 @@ describe('Group Tests', () => {
     const customid = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid, group_name) => {
+    const result = await page.evaluate(async (customid, group_name) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.createGroup(session, { name: group_name, open: true });
-        })
+      const session = await client.authenticateCustom({ id: customid });
+      return await client.createGroup(session, { name: group_name, open: true });
     }, customid, group_name);
 
     expect(result).not.toBeNull();
@@ -61,15 +59,11 @@ describe('Group Tests', () => {
     const customid = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid, group_name) => {
+    const result = await page.evaluate(async (customid, group_name) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.createGroup(session, { name: group_name, open: true })
-            .then(group => {
-              return client.listUserGroups(session, session.user_id);
-            });
-        });
+      const session = await client.authenticateCustom({ id: customid })
+      const group = await client.createGroup(session, { name: group_name, open: true });
+      return await client.listUserGroups(session, session.user_id);
     }, customid, group_name);
 
     expect(result).not.toBeNull();
@@ -87,18 +81,12 @@ describe('Group Tests', () => {
     const group_name1 = generateid();
     const group_name2 = generateid();
 
-    const result = await page.evaluate((customid, group_name1, group_name2) => {
+    const result = await page.evaluate(async (customid, group_name1, group_name2) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.createGroup(session, { name: group_name1, open: true })
-            .then(group => {
-              return client.updateGroup(session, group.id, { name: group_name2 });
-            })
-            .then(result => {
-              return client.listUserGroups(session, session.user_id);
-            });
-        });
+      const session = await client.authenticateCustom({ id: customid });
+      const group = await client.createGroup(session, { name: group_name1, open: true });
+      await client.updateGroup(session, group.id, { name: group_name2 });
+      return await client.listUserGroups(session, session.user_id);
     }, customid, group_name1, group_name2);
 
     expect(result).not.toBeNull();
@@ -115,18 +103,12 @@ describe('Group Tests', () => {
     const customid = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid, group_name) => {
+    const result = await page.evaluate(async (customid, group_name) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.createGroup(session, { name: group_name, open: true })
-            .then(group => {
-              return client.deleteGroup(session, group.id);
-            })
-            .then(result => {
-              return client.listUserGroups(session, session.user_id);
-            });
-        });
+      const session = await client.authenticateCustom({ id: customid });
+      const group = await client.createGroup(session, { name: group_name, open: true });
+      await client.deleteGroup(session, group.id);
+      return await client.listUserGroups(session, session.user_id);
     }, customid, group_name);
 
     expect(result).not.toBeNull();
@@ -137,15 +119,11 @@ describe('Group Tests', () => {
     const customid = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid, group_name) => {
+    const result = await page.evaluate(async (customid, group_name) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.createGroup(session, { name: group_name, open: true })
-            .then(group => {
-              return client.listGroupUsers(session, group.id);
-            });
-        });
+      const session = await client.authenticateCustom({ id: customid })
+      const group = await client.createGroup(session, { name: group_name, open: true });
+      return await client.listGroupUsers(session, group.id);
     }, customid, group_name);
 
     expect(result).not.toBeNull();
@@ -158,22 +136,15 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: true })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id);
-                })
-                .then(result => {
-                  return client1.listGroupUsers(session1, group.id)
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const group = await client1.createGroup(session1, { name: group_name, open: true });
+
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await client2.joinGroup(session2, group.id);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -198,13 +169,9 @@ describe('Group Tests', () => {
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
-      return client1.createGroup(session1, { name: group_name, open: true })
-        .then(group => {
-          return client1.addGroupUsers(session1, group.id, [session2.user_id])
-            .then(result => {
-              return client1.listGroupUsers(session1, group.id);
-            })
-        })
+      const group = await client1.createGroup(session1, { name: group_name, open: true })
+      await client1.addGroupUsers(session1, group.id, [session2.user_id]);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -229,16 +196,10 @@ describe('Group Tests', () => {
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
-      return client1.createGroup(session1, { name: group_name, open: true })
-        .then(group => {
-          return client1.addGroupUsers(session1, group.id, [session2.user_id])
-            .then(result => {
-              return client1.kickGroupUsers(session1, group.id, [session2.user_id]);
-            })
-            .then(result => {
-              return client1.listGroupUsers(session1, group.id);
-            })
-        })
+      const group = await client1.createGroup(session1, { name: group_name, open: true });
+      await client1.addGroupUsers(session1, group.id, [session2.user_id]);
+      await client1.kickGroupUsers(session1, group.id, [session2.user_id]);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -251,22 +212,15 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: false })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id);
-                })
-                .then(result => {
-                  return client1.listGroupUsers(session1, group.id);
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const group = await client1.createGroup(session1, { name: group_name, open: false });
+
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await client2.joinGroup(session2, group.id);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -285,22 +239,16 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: true })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id);
-                })
-                .then(result => {
-                  return client1.listUserGroups(session1, session1.user_id);
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 })
+      const group = await client1.createGroup(session1, { name: group_name, open: true });
+
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+
+      await client2.joinGroup(session2, group.id);
+      return await client1.listUserGroups(session1, session1.user_id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -313,22 +261,16 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: false })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id);
-                })
-                .then(result => {
-                  return client1.listUserGroups(session1, session1.user_id);
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const group = await client1.createGroup(session1, { name: group_name, open: false });
+
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+
+      await client2.joinGroup(session2, group.id);
+      return await client1.listUserGroups(session1, session1.user_id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -341,25 +283,17 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: false })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id)
-                    .then(result => {
-                      return client1.addGroupUsers(session1, group.id, [session2.user_id]);
-                    })
-                    .then(result => {
-                      return client1.listUserGroups(session1, session1.user_id);
-                    });
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const group = await client1.createGroup(session1, { name: group_name, open: false })
+
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+
+      await client2.joinGroup(session2, group.id);
+      await client1.addGroupUsers(session1, group.id, [session2.user_id]);
+      return await client1.listUserGroups(session1, session1.user_id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -372,25 +306,16 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: false })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id)
-                    .then(result => {
-                      return client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
-                    })
-                    .then(result => {
-                      return client1.listUserGroups(session1, session1.user_id);
-                    });
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const group = await client1.createGroup(session1, { name: group_name, open: false });
+
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await client2.joinGroup(session2, group.id);
+      await client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
+      return await client1.listUserGroups(session1, session1.user_id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -403,25 +328,17 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: true })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id)
-                    .then(result => {
-                      return client2.leaveGroup(session2, group.id);
-                    })
-                    .then(result => {
-                      return client1.listUserGroups(session1, session1.user_id);
-                    });
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const group = await client1.createGroup(session1, { name: group_name, open: true });
+
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+
+      await client2.joinGroup(session2, group.id);
+      await client2.leaveGroup(session2, group.id);
+      return await client1.listUserGroups(session1, session1.user_id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -434,25 +351,15 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: false })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id)
-                    .then(result => {
-                      return client2.leaveGroup(session2, group.id);
-                    })
-                    .then(result => {
-                      return client1.listUserGroups(session1, session1.user_id);
-                    });
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const group = await client1.createGroup(session1, { name: group_name, open: false });
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await client2.joinGroup(session2, group.id);
+      await client2.leaveGroup(session2, group.id);
+      return await client1.listUserGroups(session1, session1.user_id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -465,25 +372,15 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: false })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id)
-                    .then(result => {
-                      return client1.addGroupUsers(session1, group.id, [session2.user_id]);
-                    })
-                    .then(result => {
-                      return client1.listGroupUsers(session1, group.id);
-                    });
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 })
+      const group = await client1.createGroup(session1, { name: group_name, open: false })
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 })
+      await client2.joinGroup(session2, group.id)
+      await client1.addGroupUsers(session1, group.id, [session2.user_id]);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -502,25 +399,15 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: false })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id)
-                    .then(result => {
-                      return client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
-                    })
-                    .then(result => {
-                      return client1.listGroupUsers(session1, group.id);
-                    });
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const group = await client1.createGroup(session1, { name: group_name, open: false });
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 })
+      await client2.joinGroup(session2, group.id)
+      await client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -539,25 +426,15 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: false })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id)
-                    .then(result => {
-                      return client1.kickGroupUsers(session1, group.id, [session2.user_id]);
-                    })
-                    .then(result => {
-                      return client1.listGroupUsers(session1, group.id);
-                    });
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const group = await client1.createGroup(session1, { name: group_name, open: false });
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await client2.joinGroup(session2, group.id)
+      await client1.kickGroupUsers(session1, group.id, [session2.user_id]);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -576,16 +453,10 @@ describe('Group Tests', () => {
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
-      return client1.createGroup(session1, { name: group_name, open: true })
-        .then(group => {
-          return client1.addGroupUsers(session1, group.id, [session2.user_id])
-            .then(result => {
-              return client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
-            })
-            .then(result => {
-              return client1.listGroupUsers(session1, group.id);
-            })
-        })
+      const group = await client1.createGroup(session1, { name: group_name, open: true })
+      await client1.addGroupUsers(session1, group.id, [session2.user_id]);
+      await client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -610,19 +481,11 @@ describe('Group Tests', () => {
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
-      return client1.createGroup(session1, { name: group_name, open: true })
-        .then(group => {
-          return client1.addGroupUsers(session1, group.id, [session2.user_id])
-            .then(result => {
-              return client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
-            })
-            .then(result => {
-              return client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
-            })
-            .then(result => {
-              return client1.listGroupUsers(session1, group.id);
-            })
-        })
+      const group = await client1.createGroup(session1, { name: group_name, open: true });
+      await client1.addGroupUsers(session1, group.id, [session2.user_id])
+      await client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
+      await client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -636,25 +499,15 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: true })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id)
-                    .then(result => {
-                      return client2.leaveGroup(session2, group.id);
-                    })
-                    .then(result => {
-                      return client1.listGroupUsers(session1, group.id);
-                    });
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const group = await client1.createGroup(session1, { name: group_name, open: true });
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await client2.joinGroup(session2, group.id)
+      await client2.leaveGroup(session2, group.id);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -667,25 +520,15 @@ describe('Group Tests', () => {
     const customid2 = generateid();
     const group_name = generateid();
 
-    const result = await page.evaluate((customid1, customid2, group_name) => {
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
       const client1 = new nakamajs.Client();
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return client1.createGroup(session1, { name: group_name, open: false })
-            .then(group => {
-              const client2 = new nakamajs.Client();
-              return client2.authenticateCustom({ id: customid2 })
-                .then(session2 => {
-                  return client2.joinGroup(session2, group.id)
-                    .then(result => {
-                      return client2.leaveGroup(session2, group.id);
-                    })
-                    .then(result => {
-                      return client1.listGroupUsers(session1, group.id);
-                    });
-                });
-            });
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 })
+      const group = await client1.createGroup(session1, { name: group_name, open: false });
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await client2.joinGroup(session2, group.id)
+      await client2.leaveGroup(session2, group.id);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
 
     expect(result).not.toBeNull();
@@ -707,22 +550,12 @@ describe('Group Tests', () => {
       const client3 = new nakamajs.Client();
       const session3 = await client3.authenticateCustom({ id: customid3 });
 
-      return client1.createGroup(session1, { name: group_name, open: true })
-        .then(group => {
-          return client1.addGroupUsers(session1, group.id, [session2.user_id])
-            .then(result => {
-              return client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
-            })
-            .then(result => {
-              return client2.addGroupUsers(session2, group.id, [session3.user_id]);
-            })
-            .then(result => {
-              return client2.promoteGroupUsers(session2, group.id, [session3.user_id]);
-            })
-            .then(result => {
-              return client1.listGroupUsers(session1, group.id);
-            });
-        });
+      const group = await client1.createGroup(session1, { name: group_name, open: true });
+      await client1.addGroupUsers(session1, group.id, [session2.user_id])
+      await client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
+      await client2.addGroupUsers(session2, group.id, [session3.user_id]);
+      await client2.promoteGroupUsers(session2, group.id, [session3.user_id]);
+      return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, customid3, group_name);
 
     expect(result).not.toBeNull();
@@ -738,10 +571,8 @@ describe('Group Tests', () => {
       const client1 = new nakamajs.Client();
       const session1 = await client1.authenticateCustom({ id: customid1 });
 
-      return client1.createGroup(session1, { name: group_name, open: true })
-        .then(group => {
-          return client1.listGroups(session1, "%" + group_name + "%")
-        });
+      const group = await client1.createGroup(session1, { name: group_name, open: true })
+      return await client1.listGroups(session1, "%" + group_name + "%");
     }, customid1, group_name);
 
     expect(result).not.toBeNull();

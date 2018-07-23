@@ -40,7 +40,7 @@ describe('User Tests', () => {
   it('should return current user account', async () => {
     const customid = generateid();
 
-    const account = await page.evaluate((customid) => {
+    const account = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
       return client.authenticateCustom({ id: customid })
         .then(session => {
@@ -68,19 +68,18 @@ describe('User Tests', () => {
     const lang = "fa";
     const loc = "california";
 
-    const account = await page.evaluate((customid, displayName, avatar, lang, loc) => {
+    const account = await page.evaluate(async (customid, displayName, avatar, lang, loc) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.updateAccount(session, {
-            displayName: displayName,
-            avatarUrl: avatar,
-            langTag: lang,
-            location: loc
-          }).then(bool => {
-            return client.getAccount(session);
-          });
-        });
+      const session = await client.authenticateCustom({ id: customid });
+
+      await client.updateAccount(session, {
+        displayName: displayName,
+        avatarUrl: avatar,
+        langTag: lang,
+        location: loc
+      });
+
+      return await client.getAccount(session);
     }, customid, displayName, avatar, lang, loc);
 
     expect(account).not.toBeNull();
@@ -114,15 +113,11 @@ describe('User Tests', () => {
     const customid = generateid();
     const customid2 = generateid();
 
-    const users = await page.evaluate((customid, customid2) => {
+    const users = await page.evaluate(async (customid, customid2) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session1 => {
-          return client.authenticateCustom({ id: customid2 })
-            .then(session2 => {
-              return client.getUsers(session2, [session1.user_id], [session2.username], []);
-            });
-        });
+      const session1 = await client.authenticateCustom({ id: customid });
+      const session2 = await client.authenticateCustom({ id: customid2 })
+      return await client.getUsers(session2, [session1.user_id], [session2.username], []);
     }, customid, customid2);
 
     expect(users).not.toBeNull();
@@ -133,12 +128,10 @@ describe('User Tests', () => {
   it('should return no users', async () => {
     const customid = generateid();
 
-    const response = await page.evaluate((customid) => {
+    const response = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.getUsers(session, [], [], []);
-        });
+      const session = await client.authenticateCustom({ id: customid });
+      return await client.getUsers(session, [], [], []);
     }, customid);
 
     expect(response).not.toBeNull();

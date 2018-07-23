@@ -41,15 +41,11 @@ describe('Link / Unlink Tests', () => {
     const customid = generateid();
     const deviceid = generateid();
 
-    const account = await page.evaluate((customid, deviceid) => {
+    const account = await page.evaluate(async (customid, deviceid) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.linkDevice(session, { id: deviceid })
-            .then(bool => {
-              return client.getAccount(session);
-            });
-        });
+      const session = await client.authenticateCustom({ id: customid })
+      await client.linkDevice(session, { id: deviceid });
+      return await client.getAccount(session);
     }, customid, deviceid);
 
     expect(account).not.toBeNull();
@@ -61,17 +57,12 @@ describe('Link / Unlink Tests', () => {
     const customid = generateid();
     const deviceid = generateid();
 
-    const account = await page.evaluate((customid, deviceid) => {
+    const account = await page.evaluate(async (customid, deviceid) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.linkDevice(session, { id: deviceid })
-            .then(bool => {
-              return client.unlinkDevice(session, {id: deviceid });
-            }).then(bool => {
-              return client.getAccount(session);
-            });
-        });
+      const session = await client.authenticateCustom({ id: customid });
+      await client.linkDevice(session, { id: deviceid });
+      await client.unlinkDevice(session, {id: deviceid });
+      return await client.getAccount(session);
     }, customid, deviceid);
 
     expect(account).not.toBeNull();

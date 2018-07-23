@@ -41,12 +41,10 @@ describe('RPC Tests', () => {
     const customid = generateid();
     const rpcid = "clientrpc.rpc_get";
 
-    const rpcResult = await page.evaluate((customid, rpcid) => {
+    const rpcResult = await page.evaluate(async (customid, rpcid) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.rpcGet(rpcid, session);
-        });
+      const session = await client.authenticateCustom({ id: customid })
+      return await client.rpcGet(rpcid, session);
     }, customid, rpcid);
 
     expect(rpcResult).not.toBeNull();
@@ -59,12 +57,10 @@ describe('RPC Tests', () => {
       "hello": "world"
     };
 
-    const rpcResult = await page.evaluate((customid, rpcid, request) => {
+    const rpcResult = await page.evaluate(async (customid, rpcid, request) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.rpc(session, rpcid, request);
-        });
+      const session = await client.authenticateCustom({ id: customid })
+      return await client.rpc(session, rpcid, request);
     }, customid, rpcid, request);
 
     expect(rpcResult).not.toBeNull();
@@ -76,9 +72,9 @@ describe('RPC Tests', () => {
     const rpcid = "clientrpc.rpc_get";
     const HTTP_KEY = "defaultkey";
 
-    const rpcResult = await page.evaluate((rpcid, HTTP_KEY) => {
+    const rpcResult = await page.evaluate(async (rpcid, HTTP_KEY) => {
       const client = new nakamajs.Client();
-      return client.rpcGet(rpcid, null, HTTP_KEY);
+      return await client.rpcGet(rpcid, null, HTTP_KEY);
     }, rpcid, HTTP_KEY);
 
     expect(rpcResult).not.toBeNull();

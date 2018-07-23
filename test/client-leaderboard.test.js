@@ -47,15 +47,12 @@ describe('Leaderboard Tests', () => {
       metadata: {"key": "value"}
     };
 
-    const result = await page.evaluate((customid, rpcid, operator, score) => {
+    const result = await page.evaluate(async (customid, rpcid, operator, score) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.rpc(session, rpcid, {"operator": operator}).then(result => {
-            var leaderboardId = result.payload.leaderboard_id;
-            return client.writeLeaderboardRecord(session, leaderboardId, score)
-          });
-        })
+      const session = await client.authenticateCustom({ id: customid })
+      const result = await client.rpc(session, rpcid, {"operator": operator});
+      const leaderboardId = result.payload.leaderboard_id;
+      return await client.writeLeaderboardRecord(session, leaderboardId, score)
     }, customid, rpcid, operator, score);
 
     expect(result).not.toBeNull();
@@ -75,19 +72,16 @@ describe('Leaderboard Tests', () => {
       metadata: {"key": "value"}
     };
 
-    const result = await page.evaluate((customid, rpcid, operator, score) => {
+    const result = await page.evaluate(async (customid, rpcid, operator, score) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.rpc(session, rpcid, {"operator": operator}).then(result => {
-            var leaderboardId = result.payload.leaderboard_id;
-            return client.writeLeaderboardRecord(session, leaderboardId, score).then(record => {
-              score.score = 1;
-              score.subscore = 20;
-              return client.writeLeaderboardRecord(session, leaderboardId, score)
-            })
-          });
-        })
+      const session = await client.authenticateCustom({ id: customid })
+      const result = await client.rpc(session, rpcid, {"operator": operator});
+      const leaderboardId = result.payload.leaderboard_id;
+      await client.writeLeaderboardRecord(session, leaderboardId, score)
+
+      score.score = 1;
+      score.subscore = 20;
+      return await client.writeLeaderboardRecord(session, leaderboardId, score)
     }, customid, rpcid, operator, score);
 
     expect(result).not.toBeNull();
@@ -107,19 +101,16 @@ describe('Leaderboard Tests', () => {
       metadata: {"key": "value"}
     };
 
-    const result = await page.evaluate((customid, rpcid, operator, score) => {
+    const result = await page.evaluate(async (customid, rpcid, operator, score) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.rpc(session, rpcid, {"operator": operator}).then(result => {
-            var leaderboardId = result.payload.leaderboard_id;
-            return client.writeLeaderboardRecord(session, leaderboardId, score).then(record => {
-              score.score = 1;
-              score.subscore = 5;
-              return client.writeLeaderboardRecord(session, leaderboardId, score)
-            })
-          });
-        })
+      const session = await client.authenticateCustom({ id: customid });
+      const result = await client.rpc(session, rpcid, {"operator": operator});
+      const leaderboardId = result.payload.leaderboard_id;
+      await client.writeLeaderboardRecord(session, leaderboardId, score);
+
+      score.score = 1;
+      score.subscore = 5;
+      return await client.writeLeaderboardRecord(session, leaderboardId, score)
     }, customid, rpcid, operator, score);
 
     expect(result).not.toBeNull();
@@ -139,17 +130,14 @@ describe('Leaderboard Tests', () => {
       metadata: {"key": "value"}
     };
 
-    const result = await page.evaluate((customid, rpcid, operator, score) => {
+    const result = await page.evaluate(async (customid, rpcid, operator, score) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.rpc(session, rpcid, {"operator": operator}).then(result => {
-            var leaderboardId = result.payload.leaderboard_id;
-            return client.writeLeaderboardRecord(session, leaderboardId, score).then(record => {
-              return client.listLeaderboardRecords(session, leaderboardId)
-            })
-          });
-        })
+      const session = await client.authenticateCustom({ id: customid });
+
+      const result = await client.rpc(session, rpcid, {"operator": operator});
+      const leaderboardId = result.payload.leaderboard_id;
+      await client.writeLeaderboardRecord(session, leaderboardId, score);
+      return await client.listLeaderboardRecords(session, leaderboardId);
     }, customid, rpcid, operator, score);
 
     expect(result).not.toBeNull();

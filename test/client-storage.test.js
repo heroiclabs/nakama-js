@@ -43,26 +43,23 @@ describe('Storage Tests', () => {
     const key = "testkey";
     const value = {"hello": "world"};
 
-    const result = await page.evaluate((customid, collection, key, value) => {
+    const result = await page.evaluate(async (customid, collection, key, value) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.writeStorageObjects(session,[
-            {
-              "collection": collection,
-              "key": key,
-              "value": value
-            }
-          ]).then(acks => {
-            return client.readStorageObjects(session, {
-              object_ids: [{
-                "collection": collection,
-                "key": key,
-                "user_id": session.user_id
-              }]
-            })
-          });
-        })
+      const session = await client.authenticateCustom({ id: customid });
+      await client.writeStorageObjects(session, [
+        {
+          "collection": collection,
+          "key": key,
+          "value": value
+        }
+      ]);
+      return await client.readStorageObjects(session, {
+        object_ids: [{
+          "collection": collection,
+          "key": key,
+          "user_id": session.user_id
+        }]
+      });
     }, customid, collection, key, value);
 
     expect(result).not.toBeNull();
@@ -82,33 +79,31 @@ describe('Storage Tests', () => {
     const key = "testkey";
     const value = {"hello": "world"};
 
-    const result = await page.evaluate((customid, collection, key, value) => {
+    const result = await page.evaluate(async (customid, collection, key, value) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.writeStorageObjects(session,[
-            {
-              "collection": collection,
-              "key": key,
-              "value": value
-            }
-          ]).then(acks => {
-            return client.deleteStorageObjects(session, {
-              object_ids: [{
-                "collection": collection,
-                "key": key
-              }]
-            })
-          }).then(bool => {
-            return client.readStorageObjects(session, {
-              object_ids: [{
-                "collection": collection,
-                "key": key,
-                "user_id": session.user_id
-              }]
-            })
-          });
-        })
+      const session = await client.authenticateCustom({ id: customid });
+      await client.writeStorageObjects(session,[
+        {
+          "collection": collection,
+          "key": key,
+          "value": value
+        }
+      ]);
+
+      await client.deleteStorageObjects(session, {
+        object_ids: [{
+          "collection": collection,
+          "key": key
+        }]
+      });
+
+      return await client.readStorageObjects(session, {
+        object_ids: [{
+          "collection": collection,
+          "key": key,
+          "user_id": session.user_id
+        }]
+      })
     }, customid, collection, key, value);
 
     expect(result).not.toBeNull();
@@ -121,22 +116,22 @@ describe('Storage Tests', () => {
     const key = "testkey";
     const value = {"hello": "world"};
 
-    const result = await page.evaluate((customid, collection, key, value) => {
+    const result = await page.evaluate(async (customid, collection, key, value) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return client.writeStorageObjects(session,[
-            {
-              "collection": collection,
-              "key": key,
-              "value": value,
-              "permission_read": 2,
-              "permission_write": 1
-            }
-          ]).then(bool => {
-            return client.listStorageObjects(session, collection, session.user_id)
-          });
-        })
+      const session = await client.authenticateCustom({ id: customid });
+
+      await client.writeStorageObjects(session,[
+        {
+          "collection": collection,
+          "key": key,
+          "value": value,
+          "permission_read": 2,
+          "permission_write": 1
+        }
+      ]);
+
+      return await client.listStorageObjects(session, collection, session.user_id);
+
     }, customid, collection, key, value);
 
     expect(result).not.toBeNull();
