@@ -321,6 +321,9 @@ export class DefaultSocket implements Socket {
     }
 
     socket.onmessage = (evt: MessageEvent) => {
+      // handle binary heartbeat
+      if (evt.data instanceof Blob) { return; }
+
       const message = JSON.parse(evt.data);
       if (this.verbose && window && window.console) {
         console.log("Response: %o", message);
