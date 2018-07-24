@@ -40,15 +40,13 @@ describe('Matchmaker Tests', () => {
   it('should add to matchmaker', async () => {
     const customid = generateid();
 
-    const response = await page.evaluate((customid) => {
+    const response = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        }).then(session => {
-          return socket.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a1:foo", string_properties: {"a1": "bar"}} });
-        });
+      const session = await client.authenticateCustom({ id: customid });
+      await socket.connect(session);
+      return await socket.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a1:foo", string_properties: {"a1": "bar"}} });
+
     }, customid);
 
     expect(response).not.toBeNull();
@@ -60,17 +58,13 @@ describe('Matchmaker Tests', () => {
   it('should add and remove from matchmaker', async () => {
     const customid = generateid();
 
-    const response = await page.evaluate((customid) => {
+    const response = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        }).then(session => {
-          return socket.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a2:foo", string_properties: {"a2": "bar"}} });
-        }).then(ticket => {
-          return socket.send({ matchmaker_remove: {ticket: ticket.matchmaker_ticket.ticket} });
-        });
+      const session = await client.authenticateCustom({ id: customid });
+      await socket.connect(session);
+      const ticket = await socket.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a2:foo", string_properties: {"a2": "bar"}} });
+      return await socket.send({ matchmaker_remove: {ticket: ticket.matchmaker_ticket.ticket} });
     }, customid);
 
     expect(response).not.toBeNull();
@@ -81,7 +75,7 @@ describe('Matchmaker Tests', () => {
     const customid1 = generateid();
     const customid2 = generateid();
 
-    const response = await page.evaluate((customid1, customid2) => {
+    const response = await page.evaluate(async (customid1, customid2) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
@@ -93,25 +87,17 @@ describe('Matchmaker Tests', () => {
         }
       });
 
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return socket1.connect(session1);
-        }).then(session1 => {
-          return socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a3:bar", string_properties: {"a3": "baz"}} });
-        }).then(ticket => {
-          return client2.authenticateCustom({ id: customid2 })
-          .then(session2 => {
-            return socket2.connect(session2);
-          }).then(session2 => {
-            return socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a3:baz", string_properties: {"a3": "bar"}} });
-          });
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
-          });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1);
+      const ticket1 = await socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a3:bar", string_properties: {"a3": "baz"}} });
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2);
+      const ticket2 = await socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a3:baz", string_properties: {"a3": "bar"}} });
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
+      });
 
-          return Promise.race([promise1, promise2]);
-        });
+      return Promise.race([promise1, promise2]);
     }, customid1, customid2);
 
     expect(response).not.toBeNull();
@@ -129,7 +115,7 @@ describe('Matchmaker Tests', () => {
     const customid1 = generateid();
     const customid2 = generateid();
 
-    const response = await page.evaluate((customid1, customid2) => {
+    const response = await page.evaluate(async (customid1, customid2) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
@@ -141,25 +127,17 @@ describe('Matchmaker Tests', () => {
         }
       });
 
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return socket1.connect(session1);
-        }).then(session1 => {
-          return socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b1:>=10 +properties.b1:<=20", numeric_properties: {"b1": 15}} });
-        }).then(ticket => {
-          return client2.authenticateCustom({ id: customid2 })
-          .then(session2 => {
-            return socket2.connect(session2);
-          }).then(session2 => {
-            return socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b1:>=10 +properties.b1:<=20", numeric_properties: {"b1": 15}} });
-          });
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
-          });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1);
+      const ticket1 = await socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b1:>=10 +properties.b1:<=20", numeric_properties: {"b1": 15}} });
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2);
+      const ticket2 = await socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b1:>=10 +properties.b1:<=20", numeric_properties: {"b1": 15}} });
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
+      });
 
-          return Promise.race([promise1, promise2]);
-        });
+      return Promise.race([promise1, promise2]);
     }, customid1, customid2);
 
     expect(response).not.toBeNull();
@@ -177,7 +155,7 @@ describe('Matchmaker Tests', () => {
     const customid1 = generateid();
     const customid2 = generateid();
 
-    const response = await page.evaluate((customid1, customid2) => {
+    const response = await page.evaluate(async (customid1, customid2) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
@@ -189,25 +167,16 @@ describe('Matchmaker Tests', () => {
         }
       });
 
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return socket1.connect(session1);
-        }).then(session1 => {
-          return socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c1:>=10 +properties.c1:<=20 +properties.c2:foo", numeric_properties: {"c1": 15}, string_properties: {"c2": "foo"}} });
-        }).then(ticket => {
-          return client2.authenticateCustom({ id: customid2 })
-          .then(session2 => {
-            return socket2.connect(session2);
-          }).then(session2 => {
-            return socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c1:>=10 +properties.c1:<=20 +properties.c2:foo", numeric_properties: {"c1": 15}, string_properties: {"c2": "foo"}} });
-          });
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
-          });
-
-          return Promise.race([promise1, promise2]);
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1);
+      const ticket1 = await socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c1:>=10 +properties.c1:<=20 +properties.c2:foo", numeric_properties: {"c1": 15}, string_properties: {"c2": "foo"}} });
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2);
+      const ticket2 = await socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c1:>=10 +properties.c1:<=20 +properties.c2:foo", numeric_properties: {"c1": 15}, string_properties: {"c2": "foo"}} });
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
+      });
+      return Promise.race([promise1, promise2]);
     }, customid1, customid2);
 
     expect(response).not.toBeNull();
@@ -225,7 +194,7 @@ describe('Matchmaker Tests', () => {
     const customid1 = generateid();
     const customid2 = generateid();
 
-    const response = await page.evaluate((customid1, customid2) => {
+    const response = await page.evaluate(async (customid1, customid2) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
@@ -237,27 +206,17 @@ describe('Matchmaker Tests', () => {
         }
       });
 
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return socket1.connect(session1);
-        }).then(session1 => {
-          return socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a4:bar", string_properties: {"a4": "baz"}} });
-        }).then(ticket => {
-          return socket1.send({ matchmaker_remove: {ticket: ticket.matchmaker_ticket.ticket} });
-        }).then(ticket => {
-          return client2.authenticateCustom({ id: customid2 })
-          .then(session2 => {
-            return socket2.connect(session2);
-          }).then(session2 => {
-            return socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a4:baz", string_properties: {"a4": "bar"}} });
-          });
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(resolve, 2500, "did not match.")
-          });
-
-          return Promise.race([promise1, promise2]);
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1);
+      const ticket1 = await socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a4:bar", string_properties: {"a4": "baz"}} });
+      await socket1.send({ matchmaker_remove: {ticket: ticket1.matchmaker_ticket.ticket} });
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2);
+      const ticket2 = await socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a4:baz", string_properties: {"a4": "bar"}} });
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(resolve, 2500, "did not match.")
+      });
+      return Promise.race([promise1, promise2]);
     }, customid1, customid2);
 
     expect(response).not.toBeNull();
@@ -268,7 +227,7 @@ describe('Matchmaker Tests', () => {
     const customid1 = generateid();
     const customid2 = generateid();
 
-    const response = await page.evaluate((customid1, customid2) => {
+    const response = await page.evaluate(async (customid1, customid2) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
@@ -280,25 +239,16 @@ describe('Matchmaker Tests', () => {
         }
       });
 
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return socket1.connect(session1);
-        }).then(session1 => {
-          return socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a5:bar", string_properties: {"a5": "baz"}} });
-        }).then(ticket => {
-          return client2.authenticateCustom({ id: customid2 })
-          .then(session2 => {
-            return socket2.connect(session2);
-          }).then(session2 => {
-            return socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a5:bar", string_properties: {"a5": "baz"}} });
-          });
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(resolve, 2500, "did not match.")
-          });
-
-          return Promise.race([promise1, promise2]);
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1);
+      const ticket1 = await socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a5:bar", string_properties: {"a5": "baz"}} });
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2);
+      const ticket2 = await socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a5:bar", string_properties: {"a5": "baz"}} });
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(resolve, 2500, "did not match.")
+      });
+      return Promise.race([promise1, promise2]);
     }, customid1, customid2);
 
     expect(response).not.toBeNull();
@@ -309,7 +259,7 @@ describe('Matchmaker Tests', () => {
     const customid1 = generateid();
     const customid2 = generateid();
 
-    const response = await page.evaluate((customid1, customid2) => {
+    const response = await page.evaluate(async (customid1, customid2) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
@@ -321,25 +271,16 @@ describe('Matchmaker Tests', () => {
         }
       });
 
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return socket1.connect(session1);
-        }).then(session1 => {
-          return socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b2:>=10 +properties.b2:<=20", numeric_properties: {"b2": 25}} });
-        }).then(ticket => {
-          return client2.authenticateCustom({ id: customid2 })
-          .then(session2 => {
-            return socket2.connect(session2);
-          }).then(session2 => {
-            return socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b2:>=10 +properties.b2:<=20", numeric_properties: {"b2": 15}} });
-          });
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(resolve, 2500, "did not match.")
-          });
-
-          return Promise.race([promise1, promise2]);
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1);
+      const ticket1 = await socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b2:>=10 +properties.b2:<=20", numeric_properties: {"b2": 25}} });
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2);
+      const ticket2 = await socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b2:>=10 +properties.b2:<=20", numeric_properties: {"b2": 15}} });
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(resolve, 2500, "did not match.")
+      });
+      return Promise.race([promise1, promise2]);
     }, customid1, customid2);
 
     expect(response).not.toBeNull();
@@ -350,7 +291,7 @@ describe('Matchmaker Tests', () => {
     const customid1 = generateid();
     const customid2 = generateid();
 
-    const response = await page.evaluate((customid1, customid2) => {
+    const response = await page.evaluate(async (customid1, customid2) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
@@ -362,25 +303,16 @@ describe('Matchmaker Tests', () => {
         }
       });
 
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return socket1.connect(session1);
-        }).then(session1 => {
-          return socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo", numeric_properties: {"c3": 25}, string_properties: {"c4": "foo"}} });
-        }).then(ticket => {
-          return client2.authenticateCustom({ id: customid2 })
-          .then(session2 => {
-            return socket2.connect(session2);
-          }).then(session2 => {
-            return socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo", numeric_properties: {"c3": 15}, string_properties: {"c4": "foo"}} });
-          });
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(resolve, 2500, "did not match.")
-          });
-
-          return Promise.race([promise1, promise2]);
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1);
+      const ticket1 = await socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo", numeric_properties: {"c3": 25}, string_properties: {"c4": "foo"}} });
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2);
+      const ticket2 = await socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo", numeric_properties: {"c3": 15}, string_properties: {"c4": "foo"}} });
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(resolve, 2500, "did not match.")
+      });
+      return Promise.race([promise1, promise2]);
     }, customid1, customid2);
 
     expect(response).not.toBeNull();
@@ -392,7 +324,7 @@ describe('Matchmaker Tests', () => {
     const customid2 = generateid();
     const customid3 = generateid();
 
-    const response = await page.evaluate((customid1, customid2, customid3) => {
+    const response = await page.evaluate(async (customid1, customid2, customid3) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const client3 = new nakamajs.Client();
@@ -406,32 +338,19 @@ describe('Matchmaker Tests', () => {
         }
       });
 
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return socket1.connect(session1);
-        }).then(session1 => {
-          return socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a6:bar", string_properties: {"a6": "bar"}} });
-        }).then(ticket => {
-          return client2.authenticateCustom({ id: customid2 })
-          .then(session2 => {
-            return socket2.connect(session2);
-          }).then(session2 => {
-            return socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a6:bar", string_properties: {"a6": "bar"}} });
-          }).then(ticket => {
-            return client3.authenticateCustom({ id: customid3 })
-            .then(session3 => {
-              return socket3.connect(session3);
-            }).then(session3 => {
-              return socket3.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a6:bar", string_properties: {"a6": "bar"}} });
-            });
-          });
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(resolve, 2500, "did not match.")
-          });
-
-          return Promise.race([promise1, promise2]);
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1);
+      const ticket1 = await socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a6:bar", string_properties: {"a6": "bar"}} });
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2);
+      const ticket2 = await socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a6:bar", string_properties: {"a6": "bar"}} });
+      const session3 = await client3.authenticateCustom({ id: customid3 });
+      await socket3.connect(session3);
+      const ticket3 = await socket3.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a6:bar", string_properties: {"a6": "bar"}} });
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(resolve, 2500, "did not match.")
+      });
+      return Promise.race([promise1, promise2]);
     }, customid1, customid2, customid3);
 
     expect(response).not.toBeNull();
@@ -442,7 +361,7 @@ describe('Matchmaker Tests', () => {
     const customid1 = generateid();
     const customid2 = generateid();
 
-    const response = await page.evaluate((customid1, customid2) => {
+    const response = await page.evaluate(async (customid1, customid2) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
@@ -454,25 +373,16 @@ describe('Matchmaker Tests', () => {
         }
       });
 
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return socket1.connect(session1);
-        }).then(session1 => {
-          return socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.d1:foo", string_properties: {"d1": "foo", "mode": "authoritative"}} });
-        }).then(ticket => {
-          return client2.authenticateCustom({ id: customid2 })
-          .then(session2 => {
-            return socket2.connect(session2);
-          }).then(session2 => {
-            return socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.d1:foo", string_properties: {"d1": "foo", "mode": "authoritative"}} });
-          });
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
-          });
-
-          return Promise.race([promise1, promise2]);
-        });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1);
+      const ticket1 = await socket1.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.d1:foo", string_properties: {"d1": "foo", "mode": "authoritative"}} });
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2);
+      const ticket2 = await socket2.send({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.d1:foo", string_properties: {"d1": "foo", "mode": "authoritative"}} });
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
+      });
+      return Promise.race([promise1, promise2]);
     }, customid1, customid2);
 
     expect(response).not.toBeNull();

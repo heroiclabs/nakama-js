@@ -40,43 +40,13 @@ describe('Socket Message Tests', () => {
   it('should connect', async () => {
     const customid = generateid();
 
-    // TODO update
     const session = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      await client.authenticateCustom({ id: customid })
-        .then(session => {
-          const socket = client.createSocket();
-          return socket.connect(session).then(_session => {
-            socket.disconnect();
-          });
-        });
+      const session = await client.authenticateCustom({ id: customid });
+      const socket = client.createSocket();
+      await socket.connect(session);
+      socket.disconnect();
     }, customid);
-  });
-
-  it('should send rpc', async () => {
-    const customid = generateid();
-    const ID = "clientrpc.rpc";
-    const PAYLOAD = JSON.stringify({ "hello": "world" });
-
-    const response = await page.evaluate((customid, id, payload) => {
-      const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        })
-        .then(session => {
-          return socket.send({ rpc: { id: id, payload: payload } });
-        });
-    }, customid, ID, PAYLOAD);
-
-    expect(response).not.toBeNull();
-    expect(response.cid).not.toBeNull();
-    expect(response.rpc).not.toBeNull();
-    expect(response.rpc.id).not.toBeNull();
-    expect(response.rpc.id).toBe(ID);
-    expect(response.rpc.payload).not.toBeNull();
-    expect(response.rpc.payload).toBe(PAYLOAD);
   });
 
   it('should rpc and receive stream data', async () => {
@@ -84,9 +54,8 @@ describe('Socket Message Tests', () => {
     const ID = "clientrpc.send_stream_data";
     const PAYLOAD = JSON.stringify({ "hello": "world" });
 
-    const response = await page.evaluate((customid, id, payload) => {
+    const response = await page.evaluate(async (customid, id, payload) => {
       const client = new nakamajs.Client();
-
       const socket = client.createSocket(false, false);
 
       var promise1 = new Promise((resolve, reject) => {
@@ -95,19 +64,14 @@ describe('Socket Message Tests', () => {
         }
       });
 
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        })
-        .then(session => {
-          return socket.send({ rpc: { id: id, payload: payload } });
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(reject, 5000, "did not receive stream data - timed out.")
-          });
+      const session = await client.authenticateCustom({ id: customid })
+      await socket.connect(session);
+      await socket.send({ rpc: { id: id, payload: payload } });
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(reject, 5000, "did not receive stream data - timed out.")
+      });
 
-          return Promise.race([promise1, promise2]);
-        });
+      return Promise.race([promise1, promise2]);
     }, customid, ID, PAYLOAD);
 
     expect(response).not.toBeNull();

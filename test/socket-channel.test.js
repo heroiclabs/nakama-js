@@ -41,22 +41,17 @@ describe('Channel Tests', () => {
     const customid = generateid();
     const channelid = generateid();
 
-    const response = await page.evaluate((customid, channelid) => {
+    const response = await page.evaluate(async (customid, channelid) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        }).then(session => {
-          return socket.send({ channel_join: {
-            type: 1, //1 = room, 2 = Direct Message 3 = Group
-            target: channelid,
-            persistence: true,
-            hidden: false
-          } });
-        }).then(channel => {
-          return channel;
-        });
+      const session = await client.authenticateCustom({ id: customid })
+      await socket.connect(session);
+      return await socket.send({ channel_join: {
+        type: 1, //1 = room, 2 = Direct Message 3 = Group
+        target: channelid,
+        persistence: true,
+        hidden: false
+      } });
     }, customid, channelid);
 
     expect(response).not.toBeNull();
@@ -71,24 +66,21 @@ describe('Channel Tests', () => {
     const customid = generateid();
     const channelid = generateid();
 
-    const response = await page.evaluate((customid, channelid) => {
+    const response = await page.evaluate(async (customid, channelid) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        }).then(session => {
-          return socket.send({ channel_join: {
-            type: 1, //1 = room, 2 = Direct Message 3 = Group
-            target: channelid,
-            persistence: true,
-            hidden: false
-          } });
-        }).then(channel => {
-          return socket.send({ channel_leave: {
-            channel_id: channel.channel.id
-          } });
-        })
+      const session = await client.authenticateCustom({ id: customid })
+      await socket.connect(session);
+      const channel = await socket.send({ channel_join: {
+        type: 1, //1 = room, 2 = Direct Message 3 = Group
+        target: channelid,
+        persistence: true,
+        hidden: false
+      } });
+
+      return await socket.send({ channel_leave: {
+        channel_id: channel.channel.id
+      } });
     }, customid, channelid);
 
     expect(response).not.toBeNull();
@@ -100,7 +92,7 @@ describe('Channel Tests', () => {
     const channelid = generateid();
     const payload = { "hello": "world" };
 
-    const response = await page.evaluate((customid, channelid, payload) => {
+    const response = await page.evaluate(async (customid, channelid, payload) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
 
@@ -110,28 +102,25 @@ describe('Channel Tests', () => {
         }
       });
 
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        }).then(session => {
-          return socket.send({ channel_join: {
-            type: 1, //1 = room, 2 = Direct Message 3 = Group
-            target: channelid,
-            persistence: false,
-            hidden: false
-          } });
-        }).then(channel => {
-          return socket.send({ channel_message_send: {
-            channel_id: channel.channel.id,
-            content: payload
-          } })
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(reject, 5000, "did not receive channel message - timed out.")
-          });
+      const session = await client.authenticateCustom({ id: customid })
+      await socket.connect(session);
+      const channel = await socket.send({ channel_join: {
+        type: 1, //1 = room, 2 = Direct Message 3 = Group
+        target: channelid,
+        persistence: false,
+        hidden: false
+      } });
 
-          return Promise.race([promise1, promise2]);
-        });
+      await socket.send({ channel_message_send: {
+        channel_id: channel.channel.id,
+        content: payload
+      } })
+
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(reject, 5000, "did not receive channel message - timed out.")
+      });
+
+      return Promise.race([promise1, promise2]);
     }, customid, channelid, payload);
 
     expect(response).not.toBeNull();
@@ -149,36 +138,32 @@ describe('Channel Tests', () => {
     const payload = { "hello": "world" };
     const updatedPayload = { "hello": "world2" };
 
-    const response = await page.evaluate((customid, channelid, payload, updatedPayload) => {
-
+    const response = await page.evaluate(async (customid, channelid, payload, updatedPayload) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
 
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        }).then(session => {
-          return socket.send({ channel_join: {
-            type: 1, //1 = room, 2 = Direct Message 3 = Group
-            target: channelid,
-            persistence: true,
-            hidden: false
-          }}).then(channel => {
-            return socket.send({channel_message_send: {
-              channel_id: channel.channel.id,
-              content: payload
-            }})
-          }).then(ack => {
-            return socket.send({ channel_message_update: {
-              channel_id: ack.channel_message_ack.channel_id,
-              message_id: ack.channel_message_ack.message_id,
-              content: updatedPayload
-            }})
-          }).then(ack => {
-            return client.listChannelMessages(session, ack.channel_message_ack.channel_id, 10)
-          })
-        });
+      const session = await client.authenticateCustom({ id: customid })
+      await socket.connect(session);
 
+      const channel = await socket.send({ channel_join: {
+        type: 1, //1 = room, 2 = Direct Message 3 = Group
+        target: channelid,
+        persistence: true,
+        hidden: false
+      }});
+
+      const ack = await socket.send({channel_message_send: {
+        channel_id: channel.channel.id,
+        content: payload
+      }});
+
+      const ack2 = await socket.send({ channel_message_update: {
+        channel_id: ack.channel_message_ack.channel_id,
+        message_id: ack.channel_message_ack.message_id,
+        content: updatedPayload
+      }});
+
+      return await client.listChannelMessages(session, ack2.channel_message_ack.channel_id, 10)
     }, customid, channelid, payload, updatedPayload);
 
     expect(response).not.toBeNull();
@@ -197,35 +182,32 @@ describe('Channel Tests', () => {
     const channelid = generateid();
     const payload = { "hello": "world" };
 
-    const response = await page.evaluate((customid, channelid, payload) => {
+    const response = await page.evaluate(async (customid, channelid, payload) => {
 
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
 
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        }).then(session => {
-          return socket.send({ channel_join: {
-            type: 1, //1 = room, 2 = Direct Message 3 = Group
-            target: channelid,
-            persistence: true,
-            hidden: false
-          }}).then(channel => {
-            return socket.send({channel_message_send: {
-              channel_id: channel.channel.id,
-              content: payload
-            }})
-          }).then(ack => {
-            return socket.send({ channel_message_remove: {
-              channel_id: ack.channel_message_ack.channel_id,
-              message_id: ack.channel_message_ack.message_id
-            }})
-          }).then(ack => {
-            return client.listChannelMessages(session, ack.channel_message_ack.channel_id, 10)
-          })
-        });
+      const session = await client.authenticateCustom({ id: customid })
+      await socket.connect(session);
 
+      const channel = await socket.send({ channel_join: {
+        type: 1, //1 = room, 2 = Direct Message 3 = Group
+        target: channelid,
+        persistence: true,
+        hidden: false
+      }});
+
+      const ack = await socket.send({channel_message_send: {
+        channel_id: channel.channel.id,
+        content: payload
+      }});
+
+      await socket.send({ channel_message_remove: {
+        channel_id: ack.channel_message_ack.channel_id,
+        message_id: ack.channel_message_ack.message_id
+      }});
+
+      return await client.listChannelMessages(session, ack.channel_message_ack.channel_id, 10)
     }, customid, channelid, payload);
 
     expect(response).not.toBeNull();

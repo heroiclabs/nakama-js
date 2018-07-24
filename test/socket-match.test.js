@@ -40,15 +40,13 @@ describe('Match Tests', () => {
   it('should create match', async () => {
     const customid = generateid();
 
-    const response = await page.evaluate((customid) => {
+    const response = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        }).then(session => {
-          return socket.send({ match_create: {} });
-        });
+
+      const session = await client.authenticateCustom({ id: customid });
+      await socket.connect(session);
+      return await socket.send({ match_create: {} });
     }, customid);
 
     expect(response).not.toBeNull();
@@ -64,17 +62,14 @@ describe('Match Tests', () => {
   it('should join a match', async () => {
     const customid = generateid();
 
-    const response = await page.evaluate((customid) => {
+    const response = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        }).then(session => {
-          return socket.send({ match_create: {} });
-        }).then(match => {
-          return socket.send({ match_join: {match_id: match.match.match_id}});
-        });
+
+      const session = await client.authenticateCustom({ id: customid });
+      await socket.connect(session);
+      const match = await socket.send({ match_create: {} });
+      return await socket.send({ match_join: {match_id: match.match.match_id}});
     }, customid);
 
     expect(response).not.toBeNull();
@@ -91,19 +86,15 @@ describe('Match Tests', () => {
   it('should join a match, then leave it', async () => {
     const customid = generateid();
 
-    const response = await page.evaluate((customid) => {
+    const response = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
-      return client.authenticateCustom({ id: customid })
-        .then(session => {
-          return socket.connect(session);
-        }).then(session => {
-          return socket.send({ match_create: {} });
-        }).then(match => {
-          return socket.send({ match_join: {match_id: match.match.match_id}});
-        }).then(match => {
-          return socket.send({ match_leave: {match_id: match.match.match_id}});
-        });
+
+      const session = await client.authenticateCustom({ id: customid });
+      await socket.connect(session);
+      const match = await socket.send({ match_create: {} });
+      await socket.send({ match_join: {match_id: match.match.match_id}});
+      return await socket.send({ match_leave: {match_id: match.match.match_id}});
     }, customid);
 
     expect(response).not.toBeNull();
@@ -115,7 +106,7 @@ describe('Match Tests', () => {
     const customid2 = generateid();
     const PAYLOAD = { "hello": "world" };
 
-    const response = await page.evaluate((customid1, customid2, payload) => {
+    const response = await page.evaluate(async (customid1, customid2, payload) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
@@ -127,27 +118,18 @@ describe('Match Tests', () => {
         }
       });
 
-      return client1.authenticateCustom({ id: customid1 })
-        .then(session1 => {
-          return socket1.connect(session1);
-        }).then(session1 => {
-          return socket1.send({ match_create: {} });
-        }).then(match => {
-          return client2.authenticateCustom({ id: customid2 })
-          .then(session2 => {
-            return socket2.connect(session2);
-          }).then(session2 => {
-            return socket2.send({ match_join: {match_id: match.match.match_id}});
-          });
-        }).then(match => {
-          return socket1.send({ match_data_send: {match_id: match.match.match_id, op_code: 20, data: payload}});
-        }).then(result => {
-          var promise2 = new Promise((resolve, reject) => {
-            setTimeout(reject, 5000, "did not receive match data - timed out.")
-          });
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1);
+      const match = await socket1.send({ match_create: {} });
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2);
+      await socket2.send({ match_join: {match_id: match.match.match_id}});
+      await socket1.send({ match_data_send: {match_id: match.match.match_id, op_code: 20, data: payload}});
+      var promise2 = new Promise((resolve, reject) => {
+        setTimeout(reject, 5000, "did not receive match data - timed out.")
+      });
 
-          return Promise.race([promise1, promise2]);
-        });
+      return Promise.race([promise1, promise2]);
     }, customid1, customid2, PAYLOAD);
 
     expect(response).not.toBeNull();
@@ -158,19 +140,14 @@ describe('Match Tests', () => {
     const customid = generateid();
     const ID = "clientrpc.create_authoritative_match";
 
-    const response = await page.evaluate((customid, id) => {
+    const response = await page.evaluate(async (customid, id) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
-      var session = null;
-      return client.authenticateCustom({ id: customid })
-        .then(ses => {
-          session = ses;
-          return socket.connect(ses);
-        }).then(session => {
-          return socket.send({ rpc: { id: id } });
-        }).then(result => {
-          return client.listMatches(session, 1, true)
-        });
+
+      const session = await client.authenticateCustom({ id: customid });
+      await socket.connect(session);
+      await socket.send({ rpc: { id: id } });
+      return await client.listMatches(session, 1, true)
     }, customid, ID);
 
     expect(response).not.toBeNull();
