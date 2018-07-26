@@ -3312,9 +3312,6 @@ var DefaultSocket = (function () {
             _this.onerror(evt);
         };
         socket.onmessage = function (evt) {
-            if (evt.data instanceof Blob) {
-                return;
-            }
             var message = JSON.parse(evt.data);
             if (_this.verbose && window && window.console) {
                 console.log("Response: %o", message);
