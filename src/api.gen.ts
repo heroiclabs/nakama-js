@@ -33,6 +33,15 @@ export interface WriteLeaderboardRecordRequestLeaderboardRecordWrite {
   // An optional secondary value.
   subscore?: string;
 }
+/** Record values to write. */
+export interface WriteTournamentRecordRequestTournamentRecordWrite {
+  // A JSON object of additional properties (optional).
+  metadata?: string;
+  // The score value to submit.
+  score?: string;
+  // An optional secondary value.
+  subscore?: string;
+}
 /** A user with additional account details. Always the current user. */
 export interface ApiAccount {
   // The custom id in the user's account.
@@ -211,6 +220,8 @@ export interface ApiLeaderboardRecord {
   expiry_time?: string;
   // The ID of the leaderboard this score belongs to.
   leaderboard_id?: string;
+  // The maximum number of score updates allowed by the owner.
+  max_num_score?: number;
   // Metadata.
   metadata?: string;
   // The number of submissions to this score record.
@@ -359,6 +370,57 @@ export interface ApiStorageObjectList {
 export interface ApiStorageObjects {
   // The batch of storage objects.
   objects?: Array<ApiStorageObject>;
+}
+/** A tournament on the server. */
+export interface ApiTournament {
+  // True if the tournament is active and can enter. A computed value.
+  can_enter?: boolean;
+  // The category of the tournament. e.g. "vip" could be category 1.
+  category?: number;
+  // The UNIX time when the tournament was created.
+  create_time?: string;
+  // The description of the tournament. May be blank.
+  description?: string;
+  // The UNIX timestamp when the tournament stops being active until next reset. A computed value.
+  end_active?: number;
+  // The UNIX time when the tournament will be stopped.
+  end_time?: string;
+  // The ID of the tournament.
+  id?: string;
+  // The maximum score updates allowed per player for the current tournament.
+  max_num_score?: number;
+  // The maximum number of players for the tournament.
+  max_size?: number;
+  // Additional information stored as a JSON object.
+  metadata?: string;
+  // The UNIX timestamp when the tournament is next playable. A computed value.
+  next_reset?: number;
+  // The current number of players in the tournament.
+  size?: number;
+  // ASC or DESC sort mode of scores in the tournament.
+  sort_order?: number;
+  // The UNIX time when the tournament will start.
+  start_time?: string;
+  // The title for the tournament.
+  title?: string;
+}
+/** A list of tournaments. */
+export interface ApiTournamentList {
+  // A pagination cursor (optional).
+  cursor?: string;
+  // The list of tournaments returned.
+  tournaments?: Array<ApiTournament>;
+}
+/** A set of tournament records which may be part of a tournament records page or a batch of individual records. */
+export interface ApiTournamentRecordList {
+  // The cursor to send when retireving the next page (optional).
+  next_cursor?: string;
+  // A batched set of tournament records belonging to specified owners.
+  owner_records?: Array<ApiLeaderboardRecord>;
+  // The cursor to send when retrieving the previous page (optional).
+  prev_cursor?: string;
+  // A list of tournament records.
+  records?: Array<ApiLeaderboardRecord>;
 }
 /** Update a user's account details. */
 export interface ApiUpdateAccountRequest {
@@ -617,13 +679,15 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Authenticate a user with a custom id against the server. */
-    authenticateCustom(body: ApiAccountCustom, options: any = {}): Promise<ApiSession> {
+    authenticateCustom(body: ApiAccountCustom, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/custom";
 
       const queryParams = {
+        create: create,
+        username: username,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -668,13 +732,15 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Authenticate a user with a device id against the server. */
-    authenticateDevice(body: ApiAccountDevice, options: any = {}): Promise<ApiSession> {
+    authenticateDevice(body: ApiAccountDevice, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/device";
 
       const queryParams = {
+        create: create,
+        username: username,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -719,13 +785,15 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Authenticate a user with an email+password against the server. */
-    authenticateEmail(body: ApiAccountEmail, options: any = {}): Promise<ApiSession> {
+    authenticateEmail(body: ApiAccountEmail, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/email";
 
       const queryParams = {
+        create: create,
+        username: username,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -770,13 +838,16 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Authenticate a user with a Facebook OAuth token against the server. */
-    authenticateFacebook(body: ApiAccountFacebook, options: any = {}): Promise<ApiSession> {
+    authenticateFacebook(body: ApiAccountFacebook, create?: boolean, username?: string, import_ ?: boolean, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/facebook";
 
       const queryParams = {
+        create: create,
+        username: username,
+        'import': import_,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -821,13 +892,15 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Authenticate a user with Apple's GameCenter against the server. */
-    authenticateGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<ApiSession> {
+    authenticateGameCenter(body: ApiAccountGameCenter, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/gamecenter";
 
       const queryParams = {
+        create: create,
+        username: username,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -872,13 +945,15 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Authenticate a user with Google against the server. */
-    authenticateGoogle(body: ApiAccountGoogle, options: any = {}): Promise<ApiSession> {
+    authenticateGoogle(body: ApiAccountGoogle, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/google";
 
       const queryParams = {
+        create: create,
+        username: username,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -923,13 +998,15 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Authenticate a user with Steam against the server. */
-    authenticateSteam(body: ApiAccountSteam, options: any = {}): Promise<ApiSession> {
+    authenticateSteam(body: ApiAccountSteam, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/steam";
 
       const queryParams = {
+        create: create,
+        username: username,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -1127,13 +1204,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Add Facebook to the social profiles on the current user's account. */
-    linkFacebook(body: ApiAccountFacebook, options: any = {}): Promise<ProtobufEmpty> {
+    linkFacebook(body: ApiAccountFacebook, import_?: boolean, options: any = {}): Promise<ProtobufEmpty> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/link/facebook";
 
       const queryParams = {
+        'import': import_,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -1932,13 +2010,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Import Facebook friends and add them to a user's account. */
-    importFacebookFriends(body: ApiAccountFacebook, options: any = {}): Promise<ProtobufEmpty> {
+    importFacebookFriends(body: ApiAccountFacebook, reset?: boolean, options: any = {}): Promise<ProtobufEmpty> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/friend/facebook";
 
       const queryParams = {
+        reset: reset,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -2083,7 +2162,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
-    /** Delete one or more groups by ID. */
+    /** Delete a group by ID. */
     deleteGroup(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -2546,7 +2625,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
-    /** List leaderboard records */
+    /** List leaderboard records. */
     listLeaderboardRecords(leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, options: any = {}): Promise<ApiLeaderboardRecordList> {
       if (leaderboardId === null || leaderboardId === undefined) {
         throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
@@ -2641,6 +2720,62 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       fetchOptions.headers = {...headers, ...options.headers};
       fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /**  */
+    listLeaderboardRecordsAroundOwner(leaderboardId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiLeaderboardRecordList> {
+      if (leaderboardId === null || leaderboardId === undefined) {
+        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+      }
+      if (ownerId === null || ownerId === undefined) {
+        throw new Error("'ownerId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/leaderboard/{leaderboard_id}/owner/{owner_id}"
+         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)))
+         .replace("{owner_id}", encodeURIComponent(String(ownerId)));
+
+      const queryParams = {
+        limit: limit,
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -3134,6 +3269,275 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
         limit: limit,
         cursor: cursor,
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** List current or upcoming tournaments. */
+    listTournaments(categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string, options: any = {}): Promise<ApiTournamentList> {
+      const urlPath = "/v2/tournament";
+
+      const queryParams = {
+        category_start: categoryStart,
+        category_end: categoryEnd,
+        start_time: startTime,
+        end_time: endTime,
+        limit: limit,
+        cursor: cursor,
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** List tournament records. */
+    listTournamentRecords(tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, options: any = {}): Promise<ApiTournamentRecordList> {
+      if (tournamentId === null || tournamentId === undefined) {
+        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/tournament/{tournament_id}"
+         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+
+      const queryParams = {
+        owner_ids: ownerIds,
+        limit: limit,
+        cursor: cursor,
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "GET" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /** Write a record to a tournament. */
+    writeTournamentRecord(tournamentId: string, body: WriteTournamentRecordRequestTournamentRecordWrite, options: any = {}): Promise<ApiLeaderboardRecord> {
+      if (tournamentId === null || tournamentId === undefined) {
+        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/tournament/{tournament_id}"
+         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "PUT" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = JSON.stringify(body || {});
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /**  */
+    joinTournament(tournamentId: string, options: any = {}): Promise<ProtobufEmpty> {
+      if (tournamentId === null || tournamentId === undefined) {
+        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/tournament/{tournament_id}/join"
+         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+
+      const queryParams = {
+      } as any;
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
+    /**  */
+    listTournamentRecordsAroundOwner(tournamentId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiTournamentRecordList> {
+      if (tournamentId === null || tournamentId === undefined) {
+        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+      }
+      if (ownerId === null || ownerId === undefined) {
+        throw new Error("'ownerId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/tournament/{tournament_id}/owner/{owner_id}"
+         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)))
+         .replace("{owner_id}", encodeURIComponent(String(ownerId)));
+
+      const queryParams = {
+        limit: limit,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {

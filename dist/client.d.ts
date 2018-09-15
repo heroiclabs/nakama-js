@@ -58,12 +58,45 @@ export interface LeaderboardRecord {
     subscore?: number;
     update_time?: string;
     username?: string;
+    max_num_score?: number;
 }
 export interface LeaderboardRecordList {
     next_cursor?: string;
     owner_records?: Array<LeaderboardRecord>;
     prev_cursor?: string;
     records?: Array<LeaderboardRecord>;
+}
+export interface Tournament {
+    id?: string;
+    title?: string;
+    description?: string;
+    category?: number;
+    sort_order?: number;
+    size?: number;
+    max_size?: number;
+    max_num_score?: number;
+    can_enter?: boolean;
+    end_active?: number;
+    next_reset?: number;
+    metadata?: object;
+    create_time?: string;
+    start_time?: string;
+    end_time?: string;
+}
+export interface TournamentList {
+    tournaments?: Array<Tournament>;
+    cursor?: string;
+}
+export interface TournamentRecordList {
+    next_cursor?: string;
+    owner_records?: Array<LeaderboardRecord>;
+    prev_cursor?: string;
+    records?: Array<LeaderboardRecord>;
+}
+export interface WriteTournamentRecord {
+    metadata?: object;
+    score?: string;
+    subscore?: string;
 }
 export interface WriteLeaderboardRecord {
     metadata?: object;
@@ -216,6 +249,7 @@ export declare class Client {
     importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<Users>;
     joinGroup(session: Session, groupId: string): Promise<boolean>;
+    joinTournament(session: Session, tournamentId: string): Promise<boolean>;
     kickGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     leaveGroup(session: Session, groupId: string): Promise<boolean>;
     listChannelMessages(session: Session, channelId: string, limit?: number, forward?: boolean, cursor?: string): Promise<ChannelMessageList>;
@@ -231,9 +265,13 @@ export declare class Client {
     linkSteam(session: Session, request: ApiAccountSteam): Promise<boolean>;
     listFriends(session: Session): Promise<Friends>;
     listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<LeaderboardRecordList>;
+    listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number): Promise<LeaderboardRecordList>;
     listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList>;
     listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<NotificationList>;
     listStorageObjects(session: Session, collection: string, userId?: string, limit?: number, cursor?: string): Promise<StorageObjectList>;
+    listTournaments(session: Session, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string): Promise<TournamentList>;
+    listTournamentRecords(session: Session, tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<TournamentRecordList>;
+    listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number): Promise<TournamentRecordList>;
     promoteGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects>;
     rpc(session: Session, id: string, input: object): Promise<RpcResponse>;
@@ -249,4 +287,5 @@ export declare class Client {
     updateGroup(session: Session, groupId: string, request: ApiUpdateGroupRequest): Promise<boolean>;
     writeLeaderboardRecord(session: Session, leaderboardId: string, request: WriteLeaderboardRecord): Promise<LeaderboardRecord>;
     writeStorageObjects(session: Session, objects: Array<WriteStorageObject>): Promise<ApiStorageObjectAcks>;
+    writeTournamentRecord(session: Session, tournamentId: string, request: WriteTournamentRecord): Promise<LeaderboardRecord>;
 }
