@@ -26,15 +26,15 @@ describe('Status Tests', () => {
   let page;
 
   beforeAll(async () => {
-    page = await global.__BROWSER__.newPage();
+    page = await browser.newPage();
 
-    page.on("console", msg => console.log("PAGE LOG:", msg.text()));
-    page.on("error", err => console.log("PAGE LOG ERROR:", err));
-    page.on("pageerror", err => console.log("PAGE LOG ERROR:", err));
+    page.on('console', msg => console.log('LOG:', msg.text()));
+    page.on('error', err => console.error('ERR:', err));
+    page.on('pageerror', err => console.error('PAGE ERROR:', err));
 
-    const nakamaJsLib = fs.readFileSync(__dirname + "/../dist/nakama-js.umd.js", "utf8");
+    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
     await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto("about:blank");
+    await page.goto('about:blank');
   }, TIMEOUT);
 
   it('should create status, and then update it', async () => {

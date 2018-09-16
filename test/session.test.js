@@ -21,12 +21,15 @@ describe('Session Tests', () => {
   let page;
 
   beforeAll(async () => {
-    page = await global.__BROWSER__.newPage();
-    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+    page = await browser.newPage();
 
-    const nakamaJsLib = fs.readFileSync(__dirname + "/../dist/nakama-js.umd.js", "utf8");
+    page.on('console', msg => console.log('LOG:', msg.text()));
+    page.on('error', err => console.error('ERR:', err));
+    page.on('pageerror', err => console.error('PAGE ERROR:', err));
+
+    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
     await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto("about:blank");
+    await page.goto('about:blank');
   }, TIMEOUT);
 
   it('should be expired', async () => {

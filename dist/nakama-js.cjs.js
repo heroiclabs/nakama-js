@@ -55,7 +55,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
       // get next character
       buffer = str.charAt(idx++);
       // character found in table? initialize bit storage and add its ascii value;
-      ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer, bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
+      ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
+        // and if not first of each 4 characters,
+        // convert the first 8 bits to one ascii character
+        bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
     ) {
       // try to find character in table (0-63, not found => -1)
       buffer = chars.indexOf(buffer);
@@ -66,6 +69,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 }());
 
 (function(self) {
+
   if (self.fetch) {
     return
   }
@@ -423,7 +427,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
   function parseHeaders(rawHeaders) {
     var headers = new Headers();
-    rawHeaders.split(/\r?\n/).forEach(function(line) {
+    // Replace instances of \r\n and \n followed by at least one space or horizontal tab with a space
+    // https://tools.ietf.org/html/rfc7230#section-3.2
+    var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, ' ');
+    preProcessedHeaders.split(/\r?\n/).forEach(function(line) {
       var parts = line.split(':');
       var key = parts.shift().trim();
       if (key) {
@@ -442,7 +449,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
     }
 
     this.type = 'default';
-    this.status = 'status' in options ? options.status : 200;
+    this.status = options.status === undefined ? 200 : options.status;
     this.ok = this.status >= 200 && this.status < 300;
     this.statusText = 'statusText' in options ? options.statusText : 'OK';
     this.headers = new Headers(options.headers);
@@ -509,6 +516,8 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
       if (request.credentials === 'include') {
         xhr.withCredentials = true;
+      } else if (request.credentials === 'omit') {
+        xhr.withCredentials = false;
       }
 
       if ('responseType' in xhr && support.blob) {
@@ -539,33 +548,17 @@ MERCHANTABLITY OR NON-INFRINGEMENT.
 See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
-/* global Reflect, Promise */
 
-
-
-var __assign = Object.assign || function __assign(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-    }
-    return t;
+var __assign = function() {
+    __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function __read(o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];

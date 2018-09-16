@@ -26,15 +26,15 @@ describe('Authenticate Tests', () => {
   let page;
 
   beforeAll(async () => {
-    page = await global.__BROWSER__.newPage();
+    page = await browser.newPage();
 
-    page.on("console", msg => console.log("PAGE LOG:", msg.text()));
-    page.on("error", err => console.log("PAGE LOG ERROR:", err));
-    page.on("pageerror", err => console.log("PAGE LOG ERROR:", err));
+    page.on('console', msg => console.log('LOG:', msg.text()));
+    page.on('error', err => console.error('ERR:', err));
+    page.on('pageerror', err => console.error('PAGE ERROR:', err));
 
-    const nakamaJsLib = fs.readFileSync(__dirname + "/../dist/nakama-js.umd.js", "utf8");
+    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
     await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto("about:blank");
+    await page.goto('about:blank');
   }, TIMEOUT);
 
   it('should authenticate with email', async () => {
@@ -77,30 +77,25 @@ describe('Authenticate Tests', () => {
   it('should fail to authenticate with new custom id', async () => {
     const customid = generateid();
 
-    const promise = await page.evaluate(async (customid) => {
+    const result = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-
-      return new Promise(async (resolve, reject) => {
-        try {
-          const session = await client.authenticateCustom({ id: customid, create: false });
-          resolve(session);
-        } catch (error) {
-          reject(error)
-        }
-      });
+      try {
+        await client.authenticateCustom({ id: customid, create: false });
+      } catch (error) {
+        return error.message;
+      }
     }, customid);
 
-    await expect(promise).rejects.not.toBeNull();
+    expect(result).not.toBeNull();
   });
 
   it('should authenticate with custom id twice', async () => {
     const customid = "someuniquecustomid";
 
-    const session = await page.evaluate((customid) => {
+    const session = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid }).then(session => {
-        return client.authenticateCustom({ id: customid });
-      });
+      await client.authenticateCustom({ id: customid });
+      return await client.authenticateCustom({ id: customid });
     }, customid);
 
     expect(session).not.toBeNull();
