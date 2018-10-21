@@ -2728,7 +2728,7 @@ var NakamaApi = function (configuration) {
                 }),
             ]);
         },
-        listMatches: function (limit, authoritative, label, minSize, maxSize, options) {
+        listMatches: function (limit, authoritative, label, minSize, maxSize, query, options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/match";
             var queryParams = {
@@ -2737,6 +2737,7 @@ var NakamaApi = function (configuration) {
                 label: label,
                 min_size: minSize,
                 max_size: maxSize,
+                query: query,
             };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
@@ -4900,9 +4901,9 @@ var Client = (function () {
             return Promise.resolve(list);
         });
     };
-    Client.prototype.listMatches = function (session, limit, authoritative, label, minSize, maxSize) {
+    Client.prototype.listMatches = function (session, limit, authoritative, label, minSize, maxSize, query) {
         this.configuration.bearerToken = (session && session.token);
-        return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize);
+        return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize, query);
     };
     Client.prototype.listNotifications = function (session, limit, cacheableCursor) {
         this.configuration.bearerToken = (session && session.token);

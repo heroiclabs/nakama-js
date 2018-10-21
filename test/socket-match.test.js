@@ -136,6 +136,25 @@ describe('Match Tests', () => {
     expect(response.data).toEqual(PAYLOAD);
   });
 
+  it('should create authoritative match, and join with metadata', async () => {
+    const customid = generateid();
+    const ID = "clientrpc.create_authoritative_match";
+
+    const response = await page.evaluate(async (customid, id) => {
+      const client = new nakamajs.Client();
+      const socket = client.createSocket(false, false);
+
+      const session = await client.authenticateCustom({ id: customid });
+      await socket.connect(session);
+
+      var res = await socket.send({ rpc: { id: id, payload: "{}" } });
+      var match = JSON.parse(res.rpc.payload);
+
+      var metadata = { key: "value" };
+      await socket.send({ match_join: {match_id: match.match_id, metadata: metadata }});
+    }, customid, ID);
+  });
+
   it('should create authoritative match, list matches', async () => {
     const customid = generateid();
     const ID = "clientrpc.create_authoritative_match";
@@ -146,9 +165,64 @@ describe('Match Tests', () => {
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session);
-      await socket.send({ rpc: { id: id } });
+      await socket.send({ rpc: { id: id, payload: "{}" } });
       return await client.listMatches(session, 1, true)
     }, customid, ID);
+
+    expect(response).not.toBeNull();
+    expect(response.matches).not.toBeNull();
+    expect(response.matches).toHaveLength(1);
+    expect(response.matches[0].match_id).not.toBeNull();
+    expect(response.matches[0].authoritative).toBe(true);
+  });
+
+  it('should create authoritative match, list matches with querying', async () => {
+    const customid = generateid();
+    const ID = "clientrpc.create_authoritative_match";
+
+    const response = await page.evaluate(async (customid, id) => {
+      const client = new nakamajs.Client();
+      const socket = client.createSocket(false, false);
+
+      const session = await client.authenticateCustom({ id: customid });
+      await socket.connect(session);
+
+      var label = { skill: 60 };
+      var data = { label: JSON.stringify(label) }  // needs to be string
+      await socket.send({ rpc: { id: id, payload: JSON.stringify(data) } });
+
+      var query = "+label.skill:>=50";
+      return await client.listMatches(session, 1, true, "", 0, 100, query)
+    }, customid, ID);
+
+    expect(response).not.toBeNull();
+    expect(response.matches).not.toBeNull();
+    expect(response.matches).toHaveLength(1);
+    expect(response.matches[0].match_id).not.toBeNull();
+    expect(response.matches[0].authoritative).toBe(true);
+  });
+
+  it('should create authoritative match, list matches with querying arrays', async () => {
+    const customid = generateid();
+    var convoId1 = generateid();
+    var convoId2 = generateid();
+    var convoId3 = generateid();
+    const ID = "clientrpc.create_authoritative_match";
+
+    const response = await page.evaluate(async (customid, id, convoId1, convoId2, convoId3) => {
+      const client = new nakamajs.Client();
+      const socket = client.createSocket(false, false);
+
+      const session = await client.authenticateCustom({ id: customid });
+      await socket.connect(session);
+
+      var label = { convo_ids: [convoId1, convoId2, convoId3] };
+      var data = { label: JSON.stringify(label) }  // needs to be string
+      await socket.send({ rpc: { id: id, payload: JSON.stringify(data) } });
+
+      var query = "+label.convo_ids=" + convoId2;
+      return await client.listMatches(session, 1, true, "", 0, 100, query)
+    }, customid, ID, convoId1, convoId2, convoId3);
 
     expect(response).not.toBeNull();
     expect(response.matches).not.toBeNull();

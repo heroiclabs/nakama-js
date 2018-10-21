@@ -2791,7 +2791,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Fetch list of running matches. */
-    listMatches(limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, options: any = {}): Promise<ApiMatchList> {
+    listMatches(limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, query?: string, options: any = {}): Promise<ApiMatchList> {
       const urlPath = "/v2/match";
 
       const queryParams = {
@@ -2800,6 +2800,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         label: label,
         min_size: minSize,
         max_size: maxSize,
+        query: query,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {

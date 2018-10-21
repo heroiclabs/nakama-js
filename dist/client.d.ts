@@ -266,7 +266,7 @@ export declare class Client {
     listFriends(session: Session): Promise<Friends>;
     listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<LeaderboardRecordList>;
     listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number): Promise<LeaderboardRecordList>;
-    listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList>;
+    listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, query?: string): Promise<ApiMatchList>;
     listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<NotificationList>;
     listStorageObjects(session: Session, collection: string, userId?: string, limit?: number, cursor?: string): Promise<StorageObjectList>;
     listTournaments(session: Session, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string): Promise<TournamentList>;

@@ -1682,9 +1682,9 @@ export class Client {
   }
 
   /** Fetch list of running matches. */
-  listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number): Promise<ApiMatchList> {
+  listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, query?: string): Promise<ApiMatchList> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize);
+    return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize, query);
   }
 
   /** Fetch list of notifications. */

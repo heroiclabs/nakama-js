@@ -329,7 +329,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     listLeaderboardRecords(leaderboardId: string, ownerIds?: string[] | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiLeaderboardRecordList>;
     writeLeaderboardRecord(leaderboardId: string, body: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
     listLeaderboardRecordsAroundOwner(leaderboardId: string, ownerId: string, limit?: number | undefined, options?: any): Promise<ApiLeaderboardRecordList>;
-    listMatches(limit?: number | undefined, authoritative?: boolean | undefined, label?: string | undefined, minSize?: number | undefined, maxSize?: number | undefined, options?: any): Promise<ApiMatchList>;
+    listMatches(limit?: number | undefined, authoritative?: boolean | undefined, label?: string | undefined, minSize?: number | undefined, maxSize?: number | undefined, query?: string | undefined, options?: any): Promise<ApiMatchList>;
     deleteNotifications(ids?: string[] | undefined, options?: any): Promise<ProtobufEmpty>;
     listNotifications(limit?: number | undefined, cacheableCursor?: string | undefined, options?: any): Promise<ApiNotificationList>;
     rpcFunc2(id: string, payload?: string | undefined, httpKey?: string | undefined, options?: any): Promise<ApiRpc>;

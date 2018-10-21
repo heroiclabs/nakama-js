@@ -126,6 +126,7 @@ export interface JoinMatch {
     match_join: {
         match_id?: string;
         token?: string;
+        metadata?: {};
     };
 }
 export interface LeaveMatch {
