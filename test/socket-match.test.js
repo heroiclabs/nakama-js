@@ -220,7 +220,7 @@ describe('Match Tests', () => {
       var data = { label: JSON.stringify(label) }  // needs to be string
       await socket.send({ rpc: { id: id, payload: JSON.stringify(data) } });
 
-      var query = "+label.convo_ids=" + convoId2;
+      var query = "+label.convo_ids:" + convoId2;
       return await client.listMatches(session, 1, true, "", 0, 100, query)
     }, customid, ID, convoId1, convoId2, convoId3);
 
