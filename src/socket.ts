@@ -173,8 +173,8 @@ export interface Match {
   authoritative: boolean;
   label?: string;
   size: number;
-  presences: Match[];
-  self: Match;
+  presences: Presence[];
+  self: Presence;
 }
 
 /** Create a multiplayer match. */
