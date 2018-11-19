@@ -104,20 +104,25 @@ export interface MatchmakerRemove {
         ticket: string;
     };
 }
+export interface MatchmakerUser {
+    presence: Presence;
+    string_properties: Map<string, string>;
+    numeric_properties: Map<string, number>;
+}
 export interface MatchmakerMatched {
     ticket: string;
     match_id: string;
     token: string;
-    users: Presence[];
-    self: Presence;
+    users: MatchmakerUser[];
+    self: MatchmakerUser;
 }
 export interface Match {
     match_id: string;
     authoritative: boolean;
     label?: string;
     size: number;
-    presences: Match[];
-    self: Match;
+    presences: Presence[];
+    self: Presence;
 }
 export interface CreateMatch {
     match_create: {};

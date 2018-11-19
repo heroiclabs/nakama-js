@@ -73,7 +73,7 @@ describe('Group Tests', () => {
     expect(result.user_groups[0].group.max_count).toBe(100);
     expect(result.user_groups[0].group.metadata).toEqual({});
     expect(result.user_groups[0].group.open).toBe(true);
-    expect(result.user_groups[0].state).toBe(1);
+    expect(result.user_groups[0].state).toBe(0);
   });
 
   it('should create, update, then list group', async () => {
@@ -96,7 +96,7 @@ describe('Group Tests', () => {
     expect(result.user_groups[0].group.max_count).toBe(100);
     expect(result.user_groups[0].group.metadata).toEqual({});
     expect(result.user_groups[0].group.open).toBe(true);
-    expect(result.user_groups[0].state).toBe(1);
+    expect(result.user_groups[0].state).toBe(0);
   });
 
   it('should create, delete, then list group', async () => {
@@ -128,7 +128,7 @@ describe('Group Tests', () => {
 
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(1);
-    expect(result.group_users[0].state).toBe(1);
+    expect(result.group_users[0].state).toBe(0);
   });
 
   it('should create, join, then list group users', async () => {
@@ -150,11 +150,11 @@ describe('Group Tests', () => {
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(2);
     if (result.group_users[0].state < result.group_users[1].state) {
-      expect(result.group_users[0].state).toBe(1);
-      expect(result.group_users[1].state).toBe(3);
+      expect(result.group_users[0].state).toBe(0);
+      expect(result.group_users[1].state).toBe(2);
     } else {
-      expect(result.group_users[0].state).toBe(3);
-      expect(result.group_users[1].state).toBe(1);
+      expect(result.group_users[0].state).toBe(2);
+      expect(result.group_users[1].state).toBe(0);
     }
   });
 
@@ -177,11 +177,11 @@ describe('Group Tests', () => {
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(2);
     if (result.group_users[0].state < result.group_users[1].state) {
-      expect(result.group_users[0].state).toBe(1);
-      expect(result.group_users[1].state).toBe(3);
+      expect(result.group_users[0].state).toBe(0);
+      expect(result.group_users[1].state).toBe(2);
     } else {
-      expect(result.group_users[0].state).toBe(3);
-      expect(result.group_users[1].state).toBe(1);
+      expect(result.group_users[0].state).toBe(2);
+      expect(result.group_users[1].state).toBe(0);
     }
   });
 
@@ -204,7 +204,7 @@ describe('Group Tests', () => {
 
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(1);
-    expect(result.group_users[0].state).toBe(1);
+    expect(result.group_users[0].state).toBe(0);
   });
 
   it('should create closed, request to join, then list group users', async () => {
@@ -226,11 +226,11 @@ describe('Group Tests', () => {
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(2);
     if (result.group_users[0].state < result.group_users[1].state) {
-      expect(result.group_users[0].state).toBe(1);
-      expect(result.group_users[1].state).toBe(4);
+      expect(result.group_users[0].state).toBe(0);
+      expect(result.group_users[1].state).toBe(3);
     } else {
-      expect(result.group_users[0].state).toBe(4);
-      expect(result.group_users[1].state).toBe(1);
+      expect(result.group_users[0].state).toBe(3);
+      expect(result.group_users[1].state).toBe(0);
     }
   });
 
@@ -386,11 +386,11 @@ describe('Group Tests', () => {
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(2);
     if (result.group_users[0].state < result.group_users[1].state) {
-      expect(result.group_users[0].state).toBe(1);
-      expect(result.group_users[1].state).toBe(3);
+      expect(result.group_users[0].state).toBe(0);
+      expect(result.group_users[1].state).toBe(2);
     } else {
-      expect(result.group_users[0].state).toBe(3);
-      expect(result.group_users[1].state).toBe(1);
+      expect(result.group_users[0].state).toBe(2);
+      expect(result.group_users[1].state).toBe(0);
     }
   });
 
@@ -413,11 +413,11 @@ describe('Group Tests', () => {
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(2);
     if (result.group_users[0].state < result.group_users[1].state) {
-      expect(result.group_users[0].state).toBe(1);
-      expect(result.group_users[1].state).toBe(3);
+      expect(result.group_users[0].state).toBe(0);
+      expect(result.group_users[1].state).toBe(2);
     } else {
-      expect(result.group_users[0].state).toBe(3);
-      expect(result.group_users[1].state).toBe(1);
+      expect(result.group_users[0].state).toBe(2);
+      expect(result.group_users[1].state).toBe(0);
     }
   });
 
@@ -439,7 +439,7 @@ describe('Group Tests', () => {
 
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(1);
-    expect(result.group_users[0].state).toBe(1);
+    expect(result.group_users[0].state).toBe(0);
   });
 
   it('should create, add, promote, then list group users', async () => {
@@ -462,11 +462,11 @@ describe('Group Tests', () => {
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(2);
     if (result.group_users[0].state < result.group_users[1].state) {
-      expect(result.group_users[0].state).toBe(1);
-      expect(result.group_users[1].state).toBe(2);
-    } else {
-      expect(result.group_users[0].state).toBe(2);
+      expect(result.group_users[0].state).toBe(0);
       expect(result.group_users[1].state).toBe(1);
+    } else {
+      expect(result.group_users[0].state).toBe(1);
+      expect(result.group_users[1].state).toBe(0);
     }
   });
 
@@ -490,8 +490,8 @@ describe('Group Tests', () => {
 
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(2);
-    expect(result.group_users[0].state).toBe(1);
-    expect(result.group_users[1].state).toBe(1);
+    expect(result.group_users[0].state).toBe(0);
+    expect(result.group_users[1].state).toBe(0);
   });
 
   it('should create, join, leave, then list group users', async () => {
@@ -512,7 +512,7 @@ describe('Group Tests', () => {
 
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(1);
-    expect(result.group_users[0].state).toBe(1);
+    expect(result.group_users[0].state).toBe(0);
   });
 
   it('should create closed, request to join, leave, then list group users', async () => {
@@ -533,7 +533,7 @@ describe('Group Tests', () => {
 
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(1);
-    expect(result.group_users[0].state).toBe(1);
+    expect(result.group_users[0].state).toBe(0);
   });
 
   it('should create, add, promote, add, promote, then list group users', async () => {

@@ -158,13 +158,20 @@ export interface MatchmakerRemove {
   };
 }
 
+/** A reference to a user and their matchmaking properties. */
+export interface MatchmakerUser {
+  presence: Presence;
+  string_properties: Map<string, string>;
+  numeric_properties: Map<string, number>;
+}
+
 /** Matchmaking result. */
 export interface MatchmakerMatched {
   ticket: string;
   match_id: string;
   token: string;
-  users: Presence[];
-  self: Presence;
+  users: MatchmakerUser[];
+  self: MatchmakerUser;
 }
 
 /** A realtime match */

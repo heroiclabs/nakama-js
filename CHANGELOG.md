@@ -7,6 +7,10 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 ### Added
 - Support for Tournaments.
 
+### Fixed
+- Typo fix in Match interface to use Presences.
+- Add missing MatchmakerUser typescript interface definition.
+
 ## [2.0.1] - 2018-05-19
 ### Added
 - Authenticate functions for Steam and Game Center.

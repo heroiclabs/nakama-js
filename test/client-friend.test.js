@@ -47,15 +47,13 @@ describe('Friend Tests', () => {
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
-      return client1.addFriends(session1, [session2.user_id])
-        .then(result => {
-          return client1.listFriends(session1);
-        });
+      await client1.addFriends(session1, [session2.user_id]);
+      return await client1.listFriends(session1);
     }, customid1, customid2);
 
     expect(result).not.toBeNull();
     expect(result.friends.length).toBe(1);
-    expect(result.friends[0].state).toBe(3);
+    expect(result.friends[0].state).toBe(1);
   });
 
   it('should receive friend invite, then list', async () => {
@@ -68,10 +66,8 @@ describe('Friend Tests', () => {
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
-      return client1.addFriends(session1, [session2.user_id])
-        .then(result => {
-          return client2.listFriends(session2);
-        });
+      await client1.addFriends(session1, [session2.user_id]);
+      return await client2.listFriends(session2);
     }, customid1, customid2);
 
     expect(result).not.toBeNull();
@@ -89,15 +85,13 @@ describe('Friend Tests', () => {
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
-      return client1.blockFriends(session1, [session2.user_id])
-        .then(result => {
-          return client1.listFriends(session1);
-        });
+      await client1.blockFriends(session1, [session2.user_id]);
+      return await client1.listFriends(session1);
     }, customid1, customid2);
 
     expect(result).not.toBeNull();
     expect(result.friends.length).toBe(1);
-    expect(result.friends[0].state).toBe(4);
+    expect(result.friends[0].state).toBe(3);
   });
 
   it('should add friend, accept, then list', async () => {
@@ -110,18 +104,14 @@ describe('Friend Tests', () => {
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
-      return client1.addFriends(session1, [session2.user_id])
-        .then(result => {
-          return client2.addFriends(session2, [session1.user_id]);
-        })
-        .then(result => {
-          return client1.listFriends(session1);
-        });
+      await client1.addFriends(session1, [session2.user_id]);
+      await client2.addFriends(session2, [session1.user_id]);
+      return await client1.listFriends(session1);
     }, customid1, customid2);
 
     expect(result).not.toBeNull();
     expect(result.friends.length).toBe(1);
-    expect(result.friends[0].state).toBe(1);
+    expect(result.friends[0].state).toBe(0);
   });
 
   it('should add friend, reject, then list', async () => {
@@ -134,13 +124,9 @@ describe('Friend Tests', () => {
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
-      return client1.addFriends(session1, [session2.user_id])
-        .then(result => {
-          return client2.deleteFriends(session2, [session1.user_id]);
-        })
-        .then(result => {
-          return client1.listFriends(session1);
-        });
+      await client1.addFriends(session1, [session2.user_id]);
+      await client2.deleteFriends(session2, [session1.user_id]);
+      return await client1.listFriends(session1);
     }, customid1, customid2);
 
     expect(result).not.toBeNull();
