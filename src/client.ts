@@ -508,9 +508,8 @@ export class Client {
       readonly serverkey = DEFAULT_SERVER_KEY,
       readonly host = DEFAULT_HOST,
       readonly port = DEFAULT_PORT,
-      public useSSL = false,
-      public timeout = DEFAULT_TIMEOUT_MS,
-      public verbose = false) {
+      readonly useSSL = false,
+      readonly timeout = DEFAULT_TIMEOUT_MS) {
     const scheme = (useSSL) ? "https://" : "http://";
     const basePath = `${scheme}${host}:${port}`;
     this.configuration = {
