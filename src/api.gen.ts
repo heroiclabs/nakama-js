@@ -381,6 +381,8 @@ export interface ApiTournament {
   create_time?: string;
   // The description of the tournament. May be blank.
   description?: string;
+  // The UNIX timestamp for duration of a tournament.
+  duration?: number;
   // The UNIX timestamp when the tournament stops being active until next reset. A computed value.
   end_active?: number;
   // The UNIX time when the tournament will be stopped.
@@ -838,7 +840,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** Authenticate a user with a Facebook OAuth token against the server. */
-    authenticateFacebook(body: ApiAccountFacebook, create?: boolean, username?: string, import_ ?: boolean, options: any = {}): Promise<ApiSession> {
+    authenticateFacebook(body: ApiAccountFacebook, create?: boolean, username?: string, import_?: boolean, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -847,7 +849,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
         create: create,
         username: username,
-        'import': import_,
+        import: import_,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -1211,7 +1213,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const urlPath = "/v2/account/link/facebook";
 
       const queryParams = {
-        'import': import_,
+        import: import_,
       } as any;
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
@@ -2734,7 +2736,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
-    /**  */
+    /** List leaderboard records that belong to a user. */
     listLeaderboardRecordsAroundOwner(leaderboardId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiLeaderboardRecordList> {
       if (leaderboardId === null || leaderboardId === undefined) {
         throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
@@ -3474,7 +3476,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
-    /**  */
+    /** Attempt to join an open and running tournament. */
     joinTournament(tournamentId: string, options: any = {}): Promise<ProtobufEmpty> {
       if (tournamentId === null || tournamentId === undefined) {
         throw new Error("'tournamentId' is a required parameter but is null or undefined.");
@@ -3525,7 +3527,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         ),
       ]);
     },
-    /**  */
+    /** List tournament records for a given owner. */
     listTournamentRecordsAroundOwner(tournamentId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiTournamentRecordList> {
       if (tournamentId === null || tournamentId === undefined) {
         throw new Error("'tournamentId' is a required parameter but is null or undefined.");

@@ -197,6 +197,8 @@ export interface Tournament {
   title?: string;
   // The description of the tournament. May be blank.
   description?: string;
+  // The UNIX timestamp for duration of a tournament.
+  duration?: number;
   // The category of the tournament. e.g. "vip" could be category 1.
   category?: number;
   // ASC or DESC sort mode of scores in the tournament.
@@ -1760,6 +1762,7 @@ export class Client {
             id: o.id,
             title: o.title,
             description: o.description,
+            duration: o.duration ? Number(o.duration) : 0,
             category: o.category ? Number(o.category) : 0,
             sort_order: o.sort_order ? Number(o.sort_order) : 0,
             size: o.size ? Number(o.size) : 0,

@@ -209,6 +209,7 @@ export interface ApiTournament {
     category?: number;
     create_time?: string;
     description?: string;
+    duration?: number;
     end_active?: number;
     end_time?: string;
     id?: string;

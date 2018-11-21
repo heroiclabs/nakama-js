@@ -887,7 +887,7 @@ var NakamaApi = function (configuration) {
             var queryParams = {
                 create: create,
                 username: username,
-                'import': import_,
+                import: import_,
             };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
@@ -1234,7 +1234,7 @@ var NakamaApi = function (configuration) {
             }
             var urlPath = "/v2/account/link/facebook";
             var queryParams = {
-                'import': import_,
+                import: import_,
             };
             var urlQuery = "?" + Object.keys(queryParams)
                 .map(function (k) {
@@ -4968,6 +4968,7 @@ var Client = (function () {
                         id: o.id,
                         title: o.title,
                         description: o.description,
+                        duration: o.duration ? Number(o.duration) : 0,
                         category: o.category ? Number(o.category) : 0,
                         sort_order: o.sort_order ? Number(o.sort_order) : 0,
                         size: o.size ? Number(o.size) : 0,

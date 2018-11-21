@@ -70,6 +70,7 @@ export interface Tournament {
     id?: string;
     title?: string;
     description?: string;
+    duration?: number;
     category?: number;
     sort_order?: number;
     size?: number;
