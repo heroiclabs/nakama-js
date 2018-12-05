@@ -296,6 +296,7 @@ export interface SocketError {
 export class DefaultSocket implements Socket {
   private socket?: WebSocket;
   private readonly cIds: { [key: string]: PromiseExecutor };
+  private nextCid: number;
 
   constructor(
       readonly host: string,
@@ -303,10 +304,13 @@ export class DefaultSocket implements Socket {
       readonly useSSL: boolean = false,
       public verbose: boolean = false) {
     this.cIds = {};
+    this.nextCid = 1;
   }
 
   generatecid(): string {
-    return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
+    const cid = this.nextCid.toString();
+    ++this.nextCid;
+    return cid;
   }
 
   connect(session: Session, createStatus: boolean = false): Promise<Session> {
