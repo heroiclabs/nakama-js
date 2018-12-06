@@ -656,9 +656,7 @@ export class Client {
       "Content-Type": "application/json",
     } as any;
 
-    if (this.configuration.bearerToken) {
-      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-    } else if (this.configuration.username) {
+    if (this.configuration.username) {
       headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
     }
 
@@ -711,9 +709,7 @@ export class Client {
       "Content-Type": "application/json",
     } as any;
 
-    if (this.configuration.bearerToken) {
-      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-    } else if (this.configuration.username) {
+    if (this.configuration.username) {
       headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
     }
 
@@ -766,9 +762,7 @@ export class Client {
       "Content-Type": "application/json",
     } as any;
 
-    if (this.configuration.bearerToken) {
-      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-    } else if (this.configuration.username) {
+    if (this.configuration.username) {
       headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
     }
 
@@ -822,9 +816,7 @@ export class Client {
       "Content-Type": "application/json",
     } as any;
 
-    if (this.configuration.bearerToken) {
-      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-    } else if (this.configuration.username) {
+    if (this.configuration.username) {
       headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
     }
 
@@ -877,9 +869,7 @@ export class Client {
       "Content-Type": "application/json",
     } as any;
 
-    if (this.configuration.bearerToken) {
-      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-    } else if (this.configuration.username) {
+    if (this.configuration.username) {
       headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
     }
 
@@ -932,9 +922,7 @@ export class Client {
       "Content-Type": "application/json",
     } as any;
 
-    if (this.configuration.bearerToken) {
-      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-    } else if (this.configuration.username) {
+    if (this.configuration.username) {
       headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
     }
 
@@ -992,9 +980,7 @@ export class Client {
       "Content-Type": "application/json",
     } as any;
 
-    if (this.configuration.bearerToken) {
-      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-    } else if (this.configuration.username) {
+    if (this.configuration.username) {
       headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
     }
 

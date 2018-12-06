@@ -224,12 +224,11 @@ export declare class Client {
     readonly serverkey: string;
     readonly host: string;
     readonly port: string;
-    useSSL: boolean;
-    timeout: number;
-    verbose: boolean;
+    readonly useSSL: boolean;
+    readonly timeout: number;
     private readonly apiClient;
     private readonly configuration;
-    constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number, verbose?: boolean);
+    constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number);
     addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     authenticateCustom(request: AccountCustom): Promise<Session>;

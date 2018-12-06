@@ -200,6 +200,7 @@ export declare class DefaultSocket implements Socket {
     verbose: boolean;
     private socket?;
     private readonly cIds;
+    private nextCid;
     constructor(host: string, port: string, useSSL?: boolean, verbose?: boolean);
     generatecid(): string;
     connect(session: Session, createStatus?: boolean): Promise<Session>;

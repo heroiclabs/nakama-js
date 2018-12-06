@@ -556,29 +556,6 @@ var __assign = function() {
     return __assign.apply(this, arguments);
 };
 
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-function __spread() {
-    for (var ar = [], i = 0; i < arguments.length; i++)
-        ar = ar.concat(__read(arguments[i]));
-    return ar;
-}
-
 var BASE_PATH = "http://127.0.0.1:80";
 var NakamaApi = function (configuration) {
     if (configuration === void 0) { configuration = {
@@ -3615,9 +3592,12 @@ var DefaultSocket = (function () {
         this.useSSL = useSSL;
         this.verbose = verbose;
         this.cIds = {};
+        this.nextCid = 1;
     }
     DefaultSocket.prototype.generatecid = function () {
-        return __spread(Array(30)).map(function () { return Math.random().toString(36)[3]; }).join('');
+        var cid = this.nextCid.toString();
+        ++this.nextCid;
+        return cid;
     };
     DefaultSocket.prototype.connect = function (session, createStatus) {
         var _this = this;
@@ -3824,19 +3804,17 @@ var DEFAULT_PORT = "7350";
 var DEFAULT_SERVER_KEY = "defaultkey";
 var DEFAULT_TIMEOUT_MS = 7000;
 var Client = (function () {
-    function Client(serverkey, host, port, useSSL, timeout, verbose) {
+    function Client(serverkey, host, port, useSSL, timeout) {
         if (serverkey === void 0) { serverkey = DEFAULT_SERVER_KEY; }
         if (host === void 0) { host = DEFAULT_HOST; }
         if (port === void 0) { port = DEFAULT_PORT; }
         if (useSSL === void 0) { useSSL = false; }
         if (timeout === void 0) { timeout = DEFAULT_TIMEOUT_MS; }
-        if (verbose === void 0) { verbose = false; }
         this.serverkey = serverkey;
         this.host = host;
         this.port = port;
         this.useSSL = useSSL;
         this.timeout = timeout;
-        this.verbose = verbose;
         var scheme = (useSSL) ? "https://" : "http://";
         var basePath = "" + scheme + host + ":" + port;
         this.configuration = {
@@ -3972,10 +3950,7 @@ var Client = (function () {
             "Accept": "application/json",
             "Content-Type": "application/json",
         };
-        if (this.configuration.bearerToken) {
-            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-        }
-        else if (this.configuration.username) {
+        if (this.configuration.username) {
             headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
         }
         fetchOptions.headers = __assign({}, headers);
@@ -4024,10 +3999,7 @@ var Client = (function () {
             "Accept": "application/json",
             "Content-Type": "application/json",
         };
-        if (this.configuration.bearerToken) {
-            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-        }
-        else if (this.configuration.username) {
+        if (this.configuration.username) {
             headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
         }
         fetchOptions.headers = __assign({}, headers);
@@ -4076,10 +4048,7 @@ var Client = (function () {
             "Accept": "application/json",
             "Content-Type": "application/json",
         };
-        if (this.configuration.bearerToken) {
-            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-        }
-        else if (this.configuration.username) {
+        if (this.configuration.username) {
             headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
         }
         fetchOptions.headers = __assign({}, headers);
@@ -4129,10 +4098,7 @@ var Client = (function () {
             "Accept": "application/json",
             "Content-Type": "application/json",
         };
-        if (this.configuration.bearerToken) {
-            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-        }
-        else if (this.configuration.username) {
+        if (this.configuration.username) {
             headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
         }
         fetchOptions.headers = __assign({}, headers);
@@ -4181,10 +4147,7 @@ var Client = (function () {
             "Accept": "application/json",
             "Content-Type": "application/json",
         };
-        if (this.configuration.bearerToken) {
-            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-        }
-        else if (this.configuration.username) {
+        if (this.configuration.username) {
             headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
         }
         fetchOptions.headers = __assign({}, headers);
@@ -4233,10 +4196,7 @@ var Client = (function () {
             "Accept": "application/json",
             "Content-Type": "application/json",
         };
-        if (this.configuration.bearerToken) {
-            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-        }
-        else if (this.configuration.username) {
+        if (this.configuration.username) {
             headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
         }
         fetchOptions.headers = __assign({}, headers);
@@ -4290,10 +4250,7 @@ var Client = (function () {
             "Accept": "application/json",
             "Content-Type": "application/json",
         };
-        if (this.configuration.bearerToken) {
-            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-        }
-        else if (this.configuration.username) {
+        if (this.configuration.username) {
             headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
         }
         fetchOptions.headers = __assign({}, headers);
