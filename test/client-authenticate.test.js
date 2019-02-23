@@ -76,13 +76,13 @@ describe('Authenticate Tests', () => {
 
   it('should fail to authenticate with new custom id', async () => {
     const customid = generateid();
-
     const result = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
       try {
-        await client.authenticateCustom({ id: customid, create: false });
-      } catch (error) {
-        return error.message;
+        // Expects exception.
+        return await client.authenticateCustom({ id: customid, create: false });
+      } catch (err) {
+        return err;
       }
     }, customid);
 
@@ -103,11 +103,16 @@ describe('Authenticate Tests', () => {
   });
 
   it('should fail authenticate with custom id', async () => {
-    const promise = page.evaluate(() => {
+    const result = await page.evaluate(async () => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: "" });
+      try {
+        // Expects exception.
+        return await client.authenticateCustom({ id: "" });
+      } catch (err) {
+        return err;
+      }
     });
 
-    await expect(promise).rejects.not.toBeNull();
+    expect(result).not.toBeNull();
   });
 }, TIMEOUT);
