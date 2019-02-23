@@ -536,7 +536,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 }) => {
   return {
     /** Perform the underlying Fetch operation and return Promise object **/
-    doFetch(urlPath: string, method: string, queryParams: any, body: any, options: any): Promise<any> {
+    doFetch(urlPath: string, method: string, queryParams: any, body?: any, options?: any): Promise<any> {
       const urlQuery = "?" + Object.keys(queryParams)
         .map(k => {
           if (queryParams[k] instanceof Array) {

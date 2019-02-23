@@ -286,7 +286,7 @@ export interface ApiWriteStorageObjectsRequest {
 export interface ProtobufEmpty {
 }
 export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
-    doFetch(urlPath: string, method: string, queryParams: any, body: any, options: any): Promise<any>;
+    doFetch(urlPath: string, method: string, queryParams: any, body?: any, options?: any): Promise<any>;
     healthcheck(options?: any): Promise<ProtobufEmpty>;
     getAccount(options?: any): Promise<ApiAccount>;
     updateAccount(body: ApiUpdateAccountRequest, options?: any): Promise<ProtobufEmpty>;
