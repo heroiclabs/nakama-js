@@ -286,20 +286,21 @@ export interface ApiWriteStorageObjectsRequest {
 export interface ProtobufEmpty {
 }
 export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
+    doFetch(urlPath: string, method: string, queryParams: any, body: any, options: any): Promise<any>;
     healthcheck(options?: any): Promise<ProtobufEmpty>;
     getAccount(options?: any): Promise<ApiAccount>;
     updateAccount(body: ApiUpdateAccountRequest, options?: any): Promise<ProtobufEmpty>;
     authenticateCustom(body: ApiAccountCustom, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateDevice(body: ApiAccountDevice, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateEmail(body: ApiAccountEmail, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
-    authenticateFacebook(body: ApiAccountFacebook, create?: boolean | undefined, username?: string | undefined, import_?: boolean | undefined, options?: any): Promise<ApiSession>;
+    authenticateFacebook(body: ApiAccountFacebook, create?: boolean | undefined, username?: string | undefined, sync?: boolean | undefined, options?: any): Promise<ApiSession>;
     authenticateGameCenter(body: ApiAccountGameCenter, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateGoogle(body: ApiAccountGoogle, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateSteam(body: ApiAccountSteam, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     linkCustom(body: ApiAccountCustom, options?: any): Promise<ProtobufEmpty>;
     linkDevice(body: ApiAccountDevice, options?: any): Promise<ProtobufEmpty>;
     linkEmail(body: ApiAccountEmail, options?: any): Promise<ProtobufEmpty>;
-    linkFacebook(body: ApiAccountFacebook, import_?: boolean | undefined, options?: any): Promise<ProtobufEmpty>;
+    linkFacebook(body: ApiAccountFacebook, sync?: boolean | undefined, options?: any): Promise<ProtobufEmpty>;
     linkGameCenter(body: ApiAccountGameCenter, options?: any): Promise<ProtobufEmpty>;
     linkGoogle(body: ApiAccountGoogle, options?: any): Promise<ProtobufEmpty>;
     linkSteam(body: ApiAccountSteam, options?: any): Promise<ProtobufEmpty>;

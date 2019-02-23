@@ -572,10 +572,7 @@
           timeoutMs: 5000,
       }; }
       return {
-          healthcheck: function (options) {
-              if (options === void 0) { options = {}; }
-              var urlPath = "/healthcheck";
-              var queryParams = {};
+          doFetch: function (urlPath, method, queryParams, body, options) {
               var urlQuery = "?" + Object.keys(queryParams)
                   .map(function (k) {
                   if (queryParams[k] instanceof Array) {
@@ -590,7 +587,7 @@
                   }
               })
                   .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
+              var fetchOptions = __assign({ method: method }, options);
               var headers = {
                   "Accept": "application/json",
                   "Content-Type": "application/json",
@@ -602,6 +599,7 @@
                   headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
               }
               fetchOptions.headers = __assign({}, headers, options.headers);
+              fetchOptions.body = body;
               return Promise.race([
                   fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
                       if (response.status >= 200 && response.status < 300) {
@@ -616,49 +614,19 @@
                   }),
               ]);
           },
+          healthcheck: function (options) {
+              if (options === void 0) { options = {}; }
+              var urlPath = "/healthcheck";
+              var queryParams = {};
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          },
           getAccount: function (options) {
               if (options === void 0) { options = {}; }
               var urlPath = "/v2/account";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           updateAccount: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -667,46 +635,9 @@
               }
               var urlPath = "/v2/account";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "PUT" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "PUT", queryParams, _body, options);
           },
           authenticateCustom: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -718,46 +649,9 @@
                   create: create,
                   username: username,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateDevice: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -769,46 +663,9 @@
                   create: create,
                   username: username,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateEmail: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -820,48 +677,11 @@
                   create: create,
                   username: username,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
-          authenticateFacebook: function (body, create, username, import_, options) {
+          authenticateFacebook: function (body, create, username, sync, options) {
               if (options === void 0) { options = {}; }
               if (body === null || body === undefined) {
                   throw new Error("'body' is a required parameter but is null or undefined.");
@@ -870,48 +690,11 @@
               var queryParams = {
                   create: create,
                   username: username,
-                  import: import_,
+                  sync: sync,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateGameCenter: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -923,46 +706,9 @@
                   create: create,
                   username: username,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateGoogle: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -974,46 +720,9 @@
                   create: create,
                   username: username,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateSteam: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -1025,46 +734,9 @@
                   create: create,
                   username: username,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkCustom: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1073,46 +745,9 @@
               }
               var urlPath = "/v2/account/link/custom";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkDevice: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1121,46 +756,9 @@
               }
               var urlPath = "/v2/account/link/device";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkEmail: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1169,96 +767,22 @@
               }
               var urlPath = "/v2/account/link/email";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
-          linkFacebook: function (body, import_, options) {
+          linkFacebook: function (body, sync, options) {
               if (options === void 0) { options = {}; }
               if (body === null || body === undefined) {
                   throw new Error("'body' is a required parameter but is null or undefined.");
               }
               var urlPath = "/v2/account/link/facebook";
               var queryParams = {
-                  import: import_,
+                  sync: sync,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkGameCenter: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1267,46 +791,9 @@
               }
               var urlPath = "/v2/account/link/gamecenter";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkGoogle: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1315,46 +802,9 @@
               }
               var urlPath = "/v2/account/link/google";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkSteam: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1363,46 +813,9 @@
               }
               var urlPath = "/v2/account/link/steam";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkCustom: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1411,46 +824,9 @@
               }
               var urlPath = "/v2/account/unlink/custom";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkDevice: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1459,46 +835,9 @@
               }
               var urlPath = "/v2/account/unlink/device";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkEmail: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1507,46 +846,9 @@
               }
               var urlPath = "/v2/account/unlink/email";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkFacebook: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1555,46 +857,9 @@
               }
               var urlPath = "/v2/account/unlink/facebook";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkGameCenter: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1603,46 +868,9 @@
               }
               var urlPath = "/v2/account/unlink/gamecenter";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkGoogle: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1651,46 +879,9 @@
               }
               var urlPath = "/v2/account/unlink/google";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkSteam: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1699,46 +890,9 @@
               }
               var urlPath = "/v2/account/unlink/steam";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           listChannelMessages: function (channelId, limit, forward, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -1752,45 +906,8 @@
                   forward: forward,
                   cursor: cursor,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           deleteFriends: function (ids, usernames, options) {
               if (options === void 0) { options = {}; }
@@ -1799,177 +916,29 @@
                   ids: ids,
                   usernames: usernames,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "DELETE" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
           },
           listFriends: function (options) {
               if (options === void 0) { options = {}; }
               var urlPath = "/v2/friend";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           addFriends: function (options) {
               if (options === void 0) { options = {}; }
               var urlPath = "/v2/friend";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           blockFriends: function (options) {
               if (options === void 0) { options = {}; }
               var urlPath = "/v2/friend/block";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           importFacebookFriends: function (body, reset, options) {
               if (options === void 0) { options = {}; }
@@ -1980,46 +949,9 @@
               var queryParams = {
                   reset: reset,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           listGroups: function (name, cursor, limit, options) {
               if (options === void 0) { options = {}; }
@@ -2029,45 +961,8 @@
                   cursor: cursor,
                   limit: limit,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           createGroup: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -2076,46 +971,9 @@
               }
               var urlPath = "/v2/group";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           deleteGroup: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -2125,45 +983,8 @@
               var urlPath = "/v2/group/{group_id}"
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "DELETE" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
           },
           updateGroup: function (groupId, body, options) {
               if (options === void 0) { options = {}; }
@@ -2176,46 +997,9 @@
               var urlPath = "/v2/group/{group_id}"
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "PUT" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "PUT", queryParams, _body, options);
           },
           addGroupUsers: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -2225,45 +1009,8 @@
               var urlPath = "/v2/group/{group_id}/add"
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           joinGroup: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -2273,45 +1020,8 @@
               var urlPath = "/v2/group/{group_id}/join"
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           kickGroupUsers: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -2321,45 +1031,8 @@
               var urlPath = "/v2/group/{group_id}/kick"
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           leaveGroup: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -2369,45 +1042,8 @@
               var urlPath = "/v2/group/{group_id}/leave"
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           promoteGroupUsers: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -2417,45 +1053,8 @@
               var urlPath = "/v2/group/{group_id}/promote"
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           listGroupUsers: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -2465,45 +1064,8 @@
               var urlPath = "/v2/group/{group_id}/user"
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           deleteLeaderboardRecord: function (leaderboardId, options) {
               if (options === void 0) { options = {}; }
@@ -2513,45 +1075,8 @@
               var urlPath = "/v2/leaderboard/{leaderboard_id}"
                   .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "DELETE" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
           },
           listLeaderboardRecords: function (leaderboardId, ownerIds, limit, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -2565,45 +1090,8 @@
                   limit: limit,
                   cursor: cursor,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           writeLeaderboardRecord: function (leaderboardId, body, options) {
               if (options === void 0) { options = {}; }
@@ -2616,46 +1104,9 @@
               var urlPath = "/v2/leaderboard/{leaderboard_id}"
                   .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           listLeaderboardRecordsAroundOwner: function (leaderboardId, ownerId, limit, options) {
               if (options === void 0) { options = {}; }
@@ -2671,45 +1122,8 @@
               var queryParams = {
                   limit: limit,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           listMatches: function (limit, authoritative, label, minSize, maxSize, query, options) {
               if (options === void 0) { options = {}; }
@@ -2722,45 +1136,8 @@
                   max_size: maxSize,
                   query: query,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           deleteNotifications: function (ids, options) {
               if (options === void 0) { options = {}; }
@@ -2768,45 +1145,8 @@
               var queryParams = {
                   ids: ids,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "DELETE" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
           },
           listNotifications: function (limit, cacheableCursor, options) {
               if (options === void 0) { options = {}; }
@@ -2815,45 +1155,8 @@
                   limit: limit,
                   cacheable_cursor: cacheableCursor,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           rpcFunc2: function (id, payload, httpKey, options) {
               if (options === void 0) { options = {}; }
@@ -2866,45 +1169,8 @@
                   payload: payload,
                   http_key: httpKey,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           rpcFunc: function (id, body, options) {
               if (options === void 0) { options = {}; }
@@ -2917,46 +1183,9 @@
               var urlPath = "/v2/rpc/{id}"
                   .replace("{id}", encodeURIComponent(String(id)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           readStorageObjects: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -2965,46 +1194,9 @@
               }
               var urlPath = "/v2/storage";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           writeStorageObjects: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -3013,46 +1205,9 @@
               }
               var urlPath = "/v2/storage";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "PUT" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "PUT", queryParams, _body, options);
           },
           deleteStorageObjects: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -3061,46 +1216,9 @@
               }
               var urlPath = "/v2/storage/delete";
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "PUT" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "PUT", queryParams, _body, options);
           },
           listStorageObjects: function (collection, userId, limit, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -3114,45 +1232,8 @@
                   limit: limit,
                   cursor: cursor,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           listStorageObjects2: function (collection, userId, limit, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -3169,45 +1250,8 @@
                   limit: limit,
                   cursor: cursor,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           listTournaments: function (categoryStart, categoryEnd, startTime, endTime, limit, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -3220,45 +1264,8 @@
                   limit: limit,
                   cursor: cursor,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           listTournamentRecords: function (tournamentId, ownerIds, limit, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -3272,45 +1279,8 @@
                   limit: limit,
                   cursor: cursor,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           writeTournamentRecord: function (tournamentId, body, options) {
               if (options === void 0) { options = {}; }
@@ -3323,46 +1293,9 @@
               var urlPath = "/v2/tournament/{tournament_id}"
                   .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "PUT" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              fetchOptions.body = JSON.stringify(body || {});
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return this.doFetch(urlPath, "PUT", queryParams, _body, options);
           },
           joinTournament: function (tournamentId, options) {
               if (options === void 0) { options = {}; }
@@ -3372,45 +1305,8 @@
               var urlPath = "/v2/tournament/{tournament_id}/join"
                   .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "POST" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           listTournamentRecordsAroundOwner: function (tournamentId, ownerId, limit, options) {
               if (options === void 0) { options = {}; }
@@ -3426,45 +1322,8 @@
               var queryParams = {
                   limit: limit,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           getUsers: function (ids, usernames, facebookIds, options) {
               if (options === void 0) { options = {}; }
@@ -3474,45 +1333,8 @@
                   usernames: usernames,
                   facebook_ids: facebookIds,
               };
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           listUserGroups: function (userId, options) {
               if (options === void 0) { options = {}; }
@@ -3522,45 +1344,8 @@
               var urlPath = "/v2/user/{user_id}/group"
                   .replace("{user_id}", encodeURIComponent(String(userId)));
               var queryParams = {};
-              var urlQuery = "?" + Object.keys(queryParams)
-                  .map(function (k) {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce(function (prev, curr) {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              var fetchOptions = __assign({ method: "GET" }, options);
-              var headers = {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-              };
-              if (configuration.bearerToken) {
-                  headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              fetchOptions.headers = __assign({}, headers, options.headers);
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                      if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise(function (_, reject) {
-                      return setTimeout(reject, configuration.timeoutMs, "Request timed out.");
-                  }),
-              ]);
+              var _body = null;
+              return this.doFetch(urlPath, "GET", queryParams, _body, options);
           },
       };
   };

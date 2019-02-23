@@ -74,6 +74,50 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
   timeoutMs: 5000,
 }) => {
   return {
+    /** Perform the underlying Fetch operation and return Promise object **/
+    doFetch(urlPath: string, method: string, queryParams: any, body: any, options: any): Promise<any> {
+      const urlQuery = "?" + Object.keys(queryParams)
+        .map(k => {
+          if (queryParams[k] instanceof Array) {
+            return queryParams[k].reduce((prev: any, curr: any) => {
+              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+            }, "");
+          } else {
+            if (queryParams[k] != null) {
+              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+            }
+          }
+        })
+        .join("");
+
+      const fetchOptions = {...{ method: method /*, keepalive: true */ }, ...options};
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      } as any;
+
+      if (configuration.bearerToken) {
+        headers["Authorization"] = "Bearer " + configuration.bearerToken;
+      } else if (configuration.username) {
+        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+      }
+
+      fetchOptions.headers = {...headers, ...options.headers};
+      fetchOptions.body = body
+
+      return Promise.race([
+        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) =>
+          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
+        ),
+      ]);
+    },
   {{- range $url, $path := .Paths}}
     {{- range $method, $operation := $path}}
     /** {{$operation.Summary}} */
@@ -121,53 +165,16 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       {{- end}}
       {{- end}}
       } as any;
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
-          }
-        })
-        .join("");
 
-      const fetchOptions = {...{ method: "{{- $method | uppercase}}" /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
-
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-
+      var _body = null;
       {{- range $parameter := $operation.Parameters}}
       {{- $camelcase := $parameter.Name | camelCase}}
       {{- if eq $parameter.In "body"}}
-      fetchOptions.body = JSON.stringify({{$camelcase}} || {});
+      _body = JSON.stringify({{$camelcase}} || {});
       {{- end}}
       {{- end}}
 
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
-        ),
-      ]);
+      return this.doFetch(urlPath, "{{- $method | uppercase}}", queryParams, _body, options)
     },
     {{- end}}
   {{- end}}
