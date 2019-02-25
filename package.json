@@ -33,16 +33,20 @@
     "dist",
     "src"
   ],
+  "resolutions": {
+    "**/merge": "^1.2.1",
+    "**/exec-sh": "^0.3.2"
+  },
   "devDependencies": {
-    "chalk": "^2.3.0",
-    "jest": "^23.6.0",
-    "jest-puppeteer": "^3.3.1",
+    "chalk": "^2.4.2",
+    "jest": "^24.1.0",
+    "jest-puppeteer": "^4.0.0",
     "mkdirp": "^0.5.1",
-    "puppeteer": "^1.8.0",
-    "rimraf": "^2.6.2",
+    "puppeteer": "^1.12.2",
+    "rimraf": "^2.6.3",
     "rollup": "^0.66.0",
     "rollup-plugin-typescript2": "^0.17.0",
-    "typedoc": "^0.10.0"
+    "typedoc": "^0.14.2"
   },
   "dependencies": {
     "Base64": "^1.0.1",
