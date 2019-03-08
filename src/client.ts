@@ -51,6 +51,7 @@ import {
   ProtobufEmpty,
 } from "./api.gen";
 
+import "Base64";
 import { Session } from "./session";
 import { DefaultSocket, Socket } from "./socket";
 

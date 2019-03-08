@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import "Base64";
 import { ApiNotification, ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";

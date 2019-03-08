@@ -1,3 +1,4 @@
+import "Base64";
 export interface ConfigurationParameters {
     basePath?: string;
     username?: string;

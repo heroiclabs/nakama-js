@@ -1,3 +1,4 @@
+import "Base64";
 import { ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";
