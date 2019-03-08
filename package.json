@@ -53,7 +53,7 @@
     "typedoc": "^0.14.2"
   },
   "dependencies": {
-    "Base64": "^1.0.1",
+    "Base64": "^1.0.2",
     "whatwg-fetch": "^2.0.3"
   }
 }
