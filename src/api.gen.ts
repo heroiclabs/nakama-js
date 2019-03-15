@@ -519,13 +519,6 @@ export interface ApiWriteStorageObjectsRequest {
   // The objects to store on the server.
   objects?: Array<ApiWriteStorageObject>;
 }
-/** service Foo {
-      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);
-    }
-
-The JSON representation for `Empty` is empty JSON object `{}`. */
-export interface ProtobufEmpty {
-}
 
 export const NakamaApi = (configuration: ConfigurationParameters = {
   basePath: BASE_PATH,
@@ -564,7 +557,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       }
 
       fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = body
+      fetchOptions.body = body;
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -580,13 +573,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       ]);
     },
     /** A healthcheck which load balancers can use to check the service. */
-    healthcheck(options: any = {}): Promise<ProtobufEmpty> {
+    healthcheck(options: any = {}): Promise<> {
       const urlPath = "/healthcheck";
 
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -597,12 +590,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Update fields in the current user's account. */
-    updateAccount(body: ApiUpdateAccountRequest, options: any = {}): Promise<ProtobufEmpty> {
+    updateAccount(body: ApiUpdateAccountRequest, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -611,133 +604,118 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "PUT", queryParams, _body, options)
     },
     /** Authenticate a user with a custom id against the server. */
-    authenticateCustom(body: ApiAccountCustom, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    authenticateCustom(body: ApiAccountCustom, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/custom";
 
       const queryParams = {
-        create: create,
-        username: username,
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with a device id against the server. */
-    authenticateDevice(body: ApiAccountDevice, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    authenticateDevice(body: ApiAccountDevice, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/device";
 
       const queryParams = {
-        create: create,
-        username: username,
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with an email+password against the server. */
-    authenticateEmail(body: ApiAccountEmail, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    authenticateEmail(body: ApiAccountEmail, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/email";
 
       const queryParams = {
-        create: create,
-        username: username,
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with a Facebook OAuth token against the server. */
-    authenticateFacebook(body: ApiAccountFacebook, create?: boolean, username?: string, sync?: boolean, options: any = {}): Promise<ApiSession> {
+    authenticateFacebook(body: ApiAccountFacebook, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/facebook";
 
       const queryParams = {
-        create: create,
-        username: username,
-        sync: sync,
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with Apple's GameCenter against the server. */
-    authenticateGameCenter(body: ApiAccountGameCenter, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    authenticateGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/gamecenter";
 
       const queryParams = {
-        create: create,
-        username: username,
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with Google against the server. */
-    authenticateGoogle(body: ApiAccountGoogle, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    authenticateGoogle(body: ApiAccountGoogle, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/google";
 
       const queryParams = {
-        create: create,
-        username: username,
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with Steam against the server. */
-    authenticateSteam(body: ApiAccountSteam, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    authenticateSteam(body: ApiAccountSteam, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/steam";
 
       const queryParams = {
-        create: create,
-        username: username,
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add a custom ID to the social profiles on the current user's account. */
-    linkCustom(body: ApiAccountCustom, options: any = {}): Promise<ProtobufEmpty> {
+    linkCustom(body: ApiAccountCustom, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -746,13 +724,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add a device ID to the social profiles on the current user's account. */
-    linkDevice(body: ApiAccountDevice, options: any = {}): Promise<ProtobufEmpty> {
+    linkDevice(body: ApiAccountDevice, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -761,13 +739,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add an email+password to the social profiles on the current user's account. */
-    linkEmail(body: ApiAccountEmail, options: any = {}): Promise<ProtobufEmpty> {
+    linkEmail(body: ApiAccountEmail, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -776,29 +754,28 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add Facebook to the social profiles on the current user's account. */
-    linkFacebook(body: ApiAccountFacebook, sync?: boolean, options: any = {}): Promise<ProtobufEmpty> {
+    linkFacebook(body: ApiAccountFacebook, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/link/facebook";
 
       const queryParams = {
-        sync: sync,
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add Apple's GameCenter to the social profiles on the current user's account. */
-    linkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<ProtobufEmpty> {
+    linkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -807,13 +784,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add Google to the social profiles on the current user's account. */
-    linkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<ProtobufEmpty> {
+    linkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -822,13 +799,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Add Steam to the social profiles on the current user's account. */
-    linkSteam(body: ApiAccountSteam, options: any = {}): Promise<ProtobufEmpty> {
+    linkSteam(body: ApiAccountSteam, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -837,13 +814,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove the custom ID from the social profiles on the current user's account. */
-    unlinkCustom(body: ApiAccountCustom, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkCustom(body: ApiAccountCustom, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -852,13 +829,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove the device ID from the social profiles on the current user's account. */
-    unlinkDevice(body: ApiAccountDevice, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkDevice(body: ApiAccountDevice, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -867,13 +844,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove the email+password from the social profiles on the current user's account. */
-    unlinkEmail(body: ApiAccountEmail, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkEmail(body: ApiAccountEmail, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -882,13 +859,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove Facebook from the social profiles on the current user's account. */
-    unlinkFacebook(body: ApiAccountFacebook, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkFacebook(body: ApiAccountFacebook, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -897,13 +874,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove Apple's GameCenter from the social profiles on the current user's account. */
-    unlinkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -912,13 +889,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove Google from the social profiles on the current user's account. */
-    unlinkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -927,13 +904,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Remove Steam from the social profiles on the current user's account. */
-    unlinkSteam(body: ApiAccountSteam, options: any = {}): Promise<ProtobufEmpty> {
+    unlinkSteam(body: ApiAccountSteam, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -942,7 +919,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
@@ -961,12 +938,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         cursor: cursor,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Delete one or more users by ID or username. */
-    deleteFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<ProtobufEmpty> {
+    deleteFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<> {
       const urlPath = "/v2/friend";
 
       const queryParams = {
@@ -974,7 +951,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         usernames: usernames,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
     },
@@ -985,44 +962,43 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Add friends by ID or username to a user's account. */
-    addFriends(options: any = {}): Promise<ProtobufEmpty> {
+    addFriends(options: any = {}): Promise<> {
       const urlPath = "/v2/friend";
 
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Block one or more users by ID or username. */
-    blockFriends(options: any = {}): Promise<ProtobufEmpty> {
+    blockFriends(options: any = {}): Promise<> {
       const urlPath = "/v2/friend/block";
 
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Import Facebook friends and add them to a user's account. */
-    importFacebookFriends(body: ApiAccountFacebook, reset?: boolean, options: any = {}): Promise<ProtobufEmpty> {
+    importFacebookFriends(body: ApiAccountFacebook, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/friend/facebook";
 
       const queryParams = {
-        reset: reset,
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
@@ -1037,7 +1013,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         limit: limit,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -1051,13 +1027,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Delete a group by ID. */
-    deleteGroup(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    deleteGroup(groupId: string, options: any = {}): Promise<> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1067,12 +1043,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
     },
     /** Update fields in a given group. */
-    updateGroup(groupId: string, body: ApiUpdateGroupRequest, options: any = {}): Promise<ProtobufEmpty> {
+    updateGroup(groupId: string, body: ApiUpdateGroupRequest, options: any = {}): Promise<> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1085,13 +1061,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "PUT", queryParams, _body, options)
     },
     /** Add users to a group. */
-    addGroupUsers(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    addGroupUsers(groupId: string, options: any = {}): Promise<> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1101,12 +1077,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Immediately join an open group, or request to join a closed one. */
-    joinGroup(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    joinGroup(groupId: string, options: any = {}): Promise<> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1116,12 +1092,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Kick a set of users from a group. */
-    kickGroupUsers(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    kickGroupUsers(groupId: string, options: any = {}): Promise<> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1131,12 +1107,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Leave a group the user is a member of. */
-    leaveGroup(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    leaveGroup(groupId: string, options: any = {}): Promise<> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1146,12 +1122,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Promote a set of users in a group to the next role up. */
-    promoteGroupUsers(groupId: string, options: any = {}): Promise<ProtobufEmpty> {
+    promoteGroupUsers(groupId: string, options: any = {}): Promise<> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1161,7 +1137,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
@@ -1176,12 +1152,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Delete a leaderboard record. */
-    deleteLeaderboardRecord(leaderboardId: string, options: any = {}): Promise<ProtobufEmpty> {
+    deleteLeaderboardRecord(leaderboardId: string, options: any = {}): Promise<> {
       if (leaderboardId === null || leaderboardId === undefined) {
         throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
       }
@@ -1191,7 +1167,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
     },
@@ -1209,7 +1185,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         cursor: cursor,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -1227,7 +1203,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
@@ -1248,7 +1224,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         limit: limit,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -1265,19 +1241,19 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         query: query,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Delete one or more notifications for the current user. */
-    deleteNotifications(ids?: Array<string>, options: any = {}): Promise<ProtobufEmpty> {
+    deleteNotifications(ids?: Array<string>, options: any = {}): Promise<> {
       const urlPath = "/v2/notification";
 
       const queryParams = {
         ids: ids,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
     },
@@ -1290,7 +1266,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         cacheable_cursor: cacheableCursor,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -1307,7 +1283,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         http_key: httpKey,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -1325,7 +1301,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
@@ -1340,7 +1316,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
@@ -1355,13 +1331,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "PUT", queryParams, _body, options)
     },
     /** Delete one or more objects by ID or username. */
-    deleteStorageObjects(body: ApiDeleteStorageObjectsRequest, options: any = {}): Promise<ProtobufEmpty> {
+    deleteStorageObjects(body: ApiDeleteStorageObjectsRequest, options: any = {}): Promise<> {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
@@ -1370,7 +1346,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "PUT", queryParams, _body, options)
@@ -1389,7 +1365,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         cursor: cursor,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -1410,7 +1386,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         cursor: cursor,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -1427,7 +1403,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         cursor: cursor,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -1445,7 +1421,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         cursor: cursor,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -1463,13 +1439,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
       _body = JSON.stringify(body || {});
 
       return this.doFetch(urlPath, "PUT", queryParams, _body, options)
     },
     /** Attempt to join an open and running tournament. */
-    joinTournament(tournamentId: string, options: any = {}): Promise<ProtobufEmpty> {
+    joinTournament(tournamentId: string, options: any = {}): Promise<> {
       if (tournamentId === null || tournamentId === undefined) {
         throw new Error("'tournamentId' is a required parameter but is null or undefined.");
       }
@@ -1479,7 +1455,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "POST", queryParams, _body, options)
     },
@@ -1499,7 +1475,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         limit: limit,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -1513,7 +1489,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         facebook_ids: facebookIds,
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
@@ -1528,7 +1504,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
       } as any;
 
-      var _body = null;
+      let _body = null;
 
       return this.doFetch(urlPath, "GET", queryParams, _body, options)
     },
