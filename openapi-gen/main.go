@@ -45,6 +45,8 @@ export interface {{$classname | title}} {
   // {{$property.Description}}
   {{- if eq $property.Type "integer"}}
   {{$fieldname}}?: number;
+  {{- else if eq $property.Type "number" }}
+  {{$fieldname}}?: number;
   {{- else if eq $property.Type "boolean"}}
   {{$fieldname}}?: boolean;
   {{- else if eq $property.Type "array"}}
@@ -103,7 +105,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       }
 
       fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = body
+      fetchOptions.body = body;
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -166,7 +168,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       {{- end}}
       } as any;
 
-      var _body = null;
+      let _body = null;
       {{- range $parameter := $operation.Parameters}}
       {{- $camelcase := $parameter.Name | camelCase}}
       {{- if eq $parameter.In "body"}}
