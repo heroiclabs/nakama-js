@@ -48,7 +48,6 @@ import {
   ApiWriteStorageObjectsRequest,
   ConfigurationParameters,
   NakamaApi,
-  ProtobufEmpty,
 } from "./api.gen";
 
 import { Session } from "./session";
@@ -569,7 +568,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((response: ProtobufEmpty) => {
+    ]).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -623,7 +622,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((response: ProtobufEmpty) => {
+    ]).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -1054,7 +1053,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((response: ProtobufEmpty) => {
+    ]).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -1134,7 +1133,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((response: ProtobufEmpty) => {
+    ]).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -1142,7 +1141,7 @@ export class Client {
   /** Delete a group the user is part of and has permissions to delete. */
   deleteGroup(session: Session, groupId: string): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.deleteGroup(groupId).then((response: ProtobufEmpty) => {
+    return this.apiClient.deleteGroup(groupId).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1195,7 +1194,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((response: ProtobufEmpty) => {
+    ]).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -1203,7 +1202,7 @@ export class Client {
   /** Delete one or more storage objects */
   deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.deleteStorageObjects(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.deleteStorageObjects(request).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -1217,7 +1216,7 @@ export class Client {
   /** Import Facebook friends and add them to a user's account. */
   importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.importFacebookFriends(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.importFacebookFriends(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1261,14 +1260,14 @@ export class Client {
   /** Join a group that's open, or send a request to join a group that is closed. */
   joinGroup(session: Session, groupId: string): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.joinGroup(groupId, {}).then((response: ProtobufEmpty) => {
+    return this.apiClient.joinGroup(groupId, {}).then((response: any) => {
       return response !== undefined;
     });
   }
 
   joinTournament(session: Session, tournamentId: string): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.joinTournament(tournamentId, {}).then((response: ProtobufEmpty) => {
+    return this.apiClient.joinTournament(tournamentId, {}).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1321,7 +1320,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((response: ProtobufEmpty) => {
+    ]).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -1329,7 +1328,7 @@ export class Client {
   /** Leave a group the user is part of. */
   leaveGroup(session: Session, groupId: string): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.leaveGroup(groupId, {}).then((response: ProtobufEmpty) => {
+    return this.apiClient.leaveGroup(groupId, {}).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1475,7 +1474,7 @@ export class Client {
   /** Add a custom ID to the social profiles on the current user's account. */
   linkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.linkCustom(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.linkCustom(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1483,7 +1482,7 @@ export class Client {
   /** Add a device ID to the social profiles on the current user's account. */
   linkDevice(session: Session, request: ApiAccountDevice): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.linkDevice(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.linkDevice(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1491,7 +1490,7 @@ export class Client {
   /** Add an email+password to the social profiles on the current user's account. */
   linkEmail(session: Session, request: ApiAccountEmail): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.linkEmail(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.linkEmail(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1499,7 +1498,7 @@ export class Client {
   /** Add Facebook to the social profiles on the current user's account. */
   linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.linkFacebook(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.linkFacebook(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1507,7 +1506,7 @@ export class Client {
   /** Add Google to the social profiles on the current user's account. */
   linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.linkGoogle(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.linkGoogle(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1515,7 +1514,7 @@ export class Client {
   /** Add GameCenter to the social profiles on the current user's account. */
   linkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.linkGameCenter(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.linkGameCenter(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1523,7 +1522,7 @@ export class Client {
   /** Add Steam to the social profiles on the current user's account. */
   linkSteam(session: Session, request: ApiAccountSteam): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.linkSteam(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.linkSteam(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1918,7 +1917,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((response: ProtobufEmpty) => {
+    ]).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -1986,7 +1985,7 @@ export class Client {
   /** Remove custom ID from the social profiles on the current user's account. */
   unlinkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.unlinkCustom(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.unlinkCustom(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1994,7 +1993,7 @@ export class Client {
   /** Remove a device ID from the social profiles on the current user's account. */
   unlinkDevice(session: Session, request: ApiAccountDevice): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.unlinkDevice(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.unlinkDevice(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -2002,7 +2001,7 @@ export class Client {
   /** Remove an email+password from the social profiles on the current user's account. */
   unlinkEmail(session: Session, request: ApiAccountEmail): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.unlinkEmail(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.unlinkEmail(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -2010,7 +2009,7 @@ export class Client {
   /** Remove Facebook from the social profiles on the current user's account. */
   unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.unlinkFacebook(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.unlinkFacebook(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -2018,7 +2017,7 @@ export class Client {
   /** Remove Google from the social profiles on the current user's account. */
   unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.unlinkGoogle(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.unlinkGoogle(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -2026,7 +2025,7 @@ export class Client {
   /** Remove GameCenter from the social profiles on the current user's account. */
   unlinkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.unlinkGameCenter(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.unlinkGameCenter(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -2034,7 +2033,7 @@ export class Client {
   /** Remove Steam from the social profiles on the current user's account. */
   unlinkSteam(session: Session, request: ApiAccountSteam): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.unlinkSteam(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.unlinkSteam(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -2042,7 +2041,7 @@ export class Client {
   /** Update fields in the current user's account. */
   updateAccount(session: Session, request: ApiUpdateAccountRequest): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.updateAccount(request).then((response: ProtobufEmpty) => {
+    return this.apiClient.updateAccount(request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -2050,7 +2049,7 @@ export class Client {
   /** Update a group the user is part of and has permissions to update. */
   updateGroup(session: Session, groupId: string, request: ApiUpdateGroupRequest): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.updateGroup(groupId, request).then((response: ProtobufEmpty) => {
+    return this.apiClient.updateGroup(groupId, request).then((response: any) => {
       return response !== undefined;
     });
   }
