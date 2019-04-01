@@ -520,1010 +520,1011 @@ export interface ApiWriteStorageObjectsRequest {
   objects?: Array<ApiWriteStorageObject>;
 }
 
-export const NakamaApi = (configuration: ConfigurationParameters = {
-  basePath: BASE_PATH,
-  bearerToken: "",
-  password: "",
-  username: "",
-  timeoutMs: 5000,
-}) => {
-  return {
-    /** Perform the underlying Fetch operation and return Promise object **/
-    doFetch(urlPath: string, method: string, queryParams: any, body?: any, options?: any): Promise<any> {
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
+export class NakamaApi {
+  configuration: ConfigurationParameters;
+  constructor(configuration: ConfigurationParameters = {
+    basePath: BASE_PATH,
+    bearerToken: "",
+    password: "",
+    username: "",
+    timeoutMs: 5000,
+  }) { this.configuration = configuration; }
+
+  /** Perform the underlying Fetch operation and return Promise object **/
+  doFetch(urlPath: string, method: string, queryParams: any, body?: any, options?: any): Promise<any> {
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
           }
-        })
-        .join("");
-
-      const fetchOptions = {...{ method: method /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
-
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
-
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = body;
-
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
-        ),
-      ]);
-    },
-    /** A healthcheck which load balancers can use to check the service. */
-    healthcheck(options: any = {}): Promise<any> {
-      const urlPath = "/healthcheck";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Fetch the current user's account. */
-    getAccount(options: any = {}): Promise<ApiAccount> {
-      const urlPath = "/v2/account";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Update fields in the current user's account. */
-    updateAccount(body: ApiUpdateAccountRequest, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "PUT", queryParams, _body, options)
-    },
-    /** Authenticate a user with a custom id against the server. */
-    authenticateCustom(body: ApiAccountCustom, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/authenticate/custom";
-
-      const queryParams = {
-        create: create,
-        username: username,
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Authenticate a user with a device id against the server. */
-    authenticateDevice(body: ApiAccountDevice, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/authenticate/device";
-
-      const queryParams = {
-        create: create,
-        username: username,
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Authenticate a user with an email+password against the server. */
-    authenticateEmail(body: ApiAccountEmail, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/authenticate/email";
-
-      const queryParams = {
-        create: create,
-        username: username,
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Authenticate a user with a Facebook OAuth token against the server. */
-    authenticateFacebook(body: ApiAccountFacebook, create?: boolean, username?: string, sync?: boolean, options: any = {}): Promise<ApiSession> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/authenticate/facebook";
-
-      const queryParams = {
-        create: create,
-        username: username,
-        sync: sync,
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Authenticate a user with Apple's GameCenter against the server. */
-    authenticateGameCenter(body: ApiAccountGameCenter, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/authenticate/gamecenter";
-
-      const queryParams = {
-        create: create,
-        username: username,
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Authenticate a user with Google against the server. */
-    authenticateGoogle(body: ApiAccountGoogle, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/authenticate/google";
-
-      const queryParams = {
-        create: create,
-        username: username,
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Authenticate a user with Steam against the server. */
-    authenticateSteam(body: ApiAccountSteam, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/authenticate/steam";
-
-      const queryParams = {
-        create: create,
-        username: username,
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Add a custom ID to the social profiles on the current user's account. */
-    linkCustom(body: ApiAccountCustom, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/link/custom";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Add a device ID to the social profiles on the current user's account. */
-    linkDevice(body: ApiAccountDevice, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/link/device";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Add an email+password to the social profiles on the current user's account. */
-    linkEmail(body: ApiAccountEmail, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/link/email";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Add Facebook to the social profiles on the current user's account. */
-    linkFacebook(body: ApiAccountFacebook, sync?: boolean, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/link/facebook";
-
-      const queryParams = {
-        sync: sync,
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Add Apple's GameCenter to the social profiles on the current user's account. */
-    linkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/link/gamecenter";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Add Google to the social profiles on the current user's account. */
-    linkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/link/google";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Add Steam to the social profiles on the current user's account. */
-    linkSteam(body: ApiAccountSteam, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/link/steam";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Remove the custom ID from the social profiles on the current user's account. */
-    unlinkCustom(body: ApiAccountCustom, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/unlink/custom";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Remove the device ID from the social profiles on the current user's account. */
-    unlinkDevice(body: ApiAccountDevice, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/unlink/device";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Remove the email+password from the social profiles on the current user's account. */
-    unlinkEmail(body: ApiAccountEmail, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/unlink/email";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Remove Facebook from the social profiles on the current user's account. */
-    unlinkFacebook(body: ApiAccountFacebook, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/unlink/facebook";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Remove Apple's GameCenter from the social profiles on the current user's account. */
-    unlinkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/unlink/gamecenter";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Remove Google from the social profiles on the current user's account. */
-    unlinkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/unlink/google";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Remove Steam from the social profiles on the current user's account. */
-    unlinkSteam(body: ApiAccountSteam, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/account/unlink/steam";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** List a channel's message history. */
-    listChannelMessages(channelId: string, limit?: number, forward?: boolean, cursor?: string, options: any = {}): Promise<ApiChannelMessageList> {
-      if (channelId === null || channelId === undefined) {
-        throw new Error("'channelId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/channel/{channel_id}"
-         .replace("{channel_id}", encodeURIComponent(String(channelId)));
-
-      const queryParams = {
-        limit: limit,
-        forward: forward,
-        cursor: cursor,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Delete one or more users by ID or username. */
-    deleteFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<any> {
-      const urlPath = "/v2/friend";
-
-      const queryParams = {
-        ids: ids,
-        usernames: usernames,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
-    },
-    /** List all friends for the current user. */
-    listFriends(options: any = {}): Promise<ApiFriends> {
-      const urlPath = "/v2/friend";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Add friends by ID or username to a user's account. */
-    addFriends(options: any = {}): Promise<any> {
-      const urlPath = "/v2/friend";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Block one or more users by ID or username. */
-    blockFriends(options: any = {}): Promise<any> {
-      const urlPath = "/v2/friend/block";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Import Facebook friends and add them to a user's account. */
-    importFacebookFriends(body: ApiAccountFacebook, reset?: boolean, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/friend/facebook";
-
-      const queryParams = {
-        reset: reset,
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** List groups based on given filters. */
-    listGroups(name?: string, cursor?: string, limit?: number, options: any = {}): Promise<ApiGroupList> {
-      const urlPath = "/v2/group";
-
-      const queryParams = {
-        name: name,
-        cursor: cursor,
-        limit: limit,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Create a new group with the current user as the owner. */
-    createGroup(body: ApiCreateGroupRequest, options: any = {}): Promise<ApiGroup> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/group";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Delete a group by ID. */
-    deleteGroup(groupId: string, options: any = {}): Promise<any> {
-      if (groupId === null || groupId === undefined) {
-        throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/group/{group_id}"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
-    },
-    /** Update fields in a given group. */
-    updateGroup(groupId: string, body: ApiUpdateGroupRequest, options: any = {}): Promise<any> {
-      if (groupId === null || groupId === undefined) {
-        throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/group/{group_id}"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "PUT", queryParams, _body, options)
-    },
-    /** Add users to a group. */
-    addGroupUsers(groupId: string, options: any = {}): Promise<any> {
-      if (groupId === null || groupId === undefined) {
-        throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/group/{group_id}/add"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Immediately join an open group, or request to join a closed one. */
-    joinGroup(groupId: string, options: any = {}): Promise<any> {
-      if (groupId === null || groupId === undefined) {
-        throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/group/{group_id}/join"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Kick a set of users from a group. */
-    kickGroupUsers(groupId: string, options: any = {}): Promise<any> {
-      if (groupId === null || groupId === undefined) {
-        throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/group/{group_id}/kick"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Leave a group the user is a member of. */
-    leaveGroup(groupId: string, options: any = {}): Promise<any> {
-      if (groupId === null || groupId === undefined) {
-        throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/group/{group_id}/leave"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Promote a set of users in a group to the next role up. */
-    promoteGroupUsers(groupId: string, options: any = {}): Promise<any> {
-      if (groupId === null || groupId === undefined) {
-        throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/group/{group_id}/promote"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** List all users that are part of a group. */
-    listGroupUsers(groupId: string, options: any = {}): Promise<ApiGroupUserList> {
-      if (groupId === null || groupId === undefined) {
-        throw new Error("'groupId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/group/{group_id}/user"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Delete a leaderboard record. */
-    deleteLeaderboardRecord(leaderboardId: string, options: any = {}): Promise<any> {
-      if (leaderboardId === null || leaderboardId === undefined) {
-        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/leaderboard/{leaderboard_id}"
-         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
-    },
-    /** List leaderboard records. */
-    listLeaderboardRecords(leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, options: any = {}): Promise<ApiLeaderboardRecordList> {
-      if (leaderboardId === null || leaderboardId === undefined) {
-        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/leaderboard/{leaderboard_id}"
-         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
-
-      const queryParams = {
-        owner_ids: ownerIds,
-        limit: limit,
-        cursor: cursor,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Write a record to a leaderboard. */
-    writeLeaderboardRecord(leaderboardId: string, body: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options: any = {}): Promise<ApiLeaderboardRecord> {
-      if (leaderboardId === null || leaderboardId === undefined) {
-        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-      }
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/leaderboard/{leaderboard_id}"
-         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** List leaderboard records that belong to a user. */
-    listLeaderboardRecordsAroundOwner(leaderboardId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiLeaderboardRecordList> {
-      if (leaderboardId === null || leaderboardId === undefined) {
-        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-      }
-      if (ownerId === null || ownerId === undefined) {
-        throw new Error("'ownerId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/leaderboard/{leaderboard_id}/owner/{owner_id}"
-         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)))
-         .replace("{owner_id}", encodeURIComponent(String(ownerId)));
-
-      const queryParams = {
-        limit: limit,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Fetch list of running matches. */
-    listMatches(limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, query?: string, options: any = {}): Promise<ApiMatchList> {
-      const urlPath = "/v2/match";
-
-      const queryParams = {
-        limit: limit,
-        authoritative: authoritative,
-        label: label,
-        min_size: minSize,
-        max_size: maxSize,
-        query: query,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Delete one or more notifications for the current user. */
-    deleteNotifications(ids?: Array<string>, options: any = {}): Promise<any> {
-      const urlPath = "/v2/notification";
-
-      const queryParams = {
-        ids: ids,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
-    },
-    /** Fetch list of notifications. */
-    listNotifications(limit?: number, cacheableCursor?: string, options: any = {}): Promise<ApiNotificationList> {
-      const urlPath = "/v2/notification";
-
-      const queryParams = {
-        limit: limit,
-        cacheable_cursor: cacheableCursor,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Execute a Lua function on the server. */
-    rpcFunc2(id: string, payload?: string, httpKey?: string, options: any = {}): Promise<ApiRpc> {
-      if (id === null || id === undefined) {
-        throw new Error("'id' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/rpc/{id}"
-         .replace("{id}", encodeURIComponent(String(id)));
-
-      const queryParams = {
-        payload: payload,
-        http_key: httpKey,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Execute a Lua function on the server. */
-    rpcFunc(id: string, body: string, options: any = {}): Promise<ApiRpc> {
-      if (id === null || id === undefined) {
-        throw new Error("'id' is a required parameter but is null or undefined.");
-      }
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/rpc/{id}"
-         .replace("{id}", encodeURIComponent(String(id)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Get storage objects. */
-    readStorageObjects(body: ApiReadStorageObjectsRequest, options: any = {}): Promise<ApiStorageObjects> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/storage";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** Write objects into the storage engine. */
-    writeStorageObjects(body: ApiWriteStorageObjectsRequest, options: any = {}): Promise<ApiStorageObjectAcks> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/storage";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "PUT", queryParams, _body, options)
-    },
-    /** Delete one or more objects by ID or username. */
-    deleteStorageObjects(body: ApiDeleteStorageObjectsRequest, options: any = {}): Promise<any> {
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/storage/delete";
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "PUT", queryParams, _body, options)
-    },
-    /** List publicly readable storage objects in a given collection. */
-    listStorageObjects(collection: string, userId?: string, limit?: number, cursor?: string, options: any = {}): Promise<ApiStorageObjectList> {
-      if (collection === null || collection === undefined) {
-        throw new Error("'collection' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/storage/{collection}"
-         .replace("{collection}", encodeURIComponent(String(collection)));
-
-      const queryParams = {
-        user_id: userId,
-        limit: limit,
-        cursor: cursor,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** List publicly readable storage objects in a given collection. */
-    listStorageObjects2(collection: string, userId: string, limit?: number, cursor?: string, options: any = {}): Promise<ApiStorageObjectList> {
-      if (collection === null || collection === undefined) {
-        throw new Error("'collection' is a required parameter but is null or undefined.");
-      }
-      if (userId === null || userId === undefined) {
-        throw new Error("'userId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/storage/{collection}/{user_id}"
-         .replace("{collection}", encodeURIComponent(String(collection)))
-         .replace("{user_id}", encodeURIComponent(String(userId)));
-
-      const queryParams = {
-        limit: limit,
-        cursor: cursor,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** List current or upcoming tournaments. */
-    listTournaments(categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string, options: any = {}): Promise<ApiTournamentList> {
-      const urlPath = "/v2/tournament";
-
-      const queryParams = {
-        category_start: categoryStart,
-        category_end: categoryEnd,
-        start_time: startTime,
-        end_time: endTime,
-        limit: limit,
-        cursor: cursor,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** List tournament records. */
-    listTournamentRecords(tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, options: any = {}): Promise<ApiTournamentRecordList> {
-      if (tournamentId === null || tournamentId === undefined) {
-        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/tournament/{tournament_id}"
-         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
-
-      const queryParams = {
-        owner_ids: ownerIds,
-        limit: limit,
-        cursor: cursor,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Write a record to a tournament. */
-    writeTournamentRecord(tournamentId: string, body: WriteTournamentRecordRequestTournamentRecordWrite, options: any = {}): Promise<ApiLeaderboardRecord> {
-      if (tournamentId === null || tournamentId === undefined) {
-        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-      }
-      if (body === null || body === undefined) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/tournament/{tournament_id}"
-         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-      _body = JSON.stringify(body || {});
-
-      return this.doFetch(urlPath, "PUT", queryParams, _body, options)
-    },
-    /** Attempt to join an open and running tournament. */
-    joinTournament(tournamentId: string, options: any = {}): Promise<any> {
-      if (tournamentId === null || tournamentId === undefined) {
-        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/tournament/{tournament_id}/join"
-         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "POST", queryParams, _body, options)
-    },
-    /** List tournament records for a given owner. */
-    listTournamentRecordsAroundOwner(tournamentId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiTournamentRecordList> {
-      if (tournamentId === null || tournamentId === undefined) {
-        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-      }
-      if (ownerId === null || ownerId === undefined) {
-        throw new Error("'ownerId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/tournament/{tournament_id}/owner/{owner_id}"
-         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)))
-         .replace("{owner_id}", encodeURIComponent(String(ownerId)));
-
-      const queryParams = {
-        limit: limit,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** Fetch zero or more users by ID and/or username. */
-    getUsers(ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>, options: any = {}): Promise<ApiUsers> {
-      const urlPath = "/v2/user";
-
-      const queryParams = {
-        ids: ids,
-        usernames: usernames,
-        facebook_ids: facebookIds,
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-    /** List groups the current user belongs to. */
-    listUserGroups(userId: string, options: any = {}): Promise<ApiUserGroupList> {
-      if (userId === null || userId === undefined) {
-        throw new Error("'userId' is a required parameter but is null or undefined.");
-      }
-      const urlPath = "/v2/user/{user_id}/group"
-         .replace("{user_id}", encodeURIComponent(String(userId)));
-
-      const queryParams = {
-      } as any;
-
-      let _body = null;
-
-      return this.doFetch(urlPath, "GET", queryParams, _body, options)
-    },
-  };
-};
+        }
+      })
+      .join("");
+
+    const fetchOptions = {...{ method: method /*, keepalive: true */ }, ...options};
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
+
+    if (this.configuration.bearerToken) {
+      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+    } else if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
+
+    fetchOptions.headers = {...headers, ...options.headers};
+    fetchOptions.body = body;
+
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+      ),
+    ]);
+  }
+  /** A healthcheck which load balancers can use to check the service. */
+  healthcheck(options: any = {}): Promise<any> {
+    const urlPath = "/healthcheck";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Fetch the current user's account. */
+  getAccount(options: any = {}): Promise<ApiAccount> {
+    const urlPath = "/v2/account";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Update fields in the current user's account. */
+  updateAccount(body: ApiUpdateAccountRequest, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "PUT", queryParams, _body, options)
+  }
+  /** Authenticate a user with a custom id against the server. */
+  authenticateCustom(body: ApiAccountCustom, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/authenticate/custom";
+
+    const queryParams = {
+      create: create,
+      username: username,
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Authenticate a user with a device id against the server. */
+  authenticateDevice(body: ApiAccountDevice, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/authenticate/device";
+
+    const queryParams = {
+      create: create,
+      username: username,
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Authenticate a user with an email+password against the server. */
+  authenticateEmail(body: ApiAccountEmail, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/authenticate/email";
+
+    const queryParams = {
+      create: create,
+      username: username,
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Authenticate a user with a Facebook OAuth token against the server. */
+  authenticateFacebook(body: ApiAccountFacebook, create?: boolean, username?: string, sync?: boolean, options: any = {}): Promise<ApiSession> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/authenticate/facebook";
+
+    const queryParams = {
+      create: create,
+      username: username,
+      sync: sync,
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Authenticate a user with Apple's GameCenter against the server. */
+  authenticateGameCenter(body: ApiAccountGameCenter, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/authenticate/gamecenter";
+
+    const queryParams = {
+      create: create,
+      username: username,
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Authenticate a user with Google against the server. */
+  authenticateGoogle(body: ApiAccountGoogle, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/authenticate/google";
+
+    const queryParams = {
+      create: create,
+      username: username,
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Authenticate a user with Steam against the server. */
+  authenticateSteam(body: ApiAccountSteam, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/authenticate/steam";
+
+    const queryParams = {
+      create: create,
+      username: username,
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Add a custom ID to the social profiles on the current user's account. */
+  linkCustom(body: ApiAccountCustom, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/link/custom";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Add a device ID to the social profiles on the current user's account. */
+  linkDevice(body: ApiAccountDevice, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/link/device";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Add an email+password to the social profiles on the current user's account. */
+  linkEmail(body: ApiAccountEmail, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/link/email";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Add Facebook to the social profiles on the current user's account. */
+  linkFacebook(body: ApiAccountFacebook, sync?: boolean, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/link/facebook";
+
+    const queryParams = {
+      sync: sync,
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Add Apple's GameCenter to the social profiles on the current user's account. */
+  linkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/link/gamecenter";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Add Google to the social profiles on the current user's account. */
+  linkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/link/google";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Add Steam to the social profiles on the current user's account. */
+  linkSteam(body: ApiAccountSteam, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/link/steam";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Remove the custom ID from the social profiles on the current user's account. */
+  unlinkCustom(body: ApiAccountCustom, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/unlink/custom";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Remove the device ID from the social profiles on the current user's account. */
+  unlinkDevice(body: ApiAccountDevice, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/unlink/device";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Remove the email+password from the social profiles on the current user's account. */
+  unlinkEmail(body: ApiAccountEmail, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/unlink/email";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Remove Facebook from the social profiles on the current user's account. */
+  unlinkFacebook(body: ApiAccountFacebook, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/unlink/facebook";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Remove Apple's GameCenter from the social profiles on the current user's account. */
+  unlinkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/unlink/gamecenter";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Remove Google from the social profiles on the current user's account. */
+  unlinkGoogle(body: ApiAccountGoogle, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/unlink/google";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Remove Steam from the social profiles on the current user's account. */
+  unlinkSteam(body: ApiAccountSteam, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/account/unlink/steam";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** List a channel's message history. */
+  listChannelMessages(channelId: string, limit?: number, forward?: boolean, cursor?: string, options: any = {}): Promise<ApiChannelMessageList> {
+    if (channelId === null || channelId === undefined) {
+      throw new Error("'channelId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/channel/{channel_id}"
+       .replace("{channel_id}", encodeURIComponent(String(channelId)));
+
+    const queryParams = {
+      limit: limit,
+      forward: forward,
+      cursor: cursor,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Delete one or more users by ID or username. */
+  deleteFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<any> {
+    const urlPath = "/v2/friend";
+
+    const queryParams = {
+      ids: ids,
+      usernames: usernames,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
+  }
+  /** List all friends for the current user. */
+  listFriends(options: any = {}): Promise<ApiFriends> {
+    const urlPath = "/v2/friend";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Add friends by ID or username to a user's account. */
+  addFriends(options: any = {}): Promise<any> {
+    const urlPath = "/v2/friend";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Block one or more users by ID or username. */
+  blockFriends(options: any = {}): Promise<any> {
+    const urlPath = "/v2/friend/block";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Import Facebook friends and add them to a user's account. */
+  importFacebookFriends(body: ApiAccountFacebook, reset?: boolean, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/friend/facebook";
+
+    const queryParams = {
+      reset: reset,
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** List groups based on given filters. */
+  listGroups(name?: string, cursor?: string, limit?: number, options: any = {}): Promise<ApiGroupList> {
+    const urlPath = "/v2/group";
+
+    const queryParams = {
+      name: name,
+      cursor: cursor,
+      limit: limit,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Create a new group with the current user as the owner. */
+  createGroup(body: ApiCreateGroupRequest, options: any = {}): Promise<ApiGroup> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/group";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Delete a group by ID. */
+  deleteGroup(groupId: string, options: any = {}): Promise<any> {
+    if (groupId === null || groupId === undefined) {
+      throw new Error("'groupId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/group/{group_id}"
+       .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
+  }
+  /** Update fields in a given group. */
+  updateGroup(groupId: string, body: ApiUpdateGroupRequest, options: any = {}): Promise<any> {
+    if (groupId === null || groupId === undefined) {
+      throw new Error("'groupId' is a required parameter but is null or undefined.");
+    }
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/group/{group_id}"
+       .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "PUT", queryParams, _body, options)
+  }
+  /** Add users to a group. */
+  addGroupUsers(groupId: string, options: any = {}): Promise<any> {
+    if (groupId === null || groupId === undefined) {
+      throw new Error("'groupId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/group/{group_id}/add"
+       .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Immediately join an open group, or request to join a closed one. */
+  joinGroup(groupId: string, options: any = {}): Promise<any> {
+    if (groupId === null || groupId === undefined) {
+      throw new Error("'groupId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/group/{group_id}/join"
+       .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Kick a set of users from a group. */
+  kickGroupUsers(groupId: string, options: any = {}): Promise<any> {
+    if (groupId === null || groupId === undefined) {
+      throw new Error("'groupId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/group/{group_id}/kick"
+       .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Leave a group the user is a member of. */
+  leaveGroup(groupId: string, options: any = {}): Promise<any> {
+    if (groupId === null || groupId === undefined) {
+      throw new Error("'groupId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/group/{group_id}/leave"
+       .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Promote a set of users in a group to the next role up. */
+  promoteGroupUsers(groupId: string, options: any = {}): Promise<any> {
+    if (groupId === null || groupId === undefined) {
+      throw new Error("'groupId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/group/{group_id}/promote"
+       .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** List all users that are part of a group. */
+  listGroupUsers(groupId: string, options: any = {}): Promise<ApiGroupUserList> {
+    if (groupId === null || groupId === undefined) {
+      throw new Error("'groupId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/group/{group_id}/user"
+       .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Delete a leaderboard record. */
+  deleteLeaderboardRecord(leaderboardId: string, options: any = {}): Promise<any> {
+    if (leaderboardId === null || leaderboardId === undefined) {
+      throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/leaderboard/{leaderboard_id}"
+       .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
+  }
+  /** List leaderboard records. */
+  listLeaderboardRecords(leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, options: any = {}): Promise<ApiLeaderboardRecordList> {
+    if (leaderboardId === null || leaderboardId === undefined) {
+      throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/leaderboard/{leaderboard_id}"
+       .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+
+    const queryParams = {
+      owner_ids: ownerIds,
+      limit: limit,
+      cursor: cursor,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Write a record to a leaderboard. */
+  writeLeaderboardRecord(leaderboardId: string, body: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options: any = {}): Promise<ApiLeaderboardRecord> {
+    if (leaderboardId === null || leaderboardId === undefined) {
+      throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+    }
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/leaderboard/{leaderboard_id}"
+       .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** List leaderboard records that belong to a user. */
+  listLeaderboardRecordsAroundOwner(leaderboardId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiLeaderboardRecordList> {
+    if (leaderboardId === null || leaderboardId === undefined) {
+      throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+    }
+    if (ownerId === null || ownerId === undefined) {
+      throw new Error("'ownerId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/leaderboard/{leaderboard_id}/owner/{owner_id}"
+       .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)))
+       .replace("{owner_id}", encodeURIComponent(String(ownerId)));
+
+    const queryParams = {
+      limit: limit,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Fetch list of running matches. */
+  listMatches(limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, query?: string, options: any = {}): Promise<ApiMatchList> {
+    const urlPath = "/v2/match";
+
+    const queryParams = {
+      limit: limit,
+      authoritative: authoritative,
+      label: label,
+      min_size: minSize,
+      max_size: maxSize,
+      query: query,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Delete one or more notifications for the current user. */
+  deleteNotifications(ids?: Array<string>, options: any = {}): Promise<any> {
+    const urlPath = "/v2/notification";
+
+    const queryParams = {
+      ids: ids,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "DELETE", queryParams, _body, options)
+  }
+  /** Fetch list of notifications. */
+  listNotifications(limit?: number, cacheableCursor?: string, options: any = {}): Promise<ApiNotificationList> {
+    const urlPath = "/v2/notification";
+
+    const queryParams = {
+      limit: limit,
+      cacheable_cursor: cacheableCursor,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Execute a Lua function on the server. */
+  rpcFunc2(id: string, payload?: string, httpKey?: string, options: any = {}): Promise<ApiRpc> {
+    if (id === null || id === undefined) {
+      throw new Error("'id' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/rpc/{id}"
+       .replace("{id}", encodeURIComponent(String(id)));
+
+    const queryParams = {
+      payload: payload,
+      http_key: httpKey,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Execute a Lua function on the server. */
+  rpcFunc(id: string, body: string, options: any = {}): Promise<ApiRpc> {
+    if (id === null || id === undefined) {
+      throw new Error("'id' is a required parameter but is null or undefined.");
+    }
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/rpc/{id}"
+       .replace("{id}", encodeURIComponent(String(id)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Get storage objects. */
+  readStorageObjects(body: ApiReadStorageObjectsRequest, options: any = {}): Promise<ApiStorageObjects> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/storage";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** Write objects into the storage engine. */
+  writeStorageObjects(body: ApiWriteStorageObjectsRequest, options: any = {}): Promise<ApiStorageObjectAcks> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/storage";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "PUT", queryParams, _body, options)
+  }
+  /** Delete one or more objects by ID or username. */
+  deleteStorageObjects(body: ApiDeleteStorageObjectsRequest, options: any = {}): Promise<any> {
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/storage/delete";
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "PUT", queryParams, _body, options)
+  }
+  /** List publicly readable storage objects in a given collection. */
+  listStorageObjects(collection: string, userId?: string, limit?: number, cursor?: string, options: any = {}): Promise<ApiStorageObjectList> {
+    if (collection === null || collection === undefined) {
+      throw new Error("'collection' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/storage/{collection}"
+       .replace("{collection}", encodeURIComponent(String(collection)));
+
+    const queryParams = {
+      user_id: userId,
+      limit: limit,
+      cursor: cursor,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** List publicly readable storage objects in a given collection. */
+  listStorageObjects2(collection: string, userId: string, limit?: number, cursor?: string, options: any = {}): Promise<ApiStorageObjectList> {
+    if (collection === null || collection === undefined) {
+      throw new Error("'collection' is a required parameter but is null or undefined.");
+    }
+    if (userId === null || userId === undefined) {
+      throw new Error("'userId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/storage/{collection}/{user_id}"
+       .replace("{collection}", encodeURIComponent(String(collection)))
+       .replace("{user_id}", encodeURIComponent(String(userId)));
+
+    const queryParams = {
+      limit: limit,
+      cursor: cursor,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** List current or upcoming tournaments. */
+  listTournaments(categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string, options: any = {}): Promise<ApiTournamentList> {
+    const urlPath = "/v2/tournament";
+
+    const queryParams = {
+      category_start: categoryStart,
+      category_end: categoryEnd,
+      start_time: startTime,
+      end_time: endTime,
+      limit: limit,
+      cursor: cursor,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** List tournament records. */
+  listTournamentRecords(tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, options: any = {}): Promise<ApiTournamentRecordList> {
+    if (tournamentId === null || tournamentId === undefined) {
+      throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/tournament/{tournament_id}"
+       .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+
+    const queryParams = {
+      owner_ids: ownerIds,
+      limit: limit,
+      cursor: cursor,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Write a record to a tournament. */
+  writeTournamentRecord(tournamentId: string, body: WriteTournamentRecordRequestTournamentRecordWrite, options: any = {}): Promise<ApiLeaderboardRecord> {
+    if (tournamentId === null || tournamentId === undefined) {
+      throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+    }
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/tournament/{tournament_id}"
+       .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+    _body = JSON.stringify(body || {});
+
+    return this.doFetch(urlPath, "PUT", queryParams, _body, options)
+  }
+  /** Attempt to join an open and running tournament. */
+  joinTournament(tournamentId: string, options: any = {}): Promise<any> {
+    if (tournamentId === null || tournamentId === undefined) {
+      throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/tournament/{tournament_id}/join"
+       .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "POST", queryParams, _body, options)
+  }
+  /** List tournament records for a given owner. */
+  listTournamentRecordsAroundOwner(tournamentId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiTournamentRecordList> {
+    if (tournamentId === null || tournamentId === undefined) {
+      throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+    }
+    if (ownerId === null || ownerId === undefined) {
+      throw new Error("'ownerId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/tournament/{tournament_id}/owner/{owner_id}"
+       .replace("{tournament_id}", encodeURIComponent(String(tournamentId)))
+       .replace("{owner_id}", encodeURIComponent(String(ownerId)));
+
+    const queryParams = {
+      limit: limit,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** Fetch zero or more users by ID and/or username. */
+  getUsers(ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>, options: any = {}): Promise<ApiUsers> {
+    const urlPath = "/v2/user";
+
+    const queryParams = {
+      ids: ids,
+      usernames: usernames,
+      facebook_ids: facebookIds,
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+  /** List groups the current user belongs to. */
+  listUserGroups(userId: string, options: any = {}): Promise<ApiUserGroupList> {
+    if (userId === null || userId === undefined) {
+      throw new Error("'userId' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v2/user/{user_id}/group"
+       .replace("{user_id}", encodeURIComponent(String(userId)));
+
+    const queryParams = {
+    } as any;
+
+    let _body = null;
+
+    return this.doFetch(urlPath, "GET", queryParams, _body, options)
+  }
+}

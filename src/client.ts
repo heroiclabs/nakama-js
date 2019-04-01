@@ -517,7 +517,7 @@ export class Client {
       password: "",
       timeoutMs: timeout,
     };
-    this.apiClient = NakamaApi(this.configuration);
+    this.apiClient = new NakamaApi(this.configuration);
   }
 
   /** Add users to a group, or accept their join requests. */

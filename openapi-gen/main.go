@@ -68,120 +68,123 @@ export interface {{$classname | title}} {
 }
 {{- end}}
 
-export const NakamaApi = (configuration: ConfigurationParameters = {
-  basePath: BASE_PATH,
-  bearerToken: "",
-  password: "",
-  username: "",
-  timeoutMs: 5000,
-}) => {
-  return {
-    /** Perform the underlying Fetch operation and return Promise object **/
-    doFetch(urlPath: string, method: string, queryParams: any, body?: any, options?: any): Promise<any> {
-      const urlQuery = "?" + Object.keys(queryParams)
-        .map(k => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
+export class NakamaApi {
+  configuration: ConfigurationParameters;
+  constructor(configuration: ConfigurationParameters = {
+    basePath: BASE_PATH,
+    bearerToken: "",
+    password: "",
+    username: "",
+    timeoutMs: 5000,
+  }) { this.configuration = configuration; }
+
+  /** Perform the underlying Fetch operation and return Promise object **/
+  doFetch(urlPath: string, method: string, queryParams: any, body?: any, options?: any): Promise<any> {
+    const urlQuery = "?" + Object.keys(queryParams)
+      .map(k => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev: any, curr: any) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
           }
-        })
-        .join("");
+        }
+      })
+      .join("");
 
-      const fetchOptions = {...{ method: method /*, keepalive: true */ }, ...options};
-      const headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      } as any;
+    const fetchOptions = {...{ method: method /*, keepalive: true */ }, ...options};
+    const headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    } as any;
 
-      if (configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + configuration.bearerToken;
-      } else if (configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-      }
+    if (this.configuration.bearerToken) {
+      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+    } else if (this.configuration.username) {
+      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+    }
 
-      fetchOptions.headers = {...headers, ...options.headers};
-      fetchOptions.body = body;
+    fetchOptions.headers = {...headers, ...options.headers};
+    fetchOptions.body = body;
 
-      return Promise.race([
-        fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) =>
-          setTimeout(reject, configuration.timeoutMs, "Request timed out.")
-        ),
-      ]);
-    },
-  {{- range $url, $path := .Paths}}
-    {{- range $method, $operation := $path}}
-    /** {{$operation.Summary}} */
-    {{$operation.OperationId | camelCase}}(
+    return Promise.race([
+      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
+      ),
+    ]);
+  }
+
+{{- range $url, $path := .Paths}}
+  {{- range $method, $operation := $path}}
+  /** {{$operation.Summary}} */
+  {{$operation.OperationId | camelCase}}(
+  {{- range $parameter := $operation.Parameters}}
+  {{- $camelcase := $parameter.Name | camelCase}}
+  {{- if eq $parameter.In "path"}}
+  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Type}},
+  {{- else if eq $parameter.In "body"}}
+    {{- if eq $parameter.Schema.Type "string"}}
+  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Schema.Type}},
+    {{- else}}
+  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Schema.Ref | cleanRef}},
+    {{- end}}
+  {{- else if eq $parameter.Type "array"}}
+  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: Array<{{$parameter.Items.Type}}>,
+  {{- else if eq $parameter.Type "integer"}}
+  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: number,
+  {{- else}}
+  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Type}},
+  {{- end}}
+  {{- " "}}
+  {{- end}}options: any = {}): Promise<{{- if $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- else -}} any {{- end}}> {
+    {{- range $parameter := $operation.Parameters}}
+    {{- $camelcase := $parameter.Name | camelCase}}
+    {{- if $parameter.Required }}
+    if ({{$camelcase}} === null || {{$camelcase}} === undefined) {
+      throw new Error("'{{$camelcase}}' is a required parameter but is null or undefined.");
+    }
+    {{- end}}
+    {{- end}}
+    const urlPath = "{{- $url}}"
     {{- range $parameter := $operation.Parameters}}
     {{- $camelcase := $parameter.Name | camelCase}}
     {{- if eq $parameter.In "path"}}
-    {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Type}},
-    {{- else if eq $parameter.In "body"}}
-      {{- if eq $parameter.Schema.Type "string"}}
-    {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Schema.Type}},
-      {{- else}}
-    {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Schema.Ref | cleanRef}},
-      {{- end}}
-    {{- else if eq $parameter.Type "array"}}
-    {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: Array<{{$parameter.Items.Type}}>,
-    {{- else if eq $parameter.Type "integer"}}
-    {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: number,
-    {{- else}}
-    {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Type}},
+       .replace("{{- print "{" $parameter.Name "}"}}", encodeURIComponent(String({{- $camelcase}})))
     {{- end}}
-    {{- " "}}
-    {{- end}}options: any = {}): Promise<{{- if $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- else -}} any {{- end}}> {
-      {{- range $parameter := $operation.Parameters}}
-      {{- $camelcase := $parameter.Name | camelCase}}
-      {{- if $parameter.Required }}
-      if ({{$camelcase}} === null || {{$camelcase}} === undefined) {
-        throw new Error("'{{$camelcase}}' is a required parameter but is null or undefined.");
-      }
-      {{- end}}
-      {{- end}}
-      const urlPath = "{{- $url}}"
-      {{- range $parameter := $operation.Parameters}}
-      {{- $camelcase := $parameter.Name | camelCase}}
-      {{- if eq $parameter.In "path"}}
-         .replace("{{- print "{" $parameter.Name "}"}}", encodeURIComponent(String({{- $camelcase}})))
-      {{- end}}
-      {{- end}};
+    {{- end}};
 
-      const queryParams = {
-      {{- range $parameter := $operation.Parameters}}
-      {{- $camelcase := $parameter.Name | camelCase}}
-      {{- if eq $parameter.In "query"}}
-        {{$parameter.Name}}: {{$camelcase}},
-      {{- end}}
-      {{- end}}
-      } as any;
-
-      let _body = null;
-      {{- range $parameter := $operation.Parameters}}
-      {{- $camelcase := $parameter.Name | camelCase}}
-      {{- if eq $parameter.In "body"}}
-      _body = JSON.stringify({{$camelcase}} || {});
-      {{- end}}
-      {{- end}}
-
-      return this.doFetch(urlPath, "{{- $method | uppercase}}", queryParams, _body, options)
-    },
+    const queryParams = {
+    {{- range $parameter := $operation.Parameters}}
+    {{- $camelcase := $parameter.Name | camelCase}}
+    {{- if eq $parameter.In "query"}}
+      {{$parameter.Name}}: {{$camelcase}},
     {{- end}}
+    {{- end}}
+    } as any;
+
+    let _body = null;
+    {{- range $parameter := $operation.Parameters}}
+    {{- $camelcase := $parameter.Name | camelCase}}
+    {{- if eq $parameter.In "body"}}
+    _body = JSON.stringify({{$camelcase}} || {});
+    {{- end}}
+    {{- end}}
+
+    return this.doFetch(urlPath, "{{- $method | uppercase}}", queryParams, _body, options)
+  }
+
   {{- end}}
-  };
-};
+{{- end}}
+}
 `
 
 func snakeCaseToCamelCase(input string) (camelCase string) {
