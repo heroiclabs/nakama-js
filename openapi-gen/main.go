@@ -75,7 +75,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
   username: "",
   timeoutMs: 5000,
 }) => {
-  return {
+  const napi = {
     /** Perform the underlying Fetch operation and return Promise object **/
     doFetch(urlPath: string, method: string, queryParams: any, body?: any, options?: any): Promise<any> {
       const urlQuery = "?" + Object.keys(queryParams)
@@ -176,11 +176,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       {{- end}}
       {{- end}}
 
-      return this.doFetch(urlPath, "{{- $method | uppercase}}", queryParams, _body, options)
+      return napi.doFetch(urlPath, "{{- $method | uppercase}}", queryParams, _body, options)
     },
     {{- end}}
   {{- end}}
   };
+
+  return napi;
 };
 `
 

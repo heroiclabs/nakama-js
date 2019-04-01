@@ -578,7 +578,7 @@
           username: "",
           timeoutMs: 5000,
       }; }
-      return {
+      var napi = {
           doFetch: function (urlPath, method, queryParams, body, options) {
               var urlQuery = "?" + Object.keys(queryParams)
                   .map(function (k) {
@@ -626,14 +626,14 @@
               var urlPath = "/healthcheck";
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           getAccount: function (options) {
               if (options === void 0) { options = {}; }
               var urlPath = "/v2/account";
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           updateAccount: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -644,7 +644,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+              return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
           },
           authenticateCustom: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -658,7 +658,7 @@
               };
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateDevice: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -672,7 +672,7 @@
               };
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateEmail: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -686,7 +686,7 @@
               };
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateFacebook: function (body, create, username, sync, options) {
               if (options === void 0) { options = {}; }
@@ -701,7 +701,7 @@
               };
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateGameCenter: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -715,7 +715,7 @@
               };
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateGoogle: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -729,7 +729,7 @@
               };
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateSteam: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
@@ -743,7 +743,7 @@
               };
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkCustom: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -754,7 +754,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkDevice: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -765,7 +765,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkEmail: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -776,7 +776,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkFacebook: function (body, sync, options) {
               if (options === void 0) { options = {}; }
@@ -789,7 +789,7 @@
               };
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkGameCenter: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -800,7 +800,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkGoogle: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -811,7 +811,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           linkSteam: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -822,7 +822,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkCustom: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -833,7 +833,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkDevice: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -844,7 +844,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkEmail: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -855,7 +855,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkFacebook: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -866,7 +866,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkGameCenter: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -877,7 +877,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkGoogle: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -888,7 +888,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           unlinkSteam: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -899,7 +899,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           listChannelMessages: function (channelId, limit, forward, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -914,7 +914,7 @@
                   cursor: cursor,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           deleteFriends: function (ids, usernames, options) {
               if (options === void 0) { options = {}; }
@@ -924,28 +924,28 @@
                   usernames: usernames,
               };
               var _body = null;
-              return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+              return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
           },
           listFriends: function (options) {
               if (options === void 0) { options = {}; }
               var urlPath = "/v2/friend";
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           addFriends: function (options) {
               if (options === void 0) { options = {}; }
               var urlPath = "/v2/friend";
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           blockFriends: function (options) {
               if (options === void 0) { options = {}; }
               var urlPath = "/v2/friend/block";
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           importFacebookFriends: function (body, reset, options) {
               if (options === void 0) { options = {}; }
@@ -958,7 +958,7 @@
               };
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           listGroups: function (name, cursor, limit, options) {
               if (options === void 0) { options = {}; }
@@ -969,7 +969,7 @@
                   limit: limit,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           createGroup: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -980,7 +980,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           deleteGroup: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -991,7 +991,7 @@
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+              return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
           },
           updateGroup: function (groupId, body, options) {
               if (options === void 0) { options = {}; }
@@ -1006,7 +1006,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+              return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
           },
           addGroupUsers: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -1017,7 +1017,7 @@
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           joinGroup: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -1028,7 +1028,7 @@
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           kickGroupUsers: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -1039,7 +1039,7 @@
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           leaveGroup: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -1050,7 +1050,7 @@
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           promoteGroupUsers: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -1061,7 +1061,7 @@
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           listGroupUsers: function (groupId, options) {
               if (options === void 0) { options = {}; }
@@ -1072,7 +1072,7 @@
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           deleteLeaderboardRecord: function (leaderboardId, options) {
               if (options === void 0) { options = {}; }
@@ -1083,7 +1083,7 @@
                   .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+              return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
           },
           listLeaderboardRecords: function (leaderboardId, ownerIds, limit, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -1098,7 +1098,7 @@
                   cursor: cursor,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           writeLeaderboardRecord: function (leaderboardId, body, options) {
               if (options === void 0) { options = {}; }
@@ -1113,7 +1113,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           listLeaderboardRecordsAroundOwner: function (leaderboardId, ownerId, limit, options) {
               if (options === void 0) { options = {}; }
@@ -1130,7 +1130,7 @@
                   limit: limit,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           listMatches: function (limit, authoritative, label, minSize, maxSize, query, options) {
               if (options === void 0) { options = {}; }
@@ -1144,7 +1144,7 @@
                   query: query,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           deleteNotifications: function (ids, options) {
               if (options === void 0) { options = {}; }
@@ -1153,7 +1153,7 @@
                   ids: ids,
               };
               var _body = null;
-              return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+              return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
           },
           listNotifications: function (limit, cacheableCursor, options) {
               if (options === void 0) { options = {}; }
@@ -1163,7 +1163,7 @@
                   cacheable_cursor: cacheableCursor,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           rpcFunc2: function (id, payload, httpKey, options) {
               if (options === void 0) { options = {}; }
@@ -1177,7 +1177,7 @@
                   http_key: httpKey,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           rpcFunc: function (id, body, options) {
               if (options === void 0) { options = {}; }
@@ -1192,7 +1192,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           readStorageObjects: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1203,7 +1203,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           writeStorageObjects: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1214,7 +1214,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+              return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
           },
           deleteStorageObjects: function (body, options) {
               if (options === void 0) { options = {}; }
@@ -1225,7 +1225,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+              return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
           },
           listStorageObjects: function (collection, userId, limit, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -1240,7 +1240,7 @@
                   cursor: cursor,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           listStorageObjects2: function (collection, userId, limit, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -1258,7 +1258,7 @@
                   cursor: cursor,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           listTournaments: function (categoryStart, categoryEnd, startTime, endTime, limit, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -1272,7 +1272,7 @@
                   cursor: cursor,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           listTournamentRecords: function (tournamentId, ownerIds, limit, cursor, options) {
               if (options === void 0) { options = {}; }
@@ -1287,7 +1287,7 @@
                   cursor: cursor,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           writeTournamentRecord: function (tournamentId, body, options) {
               if (options === void 0) { options = {}; }
@@ -1302,7 +1302,7 @@
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
-              return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+              return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
           },
           joinTournament: function (tournamentId, options) {
               if (options === void 0) { options = {}; }
@@ -1313,7 +1313,7 @@
                   .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "POST", queryParams, _body, options);
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           listTournamentRecordsAroundOwner: function (tournamentId, ownerId, limit, options) {
               if (options === void 0) { options = {}; }
@@ -1330,7 +1330,7 @@
                   limit: limit,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           getUsers: function (ids, usernames, facebookIds, options) {
               if (options === void 0) { options = {}; }
@@ -1341,7 +1341,7 @@
                   facebook_ids: facebookIds,
               };
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
           listUserGroups: function (userId, options) {
               if (options === void 0) { options = {}; }
@@ -1352,9 +1352,10 @@
                   .replace("{user_id}", encodeURIComponent(String(userId)));
               var queryParams = {};
               var _body = null;
-              return this.doFetch(urlPath, "GET", queryParams, _body, options);
+              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
       };
+      return napi;
   };
 
   var Session = (function () {
