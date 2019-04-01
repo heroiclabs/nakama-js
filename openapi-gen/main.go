@@ -142,7 +142,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
     {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Type}},
     {{- end}}
     {{- " "}}
-    {{- end}}options: any = {}): Promise<{{$operation.Responses.Ok.Schema.Ref | cleanRef}}> {
+    {{- end}}options: any = {}): Promise<{{- if $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- else -}} any {{- end}}> {
       {{- range $parameter := $operation.Parameters}}
       {{- $camelcase := $parameter.Name | camelCase}}
       {{- if $parameter.Required }}
