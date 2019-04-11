@@ -59,6 +59,16 @@ export interface {{$classname | title}} {
     {{- else}}
   {{$fieldname}}?: Array<{{$property.Items.Ref | cleanRef}}>;
     {{- end}}
+  {{- else if eq $property.Type "object"}}
+    {{- if eq $property.AdditionalProperties.Type "string"}}
+  {{$fieldname}}?: Map<string, string>;
+    {{- else if eq $property.AdditionalProperties.Type "integer"}}
+  {{$fieldname}}?: Map<string, integer>;
+    {{- else if eq $property.AdditionalProperties.Type "boolean"}}
+  {{$fieldname}}?: Map<string, boolean>;
+    {{- else}}
+  {{$fieldname}}?: Map<{{$property.AdditionalProperties | cleanRef}}>;
+    {{- end}}
   {{- else if eq $property.Type "string"}}
   {{$fieldname}}?: string;
   {{- else}}
@@ -136,6 +146,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       {{- end}}
     {{- else if eq $parameter.Type "array"}}
     {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: Array<{{$parameter.Items.Type}}>,
+    {{- else if eq $parameter.Type "object"}}
+    {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: Map<{{$parameter.AdditionalProperties.Type}}>,
     {{- else if eq $parameter.Type "integer"}}
     {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: number,
     {{- else}}
@@ -209,7 +221,7 @@ func snakeCaseToCamelCase(input string) (camelCase string) {
 }
 
 func convertRefToClassName(input string) (className string) {
-	cleanRef := strings.TrimLeft(input, "#/definitions/")
+	cleanRef := strings.TrimPrefix(input, "#/definitions/")
 	className = strings.Title(cleanRef)
 	return
 }
@@ -272,6 +284,9 @@ func main() {
 				Items struct { // used with type "array"
 					Type string
 					Ref  string `json:"$ref"`
+				}
+				AdditionalProperties struct {
+					Type string // used with type "map"
 				}
 				Format      string // used with type "boolean"
 				Description string
