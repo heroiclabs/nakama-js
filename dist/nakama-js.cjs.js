@@ -593,17 +593,24 @@ var NakamaApi = function (configuration) {
             })
                 .join("");
             var fetchOptions = __assign({ method: method }, options);
-            var headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            };
+            fetchOptions.headers = __assign({}, options.headers);
             if (configuration.bearerToken) {
-                headers["Authorization"] = "Bearer " + configuration.bearerToken;
+                fetchOptions.headers["Authorization"] = "Bearer " + configuration.bearerToken;
             }
             else if (configuration.username) {
-                headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+                fetchOptions.headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
             }
-            fetchOptions.headers = __assign({}, headers, options.headers);
+            if (!Object.keys(fetchOptions.headers).includes("Accept")) {
+                fetchOptions.headers["Accept"] = "application/json";
+            }
+            if (!Object.keys(fetchOptions.headers).includes("Content-Type")) {
+                fetchOptions.headers["Content-Type"] = "application/json";
+            }
+            Object.keys(fetchOptions.headers).forEach(function (key) {
+                if (!fetchOptions.headers[key]) {
+                    delete fetchOptions.headers[key];
+                }
+            });
             fetchOptions.body = body;
             return Promise.race([
                 fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
