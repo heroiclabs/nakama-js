@@ -566,7 +566,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       return Promise.race([
         fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
             return response.json();
           } else {
             throw response;
