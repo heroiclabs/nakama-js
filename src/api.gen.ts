@@ -1001,10 +1001,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Block one or more users by ID or username. */
-    blockFriends(options: any = {}): Promise<any> {
+    blockFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<any> {
       const urlPath = "/v2/friend/block";
 
       const queryParams = {
+        ids: ids,
+        usernames: usernames,
       } as any;
 
       let _body = null;
@@ -1091,7 +1093,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "PUT", queryParams, _body, options)
     },
     /** Add users to a group. */
-    addGroupUsers(groupId: string, options: any = {}): Promise<any> {
+    addGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1099,6 +1101,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
+        user_ids: userIds,
       } as any;
 
       let _body = null;
@@ -1121,7 +1124,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Kick a set of users from a group. */
-    kickGroupUsers(groupId: string, options: any = {}): Promise<any> {
+    kickGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1129,6 +1132,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
+        user_ids: userIds,
       } as any;
 
       let _body = null;
@@ -1151,7 +1155,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Promote a set of users in a group to the next role up. */
-    promoteGroupUsers(groupId: string, options: any = {}): Promise<any> {
+    promoteGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1159,6 +1163,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
+        user_ids: userIds,
       } as any;
 
       let _body = null;

@@ -610,7 +610,10 @@ var NakamaApi = function (configuration) {
             fetchOptions.body = body;
             return Promise.race([
                 fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
+                    if (response.status == 204) {
+                        return response;
+                    }
+                    else if (response.status >= 200 && response.status < 300) {
                         return response.json();
                     }
                     else {
@@ -941,10 +944,13 @@ var NakamaApi = function (configuration) {
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
-        blockFriends: function (options) {
+        blockFriends: function (ids, usernames, options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/friend/block";
-            var queryParams = {};
+            var queryParams = {
+                ids: ids,
+                usernames: usernames,
+            };
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
@@ -1009,14 +1015,16 @@ var NakamaApi = function (configuration) {
             _body = JSON.stringify(body || {});
             return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
         },
-        addGroupUsers: function (groupId, options) {
+        addGroupUsers: function (groupId, userIds, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/add"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
-            var queryParams = {};
+            var queryParams = {
+                user_ids: userIds,
+            };
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
@@ -1031,14 +1039,16 @@ var NakamaApi = function (configuration) {
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
-        kickGroupUsers: function (groupId, options) {
+        kickGroupUsers: function (groupId, userIds, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/kick"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
-            var queryParams = {};
+            var queryParams = {
+                user_ids: userIds,
+            };
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
@@ -1053,14 +1063,16 @@ var NakamaApi = function (configuration) {
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
-        promoteGroupUsers: function (groupId, options) {
+        promoteGroupUsers: function (groupId, userIds, options) {
             if (options === void 0) { options = {}; }
             if (groupId === null || groupId === undefined) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/promote"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
-            var queryParams = {};
+            var queryParams = {
+                user_ids: userIds,
+            };
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
