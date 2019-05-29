@@ -990,10 +990,12 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Add friends by ID or username to a user's account. */
-    addFriends(options: any = {}): Promise<any> {
+    addFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<any> {
       const urlPath = "/v2/friend";
 
       const queryParams = {
+        ids: ids,
+        usernames: usernames,
       } as any;
 
       let _body = null;
