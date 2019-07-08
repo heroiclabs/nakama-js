@@ -31,7 +31,7 @@ export interface ChannelMessage {
     code: number;
     sender_id: string;
     username: string;
-    content: object;
+    content: any;
     create_time: string;
     update_time: string;
     persistent: boolean;
@@ -48,14 +48,14 @@ export interface ChannelMessageAck {
 export interface ChannelMessageSend {
     channel_message_send: {
         channel_id: string;
-        content: object;
+        content: any;
     };
 }
 export interface ChannelMessageUpdate {
     channel_message_update: {
         channel_id: string;
         message_id: string;
-        content: object;
+        content: any;
     };
 }
 export interface ChannelMessageRemove {
@@ -142,11 +142,11 @@ export interface LeaveMatch {
 export interface MatchData {
     match_id: string;
     op_code: number;
-    data: object;
+    data: any;
     presence: Presence;
 }
 export interface MatchDataSend {
-    match_data_send: MatchData;
+    match_data_send: Partial<MatchData>;
 }
 export interface Rpc {
     rpc: ApiRpc;

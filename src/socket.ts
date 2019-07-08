@@ -62,7 +62,7 @@ export interface ChannelMessage {
   code: number;
   sender_id: string;
   username: string;
-  content: object;
+  content: any;
   create_time: string;
   update_time: string;
   persistent: boolean;
@@ -83,7 +83,7 @@ export interface ChannelMessageAck {
 export interface ChannelMessageSend {
   channel_message_send: {
     channel_id: string;
-    content: object;
+    content: any;
   };
 }
 
@@ -92,7 +92,7 @@ export interface ChannelMessageUpdate {
   channel_message_update: {
     channel_id: string,
     message_id: string,
-    content: object;
+    content: any;
   };
 }
 
@@ -209,13 +209,13 @@ export interface LeaveMatch {
 export interface MatchData {
   match_id: string;
   op_code: number;
-  data: object;
+  data: any;
   presence: Presence;
 }
 
 /** Send a message contains match data. */
 export interface MatchDataSend {
-  match_data_send: MatchData;
+  match_data_send: Partial<MatchData>;
 }
 
 /** Execute an Lua function on the server. */
