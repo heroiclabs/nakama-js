@@ -95,8 +95,8 @@ export interface MatchmakerAdd {
         min_count: number;
         max_count: number;
         query: string;
-        string_properties?: { [key: string]: string };
-        numeric_properties?: { [key: string]: number };
+        string_properties?: Record<string, string>;
+        numeric_properties?: Record<string, number>;
     };
 }
 export interface MatchmakerRemove {
@@ -106,8 +106,8 @@ export interface MatchmakerRemove {
 }
 export interface MatchmakerUser {
     presence: Presence;
-    string_properties: { [key: string]: string };
-    numeric_properties: { [key: string]: number };
+    string_properties?: Record<string, string>;
+    numeric_properties?: Record<string, number>;
 }
 export interface MatchmakerMatched {
     ticket: string;
