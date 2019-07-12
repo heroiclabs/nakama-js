@@ -7,13 +7,15 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 ### Added
 - Support for Tournaments.
 
+### Changed
+- Simplified the way callback IDs are generated. (Thanks @dimon4eg).
+- Small improvements to TypeScript typings. (Thanks @Blaizer).
+- Updated minimum TypeScript language to 3.5 version. (Thanks @Blaizer).
+
 ### Fixed
 - Typo fix in Match interface to use Presences.
 - Add missing MatchmakerUser typescript interface definition.
 - Authentication functions no longer check for session tokens.
-
-### Changed
-- Improved the way collation ID is generated. (Thanks @dimon4eg).
 
 ## [2.0.1] - 2018-05-19
 ### Added
