@@ -1,6 +1,7 @@
 import { ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";
+declare type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
 export interface Presence {
     user_id: string;
     session_id: string;
@@ -146,7 +147,7 @@ export interface MatchData {
     presence: Presence;
 }
 export interface MatchDataSend {
-    match_data_send: Partial<MatchData>;
+    match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
 }
 export interface Rpc {
     rpc: ApiRpc;
@@ -218,3 +219,4 @@ export declare class DefaultSocket implements Socket {
     onstreamdata(streamData: StreamData): void;
     send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
 }
+export {};

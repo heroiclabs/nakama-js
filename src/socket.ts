@@ -18,6 +18,8 @@ import { ApiNotification, ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";
 
+type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
+
 /** Stores function references for resolve/reject with a DOM Promise. */
 interface PromiseExecutor {
   resolve: (value?: any) => void;
@@ -215,7 +217,7 @@ export interface MatchData {
 
 /** Send a message contains match data. */
 export interface MatchDataSend {
-  match_data_send: Partial<MatchData>;
+  match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
 }
 
 /** Execute an Lua function on the server. */
