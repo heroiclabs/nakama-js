@@ -18,6 +18,8 @@ import { ApiNotification, ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";
 
+type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
+
 /** Stores function references for resolve/reject with a DOM Promise. */
 interface PromiseExecutor {
   resolve: (value?: any) => void;
@@ -62,7 +64,7 @@ export interface ChannelMessage {
   code: number;
   sender_id: string;
   username: string;
-  content: object;
+  content: any;
   create_time: string;
   update_time: string;
   persistent: boolean;
@@ -83,7 +85,7 @@ export interface ChannelMessageAck {
 export interface ChannelMessageSend {
   channel_message_send: {
     channel_id: string;
-    content: object;
+    content: any;
   };
 }
 
@@ -92,7 +94,7 @@ export interface ChannelMessageUpdate {
   channel_message_update: {
     channel_id: string,
     message_id: string,
-    content: object;
+    content: any;
   };
 }
 
@@ -146,8 +148,8 @@ export interface MatchmakerAdd {
     min_count: number;
     max_count: number;
     query: string;
-    string_properties?: { [key: string]: string };
-    numeric_properties?: { [key: string]: number };
+    string_properties?: Record<string, string>;
+    numeric_properties?: Record<string, number>;
   };
 }
 
@@ -161,8 +163,8 @@ export interface MatchmakerRemove {
 /** A reference to a user and their matchmaking properties. */
 export interface MatchmakerUser {
   presence: Presence;
-  string_properties: { [key: string]: string };
-  numeric_properties: { [key: string]: number };
+  string_properties?: Record<string, string>;
+  numeric_properties?: Record<string, number>;
 }
 
 /** Matchmaking result. */
@@ -209,13 +211,13 @@ export interface LeaveMatch {
 export interface MatchData {
   match_id: string;
   op_code: number;
-  data: object;
+  data: any;
   presence: Presence;
 }
 
 /** Send a message contains match data. */
 export interface MatchDataSend {
-  match_data_send: MatchData;
+  match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
 }
 
 /** Execute an Lua function on the server. */

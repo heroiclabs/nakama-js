@@ -1,6 +1,7 @@
 import { ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";
+declare type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
 export interface Presence {
     user_id: string;
     session_id: string;
@@ -31,7 +32,7 @@ export interface ChannelMessage {
     code: number;
     sender_id: string;
     username: string;
-    content: object;
+    content: any;
     create_time: string;
     update_time: string;
     persistent: boolean;
@@ -48,14 +49,14 @@ export interface ChannelMessageAck {
 export interface ChannelMessageSend {
     channel_message_send: {
         channel_id: string;
-        content: object;
+        content: any;
     };
 }
 export interface ChannelMessageUpdate {
     channel_message_update: {
         channel_id: string;
         message_id: string;
-        content: object;
+        content: any;
     };
 }
 export interface ChannelMessageRemove {
@@ -95,8 +96,8 @@ export interface MatchmakerAdd {
         min_count: number;
         max_count: number;
         query: string;
-        string_properties?: { [key: string]: string };
-        numeric_properties?: { [key: string]: number };
+        string_properties?: Record<string, string>;
+        numeric_properties?: Record<string, number>;
     };
 }
 export interface MatchmakerRemove {
@@ -106,8 +107,8 @@ export interface MatchmakerRemove {
 }
 export interface MatchmakerUser {
     presence: Presence;
-    string_properties: { [key: string]: string };
-    numeric_properties: { [key: string]: number };
+    string_properties?: Record<string, string>;
+    numeric_properties?: Record<string, number>;
 }
 export interface MatchmakerMatched {
     ticket: string;
@@ -142,11 +143,11 @@ export interface LeaveMatch {
 export interface MatchData {
     match_id: string;
     op_code: number;
-    data: object;
+    data: any;
     presence: Presence;
 }
 export interface MatchDataSend {
-    match_data_send: MatchData;
+    match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
 }
 export interface Rpc {
     rpc: ApiRpc;
@@ -218,3 +219,4 @@ export declare class DefaultSocket implements Socket {
     onstreamdata(streamData: StreamData): void;
     send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
 }
+export {};
