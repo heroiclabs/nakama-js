@@ -1,16 +1,9 @@
 (function () {
 
-  var object = (
-    // #34: CommonJS
-    typeof exports === 'object' && exports !== null &&
-    typeof exports.nodeType !== 'number' ?
-      exports :
-    // #8: web workers
-    typeof self != 'undefined' ?
-      self :
-    // #31: ExtendScript
-      $.global
-  );
+  var object =
+    typeof exports != 'undefined' ? exports :
+    typeof self != 'undefined' ? self : // #8: web workers
+    $.global; // #31: ExtendScript
 
   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
@@ -937,10 +930,13 @@ var NakamaApi = function (configuration) {
             var _body = null;
             return napi.doFetch(urlPath, "GET", queryParams, _body, options);
         },
-        addFriends: function (options) {
+        addFriends: function (ids, usernames, options) {
             if (options === void 0) { options = {}; }
             var urlPath = "/v2/friend";
-            var queryParams = {};
+            var queryParams = {
+                ids: ids,
+                usernames: usernames,
+            };
             var _body = null;
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },

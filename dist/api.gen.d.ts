@@ -312,7 +312,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     listChannelMessages(channelId: string, limit?: number | undefined, forward?: boolean | undefined, cursor?: string | undefined, options?: any): Promise<ApiChannelMessageList>;
     deleteFriends(ids?: string[] | undefined, usernames?: string[] | undefined, options?: any): Promise<any>;
     listFriends(options?: any): Promise<ApiFriends>;
-    addFriends(options?: any): Promise<any>;
+    addFriends(ids?: string[] | undefined, usernames?: string[] | undefined, options?: any): Promise<any>;
     blockFriends(ids?: string[] | undefined, usernames?: string[] | undefined, options?: any): Promise<any>;
     importFacebookFriends(body: ApiAccountFacebook, reset?: boolean | undefined, options?: any): Promise<any>;
     listGroups(name?: string | undefined, cursor?: string | undefined, limit?: number | undefined, options?: any): Promise<ApiGroupList>;
