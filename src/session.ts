@@ -14,8 +14,20 @@
  * limitations under the License.
  */
 
+ /** A nakama session. */
+export interface ISession {
+  // Claims
+  readonly token: string;
+  readonly created_at: number;
+  readonly expires_at: number;
+  readonly username: string;
+  readonly user_id: string;
+  // Validate token
+  isexpired(currenttime: number): boolean;
+}
+
 export class Session {
-  private constructor(
+  public constructor(
     readonly token: string,
     readonly created_at: number,
     readonly expires_at: number,
