@@ -6,7 +6,7 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Added
 - Support for Tournaments.
-- Added session inteface
+- Added session interface
 - Implemented interface in Session class
 - Made session constructor public for unit test mocking
 
