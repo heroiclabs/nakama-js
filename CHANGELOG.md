@@ -6,6 +6,9 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Added
 - Support for Tournaments.
+- Added session inteface
+- Implemented interface in Session class
+- Made session constructor public for unit test mocking
 
 ### Changed
 - Simplified the way callback IDs are generated. (Thanks @dimon4eg).
