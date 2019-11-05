@@ -61,7 +61,7 @@ const DEFAULT_TIMEOUT_MS = 7000;
 /** Send a custom ID to the server. Used with authenticate. */
 
 export interface BaseAuth {
-  vars: { [key:string]: string };
+  vars?: { [key:string]: string };
 }
 export interface AccountCustom extends BaseAuth {
   // Set a username when the account is created, otherwise the server will generate one.
@@ -637,8 +637,7 @@ export class Client {
 
     const queryParams = {
       username: request.username,
-      create: request.create,
-      vars: request.vars
+      create: request.create
     } as any;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
@@ -666,7 +665,8 @@ export class Client {
 
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
-      id: request.id
+      id: request.id,
+      vars: request.vars
     });
 
     return Promise.race([
@@ -691,8 +691,7 @@ export class Client {
 
     const queryParams = {
       username: request.username,
-      create: request.create,
-      vars: request.vars
+      create: request.create
     } as any;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
@@ -720,7 +719,8 @@ export class Client {
 
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
-      id: request.id
+      id: request.id,
+      vars: request.vars
     });
 
     return Promise.race([
@@ -745,8 +745,7 @@ export class Client {
 
     const queryParams = {
       username: request.username,
-      create: request.create,
-      vars: request.vars
+      create: request.create
     } as any;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
@@ -775,7 +774,8 @@ export class Client {
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
       email: request.email,
-      password: request.password
+      password: request.password,
+      vars: request.vars
     });
 
     return Promise.race([
@@ -800,8 +800,7 @@ export class Client {
 
     const queryParams = {
       username: request.username,
-      create: request.create,
-      vars: request.vars
+      create: request.create
     } as any;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
@@ -829,7 +828,8 @@ export class Client {
 
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
-      token: request.token
+      token: request.token,
+      vars: request.vars
     });
 
     return Promise.race([
@@ -854,8 +854,7 @@ export class Client {
 
     const queryParams = {
       username: request.username,
-      create: request.create,
-      vars: request.vars
+      create: request.create
     } as any;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
@@ -883,7 +882,8 @@ export class Client {
 
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
-      token: request.token
+      token: request.token,
+      vars: request.vars
     });
 
     return Promise.race([
@@ -908,8 +908,7 @@ export class Client {
 
     const queryParams = {
       username: request.username,
-      create: request.create,
-      vars: request.vars
+      create: request.create
     } as any;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {
@@ -942,7 +941,8 @@ export class Client {
       public_key_url: request.public_key_url,
       salt: request.salt,
       signature: request.signature,
-      timestamp_seconds: request.timestamp_seconds
+      timestamp_seconds: request.timestamp_seconds,
+      vars: request.vars
     });
 
     return Promise.race([

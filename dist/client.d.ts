@@ -2,7 +2,7 @@ import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAcc
 import { Session } from "./session";
 import { Socket } from "./socket";
 export interface BaseAuth {
-    vars: {
+    vars?: {
         [key: string]: string;
     };
 }
