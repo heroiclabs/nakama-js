@@ -5,6 +5,7 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 ### Added
+- Support for authentication metadata
 - Support for Tournaments.
 - Added session interface
 - Implemented interface in Session class

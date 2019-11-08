@@ -1,28 +1,33 @@
 import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
-export interface AccountCustom {
+export interface BaseAuth {
+    vars?: {
+        [key: string]: string;
+    };
+}
+export interface AccountCustom extends BaseAuth {
     username?: string;
     create?: boolean;
     id?: string;
 }
-export interface AccountDevice {
+export interface AccountDevice extends BaseAuth {
     username?: string;
     create?: boolean;
     id?: string;
 }
-export interface AccountEmail {
+export interface AccountEmail extends BaseAuth {
     username?: string;
     create?: boolean;
     email?: string;
     password?: string;
 }
-export interface AccountFacebook {
+export interface AccountFacebook extends BaseAuth {
     username?: string;
     create?: boolean;
     token?: string;
 }
-export interface AccountGameCenter {
+export interface AccountGameCenter extends BaseAuth {
     username?: string;
     create?: boolean;
     bundle_id?: string;
@@ -32,12 +37,12 @@ export interface AccountGameCenter {
     signature?: string;
     timestamp_seconds?: string;
 }
-export interface AccountGoogle {
+export interface AccountGoogle extends BaseAuth {
     username?: string;
     create?: boolean;
     token?: string;
 }
-export interface AccountSteam {
+export interface AccountSteam extends BaseAuth {
     username?: string;
     create?: boolean;
     token?: string;

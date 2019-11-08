@@ -59,7 +59,11 @@ const DEFAULT_SERVER_KEY = "defaultkey";
 const DEFAULT_TIMEOUT_MS = 7000;
 
 /** Send a custom ID to the server. Used with authenticate. */
-export interface AccountCustom {
+
+export interface BaseAuth {
+  vars?: { [key:string]: string };
+}
+export interface AccountCustom extends BaseAuth {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
@@ -69,7 +73,7 @@ export interface AccountCustom {
 }
 
 /** Send a device to the server. Used with authenticate. */
-export interface AccountDevice {
+export interface AccountDevice extends BaseAuth {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
@@ -79,7 +83,7 @@ export interface AccountDevice {
 }
 
 /** Send an email with password to the server. Used with authenticate. */
-export interface AccountEmail {
+export interface AccountEmail extends BaseAuth {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
@@ -91,7 +95,7 @@ export interface AccountEmail {
 }
 
 /** Send a Facebook token to the server. Used with authenticate. */
-export interface AccountFacebook {
+export interface AccountFacebook extends BaseAuth {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
@@ -101,7 +105,7 @@ export interface AccountFacebook {
 }
 
 /** Send Apple's Game Center account credentials to the server. Used with authenticate. */
-export interface AccountGameCenter {
+export interface AccountGameCenter extends BaseAuth {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
@@ -121,7 +125,7 @@ export interface AccountGameCenter {
 }
 
 /** Send a Google token to the server. Used with authenticate. */
-export interface AccountGoogle {
+export interface AccountGoogle extends BaseAuth {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
@@ -131,7 +135,7 @@ export interface AccountGoogle {
 }
 
 /** Send a Steam token to the server. Used with authenticate. */
-export interface AccountSteam {
+export interface AccountSteam extends BaseAuth {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
@@ -661,7 +665,8 @@ export class Client {
 
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
-      id: request.id
+      id: request.id,
+      vars: request.vars
     });
 
     return Promise.race([
@@ -714,7 +719,8 @@ export class Client {
 
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
-      id: request.id
+      id: request.id,
+      vars: request.vars
     });
 
     return Promise.race([
@@ -768,7 +774,8 @@ export class Client {
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
       email: request.email,
-      password: request.password
+      password: request.password,
+      vars: request.vars
     });
 
     return Promise.race([
@@ -821,7 +828,8 @@ export class Client {
 
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
-      token: request.token
+      token: request.token,
+      vars: request.vars
     });
 
     return Promise.race([
@@ -874,7 +882,8 @@ export class Client {
 
     fetchOptions.headers = {...headers};
     fetchOptions.body = JSON.stringify({
-      token: request.token
+      token: request.token,
+      vars: request.vars
     });
 
     return Promise.race([
@@ -932,7 +941,8 @@ export class Client {
       public_key_url: request.public_key_url,
       salt: request.salt,
       signature: request.signature,
-      timestamp_seconds: request.timestamp_seconds
+      timestamp_seconds: request.timestamp_seconds,
+      vars: request.vars
     });
 
     return Promise.race([
@@ -957,7 +967,8 @@ export class Client {
 
     const queryParams = {
       username: request.username,
-      create: request.create
+      create: request.create,
+      vars: request.vars
     } as any;
     const urlQuery = "?" + Object.keys(queryParams)
       .map(k => {

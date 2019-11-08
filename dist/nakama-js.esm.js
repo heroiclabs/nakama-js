@@ -1763,7 +1763,8 @@ var Client = (function () {
         }
         fetchOptions.headers = __assign({}, headers);
         fetchOptions.body = JSON.stringify({
-            id: request.id
+            id: request.id,
+            vars: request.vars
         });
         return Promise.race([
             fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
@@ -1812,7 +1813,8 @@ var Client = (function () {
         }
         fetchOptions.headers = __assign({}, headers);
         fetchOptions.body = JSON.stringify({
-            id: request.id
+            id: request.id,
+            vars: request.vars
         });
         return Promise.race([
             fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
@@ -1862,7 +1864,8 @@ var Client = (function () {
         fetchOptions.headers = __assign({}, headers);
         fetchOptions.body = JSON.stringify({
             email: request.email,
-            password: request.password
+            password: request.password,
+            vars: request.vars
         });
         return Promise.race([
             fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
@@ -1911,7 +1914,8 @@ var Client = (function () {
         }
         fetchOptions.headers = __assign({}, headers);
         fetchOptions.body = JSON.stringify({
-            token: request.token
+            token: request.token,
+            vars: request.vars
         });
         return Promise.race([
             fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
@@ -1960,7 +1964,8 @@ var Client = (function () {
         }
         fetchOptions.headers = __assign({}, headers);
         fetchOptions.body = JSON.stringify({
-            token: request.token
+            token: request.token,
+            vars: request.vars
         });
         return Promise.race([
             fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
@@ -2014,7 +2019,8 @@ var Client = (function () {
             public_key_url: request.public_key_url,
             salt: request.salt,
             signature: request.signature,
-            timestamp_seconds: request.timestamp_seconds
+            timestamp_seconds: request.timestamp_seconds,
+            vars: request.vars
         });
         return Promise.race([
             fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
@@ -2037,7 +2043,8 @@ var Client = (function () {
         var urlPath = "/v2/account/authenticate/steam";
         var queryParams = {
             username: request.username,
-            create: request.create
+            create: request.create,
+            vars: request.vars
         };
         var urlQuery = "?" + Object.keys(queryParams)
             .map(function (k) {
