@@ -1,33 +1,40 @@
-import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
+import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
-export interface BaseAuth {
+export interface AccountCustom {
+    username?: string;
+    create?: boolean;
+    id?: string;
     vars?: {
         [key: string]: string;
     };
 }
-export interface AccountCustom extends BaseAuth {
+export interface AccountDevice {
     username?: string;
     create?: boolean;
     id?: string;
+    vars?: {
+        [key: string]: string;
+    };
 }
-export interface AccountDevice extends BaseAuth {
-    username?: string;
-    create?: boolean;
-    id?: string;
-}
-export interface AccountEmail extends BaseAuth {
+export interface AccountEmail {
     username?: string;
     create?: boolean;
     email?: string;
     password?: string;
+    vars?: {
+        [key: string]: string;
+    };
 }
-export interface AccountFacebook extends BaseAuth {
+export interface AccountFacebook {
     username?: string;
     create?: boolean;
     token?: string;
+    vars?: {
+        [key: string]: string;
+    };
 }
-export interface AccountGameCenter extends BaseAuth {
+export interface AccountGameCenter {
     username?: string;
     create?: boolean;
     bundle_id?: string;
@@ -36,16 +43,25 @@ export interface AccountGameCenter extends BaseAuth {
     salt?: string;
     signature?: string;
     timestamp_seconds?: string;
+    vars?: {
+        [key: string]: string;
+    };
 }
-export interface AccountGoogle extends BaseAuth {
+export interface AccountGoogle {
     username?: string;
     create?: boolean;
     token?: string;
+    vars?: {
+        [key: string]: string;
+    };
 }
-export interface AccountSteam extends BaseAuth {
+export interface AccountSteam {
     username?: string;
     create?: boolean;
     token?: string;
+    vars?: {
+        [key: string]: string;
+    };
 }
 export interface RpcResponse {
     id?: string;
@@ -88,6 +104,7 @@ export interface Tournament {
     create_time?: string;
     start_time?: string;
     end_time?: string;
+    start_active?: number;
 }
 export interface TournamentList {
     tournaments?: Array<Tournament>;
@@ -140,11 +157,15 @@ export interface ChannelMessage {
     code?: number;
     content?: object;
     create_time?: string;
+    group_id?: string;
     message_id?: string;
     persistent?: boolean;
+    room_name?: string;
     reference_id?: string;
     sender_id?: string;
     update_time?: string;
+    user_id_one?: string;
+    user_id_two?: string;
     username?: string;
 }
 export interface ChannelMessageList {
@@ -179,6 +200,7 @@ export interface Friend {
 }
 export interface Friends {
     friends?: Array<Friend>;
+    cursor?: string;
 }
 export interface GroupUser {
     user?: User;
@@ -186,6 +208,7 @@ export interface GroupUser {
 }
 export interface GroupUserList {
     group_users?: Array<GroupUser>;
+    cursor?: string;
 }
 export interface Group {
     avatar_url?: string;
@@ -211,6 +234,7 @@ export interface UserGroup {
 }
 export interface UserGroupList {
     user_groups?: Array<UserGroup>;
+    cursor?: string;
 }
 export interface Notification {
     code?: number;
@@ -250,6 +274,7 @@ export declare class Client {
     deleteGroup(session: Session, groupId: string): Promise<boolean>;
     deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean>;
     deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean>;
+    emitEvent(session: Session, request: ApiEvent): Promise<boolean>;
     getAccount(session: Session): Promise<ApiAccount>;
     importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<Users>;
@@ -258,8 +283,8 @@ export declare class Client {
     kickGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     leaveGroup(session: Session, groupId: string): Promise<boolean>;
     listChannelMessages(session: Session, channelId: string, limit?: number, forward?: boolean, cursor?: string): Promise<ChannelMessageList>;
-    listGroupUsers(session: Session, groupId: string): Promise<GroupUserList>;
-    listUserGroups(session: Session, userId: string): Promise<UserGroupList>;
+    listGroupUsers(session: Session, groupId: string, state?: number, limit?: number, cursor?: string): Promise<GroupUserList>;
+    listUserGroups(session: Session, userId: string, state?: number, limit?: number, cursor?: string): Promise<UserGroupList>;
     listGroups(session: Session, name?: string, cursor?: string, limit?: number): Promise<GroupList>;
     linkCustom(session: Session, request: ApiAccountCustom): Promise<boolean>;
     linkDevice(session: Session, request: ApiAccountDevice): Promise<boolean>;
@@ -268,15 +293,15 @@ export declare class Client {
     linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
     linkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean>;
     linkSteam(session: Session, request: ApiAccountSteam): Promise<boolean>;
-    listFriends(session: Session): Promise<Friends>;
-    listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<LeaderboardRecordList>;
-    listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number): Promise<LeaderboardRecordList>;
+    listFriends(session: Session, state?: number, limit?: number, cursor?: string): Promise<Friends>;
+    listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string): Promise<LeaderboardRecordList>;
+    listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number, expiry?: string): Promise<LeaderboardRecordList>;
     listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, query?: string): Promise<ApiMatchList>;
     listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<NotificationList>;
     listStorageObjects(session: Session, collection: string, userId?: string, limit?: number, cursor?: string): Promise<StorageObjectList>;
     listTournaments(session: Session, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string): Promise<TournamentList>;
-    listTournamentRecords(session: Session, tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<TournamentRecordList>;
-    listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number): Promise<TournamentRecordList>;
+    listTournamentRecords(session: Session, tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string): Promise<TournamentRecordList>;
+    listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number, expiry?: string): Promise<TournamentRecordList>;
     promoteGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects>;
     rpc(session: Session, id: string, input: object): Promise<RpcResponse>;

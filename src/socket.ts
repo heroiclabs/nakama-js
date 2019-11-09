@@ -68,6 +68,10 @@ export interface ChannelMessage {
   create_time: string;
   update_time: string;
   persistent: boolean;
+  group_id: string;
+  room_name: string;
+  user_id_one: string;
+  user_id_two: string;
 }
 
 /** An acknowledgement received in response to sending a message on a chat channel. */
