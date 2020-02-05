@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { ApiNotification, ApiRpc } from "./api.gen";
-import { Session } from "./session";
-import { Notification } from "./client";
+import {ApiNotification, ApiRpc} from "./api.gen";
+import {Session} from "./session";
+import {Notification} from "./client";
+import {b64EncodeUnicode, b64DecodeUnicode} from "./utils";
 
 type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
 
@@ -360,7 +361,7 @@ export class DefaultSocket implements Socket {
             this.onnotification(notification);
           });
         } else if (message.match_data) {
-          message.match_data.data = message.match_data.data != null ? JSON.parse(atob(message.match_data.data)) : null;
+          message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
           message.match_data.op_code = parseInt(message.match_data.op_code);
           this.onmatchdata(message.match_data);
         } else if (message.match_presence_event) {
@@ -501,7 +502,7 @@ export class DefaultSocket implements Socket {
         reject("Socket connection has not been established yet.");
       } else {
         if (m.match_data_send) {
-          m.match_data_send.data = btoa(JSON.stringify(m.match_data_send.data));
+          m.match_data_send.data = b64EncodeUnicode(JSON.stringify(m.match_data_send.data));
           m.match_data_send.op_code = m.match_data_send.op_code.toString();
           this.socket.send(JSON.stringify(m));
           resolve();

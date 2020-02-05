@@ -10,6 +10,7 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 - Support for Tournaments.
 - Support for events.
 - Update to support features in Nakama 2.7.0.
+- Implemented base64 encoder and decoder for unicode characters
 
 ### Changed
 - Simplified the way callback IDs are generated. (Thanks @dimon4eg).
