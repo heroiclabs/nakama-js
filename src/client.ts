@@ -26,7 +26,8 @@ import {
   ApiChannelMessageList,
   ApiCreateGroupRequest,
   ApiDeleteStorageObjectsRequest,
-  ApiFriends,
+  ApiEvent,
+  ApiFriendList,
   ApiGroup,
   ApiGroupList,
   ApiGroupUserList,
@@ -59,31 +60,31 @@ const DEFAULT_SERVER_KEY = "defaultkey";
 const DEFAULT_TIMEOUT_MS = 7000;
 
 /** Send a custom ID to the server. Used with authenticate. */
-
-export interface BaseAuth {
-  vars?: { [key:string]: string };
-}
-export interface AccountCustom extends BaseAuth {
+export interface AccountCustom {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
   create?: boolean;
   // A custom identifier.
   id?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: { [key:string]: string };
 }
 
 /** Send a device to the server. Used with authenticate. */
-export interface AccountDevice extends BaseAuth {
+export interface AccountDevice {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
   create?: boolean;
   // A device identifier. Should be obtained by a platform-specific device API.
   id?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: { [key:string]: string };
 }
 
 /** Send an email with password to the server. Used with authenticate. */
-export interface AccountEmail extends BaseAuth {
+export interface AccountEmail {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
@@ -92,20 +93,24 @@ export interface AccountEmail extends BaseAuth {
   email?: string;
   // A password for the user account.
   password?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: { [key:string]: string };
 }
 
 /** Send a Facebook token to the server. Used with authenticate. */
-export interface AccountFacebook extends BaseAuth {
+export interface AccountFacebook {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
   create?: boolean;
   // The OAuth token received from Facebook to access their profile API.
   token?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: { [key:string]: string };
 }
 
 /** Send Apple's Game Center account credentials to the server. Used with authenticate. */
-export interface AccountGameCenter extends BaseAuth {
+export interface AccountGameCenter {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
@@ -122,26 +127,32 @@ export interface AccountGameCenter extends BaseAuth {
   signature?: string;
   // Time since UNIX epoch when the signature was created.
   timestamp_seconds?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: { [key:string]: string };
 }
 
 /** Send a Google token to the server. Used with authenticate. */
-export interface AccountGoogle extends BaseAuth {
+export interface AccountGoogle {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
   create?: boolean;
   // The OAuth token received from Google to access their profile API.
   token?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: { [key:string]: string };
 }
 
 /** Send a Steam token to the server. Used with authenticate. */
-export interface AccountSteam extends BaseAuth {
+export interface AccountSteam {
   // Set a username when the account is created, otherwise the server will generate one.
   username?: string;
   // True to create the account if it doesn't exist, false to reject.
   create?: boolean;
   // The account token received from Steam to access their profile API.
   token?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: { [key:string]: string };
 }
 
 /** Response for an RPC function executed on the server. */
@@ -226,6 +237,8 @@ export interface Tournament {
   start_time?: string;
   // The UNIX time when the tournament will be stopped.
   end_time?: string;
+  // The UNIX time when the tournament start being active. A computed value.
+  start_active?: number;
 }
 
 /** A list of tournaments. */
@@ -330,16 +343,24 @@ export interface ChannelMessage {
   content?: object;
   // The UNIX time when the message was created.
   create_time?: string;
+  // The ID of the group, or an empty string if this message was not sent through a group channel.
+  group_id?: string;
   // The unique ID of this message.
   message_id?: string;
   // True if the message was persisted to the channel's history, false otherwise.
   persistent?: boolean;
+  // The name of the chat room, or an empty string if this message was not sent through a chat room.
+  room_name?: string;
   // Another message ID reference, if any.
   reference_id?: string;
   // Message sender, usually a user ID.
   sender_id?: string;
   // The UNIX time when the message was last updated.
   update_time?: string;
+  // The ID of the first DM user, or an empty string if this message was not sent through a DM chat.
+  user_id_one?: string;
+  // The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
+  user_id_two?: string;
   // The username of the message sender, if any.
   username?: string;
 }
@@ -408,6 +429,8 @@ export interface Friend {
 export interface Friends {
   // The Friend objects.
   friends?: Array<Friend>;
+  // Cursor for the next page of results, if any.
+  cursor?: string;
 }
 
 /** A user-role pair representing the user's role in a group. */
@@ -422,6 +445,8 @@ export interface GroupUser {
 export interface GroupUserList {
   // The user-role pairs.
   group_users?: Array<GroupUser>;
+  // Cursor for the next page of results, if any.
+  cursor?: string;
 }
 
 /** A group in the server. */
@@ -472,6 +497,8 @@ export interface UserGroup {
 export interface UserGroupList {
   // The group-role pairs.
   user_groups?: Array<UserGroup>;
+  // Cursor for the next page of results, if any.
+  cursor?: string;
 }
 
 /** A notification in the server. */
@@ -1218,6 +1245,14 @@ export class Client {
     });
   }
 
+  /** Submit an event for processing in the server's registered runtime custom events handler. */
+  emitEvent(session: Session, request: ApiEvent): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.event(request).then((response: any) => {
+      return Promise.resolve(response != undefined);
+    });
+  }
+
   /** Fetch the current user's account. */
   getAccount(session: Session): Promise<ApiAccount> {
     this.configuration.bearerToken = (session && session.token);
@@ -1368,7 +1403,11 @@ export class Client {
           sender_id: m.sender_id,
           update_time: m.update_time,
           username: m.username,
-          content: m.content ? JSON.parse(m.content) : undefined
+          content: m.content ? JSON.parse(m.content) : undefined,
+          group_id: m.group_id,
+          room_name: m.room_name,
+          user_id_one: m.user_id_one,
+          user_id_two: m.user_id_two
         })
       });
       return Promise.resolve(result);
@@ -1376,11 +1415,12 @@ export class Client {
   }
 
   /** List a group's users. */
-  listGroupUsers(session: Session, groupId: string): Promise<GroupUserList> {
+  listGroupUsers(session: Session, groupId: string, state?: number, limit?: number, cursor?: string): Promise<GroupUserList> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.listGroupUsers(groupId).then((response: ApiGroupUserList) => {
+    return this.apiClient.listGroupUsers(groupId, limit, state, cursor).then((response: ApiGroupUserList) => {
       var result: GroupUserList = {
-        group_users: []
+        group_users: [],
+        cursor: response.cursor
       };
 
       if (response.group_users == null) {
@@ -1415,11 +1455,12 @@ export class Client {
   }
 
   /** List a user's groups. */
-  listUserGroups(session: Session, userId: string): Promise<UserGroupList> {
+  listUserGroups(session: Session, userId: string, state?: number, limit?: number, cursor?: string,): Promise<UserGroupList> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.listUserGroups(userId).then((response: ApiUserGroupList) => {
+    return this.apiClient.listUserGroups(userId, state, limit, cursor).then((response: ApiUserGroupList) => {
       var result: UserGroupList = {
-        user_groups: []
+        user_groups: [],
+        cursor: response.cursor,
       };
 
       if (response.user_groups == null) {
@@ -1539,11 +1580,12 @@ export class Client {
   }
 
   /** List all friends for the current user. */
-  listFriends(session: Session): Promise<Friends> {
+  listFriends(session: Session, state?: number, limit?: number, cursor?: string): Promise<Friends> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.listFriends().then((response: ApiFriends) => {
+    return this.apiClient.listFriends(limit, state, cursor).then((response: ApiFriendList) => {
       var result: Friends = {
-        friends: []
+        friends: [],
+        cursor: response.cursor
       };
 
       if (response.friends == null) {
@@ -1578,9 +1620,9 @@ export class Client {
   }
 
   /** List leaderboard records */
-  listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<LeaderboardRecordList> {
+  listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string,): Promise<LeaderboardRecordList> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor).then((response: ApiLeaderboardRecordList) => {
+    return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry).then((response: ApiLeaderboardRecordList) => {
       var list: LeaderboardRecordList = {
         next_cursor: response.next_cursor,
         prev_cursor: response.prev_cursor,
@@ -1628,9 +1670,9 @@ export class Client {
     });
   }
 
-  listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number): Promise<LeaderboardRecordList> {
+  listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number, expiry?: string): Promise<LeaderboardRecordList> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit).then((response: ApiLeaderboardRecordList) => {
+    return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry).then((response: ApiLeaderboardRecordList) => {
       var list: LeaderboardRecordList = {
         next_cursor: response.next_cursor,
         prev_cursor: response.prev_cursor,
@@ -1770,6 +1812,7 @@ export class Client {
             create_time: o.create_time,
             start_time: o.start_time,
             end_time: o.end_time,
+            start_active: o.start_active,
           })
         })
       }
@@ -1779,9 +1822,9 @@ export class Client {
   }
 
   /** List tournament records from a given tournament. */
-  listTournamentRecords(session: Session, tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string): Promise<TournamentRecordList> {
+  listTournamentRecords(session: Session, tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string): Promise<TournamentRecordList> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor).then((response: ApiTournamentRecordList) => {
+    return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry).then((response: ApiTournamentRecordList) => {
       var list: TournamentRecordList = {
         next_cursor: response.next_cursor,
         prev_cursor: response.prev_cursor,
@@ -1830,9 +1873,9 @@ export class Client {
   }
 
   /** List tournament records from a given tournament around the owner. */
-  listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number): Promise<TournamentRecordList> {
+  listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number, expiry?: string): Promise<TournamentRecordList> {
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit).then((response: ApiTournamentRecordList) => {
+    return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry).then((response: ApiTournamentRecordList) => {
       var list: TournamentRecordList = {
         next_cursor: response.next_cursor,
         prev_cursor: response.prev_cursor,

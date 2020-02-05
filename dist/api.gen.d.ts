@@ -33,16 +33,20 @@ export interface ApiAccount {
 }
 export interface ApiAccountCustom {
     id?: string;
+    vars?: Map<string, string>;
 }
 export interface ApiAccountDevice {
     id?: string;
+    vars?: Map<string, string>;
 }
 export interface ApiAccountEmail {
     email?: string;
     password?: string;
+    vars?: Map<string, string>;
 }
 export interface ApiAccountFacebook {
     token?: string;
+    vars?: Map<string, string>;
 }
 export interface ApiAccountGameCenter {
     bundle_id?: string;
@@ -51,22 +55,29 @@ export interface ApiAccountGameCenter {
     salt?: string;
     signature?: string;
     timestamp_seconds?: string;
+    vars?: Map<string, string>;
 }
 export interface ApiAccountGoogle {
     token?: string;
+    vars?: Map<string, string>;
 }
 export interface ApiAccountSteam {
     token?: string;
+    vars?: Map<string, string>;
 }
 export interface ApiChannelMessage {
     channel_id?: string;
     code?: number;
     content?: string;
     create_time?: string;
+    group_id?: string;
     message_id?: string;
     persistent?: boolean;
+    room_name?: string;
     sender_id?: string;
     update_time?: string;
+    user_id_one?: string;
+    user_id_two?: string;
     username?: string;
 }
 export interface ApiChannelMessageList {
@@ -78,6 +89,7 @@ export interface ApiCreateGroupRequest {
     avatar_url?: string;
     description?: string;
     lang_tag?: string;
+    max_count?: number;
     name?: string;
     open?: boolean;
 }
@@ -89,11 +101,18 @@ export interface ApiDeleteStorageObjectId {
 export interface ApiDeleteStorageObjectsRequest {
     object_ids?: Array<ApiDeleteStorageObjectId>;
 }
+export interface ApiEvent {
+    external?: boolean;
+    name?: string;
+    properties?: Map<string, string>;
+    timestamp?: string;
+}
 export interface ApiFriend {
     state?: number;
     user?: ApiUser;
 }
-export interface ApiFriends {
+export interface ApiFriendList {
+    cursor?: string;
     friends?: Array<ApiFriend>;
 }
 export interface ApiGroup {
@@ -115,6 +134,7 @@ export interface ApiGroupList {
     groups?: Array<ApiGroup>;
 }
 export interface ApiGroupUserList {
+    cursor?: string;
     group_users?: Array<GroupUserListGroupUser>;
 }
 export interface ApiLeaderboardRecord {
@@ -175,7 +195,6 @@ export interface ApiRpc {
 export interface ApiSession {
     created?: boolean;
     token?: string;
-    udp_token?: string;
 }
 export interface ApiStorageObject {
     collection?: string;
@@ -219,6 +238,7 @@ export interface ApiTournament {
     next_reset?: number;
     size?: number;
     sort_order?: number;
+    start_active?: number;
     start_time?: string;
     title?: string;
 }
@@ -267,6 +287,7 @@ export interface ApiUser {
     username?: string;
 }
 export interface ApiUserGroupList {
+    cursor?: string;
     user_groups?: Array<UserGroupListUserGroup>;
 }
 export interface ApiUsers {
@@ -310,8 +331,9 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     unlinkGoogle(body: ApiAccountGoogle, options?: any): Promise<any>;
     unlinkSteam(body: ApiAccountSteam, options?: any): Promise<any>;
     listChannelMessages(channelId: string, limit?: number | undefined, forward?: boolean | undefined, cursor?: string | undefined, options?: any): Promise<ApiChannelMessageList>;
+    event(body: ApiEvent, options?: any): Promise<any>;
     deleteFriends(ids?: string[] | undefined, usernames?: string[] | undefined, options?: any): Promise<any>;
-    listFriends(options?: any): Promise<ApiFriends>;
+    listFriends(limit?: number | undefined, state?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiFriendList>;
     addFriends(ids?: string[] | undefined, usernames?: string[] | undefined, options?: any): Promise<any>;
     blockFriends(ids?: string[] | undefined, usernames?: string[] | undefined, options?: any): Promise<any>;
     importFacebookFriends(body: ApiAccountFacebook, reset?: boolean | undefined, options?: any): Promise<any>;
@@ -324,11 +346,11 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     kickGroupUsers(groupId: string, userIds?: string[] | undefined, options?: any): Promise<any>;
     leaveGroup(groupId: string, options?: any): Promise<any>;
     promoteGroupUsers(groupId: string, userIds?: string[] | undefined, options?: any): Promise<any>;
-    listGroupUsers(groupId: string, options?: any): Promise<ApiGroupUserList>;
+    listGroupUsers(groupId: string, limit?: number | undefined, state?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiGroupUserList>;
     deleteLeaderboardRecord(leaderboardId: string, options?: any): Promise<any>;
-    listLeaderboardRecords(leaderboardId: string, ownerIds?: string[] | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiLeaderboardRecordList>;
+    listLeaderboardRecords(leaderboardId: string, ownerIds?: string[] | undefined, limit?: number | undefined, cursor?: string | undefined, expiry?: string | undefined, options?: any): Promise<ApiLeaderboardRecordList>;
     writeLeaderboardRecord(leaderboardId: string, body: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
-    listLeaderboardRecordsAroundOwner(leaderboardId: string, ownerId: string, limit?: number | undefined, options?: any): Promise<ApiLeaderboardRecordList>;
+    listLeaderboardRecordsAroundOwner(leaderboardId: string, ownerId: string, limit?: number | undefined, expiry?: string | undefined, options?: any): Promise<ApiLeaderboardRecordList>;
     listMatches(limit?: number | undefined, authoritative?: boolean | undefined, label?: string | undefined, minSize?: number | undefined, maxSize?: number | undefined, query?: string | undefined, options?: any): Promise<ApiMatchList>;
     deleteNotifications(ids?: string[] | undefined, options?: any): Promise<any>;
     listNotifications(limit?: number | undefined, cacheableCursor?: string | undefined, options?: any): Promise<ApiNotificationList>;
@@ -340,10 +362,10 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     listStorageObjects(collection: string, userId?: string | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiStorageObjectList>;
     listStorageObjects2(collection: string, userId: string, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiStorageObjectList>;
     listTournaments(categoryStart?: number | undefined, categoryEnd?: number | undefined, startTime?: number | undefined, endTime?: number | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiTournamentList>;
-    listTournamentRecords(tournamentId: string, ownerIds?: string[] | undefined, limit?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiTournamentRecordList>;
+    listTournamentRecords(tournamentId: string, ownerIds?: string[] | undefined, limit?: number | undefined, cursor?: string | undefined, expiry?: string | undefined, options?: any): Promise<ApiTournamentRecordList>;
     writeTournamentRecord(tournamentId: string, body: WriteTournamentRecordRequestTournamentRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
     joinTournament(tournamentId: string, options?: any): Promise<any>;
-    listTournamentRecordsAroundOwner(tournamentId: string, ownerId: string, limit?: number | undefined, options?: any): Promise<ApiTournamentRecordList>;
+    listTournamentRecordsAroundOwner(tournamentId: string, ownerId: string, limit?: number | undefined, expiry?: string | undefined, options?: any): Promise<ApiTournamentRecordList>;
     getUsers(ids?: string[] | undefined, usernames?: string[] | undefined, facebookIds?: string[] | undefined, options?: any): Promise<ApiUsers>;
-    listUserGroups(userId: string, options?: any): Promise<ApiUserGroupList>;
+    listUserGroups(userId: string, limit?: number | undefined, state?: number | undefined, cursor?: string | undefined, options?: any): Promise<ApiUserGroupList>;
 };

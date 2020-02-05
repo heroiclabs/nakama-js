@@ -22,6 +22,7 @@ export interface ISession {
   readonly expires_at: number;
   readonly username: string;
   readonly user_id: string;
+  readonly vars: object;
   // Validate token
   isexpired(currenttime: number): boolean;
 }
@@ -32,7 +33,8 @@ export class Session {
     readonly created_at: number,
     readonly expires_at: number,
     readonly username: string,
-    readonly user_id: string) {
+    readonly user_id: string,
+    readonly vars: object) {
   }
 
   isexpired(currenttime: number): boolean {
@@ -48,6 +50,6 @@ export class Session {
     const decoded = JSON.parse(atob(parts[1])); // FIXME: use base64 polyfill for React Native.
     const expiresAt = Math.floor(parseInt(decoded['exp']));
 
-    return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid']);
+    return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid'], decoded['vrs']);
   }
 }

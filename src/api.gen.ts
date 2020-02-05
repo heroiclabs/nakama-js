@@ -61,11 +61,15 @@ export interface ApiAccount {
 export interface ApiAccountCustom {
   // A custom identifier.
   id?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: Map<string, string>;
 }
 /** Send a device to the server. Used with authenticate/link/unlink and user. */
 export interface ApiAccountDevice {
   // A device identifier. Should be obtained by a platform-specific device API.
   id?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: Map<string, string>;
 }
 /** Send an email with password to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountEmail {
@@ -73,11 +77,15 @@ export interface ApiAccountEmail {
   email?: string;
   // A password for the user account.
   password?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: Map<string, string>;
 }
 /** Send a Facebook token to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountFacebook {
   // The OAuth token received from Facebook to access their profile API.
   token?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: Map<string, string>;
 }
 /** Send Apple's Game Center account credentials to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountGameCenter {
@@ -93,16 +101,22 @@ export interface ApiAccountGameCenter {
   signature?: string;
   // Time since UNIX epoch when the signature was created.
   timestamp_seconds?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: Map<string, string>;
 }
 /** Send a Google token to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountGoogle {
   // The OAuth token received from Google to access their profile API.
   token?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: Map<string, string>;
 }
 /** Send a Steam token to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountSteam {
   // The account token received from Steam to access their profile API.
   token?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: Map<string, string>;
 }
 /** A message sent on a channel. */
 export interface ApiChannelMessage {
@@ -114,14 +128,22 @@ export interface ApiChannelMessage {
   content?: string;
   // The UNIX time when the message was created.
   create_time?: string;
+  // The ID of the group, or an empty string if this message was not sent through a group channel.
+  group_id?: string;
   // The unique ID of this message.
   message_id?: string;
   // True if the message was persisted to the channel's history, false otherwise.
   persistent?: boolean;
+  // The name of the chat room, or an empty string if this message was not sent through a chat room.
+  room_name?: string;
   // Message sender, usually a user ID.
   sender_id?: string;
   // The UNIX time when the message was last updated.
   update_time?: string;
+  // The ID of the first DM user, or an empty string if this message was not sent through a DM chat.
+  user_id_one?: string;
+  // The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
+  user_id_two?: string;
   // The username of the message sender, if any.
   username?: string;
 }
@@ -142,6 +164,8 @@ export interface ApiCreateGroupRequest {
   description?: string;
   // The language expected to be a tag which follows the BCP-47 spec.
   lang_tag?: string;
+  // Maximum number of group members.
+  max_count?: number;
   // A unique name for the group.
   name?: string;
   // Mark a group as open or not where only admins can accept members.
@@ -161,6 +185,17 @@ export interface ApiDeleteStorageObjectsRequest {
   // Batch of storage objects.
   object_ids?: Array<ApiDeleteStorageObjectId>;
 }
+/** Represents an event to be passed through the server to registered event handlers. */
+export interface ApiEvent {
+  // True if the event came directly from a client call, false otherwise.
+  external?: boolean;
+  // An event name, type, category, or identifier.
+  name?: string;
+  // Arbitrary event property values.
+  properties?: Map<string, string>;
+  // The time when the event was triggered.
+  timestamp?: string;
+}
 /** A friend of a user. */
 export interface ApiFriend {
   // The friend status.
@@ -169,7 +204,9 @@ export interface ApiFriend {
   user?: ApiUser;
 }
 /** A collection of zero or more friends of the user. */
-export interface ApiFriends {
+export interface ApiFriendList {
+  // Cursor for the next page of results, if any.
+  cursor?: string;
   // The Friend objects.
   friends?: Array<ApiFriend>;
 }
@@ -209,6 +246,8 @@ export interface ApiGroupList {
 }
 /** A list of users belonging to a group, along with their role. */
 export interface ApiGroupUserList {
+  // Cursor for the next page of results, if any.
+  cursor?: string;
   // User-role pairs for a group.
   group_users?: Array<GroupUserListGroupUser>;
 }
@@ -241,9 +280,9 @@ export interface ApiLeaderboardRecord {
 }
 /** A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records. */
 export interface ApiLeaderboardRecordList {
-  // The cursor to send when retireving the next page, if any.
+  // The cursor to send when retrieving the next page, if any.
   next_cursor?: string;
-  // A batched set of leaderobard records belonging to specified owners.
+  // A batched set of leaderboard records belonging to specified owners.
   owner_records?: Array<ApiLeaderboardRecord>;
   // The cursor to send when retrieving the previous page, if any.
   prev_cursor?: string;
@@ -319,8 +358,6 @@ export interface ApiSession {
   created?: boolean;
   // Authentication credentials.
   token?: string;
-  // rUDP specific authentication credentials.
-  udp_token?: string;
 }
 /** An object within the storage engine. */
 export interface ApiStorageObject {
@@ -361,7 +398,7 @@ export interface ApiStorageObjectAcks {
 }
 /** List of storage objects. */
 export interface ApiStorageObjectList {
-  // The cursor associated with the query a page of results.
+  // The cursor for the next page of results, if any.
   cursor?: string;
   // The list of storage objects.
   objects?: Array<ApiStorageObject>;
@@ -381,9 +418,9 @@ export interface ApiTournament {
   create_time?: string;
   // The description of the tournament. May be blank.
   description?: string;
-  // The UNIX timestamp for duration of a tournament.
+  // Duration of the tournament in seconds.
   duration?: number;
-  // The UNIX timestamp when the tournament stops being active until next reset. A computed value.
+  // The UNIX time when the tournament stops being active until next reset. A computed value.
   end_active?: number;
   // The UNIX time when the tournament will be stopped.
   end_time?: string;
@@ -395,12 +432,14 @@ export interface ApiTournament {
   max_size?: number;
   // Additional information stored as a JSON object.
   metadata?: string;
-  // The UNIX timestamp when the tournament is next playable. A computed value.
+  // The UNIX time when the tournament is next playable. A computed value.
   next_reset?: number;
   // The current number of players in the tournament.
   size?: number;
   // ASC or DESC sort mode of scores in the tournament.
   sort_order?: number;
+  // The UNIX time when the tournament start being active. A computed value.
+  start_active?: number;
   // The UNIX time when the tournament will start.
   start_time?: string;
   // The title for the tournament.
@@ -491,6 +530,8 @@ export interface ApiUser {
 }
 /** A list of groups belonging to a user, along with the user's role in each group. */
 export interface ApiUserGroupList {
+  // Cursor for the next page of results, if any.
+  cursor?: string;
   // Group-role pairs for a user.
   user_groups?: Array<UserGroupListUserGroup>;
 }
@@ -965,6 +1006,21 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
+    /** Submit an event for processing in the server's registered runtime custom events handler. */
+    event(body: ApiEvent, options: any = {}): Promise<any> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/event";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
     /** Delete one or more users by ID or username. */
     deleteFriends(ids?: Array<string>, usernames?: Array<string>, options: any = {}): Promise<any> {
       const urlPath = "/v2/friend";
@@ -979,10 +1035,13 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "DELETE", queryParams, _body, options)
     },
     /** List all friends for the current user. */
-    listFriends(options: any = {}): Promise<ApiFriends> {
+    listFriends(limit?: number, state?: number, cursor?: string, options: any = {}): Promise<ApiFriendList> {
       const urlPath = "/v2/friend";
 
       const queryParams = {
+        limit: limit,
+        state: state,
+        cursor: cursor,
       } as any;
 
       let _body = null;
@@ -1173,7 +1232,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** List all users that are part of a group. */
-    listGroupUsers(groupId: string, options: any = {}): Promise<ApiGroupUserList> {
+    listGroupUsers(groupId: string, limit?: number, state?: number, cursor?: string, options: any = {}): Promise<ApiGroupUserList> {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
@@ -1181,6 +1240,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
+        limit: limit,
+        state: state,
+        cursor: cursor,
       } as any;
 
       let _body = null;
@@ -1203,7 +1265,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "DELETE", queryParams, _body, options)
     },
     /** List leaderboard records. */
-    listLeaderboardRecords(leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, options: any = {}): Promise<ApiLeaderboardRecordList> {
+    listLeaderboardRecords(leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string, options: any = {}): Promise<ApiLeaderboardRecordList> {
       if (leaderboardId === null || leaderboardId === undefined) {
         throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
       }
@@ -1214,6 +1276,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         owner_ids: ownerIds,
         limit: limit,
         cursor: cursor,
+        expiry: expiry,
       } as any;
 
       let _body = null;
@@ -1240,7 +1303,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** List leaderboard records that belong to a user. */
-    listLeaderboardRecordsAroundOwner(leaderboardId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiLeaderboardRecordList> {
+    listLeaderboardRecordsAroundOwner(leaderboardId: string, ownerId: string, limit?: number, expiry?: string, options: any = {}): Promise<ApiLeaderboardRecordList> {
       if (leaderboardId === null || leaderboardId === undefined) {
         throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
       }
@@ -1253,6 +1316,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
         limit: limit,
+        expiry: expiry,
       } as any;
 
       let _body = null;
@@ -1439,7 +1503,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** List tournament records. */
-    listTournamentRecords(tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, options: any = {}): Promise<ApiTournamentRecordList> {
+    listTournamentRecords(tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string, options: any = {}): Promise<ApiTournamentRecordList> {
       if (tournamentId === null || tournamentId === undefined) {
         throw new Error("'tournamentId' is a required parameter but is null or undefined.");
       }
@@ -1450,6 +1514,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         owner_ids: ownerIds,
         limit: limit,
         cursor: cursor,
+        expiry: expiry,
       } as any;
 
       let _body = null;
@@ -1491,7 +1556,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** List tournament records for a given owner. */
-    listTournamentRecordsAroundOwner(tournamentId: string, ownerId: string, limit?: number, options: any = {}): Promise<ApiTournamentRecordList> {
+    listTournamentRecordsAroundOwner(tournamentId: string, ownerId: string, limit?: number, expiry?: string, options: any = {}): Promise<ApiTournamentRecordList> {
       if (tournamentId === null || tournamentId === undefined) {
         throw new Error("'tournamentId' is a required parameter but is null or undefined.");
       }
@@ -1504,6 +1569,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
         limit: limit,
+        expiry: expiry,
       } as any;
 
       let _body = null;
@@ -1525,7 +1591,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** List groups the current user belongs to. */
-    listUserGroups(userId: string, options: any = {}): Promise<ApiUserGroupList> {
+    listUserGroups(userId: string, limit?: number, state?: number, cursor?: string, options: any = {}): Promise<ApiUserGroupList> {
       if (userId === null || userId === undefined) {
         throw new Error("'userId' is a required parameter but is null or undefined.");
       }
@@ -1533,6 +1599,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{user_id}", encodeURIComponent(String(userId)));
 
       const queryParams = {
+        limit: limit,
+        state: state,
+        cursor: cursor,
       } as any;
 
       let _body = null;

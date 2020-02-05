@@ -919,6 +919,17 @@
               var _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
+          event: function (body, options) {
+              if (options === void 0) { options = {}; }
+              if (body === null || body === undefined) {
+                  throw new Error("'body' is a required parameter but is null or undefined.");
+              }
+              var urlPath = "/v2/event";
+              var queryParams = {};
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+          },
           deleteFriends: function (ids, usernames, options) {
               if (options === void 0) { options = {}; }
               var urlPath = "/v2/friend";
@@ -929,10 +940,14 @@
               var _body = null;
               return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
           },
-          listFriends: function (options) {
+          listFriends: function (limit, state, cursor, options) {
               if (options === void 0) { options = {}; }
               var urlPath = "/v2/friend";
-              var queryParams = {};
+              var queryParams = {
+                  limit: limit,
+                  state: state,
+                  cursor: cursor,
+              };
               var _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
@@ -1078,14 +1093,18 @@
               var _body = null;
               return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
-          listGroupUsers: function (groupId, options) {
+          listGroupUsers: function (groupId, limit, state, cursor, options) {
               if (options === void 0) { options = {}; }
               if (groupId === null || groupId === undefined) {
                   throw new Error("'groupId' is a required parameter but is null or undefined.");
               }
               var urlPath = "/v2/group/{group_id}/user"
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
-              var queryParams = {};
+              var queryParams = {
+                  limit: limit,
+                  state: state,
+                  cursor: cursor,
+              };
               var _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
@@ -1100,7 +1119,7 @@
               var _body = null;
               return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
           },
-          listLeaderboardRecords: function (leaderboardId, ownerIds, limit, cursor, options) {
+          listLeaderboardRecords: function (leaderboardId, ownerIds, limit, cursor, expiry, options) {
               if (options === void 0) { options = {}; }
               if (leaderboardId === null || leaderboardId === undefined) {
                   throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
@@ -1111,6 +1130,7 @@
                   owner_ids: ownerIds,
                   limit: limit,
                   cursor: cursor,
+                  expiry: expiry,
               };
               var _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
@@ -1130,7 +1150,7 @@
               _body = JSON.stringify(body || {});
               return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
-          listLeaderboardRecordsAroundOwner: function (leaderboardId, ownerId, limit, options) {
+          listLeaderboardRecordsAroundOwner: function (leaderboardId, ownerId, limit, expiry, options) {
               if (options === void 0) { options = {}; }
               if (leaderboardId === null || leaderboardId === undefined) {
                   throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
@@ -1143,6 +1163,7 @@
                   .replace("{owner_id}", encodeURIComponent(String(ownerId)));
               var queryParams = {
                   limit: limit,
+                  expiry: expiry,
               };
               var _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
@@ -1289,7 +1310,7 @@
               var _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
-          listTournamentRecords: function (tournamentId, ownerIds, limit, cursor, options) {
+          listTournamentRecords: function (tournamentId, ownerIds, limit, cursor, expiry, options) {
               if (options === void 0) { options = {}; }
               if (tournamentId === null || tournamentId === undefined) {
                   throw new Error("'tournamentId' is a required parameter but is null or undefined.");
@@ -1300,6 +1321,7 @@
                   owner_ids: ownerIds,
                   limit: limit,
                   cursor: cursor,
+                  expiry: expiry,
               };
               var _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
@@ -1330,7 +1352,7 @@
               var _body = null;
               return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
-          listTournamentRecordsAroundOwner: function (tournamentId, ownerId, limit, options) {
+          listTournamentRecordsAroundOwner: function (tournamentId, ownerId, limit, expiry, options) {
               if (options === void 0) { options = {}; }
               if (tournamentId === null || tournamentId === undefined) {
                   throw new Error("'tournamentId' is a required parameter but is null or undefined.");
@@ -1343,6 +1365,7 @@
                   .replace("{owner_id}", encodeURIComponent(String(ownerId)));
               var queryParams = {
                   limit: limit,
+                  expiry: expiry,
               };
               var _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
@@ -1358,14 +1381,18 @@
               var _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
-          listUserGroups: function (userId, options) {
+          listUserGroups: function (userId, limit, state, cursor, options) {
               if (options === void 0) { options = {}; }
               if (userId === null || userId === undefined) {
                   throw new Error("'userId' is a required parameter but is null or undefined.");
               }
               var urlPath = "/v2/user/{user_id}/group"
                   .replace("{user_id}", encodeURIComponent(String(userId)));
-              var queryParams = {};
+              var queryParams = {
+                  limit: limit,
+                  state: state,
+                  cursor: cursor,
+              };
               var _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
@@ -1374,12 +1401,13 @@
   };
 
   var Session = (function () {
-      function Session(token, created_at, expires_at, username, user_id) {
+      function Session(token, created_at, expires_at, username, user_id, vars) {
           this.token = token;
           this.created_at = created_at;
           this.expires_at = expires_at;
           this.username = username;
           this.user_id = user_id;
+          this.vars = vars;
       }
       Session.prototype.isexpired = function (currenttime) {
           return (this.expires_at - currenttime) < 0;
@@ -1392,7 +1420,7 @@
           }
           var decoded = JSON.parse(atob(parts[1]));
           var expiresAt = Math.floor(parseInt(decoded['exp']));
-          return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid']);
+          return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid'], decoded['vrs']);
       };
       return Session;
   }());
@@ -2290,6 +2318,12 @@
               return Promise.resolve(response != undefined);
           });
       };
+      Client.prototype.emitEvent = function (session, request) {
+          this.configuration.bearerToken = (session && session.token);
+          return this.apiClient.event(request).then(function (response) {
+              return Promise.resolve(response != undefined);
+          });
+      };
       Client.prototype.getAccount = function (session) {
           this.configuration.bearerToken = (session && session.token);
           return this.apiClient.getAccount();
@@ -2420,17 +2454,22 @@
                       sender_id: m.sender_id,
                       update_time: m.update_time,
                       username: m.username,
-                      content: m.content ? JSON.parse(m.content) : undefined
+                      content: m.content ? JSON.parse(m.content) : undefined,
+                      group_id: m.group_id,
+                      room_name: m.room_name,
+                      user_id_one: m.user_id_one,
+                      user_id_two: m.user_id_two
                   });
               });
               return Promise.resolve(result);
           });
       };
-      Client.prototype.listGroupUsers = function (session, groupId) {
+      Client.prototype.listGroupUsers = function (session, groupId, state, limit, cursor) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listGroupUsers(groupId).then(function (response) {
+          return this.apiClient.listGroupUsers(groupId, limit, state, cursor).then(function (response) {
               var result = {
-                  group_users: []
+                  group_users: [],
+                  cursor: response.cursor
               };
               if (response.group_users == null) {
                   return Promise.resolve(result);
@@ -2461,11 +2500,12 @@
               return Promise.resolve(result);
           });
       };
-      Client.prototype.listUserGroups = function (session, userId) {
+      Client.prototype.listUserGroups = function (session, userId, state, limit, cursor) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listUserGroups(userId).then(function (response) {
+          return this.apiClient.listUserGroups(userId, state, limit, cursor).then(function (response) {
               var result = {
-                  user_groups: []
+                  user_groups: [],
+                  cursor: response.cursor,
               };
               if (response.user_groups == null) {
                   return Promise.resolve(result);
@@ -2563,11 +2603,12 @@
               return response !== undefined;
           });
       };
-      Client.prototype.listFriends = function (session) {
+      Client.prototype.listFriends = function (session, state, limit, cursor) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listFriends().then(function (response) {
+          return this.apiClient.listFriends(limit, state, cursor).then(function (response) {
               var result = {
-                  friends: []
+                  friends: [],
+                  cursor: response.cursor
               };
               if (response.friends == null) {
                   return Promise.resolve(result);
@@ -2598,9 +2639,9 @@
               return Promise.resolve(result);
           });
       };
-      Client.prototype.listLeaderboardRecords = function (session, leaderboardId, ownerIds, limit, cursor) {
+      Client.prototype.listLeaderboardRecords = function (session, leaderboardId, ownerIds, limit, cursor, expiry) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor).then(function (response) {
+          return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry).then(function (response) {
               var list = {
                   next_cursor: response.next_cursor,
                   prev_cursor: response.prev_cursor,
@@ -2644,9 +2685,9 @@
               return Promise.resolve(list);
           });
       };
-      Client.prototype.listLeaderboardRecordsAroundOwner = function (session, leaderboardId, ownerId, limit) {
+      Client.prototype.listLeaderboardRecordsAroundOwner = function (session, leaderboardId, ownerId, limit, expiry) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit).then(function (response) {
+          return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry).then(function (response) {
               var list = {
                   next_cursor: response.next_cursor,
                   prev_cursor: response.prev_cursor,
@@ -2770,15 +2811,16 @@
                           create_time: o.create_time,
                           start_time: o.start_time,
                           end_time: o.end_time,
+                          start_active: o.start_active,
                       });
                   });
               }
               return Promise.resolve(list);
           });
       };
-      Client.prototype.listTournamentRecords = function (session, tournamentId, ownerIds, limit, cursor) {
+      Client.prototype.listTournamentRecords = function (session, tournamentId, ownerIds, limit, cursor, expiry) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor).then(function (response) {
+          return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry).then(function (response) {
               var list = {
                   next_cursor: response.next_cursor,
                   prev_cursor: response.prev_cursor,
@@ -2822,9 +2864,9 @@
               return Promise.resolve(list);
           });
       };
-      Client.prototype.listTournamentRecordsAroundOwner = function (session, tournamentId, ownerId, limit) {
+      Client.prototype.listTournamentRecordsAroundOwner = function (session, tournamentId, ownerId, limit, expiry) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit).then(function (response) {
+          return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry).then(function (response) {
               var list = {
                   next_cursor: response.next_cursor,
                   prev_cursor: response.prev_cursor,

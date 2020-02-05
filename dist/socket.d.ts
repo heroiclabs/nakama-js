@@ -36,6 +36,10 @@ export interface ChannelMessage {
     create_time: string;
     update_time: string;
     persistent: boolean;
+    group_id: string;
+    room_name: string;
+    user_id_one: string;
+    user_id_two: string;
 }
 export interface ChannelMessageAck {
     channel_id: string;

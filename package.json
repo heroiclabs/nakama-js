@@ -43,8 +43,8 @@
   },
   "devDependencies": {
     "chalk": "^2.4.2",
-    "jest": "^24.1.0",
-    "jest-puppeteer": "^4.0.0",
+    "jest": "^24.9.0",
+    "jest-puppeteer": "^4.3.0",
     "mkdirp": "^0.5.1",
     "puppeteer": "^1.12.2",
     "rimraf": "^2.6.3",

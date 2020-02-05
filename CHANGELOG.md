@@ -5,11 +5,11 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 ### Added
-- Support for authentication metadata
+- Support for Session Vars.
+- Added interface for Session object.
 - Support for Tournaments.
-- Added session interface
-- Implemented interface in Session class
-- Made session constructor public for unit test mocking
+- Support for events.
+- Update to support features in Nakama 2.7.0.
 - Implemented base64 encoder and decoder for unicode characters
 
 ### Changed
