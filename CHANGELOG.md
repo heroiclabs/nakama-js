@@ -10,6 +10,7 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 - Added session interface
 - Implemented interface in Session class
 - Made session constructor public for unit test mocking
+- Implemented base64 encoder and decoder for unicode characters
 
 ### Changed
 - Simplified the way callback IDs are generated. (Thanks @dimon4eg).
