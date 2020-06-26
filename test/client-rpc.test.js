@@ -70,7 +70,7 @@ describe('RPC Tests', () => {
 
   it('should send rpc with httpKey', async() => {
     const rpcid = "clientrpc.rpc_get";
-    const HTTP_KEY = "defaultkey";
+    const HTTP_KEY = "defaulthttpkey";
 
     const rpcResult = await page.evaluate(async (rpcid, HTTP_KEY) => {
       const client = new nakamajs.Client();

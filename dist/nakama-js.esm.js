@@ -1643,6 +1643,51 @@ var DefaultSocket = (function () {
             }
         });
     };
+    DefaultSocket.prototype.addMatchmaker = function (matchmakerAdd) {
+        return this.send(matchmakerAdd);
+    };
+    DefaultSocket.prototype.createMatch = function (createMatch) {
+        return this.send(createMatch);
+    };
+    DefaultSocket.prototype.followUsers = function (statusFollow) {
+        return this.send(statusFollow);
+    };
+    DefaultSocket.prototype.joinChat = function (channelJoin) {
+        return this.send(channelJoin);
+    };
+    DefaultSocket.prototype.joinMatch = function (joinMatch) {
+        return this.send(joinMatch);
+    };
+    DefaultSocket.prototype.leaveChat = function (channelLeave) {
+        return this.send(channelLeave);
+    };
+    DefaultSocket.prototype.leaveMatch = function (leaveMatch) {
+        return this.send(leaveMatch);
+    };
+    DefaultSocket.prototype.removeChatMessage = function (messageRemove) {
+        return this.send(messageRemove);
+    };
+    DefaultSocket.prototype.removeMatchmaker = function (matchmakerRemove) {
+        return this.send(matchmakerRemove);
+    };
+    DefaultSocket.prototype.rpc = function (rpc) {
+        return this.send(rpc);
+    };
+    DefaultSocket.prototype.sendMatchState = function (matchDataSend) {
+        return this.send(matchDataSend);
+    };
+    DefaultSocket.prototype.unfollowUsers = function (statusUnfollow) {
+        return this.send(statusUnfollow);
+    };
+    DefaultSocket.prototype.updateChatMessage = function (messageUpdate) {
+        return this.send(messageUpdate);
+    };
+    DefaultSocket.prototype.updateStatus = function (statusUpdate) {
+        return this.send(statusUpdate);
+    };
+    DefaultSocket.prototype.writeChatMessage = function (messageSend) {
+        return this.send(messageSend);
+    };
     return DefaultSocket;
 }());
 

@@ -54,7 +54,7 @@
     "typescript": "^3.5.0"
   },
   "dependencies": {
-    "Base64": "^1.0.1",
+    "Base64": "1.0.1",
     "whatwg-fetch": "^2.0.3"
   }
 }

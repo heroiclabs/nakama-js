@@ -66,7 +66,7 @@ describe('Socket Message Tests', () => {
 
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session);
-      await socket.send({ rpc: { id: id, payload: payload } });
+      await socket.rpc({ rpc: { id: id, payload: payload } });
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(reject, 5000, "did not receive stream data - timed out.")
       });

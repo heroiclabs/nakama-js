@@ -108,7 +108,7 @@ socket.onchannelmessage = (message) => {
 };
 
 const roomname = "mychannel";
-const channel = await socket.send({ channel_join: {
+const channel = await socket.joinChat({ channel_join: {
     type: 1, // 1 = room, 2 = Direct Message, 3 = Group
     target: roomname,
     persistence: false,
@@ -116,7 +116,7 @@ const channel = await socket.send({ channel_join: {
 } });
 
 const message = { "hello": "world" };
-socket.send({ channel_message_send: {
+socket.writeChatMessage({ channel_message_send: {
     channel_id: channel.channel.id,
     content: message
 } });
@@ -127,6 +127,8 @@ socket.send({ channel_message_send: {
 The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested to enhance the code please open an issue to discuss the changes or drop in and discuss it in the [community forum](https://forum.heroiclabs.com).
 
 ### Source Builds
+
+Ensure you are using Node v12.18.1
 
 The codebase is written in TypeScript with tests in JavaScript and can be built with [Rollup.js](https://rollupjs.org/guide/en). All dependencies are managed with NPM.
 
