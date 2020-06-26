@@ -270,30 +270,44 @@ export interface Socket {
     LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc |
     StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
 
+  // Create a multiplayer match on the server.
   createMatch(createMatch : CreateMatch) : Promise<Match>;
 
+  // Subscribe to one or more users for their status updates.
   followUsers(statusFollow : StatusFollow) : Promise<Status>;
 
+  // Join a chat channel on the server.
   joinChat(channelJoin : ChannelJoin) : Promise<Channel>;
 
-  joinMatch(joinMatch : JoinMatch) : Promise<JoinMatch>;
+  // Join a multiplayer match.
+  joinMatch(joinMatch : JoinMatch) : Promise<Match>; 
 
+  // Leave a chat channel on the server.
   leaveChat(channelLeave : ChannelLeave) : Promise<void>;
 
+  // Leave a multiplayer match on the server.
   leaveMatch(leaveMatch : LeaveMatch) : Promise<void>;
 
+  // Remove a chat message from a chat channel on the server.
   removeChatMessage(messageRemove : ChannelMessageRemove) : Promise<ChannelMessageAck>;
   
+  // Leave the matchmaker pool with the provided ticket.
   removeMatchmaker(matchmakerRemove : MatchmakerRemove) : Promise<void>;
 
+  // Send input to a multiplayer match on the server.
+  // When no presences are supplied the new match state will be sent to all presences.
   sendMatchState(matchDataSend : MatchDataSend) : Promise<MatchData>;
 
+  // Unfollow one or more users from their status updates.
   unfollowUsers(statusUnfollow : StatusUnfollow) : Promise<void>;
 
+  // Update a chat message on a chat channel in the server.
   updateChatMessage(messageUpdate : ChannelMessageUpdate) : Promise<ChannelMessageAck>;
 
+  // Update the status for the current user online.
   updateStatus(statusUpdate : StatusUpdate) : Promise<void>;
 
+  // Send a chat message to a chat channel on the server.
   writeChatMessage(messageSend : ChannelMessage) : Promise<ChannelMessageAck>;
 
   // Handle disconnect events received from the socket.
