@@ -108,7 +108,7 @@ socket.onchannelmessage = (message) => {
 };
 
 const roomname = "mychannel";
-const channel = await socket.send({ channel_join: {
+const channel = await socket.joinChat({ channel_join: {
     type: 1, // 1 = room, 2 = Direct Message, 3 = Group
     target: roomname,
     persistence: false,
@@ -116,7 +116,7 @@ const channel = await socket.send({ channel_join: {
 } });
 
 const message = { "hello": "world" };
-socket.send({ channel_message_send: {
+socket.writeMessage({ channel_message_send: {
     channel_id: channel.channel.id,
     content: message
 } });

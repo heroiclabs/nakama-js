@@ -577,8 +577,7 @@ export class DefaultSocket implements Socket {
     });
   }
 
-  addMatchmaker(matchmakerAdd : MatchmakerAdd) : Promise<MatchmakerMatched>
-  {
+  addMatchmaker(matchmakerAdd : MatchmakerAdd) : Promise<MatchmakerMatched> {
     return this.send(matchmakerAdd);
   }
 
