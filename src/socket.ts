@@ -355,7 +355,7 @@ export class DefaultSocket implements Socket {
       public verbose: boolean = false) {
     this.cIds = {};
     this.nextCid = 1;
-  }
+  }  
 
   generatecid(): string {
     const cid = this.nextCid.toString();
@@ -569,5 +569,57 @@ export class DefaultSocket implements Socket {
         console.log("Sent message: %o", m);
       }
     });
+  }
+
+  createMatch(createMatch: CreateMatch): Promise<Match> {
+    return this.send(createMatch);
+  }
+  
+  followUsers(statusFollow: StatusFollow): Promise<Status> {
+    return this.send(statusFollow);
+  }
+  
+  joinChat(channelJoin: ChannelJoin): Promise<Channel> {
+    return this.send(channelJoin);
+  }
+
+  joinMatch(joinMatch: JoinMatch): Promise<Match> {
+    return this.send(joinMatch);
+  }
+
+  leaveChat(channelLeave: ChannelLeave): Promise<void> {
+    return this.send(channelLeave);
+  }
+  
+  leaveMatch(leaveMatch: LeaveMatch): Promise<void> {
+    return this.send(leaveMatch);
+  }
+
+  removeChatMessage(messageRemove: ChannelMessageRemove): Promise<ChannelMessageAck> {
+    return this.send(messageRemove);
+  }
+
+  removeMatchmaker(matchmakerRemove: MatchmakerRemove): Promise<void> {
+    return this.send(matchmakerRemove);
+  }
+
+  sendMatchState(matchDataSend: MatchDataSend): Promise<MatchData> {
+    return this.send(matchDataSend);
+  }
+
+  unfollowUsers(statusUnfollow: StatusUnfollow): Promise<void> {
+    return this.send(statusUnfollow);
+  }
+
+  updateChatMessage(messageUpdate: ChannelMessageUpdate): Promise<ChannelMessageAck> {
+    return this.send(messageUpdate);
+  }
+
+  updateStatus(statusUpdate: StatusUpdate): Promise<void> {
+    return this.send(statusUpdate);
+  }
+
+  writeChatMessage(messageSend: ChannelMessage): Promise<ChannelMessageAck> {
+    return this.send(messageSend);
   }
 };
