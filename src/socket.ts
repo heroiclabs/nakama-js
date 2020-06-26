@@ -270,6 +270,9 @@ export interface Socket {
     LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc |
     StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
 
+  /// Join the matchmaker pool and search for opponents on the server.
+  addMatchmaker(matchmakerAdd : MatchmakerAdd) : Promise<MatchmakerMatched>;
+
   // Create a multiplayer match on the server.
   createMatch(createMatch : CreateMatch) : Promise<Match>;
 
@@ -293,6 +296,9 @@ export interface Socket {
   
   // Leave the matchmaker pool with the provided ticket.
   removeMatchmaker(matchmakerRemove : MatchmakerRemove) : Promise<void>;
+
+  // Execute an RPC function to the server.
+  rpc(rpc : Rpc) : Promise<ApiRpc>
 
   // Send input to a multiplayer match on the server.
   // When no presences are supplied the new match state will be sent to all presences.
@@ -571,6 +577,11 @@ export class DefaultSocket implements Socket {
     });
   }
 
+  addMatchmaker(matchmakerAdd : MatchmakerAdd) : Promise<MatchmakerMatched>
+  {
+    return this.send(matchmakerAdd);
+  }
+
   createMatch(createMatch: CreateMatch): Promise<Match> {
     return this.send(createMatch);
   }
@@ -601,6 +612,10 @@ export class DefaultSocket implements Socket {
 
   removeMatchmaker(matchmakerRemove: MatchmakerRemove): Promise<void> {
     return this.send(matchmakerRemove);
+  }
+
+  rpc(rpc : Rpc) : Promise<ApiRpc> {
+    return this.send(rpc);
   }
 
   sendMatchState(matchDataSend: MatchDataSend): Promise<MatchData> {
