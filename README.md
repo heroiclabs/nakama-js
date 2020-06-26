@@ -116,7 +116,7 @@ const channel = await socket.joinChat({ channel_join: {
 } });
 
 const message = { "hello": "world" };
-socket.writeMessage({ channel_message_send: {
+socket.writeChatMessage({ channel_message_send: {
     channel_id: channel.channel.id,
     content: message
 } });
