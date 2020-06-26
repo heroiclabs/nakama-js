@@ -262,11 +262,60 @@ export interface Socket {
   connect(session: Session, createStatus: boolean): Promise<Session>;
   // Disconnect from the server.
   disconnect(fireDisconnectEvent: boolean): void;
-  // Send message to the server.
+  // Send message to the server. This method remains in the API for backwards compatibility. 
+  // We recommend that you use the other socket-based methods below for improved
+  // type checking and code readability.
   send(message: ChannelJoin | ChannelLeave | ChannelMessageSend |
     ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch |
     LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc |
     StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
+
+  /// Join the matchmaker pool and search for opponents on the server.
+  addMatchmaker(matchmakerAdd : MatchmakerAdd) : Promise<MatchmakerMatched>;
+
+  // Create a multiplayer match on the server.
+  createMatch(createMatch : CreateMatch) : Promise<Match>;
+
+  // Subscribe to one or more users for their status updates.
+  followUsers(statusFollow : StatusFollow) : Promise<Status>;
+
+  // Join a chat channel on the server.
+  joinChat(channelJoin : ChannelJoin) : Promise<Channel>;
+
+  // Join a multiplayer match.
+  joinMatch(joinMatch : JoinMatch) : Promise<Match>; 
+
+  // Leave a chat channel on the server.
+  leaveChat(channelLeave : ChannelLeave) : Promise<void>;
+
+  // Leave a multiplayer match on the server.
+  leaveMatch(leaveMatch : LeaveMatch) : Promise<void>;
+
+  // Remove a chat message from a chat channel on the server.
+  removeChatMessage(messageRemove : ChannelMessageRemove) : Promise<ChannelMessageAck>;
+  
+  // Leave the matchmaker pool with the provided ticket.
+  removeMatchmaker(matchmakerRemove : MatchmakerRemove) : Promise<void>;
+
+  // Execute an RPC function to the server.
+  rpc(rpc : Rpc) : Promise<ApiRpc>
+
+  // Send input to a multiplayer match on the server.
+  // When no presences are supplied the new match state will be sent to all presences.
+  sendMatchState(matchDataSend : MatchDataSend) : Promise<MatchData>;
+
+  // Unfollow one or more users from their status updates.
+  unfollowUsers(statusUnfollow : StatusUnfollow) : Promise<void>;
+
+  // Update a chat message on a chat channel in the server.
+  updateChatMessage(messageUpdate : ChannelMessageUpdate) : Promise<ChannelMessageAck>;
+
+  // Update the status for the current user online.
+  updateStatus(statusUpdate : StatusUpdate) : Promise<void>;
+
+  // Send a chat message to a chat channel on the server.
+  writeChatMessage(messageSend : ChannelMessageSend) : Promise<ChannelMessageAck>;
+
   // Handle disconnect events received from the socket.
   ondisconnect: (evt: Event) => void;
   // Handle error events received from the socket.
@@ -312,7 +361,7 @@ export class DefaultSocket implements Socket {
       public verbose: boolean = false) {
     this.cIds = {};
     this.nextCid = 1;
-  }
+  }  
 
   generatecid(): string {
     const cid = this.nextCid.toString();
@@ -526,5 +575,65 @@ export class DefaultSocket implements Socket {
         console.log("Sent message: %o", m);
       }
     });
+  }
+
+  addMatchmaker(matchmakerAdd : MatchmakerAdd) : Promise<MatchmakerMatched> {
+    return this.send(matchmakerAdd);
+  }
+
+  createMatch(createMatch: CreateMatch): Promise<Match> {
+    return this.send(createMatch);
+  }
+  
+  followUsers(statusFollow: StatusFollow): Promise<Status> {
+    return this.send(statusFollow);
+  }
+  
+  joinChat(channelJoin: ChannelJoin): Promise<Channel> {
+    return this.send(channelJoin);
+  }
+
+  joinMatch(joinMatch: JoinMatch): Promise<Match> {
+    return this.send(joinMatch);
+  }
+
+  leaveChat(channelLeave: ChannelLeave): Promise<void> {
+    return this.send(channelLeave);
+  }
+  
+  leaveMatch(leaveMatch: LeaveMatch): Promise<void> {
+    return this.send(leaveMatch);
+  }
+
+  removeChatMessage(messageRemove: ChannelMessageRemove): Promise<ChannelMessageAck> {
+    return this.send(messageRemove);
+  }
+
+  removeMatchmaker(matchmakerRemove: MatchmakerRemove): Promise<void> {
+    return this.send(matchmakerRemove);
+  }
+
+  rpc(rpc : Rpc) : Promise<ApiRpc> {
+    return this.send(rpc);
+  }
+
+  sendMatchState(matchDataSend: MatchDataSend): Promise<MatchData> {
+    return this.send(matchDataSend);
+  }
+
+  unfollowUsers(statusUnfollow: StatusUnfollow): Promise<void> {
+    return this.send(statusUnfollow);
+  }
+
+  updateChatMessage(messageUpdate: ChannelMessageUpdate): Promise<ChannelMessageAck> {
+    return this.send(messageUpdate);
+  }
+
+  updateStatus(statusUpdate: StatusUpdate): Promise<void> {
+    return this.send(statusUpdate);
+  }
+
+  writeChatMessage(messageSend: ChannelMessageSend): Promise<ChannelMessageAck> {
+    return this.send(messageSend);
   }
 };
