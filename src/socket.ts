@@ -308,7 +308,7 @@ export interface Socket {
   updateStatus(statusUpdate : StatusUpdate) : Promise<void>;
 
   // Send a chat message to a chat channel on the server.
-  writeChatMessage(messageSend : ChannelMessage) : Promise<ChannelMessageAck>;
+  writeChatMessage(messageSend : ChannelMessageSend) : Promise<ChannelMessageAck>;
 
   // Handle disconnect events received from the socket.
   ondisconnect: (evt: Event) => void;
@@ -619,7 +619,7 @@ export class DefaultSocket implements Socket {
     return this.send(statusUpdate);
   }
 
-  writeChatMessage(messageSend: ChannelMessage): Promise<ChannelMessageAck> {
+  writeChatMessage(messageSend: ChannelMessageSend): Promise<ChannelMessageAck> {
     return this.send(messageSend);
   }
 };
