@@ -262,11 +262,40 @@ export interface Socket {
   connect(session: Session, createStatus: boolean): Promise<Session>;
   // Disconnect from the server.
   disconnect(fireDisconnectEvent: boolean): void;
-  // Send message to the server.
+  // Send message to the server. This method remains in the API for backwards compatibility. 
+  // We recommend that you use the other socket-based methods below for improved
+  // type checking and code readability.
   send(message: ChannelJoin | ChannelLeave | ChannelMessageSend |
     ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch |
     LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc |
     StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
+
+  createMatch(createMatch : CreateMatch) : Promise<Match>;
+
+  followUsers(statusFollow : StatusFollow) : Promise<Status>;
+
+  joinChat(channelJoin : ChannelJoin) : Promise<Channel>;
+
+  joinMatch(joinMatch : JoinMatch) : Promise<JoinMatch>;
+
+  leaveChat(channelLeave : ChannelLeave) : Promise<void>;
+
+  leaveMatch(leaveMatch : LeaveMatch) : Promise<void>;
+
+  removeChatMessage(messageRemove : ChannelMessageRemove) : Promise<ChannelMessageAck>;
+  
+  removeMatchmaker(matchmakerRemove : MatchmakerRemove) : Promise<void>;
+
+  sendMatchState(matchDataSend : MatchDataSend) : Promise<MatchData>;
+
+  unfollowUsers(statusUnfollow : StatusUnfollow) : Promise<void>;
+
+  updateChatMessage(messageUpdate : ChannelMessageUpdate) : Promise<ChannelMessageAck>;
+
+  updateStatus(statusUpdate : StatusUpdate) : Promise<void>;
+
+  writeChatMessage(messageSend : ChannelMessage) : Promise<ChannelMessageAck>;
+
   // Handle disconnect events received from the socket.
   ondisconnect: (evt: Event) => void;
   // Handle error events received from the socket.
