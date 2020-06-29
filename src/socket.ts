@@ -653,7 +653,6 @@ export class DefaultSocket implements Socket {
   }
 
   removeMatchmaker(ticket: string): Promise<void> {
-    console.log("removing matchamaker: " + ticket)
     return this.send({matchmaker_remove: {ticket: ticket}});
   }
 
