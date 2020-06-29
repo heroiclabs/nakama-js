@@ -107,19 +107,17 @@ socket.onchannelmessage = (message) => {
     console.info("Received message", message);
 };
 
+
+// 1 = room, 2 = Direct Message, 3 = Group
+const type : number = 1;
 const roomname = "mychannel";
-const channel = await socket.joinChat({ channel_join: {
-    type: 1, // 1 = room, 2 = Direct Message, 3 = Group
-    target: roomname,
-    persistence: false,
-    hidden: false
-} });
+const persistence : boolean = false;
+const hidden : boolean = false;
+
+const channel = await socket.joinChat(type, roomname, persistence, hidden);
 
 const message = { "hello": "world" };
-socket.writeChatMessage({ channel_message_send: {
-    channel_id: channel.channel.id,
-    content: message
-} });
+socket.writeChatMessage(channel.channel.id, message);
 ```
 
 ## Contribute
