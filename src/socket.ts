@@ -589,7 +589,7 @@ export class DefaultSocket implements Socket {
       {
         "matchmaker_add": {
           min_count: minCount, 
-          max_count:maxCount, 
+          max_count: maxCount, 
           query: query, 
           string_properties: stringProperties, 
           numeric_properties: numericProperties
