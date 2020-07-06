@@ -1644,9 +1644,6 @@ var DefaultSocket = (function () {
         });
     };
     DefaultSocket.prototype.addMatchmaker = function (query, minCount, maxCount, stringProperties, numericProperties) {
-        if (query === void 0) { query = "*"; }
-        if (minCount === void 0) { minCount = 2; }
-        if (maxCount === void 0) { maxCount = 8; }
         var matchMakerAdd = {
             "matchmaker_add": {
                 min_count: minCount,

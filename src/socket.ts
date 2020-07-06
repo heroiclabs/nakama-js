@@ -272,7 +272,7 @@ export interface Socket {
     StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
 
   /// Join the matchmaker pool and search for opponents on the server.
-  addMatchmaker(query? : string, minCount? : number, maxCount? : number,  
+  addMatchmaker(query : string, minCount : number, maxCount : number,  
     stringProperties? : Record<string, string>, numericProperties? : Record<string, number>)
     : Promise<MatchmakerMatched>;
   
@@ -581,7 +581,7 @@ export class DefaultSocket implements Socket {
   }
 
 
-  addMatchmaker(query : string = "*", minCount : number = 2, maxCount : number = 8,  
+  addMatchmaker(query : string, minCount : number, maxCount : number,  
     stringProperties? : Record<string, string>, numericProperties? : Record<string, number>)
     : Promise<MatchmakerMatched> {
 

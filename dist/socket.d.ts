@@ -182,7 +182,7 @@ export interface Socket {
     connect(session: Session, createStatus: boolean): Promise<Session>;
     disconnect(fireDisconnectEvent: boolean): void;
     send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
-    addMatchmaker(query?: string, minCount?: number, maxCount?: number, stringProperties?: Record<string, string>, numericProperties?: Record<string, number>): Promise<MatchmakerMatched>;
+    addMatchmaker(query: string, minCount: number, maxCount: number, stringProperties?: Record<string, string>, numericProperties?: Record<string, number>): Promise<MatchmakerMatched>;
     createMatch(): Promise<Match>;
     followUsers(user_ids: string[]): Promise<Status>;
     joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel>;
@@ -237,7 +237,7 @@ export declare class DefaultSocket implements Socket {
     onstreampresence(streamPresence: StreamPresenceEvent): void;
     onstreamdata(streamData: StreamData): void;
     send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
-    addMatchmaker(query?: string, minCount?: number, maxCount?: number, stringProperties?: Record<string, string>, numericProperties?: Record<string, number>): Promise<MatchmakerMatched>;
+    addMatchmaker(query: string, minCount: number, maxCount: number, stringProperties?: Record<string, string>, numericProperties?: Record<string, number>): Promise<MatchmakerMatched>;
     createMatch(): Promise<Match>;
     followUsers(userIds: string[]): Promise<Status>;
     joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel>;
