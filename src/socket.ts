@@ -692,6 +692,6 @@ export class DefaultSocket implements Socket {
   }
 
   writeChatMessage(channel_id: string, content: any): Promise<ChannelMessageAck> {
-    return this.send({channel_message_send: {channel_id: channel_id, content:content}});
+    return this.send({channel_message_send: {channel_id: channel_id, content: content}});
   }
 };
