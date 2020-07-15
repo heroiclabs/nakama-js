@@ -1767,52 +1767,9 @@ var Client = (function () {
         this.apiClient = NakamaApi(this.configuration);
     }
     Client.prototype.addGroupUsers = function (session, groupId, ids) {
-        var _this = this;
         this.configuration.bearerToken = (session && session.token);
-        var urlPath = "/v2/group/" + groupId + "/add";
-        var queryParams = {
-            user_ids: ids
-        };
-        var urlQuery = "?" + Object.keys(queryParams)
-            .map(function (k) {
-            if (queryParams[k] instanceof Array) {
-                return queryParams[k].reduce(function (prev, curr) {
-                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                }, "");
-            }
-            else {
-                if (queryParams[k] != null) {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                }
-            }
-        })
-            .join("");
-        var fetchOptions = __assign({ method: "POST" });
-        var headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        };
-        if (this.configuration.bearerToken) {
-            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-        }
-        else if (this.configuration.username) {
-            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-        }
-        fetchOptions.headers = __assign({}, headers);
-        return Promise.race([
-            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                if (response.status >= 200 && response.status < 300) {
-                    return response.json();
-                }
-                else {
-                    throw response;
-                }
-            }),
-            new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
-            }),
-        ]).then(function (response) {
-            return Promise.resolve(response != undefined);
+        return this.apiClient.addGroupUsers(groupId, ids).then(function (response) {
+            return response !== undefined;
         });
     };
     Client.prototype.addFriends = function (session, ids, usernames) {
@@ -2015,6 +1972,9 @@ var Client = (function () {
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
         });
+    };
+    Client.prototype.authenticateFacebookInstantGame = function (request) {
+        return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, request.username, request.create);
     };
     Client.prototype.authenticateFacebook = function (request) {
         var _this = this;
@@ -2219,6 +2179,12 @@ var Client = (function () {
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
+        });
+    };
+    Client.prototype.banGroupUsers = function (session, groupId, ids) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.banGroupUsers(groupId, ids).then(function (response) {
+            return response !== undefined;
         });
     };
     Client.prototype.blockFriends = function (session, ids, usernames) {
@@ -2670,6 +2636,12 @@ var Client = (function () {
     Client.prototype.linkFacebook = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.linkFacebook(request).then(function (response) {
+            return response !== undefined;
+        });
+    };
+    Client.prototype.linkFacebookInstantGame = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.linkFacebookInstantGame(request).then(function (response) {
             return response !== undefined;
         });
     };
