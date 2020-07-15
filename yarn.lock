@@ -467,9 +467,10 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-Base64@^1.0.1:
+Base64@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/Base64/-/Base64-1.0.1.tgz#def45cc50c961bcc9bf2321d0f52bcbfec1f1bb1"
+  integrity sha1-3vRcxQyWG8yb8jIdD1K8v+wfG7E=
 
 abab@^1.0.0:
   version "1.0.4"

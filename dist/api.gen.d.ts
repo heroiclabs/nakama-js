@@ -26,6 +26,7 @@ export interface WriteTournamentRecordRequestTournamentRecordWrite {
 export interface ApiAccount {
     custom_id?: string;
     devices?: Array<ApiAccountDevice>;
+    disable_time?: string;
     email?: string;
     user?: ApiUser;
     verify_time?: string;
@@ -46,6 +47,10 @@ export interface ApiAccountEmail {
 }
 export interface ApiAccountFacebook {
     token?: string;
+    vars?: Map<string, string>;
+}
+export interface ApiAccountFacebookInstantGame {
+    signed_player_info?: string;
     vars?: Map<string, string>;
 }
 export interface ApiAccountGameCenter {
@@ -274,6 +279,7 @@ export interface ApiUser {
     display_name?: string;
     edge_count?: number;
     facebook_id?: string;
+    facebook_instant_game_id?: string;
     gamecenter_id?: string;
     google_id?: string;
     id?: string;
@@ -313,6 +319,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     authenticateDevice(body: ApiAccountDevice, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateEmail(body: ApiAccountEmail, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateFacebook(body: ApiAccountFacebook, create?: boolean | undefined, username?: string | undefined, sync?: boolean | undefined, options?: any): Promise<ApiSession>;
+    authenticateFacebookInstantGame(body: ApiAccountFacebookInstantGame, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateGameCenter(body: ApiAccountGameCenter, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateGoogle(body: ApiAccountGoogle, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
     authenticateSteam(body: ApiAccountSteam, create?: boolean | undefined, username?: string | undefined, options?: any): Promise<ApiSession>;
@@ -320,6 +327,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     linkDevice(body: ApiAccountDevice, options?: any): Promise<any>;
     linkEmail(body: ApiAccountEmail, options?: any): Promise<any>;
     linkFacebook(body: ApiAccountFacebook, sync?: boolean | undefined, options?: any): Promise<any>;
+    linkFacebookInstantGame(body: ApiAccountFacebookInstantGame, options?: any): Promise<any>;
     linkGameCenter(body: ApiAccountGameCenter, options?: any): Promise<any>;
     linkGoogle(body: ApiAccountGoogle, options?: any): Promise<any>;
     linkSteam(body: ApiAccountSteam, options?: any): Promise<any>;
@@ -327,6 +335,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     unlinkDevice(body: ApiAccountDevice, options?: any): Promise<any>;
     unlinkEmail(body: ApiAccountEmail, options?: any): Promise<any>;
     unlinkFacebook(body: ApiAccountFacebook, options?: any): Promise<any>;
+    unlinkFacebookInstantGame(body: ApiAccountFacebookInstantGame, options?: any): Promise<any>;
     unlinkGameCenter(body: ApiAccountGameCenter, options?: any): Promise<any>;
     unlinkGoogle(body: ApiAccountGoogle, options?: any): Promise<any>;
     unlinkSteam(body: ApiAccountSteam, options?: any): Promise<any>;
@@ -342,6 +351,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     deleteGroup(groupId: string, options?: any): Promise<any>;
     updateGroup(groupId: string, body: ApiUpdateGroupRequest, options?: any): Promise<any>;
     addGroupUsers(groupId: string, userIds?: string[] | undefined, options?: any): Promise<any>;
+    banGroupUsers(groupId: string, userIds?: string[] | undefined, options?: any): Promise<any>;
     joinGroup(groupId: string, options?: any): Promise<any>;
     kickGroupUsers(groupId: string, userIds?: string[] | undefined, options?: any): Promise<any>;
     leaveGroup(groupId: string, options?: any): Promise<any>;

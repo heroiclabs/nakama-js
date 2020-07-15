@@ -706,6 +706,20 @@
               _body = JSON.stringify(body || {});
               return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
+          authenticateFacebookInstantGame: function (body, create, username, options) {
+              if (options === void 0) { options = {}; }
+              if (body === null || body === undefined) {
+                  throw new Error("'body' is a required parameter but is null or undefined.");
+              }
+              var urlPath = "/v2/account/authenticate/facebookinstantgame";
+              var queryParams = {
+                  create: create,
+                  username: username,
+              };
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+          },
           authenticateGameCenter: function (body, create, username, options) {
               if (options === void 0) { options = {}; }
               if (body === null || body === undefined) {
@@ -794,6 +808,17 @@
               _body = JSON.stringify(body || {});
               return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
+          linkFacebookInstantGame: function (body, options) {
+              if (options === void 0) { options = {}; }
+              if (body === null || body === undefined) {
+                  throw new Error("'body' is a required parameter but is null or undefined.");
+              }
+              var urlPath = "/v2/account/link/facebookinstantgame";
+              var queryParams = {};
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+          },
           linkGameCenter: function (body, options) {
               if (options === void 0) { options = {}; }
               if (body === null || body === undefined) {
@@ -866,6 +891,17 @@
                   throw new Error("'body' is a required parameter but is null or undefined.");
               }
               var urlPath = "/v2/account/unlink/facebook";
+              var queryParams = {};
+              var _body = null;
+              _body = JSON.stringify(body || {});
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+          },
+          unlinkFacebookInstantGame: function (body, options) {
+              if (options === void 0) { options = {}; }
+              if (body === null || body === undefined) {
+                  throw new Error("'body' is a required parameter but is null or undefined.");
+              }
+              var urlPath = "/v2/account/unlink/facebookinstantgame";
               var queryParams = {};
               var _body = null;
               _body = JSON.stringify(body || {});
@@ -1038,6 +1074,19 @@
                   throw new Error("'groupId' is a required parameter but is null or undefined.");
               }
               var urlPath = "/v2/group/{group_id}/add"
+                  .replace("{group_id}", encodeURIComponent(String(groupId)));
+              var queryParams = {
+                  user_ids: userIds,
+              };
+              var _body = null;
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+          },
+          banGroupUsers: function (groupId, userIds, options) {
+              if (options === void 0) { options = {}; }
+              if (groupId === null || groupId === undefined) {
+                  throw new Error("'groupId' is a required parameter but is null or undefined.");
+              }
+              var urlPath = "/v2/group/{group_id}/ban"
                   .replace("{group_id}", encodeURIComponent(String(groupId)));
               var queryParams = {
                   user_ids: userIds,
