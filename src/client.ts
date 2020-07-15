@@ -20,6 +20,7 @@ import {
   ApiAccountDevice,
   ApiAccountEmail,
   ApiAccountFacebook,
+  ApiAccountFacebookInstantGame,
   ApiAccountGoogle,
   ApiAccountGameCenter,
   ApiAccountSteam,
@@ -107,6 +108,17 @@ export interface AccountFacebook {
   token?: string;
   // Extra information that will be bundled in the session token.
   vars?: { [key:string]: string };
+}
+
+export interface AccountFacebookInstantGame {
+    // Set a username when the account is created, otherwise the server will generate one.
+    username?: string;
+    // True to create the account if it doesn't exist, false to reject.
+    create?: boolean;
+    // The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
+    signed_player_info?: string;
+    // Extra information that will be bundled in the session token.
+    vars?: Map<string, string>;
 }
 
 /** Send Apple's Game Center account credentials to the server. Used with authenticate. */
@@ -774,6 +786,12 @@ export class Client {
     ]).then((apiSession) => {
       return Session.restore(apiSession.token || "");
     });
+  }
+
+  /** Authenticate a user with a Facebook Instant Game token against the server. */
+  authenticateFacebookInstantGame(request : AccountFacebookInstantGame): Promise<Session> {
+    return this.apiClient.authenticateFacebookInstantGame(
+      {signed_player_info: request.signed_player_info, vars: request.vars}, request.username, request.create);
   }
 
   /** Authenticate a user with a Facebook OAuth token against the server. */
@@ -1514,6 +1532,14 @@ export class Client {
   linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkFacebook(request).then((response: any) => {
+      return response !== undefined;
+    });
+  }
+
+  /** Add Facebook Instant to the social profiles on the current user's account. */
+  linkFacebookInstantGame(session: Session, request: ApiAccountFacebookInstantGame): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.linkFacebookInstantGame(request).then((response: any) => {
       return response !== undefined;
     });
   }

@@ -491,9 +491,7 @@ describe('Group Tests', () => {
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(2);
     expect(result.group_users[0].state).toBe(0);
-    expect(result.group_users[0].id).toBe(customid1);
     expect(result.group_users[1].state).toBe(0);
-    expect(result.group_users[1].id).toBe(customid2);
   });
 
   it('should create, join, leave, then list group users', async () => {
@@ -584,7 +582,7 @@ describe('Group Tests', () => {
   });
 
 
-  it('should create, add + ban, then list group users', async () => {
+  it('should create, add, ban, then list group users', async () => {
     // TODO currently no way to check if a user has been banned in a group other than checking
     // that they aren't returned in the listGroupUsers() call
 
