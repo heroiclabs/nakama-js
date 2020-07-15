@@ -583,4 +583,30 @@ describe('Group Tests', () => {
     expect(result.cursor).not.toBeNull();
   });
 
+
+  it('should create, add + ban, then list group users', async () => {
+    // TODO currently no way to check if a user has been banned in a group other than checking
+    // that they aren't returned in the listGroupUsers() call
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+    const group_name = generateid();
+
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+
+      const group = await client1.createGroup(session1, { name: group_name, open: true });
+      await client1.addGroupUsers(session1, group.id, [session2.user_id])
+      await client1.banGroupUsers(session1, group.id, [session2.user_id]);
+      return await client1.listGroupUsers(session1, group.id);
+    }, customid1, customid2, group_name);
+
+    expect(result).not.toBeNull();
+    expect(result.group_users).not.toBeNull();
+    expect(result.group_users.length).toBe(1);
+  });
+
 }, TIMEOUT);

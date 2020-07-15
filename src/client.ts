@@ -997,6 +997,14 @@ export class Client {
     });
   }
 
+    /** Add users to a group, or accept their join requests. */
+    banGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+      this.configuration.bearerToken = (session && session.token);
+      return this.apiClient.banGroupUsers(groupId, ids).then((response: any) => {
+        return response !== undefined;
+      });
+    }
+
   /** Block one or more users by ID or username. */
   blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
