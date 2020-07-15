@@ -491,7 +491,9 @@ describe('Group Tests', () => {
     expect(result).not.toBeNull();
     expect(result.group_users.length).toBe(2);
     expect(result.group_users[0].state).toBe(0);
+    expect(result.group_users[0].id).toBe(customid1);
     expect(result.group_users[1].state).toBe(0);
+    expect(result.group_users[1].id).toBe(customid2);
   });
 
   it('should create, join, leave, then list group users', async () => {
