@@ -48,6 +48,8 @@ export interface ApiAccount {
   custom_id?: string;
   // The devices which belong to the user's account.
   devices?: Array<ApiAccountDevice>;
+  // The UNIX time when the user's account was disabled/banned.
+  disable_time?: string;
   // The email address of the user.
   email?: string;
   // The user object.
@@ -84,6 +86,13 @@ export interface ApiAccountEmail {
 export interface ApiAccountFacebook {
   // The OAuth token received from Facebook to access their profile API.
   token?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: Map<string, string>;
+}
+/** Send a Facebook Instant Game token to the server. Used with authenticate/link/unlink. */
+export interface ApiAccountFacebookInstantGame {
+  // 
+  signed_player_info?: string;
   // Extra information that will be bundled in the session token.
   vars?: Map<string, string>;
 }
@@ -505,6 +514,8 @@ export interface ApiUser {
   edge_count?: number;
   // The Facebook id in the user's account.
   facebook_id?: string;
+  // The Facebook Instant Game id in the user's account.
+  facebook_instant_game_id?: string;
   // The Apple Game Center in of the user's account.
   gamecenter_id?: string;
   // The Google id in the user's account.
@@ -726,6 +737,23 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
+    /** Authenticate a user with a Facebook Instant Game token against the server. */
+    authenticateFacebookInstantGame(body: ApiAccountFacebookInstantGame, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/facebookinstantgame";
+
+      const queryParams = {
+        create: create,
+        username: username,
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
     /** Authenticate a user with Apple's GameCenter against the server. */
     authenticateGameCenter(body: ApiAccountGameCenter, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
       if (body === null || body === undefined) {
@@ -838,6 +866,21 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
+    /** Add Facebook Instant Game to the social profiles on the current user's account. */
+    linkFacebookInstantGame(body: ApiAccountFacebookInstantGame, options: any = {}): Promise<any> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/facebookinstantgame";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
     /** Add Apple's GameCenter to the social profiles on the current user's account. */
     linkGameCenter(body: ApiAccountGameCenter, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
@@ -934,6 +977,21 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/unlink/facebook";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
+    /** Remove Facebook Instant Game profile from the social profiles on the current user's account. */
+    unlinkFacebookInstantGame(body: ApiAccountFacebookInstantGame, options: any = {}): Promise<any> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/facebookinstantgame";
 
       const queryParams = {
       } as any;
@@ -1159,6 +1217,22 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/group/{group_id}/add"
+         .replace("{group_id}", encodeURIComponent(String(groupId)));
+
+      const queryParams = {
+        user_ids: userIds,
+      } as any;
+
+      let _body = null;
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
+    /** Ban a set of users from a group. */
+    banGroupUsers(groupId: string, userIds?: Array<string>, options: any = {}): Promise<any> {
+      if (groupId === null || groupId === undefined) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{group_id}/ban"
          .replace("{group_id}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
