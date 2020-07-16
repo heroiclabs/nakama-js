@@ -20,6 +20,7 @@ import {
   ApiAccountDevice,
   ApiAccountEmail,
   ApiAccountFacebook,
+  ApiAccountFacebookInstantGame,
   ApiAccountGoogle,
   ApiAccountGameCenter,
   ApiAccountSteam,
@@ -107,6 +108,17 @@ export interface AccountFacebook {
   token?: string;
   // Extra information that will be bundled in the session token.
   vars?: { [key:string]: string };
+}
+
+export interface AccountFacebookInstantGame {
+    // Set a username when the account is created, otherwise the server will generate one.
+    username?: string;
+    // True to create the account if it doesn't exist, false to reject.
+    create?: boolean;
+    // The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
+    signed_player_info?: string;
+    // Extra information that will be bundled in the session token.
+    vars?: Map<string, string>;
 }
 
 /** Send Apple's Game Center account credentials to the server. Used with authenticate. */
@@ -554,53 +566,8 @@ export class Client {
   /** Add users to a group, or accept their join requests. */
   addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
-
-    const urlPath = "/v2/group/" + groupId + "/add";
-
-    const queryParams = {
-      user_ids: ids
-    } as any;
-    const urlQuery = "?" + Object.keys(queryParams)
-      .map(k => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev: any, curr: any) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      })
-      .join("");
-
-    const fetchOptions = {...{ method: "POST" /*, keepalive: true */ }} as any;
-    const headers = {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-    } as any;
-
-    if (this.configuration.bearerToken) {
-      headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-    } else if (this.configuration.username) {
-      headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-    }
-
-    fetchOptions.headers = {...headers};
-
-    return Promise.race([
-      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      }),
-      new Promise((_, reject) =>
-        setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
-      ),
-    ]).then((response: any) => {
-      return Promise.resolve(response != undefined);
+    return this.apiClient.addGroupUsers(groupId, ids).then((response: any) => {
+      return response !== undefined;
     });
   }
 
@@ -819,6 +786,12 @@ export class Client {
     ]).then((apiSession) => {
       return Session.restore(apiSession.token || "");
     });
+  }
+
+  /** Authenticate a user with a Facebook Instant Game token against the server. */
+  authenticateFacebookInstantGame(request : AccountFacebookInstantGame): Promise<Session> {
+    return this.apiClient.authenticateFacebookInstantGame(
+      {signed_player_info: request.signed_player_info, vars: request.vars}, request.username, request.create);
   }
 
   /** Authenticate a user with a Facebook OAuth token against the server. */
@@ -1041,6 +1014,14 @@ export class Client {
       return Session.restore(apiSession.token || "");
     });
   }
+
+    /** Add users to a group, or accept their join requests. */
+    banGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+      this.configuration.bearerToken = (session && session.token);
+      return this.apiClient.banGroupUsers(groupId, ids).then((response: any) => {
+        return response !== undefined;
+      });
+    }
 
   /** Block one or more users by ID or username. */
   blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
@@ -1555,6 +1536,14 @@ export class Client {
     });
   }
 
+  /** Add Facebook Instant to the social profiles on the current user's account. */
+  linkFacebookInstantGame(session: Session, request: ApiAccountFacebookInstantGame): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.linkFacebookInstantGame(request).then((response: any) => {
+      return response !== undefined;
+    });
+  }
+
   /** Add Google to the social profiles on the current user's account. */
   linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
@@ -2064,6 +2053,14 @@ export class Client {
   unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.unlinkFacebook(request).then((response: any) => {
+      return response !== undefined;
+    });
+  }
+
+  /** Remove Facebook Instant social profiles from the current user's account. */
+  unlinkFacebookInstantGame(session: Session, request: ApiAccountFacebookInstantGame): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.unlinkFacebookInstantGame(request).then((response: any) => {
       return response !== undefined;
     });
   }

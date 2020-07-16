@@ -1,4 +1,4 @@
-import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
+import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountFacebookInstantGame, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
 export interface AccountCustom {
@@ -33,6 +33,12 @@ export interface AccountFacebook {
     vars?: {
         [key: string]: string;
     };
+}
+export interface AccountFacebookInstantGame {
+    username?: string;
+    create?: boolean;
+    signed_player_info?: string;
+    vars?: Map<string, string>;
 }
 export interface AccountGameCenter {
     username?: string;
@@ -263,10 +269,12 @@ export declare class Client {
     authenticateCustom(request: AccountCustom): Promise<Session>;
     authenticateDevice(request: AccountDevice): Promise<Session>;
     authenticateEmail(request: AccountEmail): Promise<Session>;
+    authenticateFacebookInstantGame(request: AccountFacebookInstantGame): Promise<Session>;
     authenticateFacebook(request: AccountFacebook): Promise<Session>;
     authenticateGoogle(request: AccountGoogle): Promise<Session>;
     authenticateGameCenter(request: AccountGameCenter): Promise<Session>;
     authenticateSteam(request: AccountSteam): Promise<Session>;
+    banGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group>;
     createSocket(useSSL?: boolean, verbose?: boolean): Socket;
@@ -290,6 +298,7 @@ export declare class Client {
     linkDevice(session: Session, request: ApiAccountDevice): Promise<boolean>;
     linkEmail(session: Session, request: ApiAccountEmail): Promise<boolean>;
     linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
+    linkFacebookInstantGame(session: Session, request: ApiAccountFacebookInstantGame): Promise<boolean>;
     linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
     linkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean>;
     linkSteam(session: Session, request: ApiAccountSteam): Promise<boolean>;
@@ -310,6 +319,7 @@ export declare class Client {
     unlinkDevice(session: Session, request: ApiAccountDevice): Promise<boolean>;
     unlinkEmail(session: Session, request: ApiAccountEmail): Promise<boolean>;
     unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
+    unlinkFacebookInstantGame(session: Session, request: ApiAccountFacebookInstantGame): Promise<boolean>;
     unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
     unlinkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean>;
     unlinkSteam(session: Session, request: ApiAccountSteam): Promise<boolean>;
