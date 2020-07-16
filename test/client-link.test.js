@@ -15,6 +15,9 @@
  */
 
 const fs = require("fs");
+const base64url = require('base64url');
+const crypto = require("crypto");
+
 const TIMEOUT = 5000;
 
 // util to generate a random id.
@@ -69,5 +72,78 @@ describe('Link / Unlink Tests', () => {
     expect(account.custom_id).not.toBeNull();
     expect(account.hasOwnProperty("devices")).toBe(false);
   });
+
+  //optional test
+  it.skip('should link to facebook instant games', async () => {
+
+    const fbid = generateid();
+
+    const testSecret = "fb-instant-test-secret";
+
+    const mockFbInstantPayload = JSON.stringify({ 
+      algorithm: "HMAC-SHA256", 
+      issued_at: 1594867628,
+      player_id: fbid,
+      request_payload: ""
+    });
+
+    const encodedPayload = base64url(mockFbInstantPayload);
+
+    const signature = crypto.createHmac('sha256', testSecret).update(encodedPayload).digest();
+    const encodedSignature = base64url(signature);
+
+    const token = encodedSignature + "." + encodedPayload;
+
+    const customid = generateid();
+
+    const account = await page.evaluate(async (customid, token) => {
+      const client = new nakamajs.Client();
+      const session = await client.authenticateCustom({ id: customid });
+      await client.linkFacebookInstantGame(session, { signed_player_info: token });
+      return await client.getAccount(session);
+    }, customid, token);
+
+    console.log("account user is...");
+    console.log(account.user);
+    expect(account).not.toBeNull();
+    expect(account.user.facebook_instant_game_id).not.toBeUndefined();
+    
+  });
+
+  //optional test
+  it.skip('should unlink to facebook instant games', async () => {
+    
+    const fbid = generateid();
+
+    const testSecret = "fb-instant-test-secret";
+
+    const mockFbInstantPayload = JSON.stringify({ 
+      algorithm: "HMAC-SHA256", 
+      issued_at: 1594867628,
+      player_id: fbid,
+      request_payload: ""
+    });
+
+    const encodedPayload = base64url(mockFbInstantPayload);
+
+    const signature = crypto.createHmac('sha256', testSecret).update(encodedPayload).digest();
+    const encodedSignature = base64url(signature);
+
+    const token = encodedSignature + "." + encodedPayload;
+
+    const customid = generateid();
+
+    const account = await page.evaluate(async (customid, token) => {
+      const client = new nakamajs.Client();
+      const session = await client.authenticateCustom({ id: customid });
+      await client.linkFacebookInstantGame(session, { signed_player_info: token });
+      await client.unlinkFacebookInstantGame(session, { signed_player_info: token });
+
+      return await client.getAccount(session);
+    }, customid, token);
+
+    expect(account).not.toBeNull();
+    expect(account.user.facebook_instant_game_id).toBeUndefined();
+  })
 
 }, TIMEOUT);

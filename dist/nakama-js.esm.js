@@ -700,6 +700,20 @@ var NakamaApi = function (configuration) {
             _body = JSON.stringify(body || {});
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
+        authenticateFacebookInstantGame: function (body, create, username, options) {
+            if (options === void 0) { options = {}; }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/account/authenticate/facebookinstantgame";
+            var queryParams = {
+                create: create,
+                username: username,
+            };
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+        },
         authenticateGameCenter: function (body, create, username, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
@@ -788,6 +802,17 @@ var NakamaApi = function (configuration) {
             _body = JSON.stringify(body || {});
             return napi.doFetch(urlPath, "POST", queryParams, _body, options);
         },
+        linkFacebookInstantGame: function (body, options) {
+            if (options === void 0) { options = {}; }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/account/link/facebookinstantgame";
+            var queryParams = {};
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+        },
         linkGameCenter: function (body, options) {
             if (options === void 0) { options = {}; }
             if (body === null || body === undefined) {
@@ -860,6 +885,17 @@ var NakamaApi = function (configuration) {
                 throw new Error("'body' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/account/unlink/facebook";
+            var queryParams = {};
+            var _body = null;
+            _body = JSON.stringify(body || {});
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+        },
+        unlinkFacebookInstantGame: function (body, options) {
+            if (options === void 0) { options = {}; }
+            if (body === null || body === undefined) {
+                throw new Error("'body' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/account/unlink/facebookinstantgame";
             var queryParams = {};
             var _body = null;
             _body = JSON.stringify(body || {});
@@ -1032,6 +1068,19 @@ var NakamaApi = function (configuration) {
                 throw new Error("'groupId' is a required parameter but is null or undefined.");
             }
             var urlPath = "/v2/group/{group_id}/add"
+                .replace("{group_id}", encodeURIComponent(String(groupId)));
+            var queryParams = {
+                user_ids: userIds,
+            };
+            var _body = null;
+            return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+        },
+        banGroupUsers: function (groupId, userIds, options) {
+            if (options === void 0) { options = {}; }
+            if (groupId === null || groupId === undefined) {
+                throw new Error("'groupId' is a required parameter but is null or undefined.");
+            }
+            var urlPath = "/v2/group/{group_id}/ban"
                 .replace("{group_id}", encodeURIComponent(String(groupId)));
             var queryParams = {
                 user_ids: userIds,
@@ -1758,52 +1807,9 @@ var Client = (function () {
         this.apiClient = NakamaApi(this.configuration);
     }
     Client.prototype.addGroupUsers = function (session, groupId, ids) {
-        var _this = this;
         this.configuration.bearerToken = (session && session.token);
-        var urlPath = "/v2/group/" + groupId + "/add";
-        var queryParams = {
-            user_ids: ids
-        };
-        var urlQuery = "?" + Object.keys(queryParams)
-            .map(function (k) {
-            if (queryParams[k] instanceof Array) {
-                return queryParams[k].reduce(function (prev, curr) {
-                    return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                }, "");
-            }
-            else {
-                if (queryParams[k] != null) {
-                    return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                }
-            }
-        })
-            .join("");
-        var fetchOptions = __assign({ method: "POST" });
-        var headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        };
-        if (this.configuration.bearerToken) {
-            headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-        }
-        else if (this.configuration.username) {
-            headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-        }
-        fetchOptions.headers = __assign({}, headers);
-        return Promise.race([
-            fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
-                if (response.status >= 200 && response.status < 300) {
-                    return response.json();
-                }
-                else {
-                    throw response;
-                }
-            }),
-            new Promise(function (_, reject) {
-                return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
-            }),
-        ]).then(function (response) {
-            return Promise.resolve(response != undefined);
+        return this.apiClient.addGroupUsers(groupId, ids).then(function (response) {
+            return response !== undefined;
         });
     };
     Client.prototype.addFriends = function (session, ids, usernames) {
@@ -2006,6 +2012,9 @@ var Client = (function () {
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
         });
+    };
+    Client.prototype.authenticateFacebookInstantGame = function (request) {
+        return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, request.username, request.create);
     };
     Client.prototype.authenticateFacebook = function (request) {
         var _this = this;
@@ -2210,6 +2219,12 @@ var Client = (function () {
             }),
         ]).then(function (apiSession) {
             return Session.restore(apiSession.token || "");
+        });
+    };
+    Client.prototype.banGroupUsers = function (session, groupId, ids) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.banGroupUsers(groupId, ids).then(function (response) {
+            return response !== undefined;
         });
     };
     Client.prototype.blockFriends = function (session, ids, usernames) {
@@ -2664,6 +2679,12 @@ var Client = (function () {
             return response !== undefined;
         });
     };
+    Client.prototype.linkFacebookInstantGame = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.linkFacebookInstantGame(request).then(function (response) {
+            return response !== undefined;
+        });
+    };
     Client.prototype.linkGoogle = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.linkGoogle(request).then(function (response) {
@@ -3112,6 +3133,12 @@ var Client = (function () {
     Client.prototype.unlinkFacebook = function (session, request) {
         this.configuration.bearerToken = (session && session.token);
         return this.apiClient.unlinkFacebook(request).then(function (response) {
+            return response !== undefined;
+        });
+    };
+    Client.prototype.unlinkFacebookInstantGame = function (session, request) {
+        this.configuration.bearerToken = (session && session.token);
+        return this.apiClient.unlinkFacebookInstantGame(request).then(function (response) {
             return response !== undefined;
         });
     };
