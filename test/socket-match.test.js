@@ -46,7 +46,7 @@ describe('Match Tests', () => {
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session);
-      return await socket.addMatchmaker({ match_create: {} });
+      return await socket.createMatch();
     }, customid);
 
     expect(response).not.toBeNull();
@@ -68,8 +68,8 @@ describe('Match Tests', () => {
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session);
-      const match = await socket.addMatchmaker({ match_create: {} });
-      return await socket.joinMatch({ match_join: {match_id: match.match.match_id}});
+      const match = await socket.createMatch();
+      return await socket.joinMatch(match.match.match_id);
     }, customid);
 
     expect(response).not.toBeNull();
@@ -92,9 +92,9 @@ describe('Match Tests', () => {
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session);
-      const match = await socket.addMatchmaker({ match_create: {} });
-      await socket.joinMatch({ match_join: {match_id: match.match.match_id}});
-      return await socket.leaveMatch({ match_leave: {match_id: match.match.match_id}});
+      const match = await socket.createMatch();
+      await socket.joinMatch(match.match.match_id);
+      return await socket.leaveMatch(match.match.match_id);
     }, customid);
 
     expect(response).not.toBeNull();
@@ -120,11 +120,11 @@ describe('Match Tests', () => {
 
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1);
-      const match = await socket1.addMatchmaker({ match_create: {} });
+      const match = await socket1.createMatch();
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2);
-      await socket2.joinMatch({ match_join: {match_id: match.match.match_id}});
-      await socket1.sendMatchState({ match_data_send: {match_id: match.match.match_id, op_code: 20, data: payload}});
+      await socket2.joinMatch(match.match.match_id);
+      await socket1.sendMatchState(match.match.match_id, 20,  payload);
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(reject, 5000, "did not receive match data - timed out.")
       });
@@ -147,11 +147,11 @@ describe('Match Tests', () => {
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session);
 
-      var res = await socket.rpc({ rpc: { id: id, payload: "{}" } });
+      var res = await socket.rpc(id, "{}");
       var match = JSON.parse(res.rpc.payload);
 
       var metadata = { key: "value" };
-      await socket.addMatchmaker({ match_join: {match_id: match.match_id, metadata: metadata }});
+      await socket.joinMatch(match.match_id, metadata);
     }, customid, ID);
   });
 
@@ -165,7 +165,7 @@ describe('Match Tests', () => {
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session);
-      await socket.rpc({ rpc: { id: id, payload: "{}" } });
+      await socket.rpc(id, "{}");
       return await client.listMatches(session, 1, true)
     }, customid, ID);
 
@@ -189,7 +189,7 @@ describe('Match Tests', () => {
 
       var label = { skill: 60 };
       var data = { label: JSON.stringify(label) }  // needs to be string
-      await socket.rpc({ rpc: { id: id, payload: JSON.stringify(data) } });
+      await socket.rpc(id, JSON.stringify(data));
 
       var query = "+label.skill:>=50";
       return await client.listMatches(session, 1, true, "", 0, 100, query)
@@ -218,7 +218,7 @@ describe('Match Tests', () => {
 
       var label = { convo_ids: [convoId1, convoId2, convoId3] };
       var data = { label: JSON.stringify(label) }  // needs to be string
-      await socket.rpc({ rpc: { id: id, payload: JSON.stringify(data) } });
+      await socket.rpc(id, JSON.stringify(data));
 
       var query = "+label.convo_ids:" + convoId2;
       return await client.listMatches(session, 1, true, "", 0, 100, query)

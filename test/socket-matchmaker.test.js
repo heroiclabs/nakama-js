@@ -45,8 +45,8 @@ describe('Matchmaker Tests', () => {
       const socket = client.createSocket(false, false);
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session);
-      return await socket.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a1:foo", string_properties: {"a1": "bar"}} });
-
+      return await socket.addMatchmaker("properties.a1:foo", 2, 2, {"a1": "bar"});
+      
     }, customid);
 
     expect(response).not.toBeNull();
@@ -63,8 +63,8 @@ describe('Matchmaker Tests', () => {
       const socket = client.createSocket(false, false);
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session);
-      const ticket = await socket.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a2:foo", string_properties: {"a2": "bar"}} });
-      return await socket.removeMatchmaker({ matchmaker_remove: {ticket: ticket.matchmaker_ticket.ticket} });
+      const ticket = await socket.addMatchmaker("properties.a2:foo", 2, 2, {"a2": "bar"});
+      return await socket.removeMatchmaker(ticket.matchmaker_ticket.ticket);
     }, customid);
 
     expect(response).not.toBeNull();
@@ -89,10 +89,10 @@ describe('Matchmaker Tests', () => {
 
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1);
-      const ticket1 = await socket1.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a3:bar", string_properties: {"a3": "baz"}} });
+      const ticket1 = await socket1.addMatchmaker("properties.a3:bar", 2, 2, {"a3": "baz"});
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2);
-      const ticket2 = await socket2.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a3:baz", string_properties: {"a3": "bar"}} });
+      const ticket2 = await socket2.addMatchmaker("properties.a3:baz", 2, 2, {"a3": "bar"});
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
       });
@@ -129,10 +129,10 @@ describe('Matchmaker Tests', () => {
 
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1);
-      const ticket1 = await socket1.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b1:>=10 +properties.b1:<=20", numeric_properties: {"b1": 15}} });
+      const ticket1 = await socket1.addMatchmaker("+properties.b1:>=10 +properties.b1:<=20", 2, 2, {}, {"b1": 15});
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2);
-      const ticket2 = await socket2.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b1:>=10 +properties.b1:<=20", numeric_properties: {"b1": 15}} });
+      const ticket2 = await socket2.addMatchmaker("+properties.b1:>=10 +properties.b1:<=20", 2, 2, {}, {"b1": 15});
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
       });
@@ -169,10 +169,10 @@ describe('Matchmaker Tests', () => {
 
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1);
-      const ticket1 = await socket1.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c1:>=10 +properties.c1:<=20 +properties.c2:foo", numeric_properties: {"c1": 15}, string_properties: {"c2": "foo"}} });
+      const ticket1 = await socket1.addMatchmaker("+properties.c1:>=10 +properties.c1:<=20 +properties.c2:foo", 2, 2, {"c2": "foo"}, {"c1": 15});
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2);
-      const ticket2 = await socket2.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c1:>=10 +properties.c1:<=20 +properties.c2:foo", numeric_properties: {"c1": 15}, string_properties: {"c2": "foo"}} });
+      const ticket2 = await socket2.addMatchmaker("+properties.c1:>=10 +properties.c1:<=20 +properties.c2:foo", 2, 2, {"c2": "foo"}, {"c1": 15});
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
       });
@@ -208,11 +208,15 @@ describe('Matchmaker Tests', () => {
 
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1);
-      const ticket1 = await socket1.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a4:bar", string_properties: {"a4": "baz"}} });
-      await socket1.removeMatchmaker({ matchmaker_remove: {ticket: ticket1.matchmaker_ticket.ticket} });
+
+      const ticket1 = await socket1.addMatchmaker("properties.a4:bar", 2, 2, {"a4": "baz"});
+      await socket1.removeMatchmaker(ticket1.matchmaker_ticket.ticket);
+
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2);
-      const ticket2 = await socket2.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a4:baz", string_properties: {"a4": "bar"}} });
+
+      const ticket2 = await socket2.addMatchmaker("properties.a4:baz", 2, 2, {"a4": "bar"});
+
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(resolve, 2500, "did not match.")
       });
@@ -241,10 +245,10 @@ describe('Matchmaker Tests', () => {
 
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1);
-      const ticket1 = await socket1.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a5:bar", string_properties: {"a5": "baz"}} });
+      const ticket1 = await socket1.addMatchmaker("properties.a5:bar", 2, 2, {"a5": "baz"});
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2);
-      const ticket2 = await socket2.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a5:bar", string_properties: {"a5": "baz"}} });
+      const ticket2 = await socket2.addMatchmaker("properties.a5:bar", 2, 2, {"a5": "baz"});
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(resolve, 2500, "did not match.")
       });
@@ -273,10 +277,10 @@ describe('Matchmaker Tests', () => {
 
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1);
-      const ticket1 = await socket1.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b2:>=10 +properties.b2:<=20", numeric_properties: {"b2": 25}} });
+      const ticket1 = await socket1.addMatchmaker("+properties.b2:>=10 +properties.b2:<=20", 2, 2, {}, {"b2": 25});
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2);
-      const ticket2 = await socket2.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.b2:>=10 +properties.b2:<=20", numeric_properties: {"b2": 15}} });
+      const ticket2 = await socket2.addMatchmaker("+properties.b2:>=10 +properties.b2:<=20", 2, 2, {}, {"b2": 15});
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(resolve, 2500, "did not match.")
       });
@@ -305,10 +309,10 @@ describe('Matchmaker Tests', () => {
 
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1);
-      const ticket1 = await socket1.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo", numeric_properties: {"c3": 25}, string_properties: {"c4": "foo"}} });
+      const ticket1 = await socket1.addMatchmaker("+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo", 2, 2, {"c4": "foo"}, {"c3": 25});
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2);
-      const ticket2 = await socket2.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo", numeric_properties: {"c3": 15}, string_properties: {"c4": "foo"}} });
+      const ticket2 = await socket2.addMatchmaker("+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo", 2, 2, {"c4": "foo"}, {"c3": 15});
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(resolve, 2500, "did not match.")
       });
@@ -340,13 +344,13 @@ describe('Matchmaker Tests', () => {
 
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1);
-      const ticket1 = await socket1.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a6:bar", string_properties: {"a6": "bar"}} });
+      const ticket1 = await socket1.addMatchmaker("properties.a6:bar", 2, 2, {"a6": "bar"});
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2);
-      const ticket2 = await socket2.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a6:bar", string_properties: {"a6": "bar"}} });
+      const ticket2 = await socket2.addMatchmaker("properties.a6:bar", 2, 2, {"a6": "bar"});
       const session3 = await client3.authenticateCustom({ id: customid3 });
       await socket3.connect(session3);
-      const ticket3 = await socket3.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.a6:bar", string_properties: {"a6": "bar"}} });
+      const ticket3 = await socket3.addMatchmaker("properties.a6:bar", 2, 2, {"a6": "bar"});
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(resolve, 2500, "did not match.")
       });
@@ -375,10 +379,10 @@ describe('Matchmaker Tests', () => {
 
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1);
-      const ticket1 = await socket1.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.d1:foo", string_properties: {"d1": "foo", "mode": "authoritative"}} });
+      const ticket1 = await socket1.addMatchmaker("properties.d1:foo", 2, 2, {"d1": "foo", "mode": "authoritative"});
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2);
-      const ticket2 = await socket2.addMatchmaker({ matchmaker_add: {min_count: 2, max_count: 2, query: "properties.d1:foo", string_properties: {"d1": "foo", "mode": "authoritative"}} });
+      const ticket2 = await socket2.addMatchmaker("properties.d1:foo", 2, 2, {"d1": "foo", "mode": "authoritative"});
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
       });

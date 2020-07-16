@@ -46,12 +46,9 @@ describe('Channel Tests', () => {
       const socket = client.createSocket(false, false);
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session);
-      return await socket.joinChat({ channel_join: {
-        type: 1, //1 = room, 2 = Direct Message 3 = Group
-        target: channelid,
-        persistence: true,
-        hidden: false
-      } });
+
+      //chat type: 1 = room, 2 = Direct Message 3 = Group
+      return await socket.joinChat(channelid, 1, true, false);
     }, customid, channelid);
 
     expect(response).not.toBeNull();
@@ -71,16 +68,10 @@ describe('Channel Tests', () => {
       const socket = client.createSocket(false, false);
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session);
-      const channel = await socket.joinChat({ channel_join: {
-        type: 1, //1 = room, 2 = Direct Message 3 = Group
-        target: channelid,
-        persistence: true,
-        hidden: false
-      } });
+      //chat type: 1 = room, 2 = Direct Message 3 = Group
+      const channel = await socket.joinChat(channelid, 1, true, false);
 
-      return await socket.leaveChat({ channel_leave: {
-        channel_id: channel.channel.id
-      } });
+      return await socket.leaveChat(channel.channel.id);
     }, customid, channelid);
 
     expect(response).not.toBeNull();
@@ -104,18 +95,12 @@ describe('Channel Tests', () => {
 
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session);
-      const channel = await socket.joinChat({ channel_join: {
-        type: 1, //1 = room, 2 = Direct Message 3 = Group
-        target: channelid,
-        persistence: false,
-        hidden: false
-      } });
 
-      await socket.writeChatMessage({ channel_message_send: {
-        channel_id: channel.channel.id,
-        content: payload
-      } })
+      // chat type: 1 = room, 2 = Direct Message 3 = Group
+      const channel = await socket.joinChat(channelid, 1, false, false);
 
+      await socket.writeChatMessage(channel.channel.id, payload);
+      
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(reject, 5000, "did not receive channel message - timed out.")
       });
@@ -145,23 +130,15 @@ describe('Channel Tests', () => {
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session);
 
-      const channel = await socket.joinChat({ channel_join: {
-        type: 1, //1 = room, 2 = Direct Message 3 = Group
-        target: channelid,
-        persistence: true,
-        hidden: false
-      }});
+      //chat type: 1 = room, 2 = Direct Message 3 = Group
+      const channel = await socket.joinChat(channelid, 1, true, false);
 
-      const ack = await socket.writeChatMessage({channel_message_send: {
-        channel_id: channel.channel.id,
-        content: payload
-      }});
-
-      const ack2 = await socket.updateChatMessage({ channel_message_update: {
-        channel_id: ack.channel_message_ack.channel_id,
-        message_id: ack.channel_message_ack.message_id,
-        content: updatedPayload
-      }});
+      const ack = await socket.writeChatMessage(channel.channel.id, payload);
+      
+      const ack2 = await socket.updateChatMessage(
+        ack.channel_message_ack.channel_id,
+        ack.channel_message_ack.message_id,
+        updatedPayload);
 
       return await client.listChannelMessages(session, ack2.channel_message_ack.channel_id, 10)
     }, customid, channelid, payload, updatedPayload);
@@ -190,22 +167,13 @@ describe('Channel Tests', () => {
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session);
 
-      const channel = await socket.joinChat({ channel_join: {
-        type: 1, //1 = room, 2 = Direct Message 3 = Group
-        target: channelid,
-        persistence: true,
-        hidden: false
-      }});
+      // chat type: 1 = room, 2 = Direct Message 3 = Group
+      const channel = await socket.joinChat(channelid, 1, true, false);
 
-      const ack = await socket.writeChatMessage({channel_message_send: {
-        channel_id: channel.channel.id,
-        content: payload
-      }});
+      const ack = await socket.writeChatMessage(channel.channel.id, payload);
 
-      await socket.removeChatMessage({ channel_message_remove: {
-        channel_id: ack.channel_message_ack.channel_id,
-        message_id: ack.channel_message_ack.message_id
-      }});
+      await socket.removeChatMessage(ack.channel_message_ack.channel_id,
+        ack.channel_message_ack.message_id);
 
       return await client.listChannelMessages(session, ack.channel_message_ack.channel_id, 10)
     }, customid, channelid, payload);

@@ -1692,50 +1692,90 @@ var DefaultSocket = (function () {
             }
         });
     };
-    DefaultSocket.prototype.addMatchmaker = function (matchmakerAdd) {
-        return this.send(matchmakerAdd);
+    DefaultSocket.prototype.addMatchmaker = function (query, minCount, maxCount, stringProperties, numericProperties) {
+        var matchMakerAdd = {
+            "matchmaker_add": {
+                min_count: minCount,
+                max_count: maxCount,
+                query: query,
+                string_properties: stringProperties,
+                numeric_properties: numericProperties
+            }
+        };
+        return this.send(matchMakerAdd);
     };
-    DefaultSocket.prototype.createMatch = function (createMatch) {
-        return this.send(createMatch);
+    DefaultSocket.prototype.createMatch = function () {
+        return this.send({ match_create: {} });
     };
-    DefaultSocket.prototype.followUsers = function (statusFollow) {
-        return this.send(statusFollow);
+    DefaultSocket.prototype.followUsers = function (userIds) {
+        return this.send({ status_follow: { user_ids: userIds } });
     };
-    DefaultSocket.prototype.joinChat = function (channelJoin) {
-        return this.send(channelJoin);
+    DefaultSocket.prototype.joinChat = function (target, type, persistence, hidden) {
+        return this.send({
+            channel_join: {
+                target: target,
+                type: type,
+                persistence: persistence,
+                hidden: hidden
+            }
+        });
     };
-    DefaultSocket.prototype.joinMatch = function (joinMatch) {
-        return this.send(joinMatch);
+    DefaultSocket.prototype.joinMatch = function (match_id, metadata, token) {
+        return this.send({
+            match_join: {
+                match_id: match_id,
+                metadata: metadata,
+                token: token
+            }
+        });
     };
-    DefaultSocket.prototype.leaveChat = function (channelLeave) {
-        return this.send(channelLeave);
+    DefaultSocket.prototype.leaveChat = function (channel_id) {
+        return this.send({ channel_leave: { channel_id: channel_id } });
     };
-    DefaultSocket.prototype.leaveMatch = function (leaveMatch) {
-        return this.send(leaveMatch);
+    DefaultSocket.prototype.leaveMatch = function (matchId) {
+        return this.send({ match_leave: { match_id: matchId } });
     };
-    DefaultSocket.prototype.removeChatMessage = function (messageRemove) {
-        return this.send(messageRemove);
+    DefaultSocket.prototype.removeChatMessage = function (channel_id, message_id) {
+        return this.send({
+            channel_message_remove: {
+                channel_id: channel_id,
+                message_id: message_id
+            }
+        });
     };
-    DefaultSocket.prototype.removeMatchmaker = function (matchmakerRemove) {
-        return this.send(matchmakerRemove);
+    DefaultSocket.prototype.removeMatchmaker = function (ticket) {
+        return this.send({ matchmaker_remove: { ticket: ticket } });
     };
-    DefaultSocket.prototype.rpc = function (rpc) {
-        return this.send(rpc);
+    DefaultSocket.prototype.rpc = function (id, payload, http_key) {
+        return this.send({
+            rpc: {
+                id: id,
+                payload: payload,
+                http_key: http_key,
+            }
+        });
     };
-    DefaultSocket.prototype.sendMatchState = function (matchDataSend) {
-        return this.send(matchDataSend);
+    DefaultSocket.prototype.sendMatchState = function (matchId, opCode, data, presence) {
+        return this.send({
+            match_data_send: {
+                match_id: matchId,
+                op_code: opCode,
+                data: data,
+                presence: presence
+            }
+        });
     };
-    DefaultSocket.prototype.unfollowUsers = function (statusUnfollow) {
-        return this.send(statusUnfollow);
+    DefaultSocket.prototype.unfollowUsers = function (user_ids) {
+        return this.send({ status_unfollow: { user_ids: user_ids } });
     };
-    DefaultSocket.prototype.updateChatMessage = function (messageUpdate) {
-        return this.send(messageUpdate);
+    DefaultSocket.prototype.updateChatMessage = function (channel_id, message_id, content) {
+        return this.send({ channel_message_update: { channel_id: channel_id, message_id: message_id, content: content } });
     };
-    DefaultSocket.prototype.updateStatus = function (statusUpdate) {
-        return this.send(statusUpdate);
+    DefaultSocket.prototype.updateStatus = function (status) {
+        return this.send({ status_update: { status: status } });
     };
-    DefaultSocket.prototype.writeChatMessage = function (messageSend) {
-        return this.send(messageSend);
+    DefaultSocket.prototype.writeChatMessage = function (channel_id, content) {
+        return this.send({ channel_message_send: { channel_id: channel_id, content: content } });
     };
     return DefaultSocket;
 }());
