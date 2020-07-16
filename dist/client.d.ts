@@ -319,6 +319,7 @@ export declare class Client {
     unlinkDevice(session: Session, request: ApiAccountDevice): Promise<boolean>;
     unlinkEmail(session: Session, request: ApiAccountEmail): Promise<boolean>;
     unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean>;
+    unlinkFacebookInstantGame(session: Session, request: ApiAccountFacebookInstantGame): Promise<boolean>;
     unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean>;
     unlinkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean>;
     unlinkSteam(session: Session, request: ApiAccountSteam): Promise<boolean>;

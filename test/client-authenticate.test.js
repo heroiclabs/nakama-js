@@ -16,7 +16,6 @@
 
 const fs = require("fs");
 const base64url = require('base64url');
-
 const crypto = require("crypto");
 
 const TIMEOUT = 5000;

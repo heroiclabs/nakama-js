@@ -2057,6 +2057,14 @@ export class Client {
     });
   }
 
+  /** Remove Facebook Instant social profiles from the current user's account. */
+  unlinkFacebookInstantGame(session: Session, request: ApiAccountFacebookInstantGame): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.unlinkFacebookInstantGame(request).then((response: any) => {
+      return response !== undefined;
+    });
+  }
+
   /** Remove Google from the social profiles on the current user's account. */
   unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);

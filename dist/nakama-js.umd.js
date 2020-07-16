@@ -3102,6 +3102,12 @@
               return response !== undefined;
           });
       };
+      Client.prototype.unlinkFacebookInstantGame = function (session, request) {
+          this.configuration.bearerToken = (session && session.token);
+          return this.apiClient.unlinkFacebookInstantGame(request).then(function (response) {
+              return response !== undefined;
+          });
+      };
       Client.prototype.unlinkGoogle = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
           return this.apiClient.unlinkGoogle(request).then(function (response) {
