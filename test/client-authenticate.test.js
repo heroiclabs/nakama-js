@@ -15,6 +15,10 @@
  */
 
 const fs = require("fs");
+const base64url = require('base64url');
+
+const crypto = require("crypto");
+
 const TIMEOUT = 5000;
 
 // util to generate a random id.
@@ -115,4 +119,34 @@ describe('Authenticate Tests', () => {
 
     expect(result).not.toBeNull();
   });
+
+  // optional test: ensure server has been configured with the 
+  // facebook instant secret used in the test and then remove `.skip()` to run.
+  it.skip('should authenticate with facebook instant games', async () => {
+    const testSecret = "fb-instant-test-secret";
+
+    const mockFbInstantPayload = JSON.stringify({ 
+      algorithm: "HMAC-SHA256", 
+      issued_at: 1594867628,
+      player_id: "a-fb-id",
+      request_payload: ""
+    });
+
+    const encodedPayload = base64url(mockFbInstantPayload);
+
+    const signature = crypto.createHmac('sha256', testSecret).update(encodedPayload).digest();
+    const encodedSignature = base64url(signature);
+
+    const token = encodedSignature + "." + encodedPayload;
+
+    const session = await page.evaluate((token, ) => {
+      const client = new nakamajs.Client();
+      const authObj = { signed_player_info: token };
+      return client.authenticateFacebookInstantGame(authObj);
+    }, token);
+
+    expect(session).not.toBeNull();
+    expect(session.token).not.toBeNull();
+  });
+
 }, TIMEOUT);
