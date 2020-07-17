@@ -1,6 +1,6 @@
 import { WebSocketAdapter, SocketCloseHandler, SocketErrorHandler, SocketMessageHandler, SocketOpenHandler } from './web_socket_adapter'
 
-import { b64EncodeUnicode } from "./utils";
+import { b64EncodeUnicode, b64DecodeUnicode } from "./utils";
 import { ApiNotification } from './api.gen';
 
 export class WebSocketAdapterText implements WebSocketAdapter {
@@ -39,6 +39,9 @@ export class WebSocketAdapterText implements WebSocketAdapter {
                     message.notifications.notifications.forEach((n: ApiNotification) => {
                         n.content = n.content ? JSON.parse(n.content) : undefined;
                     });
+                } else if (message.match_data) {
+                    message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
+                    message.match_data.op_code = parseInt(message.match_data.op_code);
                 }
 
                 value!(message);

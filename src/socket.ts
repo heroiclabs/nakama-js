@@ -17,7 +17,6 @@
 import {ApiNotification, ApiRpc} from "./api.gen";
 import {Session} from "./session";
 import {Notification} from "./client";
-import {b64DecodeUnicode} from "./utils";
 import {WebSocketAdapter} from "./web_socket_adapter"
 import {WebSocketAdapterText} from "./web_socket_adapter_text"
 
@@ -403,8 +402,6 @@ export class DefaultSocket implements Socket {
             this.onnotification(n);
           });
         } else if (message.match_data) {
-          message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
-          message.match_data.op_code = parseInt(message.match_data.op_code);
           this.onmatchdata(message.match_data);
         } else if (message.match_presence_event) {
           this.onmatchpresence(<MatchPresenceEvent>message.match_presence_event);
