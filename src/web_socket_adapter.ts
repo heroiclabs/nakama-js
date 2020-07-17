@@ -20,7 +20,7 @@ export interface SocketErrorHandler {
 }
 
 export interface SocketMessageHandler {
-    (this : WebSocket, evt: MessageEvent): void;
+    (message: any): void;
 }
 
 export interface SocketOpenHandler {

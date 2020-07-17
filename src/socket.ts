@@ -391,8 +391,7 @@ export class DefaultSocket implements Socket {
       this.onerror(evt);
     }
 
-    this.adapter.onMessage = (evt: MessageEvent) => {
-      const message = JSON.parse(evt.data);
+    this.adapter.onMessage = (message: any) => {
       if (this.verbose && window && window.console) {
         console.log("Response: %o", message);
       }

@@ -7,6 +7,7 @@ export class WebSocketAdapterText implements WebSocketAdapter {
     private _isConnected : boolean = false;
 
     private _socket? : WebSocket;
+    
 
     get onClose() : SocketCloseHandler | null {
         return this._socket!.onclose;
@@ -29,7 +30,7 @@ export class WebSocketAdapterText implements WebSocketAdapter {
     }
 
     set onMessage(value: SocketMessageHandler | null) {
-        this._socket!.onmessage = value;
+          this._socket!.onmessage = value ? (evt : MessageEvent) => value!(JSON.parse(evt.data)) : null;
     }
 
     get onOpen() : SocketOpenHandler | null {
@@ -58,6 +59,7 @@ export class WebSocketAdapterText implements WebSocketAdapter {
     }
 
     send(msg: any) : void { 
+
         if (msg.match_data_send) {
             msg.match_data_send.data = b64EncodeUnicode(JSON.stringify(msg.match_data_send.data));
             msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
@@ -68,7 +70,7 @@ export class WebSocketAdapterText implements WebSocketAdapter {
         } else if (msg.channel_message_update) {
             msg.channel_message_update.content = JSON.stringify(msg.channel_message_update.content);
         }
-        
+
         this._socket!.send(JSON.stringify(msg));
     }
 }
