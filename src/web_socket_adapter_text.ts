@@ -42,8 +42,10 @@ export class WebSocketAdapterText implements WebSocketAdapter {
                 } else if (message.match_data) {
                     message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
                     message.match_data.op_code = parseInt(message.match_data.op_code);
+                } else if (message.channel_message) {
+                    message.channel_message.content = JSON.parse(message.channel_message.content);
                 }
-
+                
                 value!(message);
             };
         }

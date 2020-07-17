@@ -414,7 +414,6 @@ export class DefaultSocket implements Socket {
         } else if (message.stream_data) {
           this.onstreamdata(<StreamData>message.stream_data);
         } else if (message.channel_message) {
-          message.channel_message.content = JSON.parse(message.channel_message.content);
           this.onchannelmessage(<ChannelMessage>message.channel_message);
         } else if (message.channel_presence_event) {
           this.onchannelpresence(<ChannelPresenceEvent>message.channel_presence_event);
