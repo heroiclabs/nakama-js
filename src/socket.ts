@@ -18,6 +18,9 @@ import {ApiNotification, ApiRpc} from "./api.gen";
 import {Session} from "./session";
 import {Notification} from "./client";
 import {b64EncodeUnicode, b64DecodeUnicode} from "./utils";
+import {WebSocketAdapter} from "./web_socket_adapter"
+import {WebSocketAdapterText} from "./web_socket_adapter_text"
+
 
 /** Requires the set of keys K to exist in type T. */
 type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
@@ -356,6 +359,7 @@ export class DefaultSocket implements Socket {
   private socket?: WebSocket;
   private readonly cIds: { [key: string]: PromiseExecutor };
   private nextCid: number;
+  private adapter : WebSocketAdapter = new WebSocketAdapterText();
 
   constructor(
       readonly host: string,
