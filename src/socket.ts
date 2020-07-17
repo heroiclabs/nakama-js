@@ -356,7 +356,6 @@ export interface SocketError {
 
 /** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
 export class DefaultSocket implements Socket {
-  private socket?: WebSocket;
   private readonly cIds: { [key: string]: PromiseExecutor };
   private nextCid: number;
   private adapter : WebSocketAdapter = new WebSocketAdapterText();
@@ -377,25 +376,22 @@ export class DefaultSocket implements Socket {
   }
 
   connect(session: Session, createStatus: boolean = false): Promise<Session> {
-    if (this.socket != undefined) {
+    if (this.adapter.isConnected) {
       return Promise.resolve(session);
     }
 
     const scheme = (this.useSSL) ? "wss://" : "ws://";
-   
-    const socket = this.adapter.connect(scheme, this.host, this.port, createStatus, session.token);
-    this.socket = socket;
+    this.adapter.connect(scheme, this.host, this.port, createStatus, session.token);
 
-    socket.onclose = (evt: Event) => {
+    this.adapter.onClose = (evt: Event) => {
       this.ondisconnect(evt);
-      this.socket = undefined;
     }
 
-    socket.onerror = (evt: Event) => {
+    this.adapter.onError = (evt: Event) => {
       this.onerror(evt);
     }
 
-    socket.onmessage = (evt: MessageEvent) => {
+    this.adapter.onMessage = (evt: MessageEvent) => {
       const message = JSON.parse(evt.data);
       if (this.verbose && window && window.console) {
         console.log("Response: %o", message);
@@ -459,23 +455,22 @@ export class DefaultSocket implements Socket {
     }
 
     return new Promise((resolve, reject) => {
-      socket.onopen = (evt: Event) => {
+      this.adapter.onOpen = (evt: Event) => {
         if (this.verbose && window && window.console) {
           console.log(evt);
         }
         resolve(session);
       }
-      socket.onerror = (evt: Event) => {
+      this.adapter.onError = (evt: Event) => {
         reject(evt);
-        socket.close();
-        this.socket = undefined;
+        this.adapter.close();
       }
     });
   }
 
   disconnect(fireDisconnectEvent: boolean = true) {
-    if (this.socket !== undefined) {
-      this.socket.close();
+    if (this.adapter.isConnected) {
+      this.adapter.close();
     }
     if (fireDisconnectEvent) {
       this.ondisconnect(<Event>{});
@@ -554,13 +549,13 @@ export class DefaultSocket implements Socket {
     Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any> {
     const m = message as any;
     return new Promise((resolve, reject) => {
-      if (this.socket === undefined) {
+      if (!this.adapter.isConnected) {
         reject("Socket connection has not been established yet.");
       } else {
         if (m.match_data_send) {
           m.match_data_send.data = b64EncodeUnicode(JSON.stringify(m.match_data_send.data));
           m.match_data_send.op_code = m.match_data_send.op_code.toString();
-          this.socket.send(JSON.stringify(m));
+          this.adapter.send(m);
           resolve();
         } else {
           if (m.channel_message_send) {
@@ -574,7 +569,7 @@ export class DefaultSocket implements Socket {
 
           // Add id for promise executor.
           m.cid = cid;
-          this.socket.send(JSON.stringify(m));
+          this.adapter.send(m);
         }
       }
 
