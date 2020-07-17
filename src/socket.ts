@@ -399,17 +399,8 @@ export class DefaultSocket implements Socket {
       // Inbound message from server.
       if (message.cid == undefined) {
         if (message.notifications) {
-          message.notifications.notifications.forEach((n: ApiNotification) => {
-            const notification: Notification = {
-              code: n.code,
-              create_time: n.create_time,
-              id: n.id,
-              persistent: n.persistent,
-              sender_id: n.sender_id,
-              subject: n.subject,
-              content: n.content ? JSON.parse(n.content) : undefined,
-            };
-            this.onnotification(notification);
+            message.notifications.notifications.forEach((n: ApiNotification) => {
+            this.onnotification(n);
           });
         } else if (message.match_data) {
           message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
