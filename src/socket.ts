@@ -17,7 +17,7 @@
 import {ApiNotification, ApiRpc} from "./api.gen";
 import {Session} from "./session";
 import {Notification} from "./client";
-import {b64EncodeUnicode, b64DecodeUnicode} from "./utils";
+import {b64DecodeUnicode} from "./utils";
 import {WebSocketAdapter} from "./web_socket_adapter"
 import {WebSocketAdapterText} from "./web_socket_adapter_text"
 
@@ -556,11 +556,6 @@ export class DefaultSocket implements Socket {
           this.adapter.send(m);
           resolve();
         } else {
-          if (m.channel_message_send) {
-            m.channel_message_send.content = JSON.stringify(m.channel_message_send.content);
-          } else if (m.channel_message_update) {
-            m.channel_message_update.content = JSON.stringify(m.channel_message_update.content);
-          }
 
           const cid = this.generatecid();
           this.cIds[cid] = {resolve, reject};

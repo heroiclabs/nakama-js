@@ -63,6 +63,12 @@ export class WebSocketAdapterText implements WebSocketAdapter {
             msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
         }
 
+        if (msg.channel_message_send) {
+            msg.channel_message_send.content = JSON.stringify(msg.channel_message_send.content);
+        } else if (msg.channel_message_update) {
+            msg.channel_message_update.content = JSON.stringify(msg.channel_message_update.content);
+        }
+        
         this._socket!.send(JSON.stringify(msg));
     }
 }
