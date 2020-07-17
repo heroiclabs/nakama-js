@@ -218,9 +218,9 @@ export declare class DefaultSocket implements Socket {
     readonly port: string;
     readonly useSSL: boolean;
     verbose: boolean;
-    private socket?;
     private readonly cIds;
     private nextCid;
+    private adapter;
     constructor(host: string, port: string, useSSL?: boolean, verbose?: boolean);
     generatecid(): string;
     connect(session: Session, createStatus?: boolean): Promise<Session>;

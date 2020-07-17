@@ -1483,6 +1483,103 @@ function b64DecodeUnicode(str) {
     }).join(''));
 }
 
+var WebSocketAdapterText = (function () {
+    function WebSocketAdapterText() {
+        this._isConnected = false;
+    }
+    Object.defineProperty(WebSocketAdapterText.prototype, "onClose", {
+        get: function () {
+            return this._socket.onclose;
+        },
+        set: function (value) {
+            this._socket.onclose = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(WebSocketAdapterText.prototype, "onError", {
+        get: function () {
+            return this._socket.onerror;
+        },
+        set: function (value) {
+            this._socket.onerror = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(WebSocketAdapterText.prototype, "onMessage", {
+        get: function () {
+            return this._socket.onmessage;
+        },
+        set: function (value) {
+            if (value) {
+                this._socket.onmessage = function (evt) {
+                    var message = JSON.parse(evt.data);
+                    if (message.notifications) {
+                        message.notifications.notifications.forEach(function (n) {
+                            n.content = n.content ? JSON.parse(n.content) : undefined;
+                        });
+                    }
+                    else if (message.match_data) {
+                        message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
+                        message.match_data.op_code = parseInt(message.match_data.op_code);
+                    }
+                    else if (message.channel_message) {
+                        message.channel_message.content = JSON.parse(message.channel_message.content);
+                    }
+                    value(message);
+                };
+            }
+            else {
+                value = null;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(WebSocketAdapterText.prototype, "onOpen", {
+        get: function () {
+            return this._socket.onopen;
+        },
+        set: function (value) {
+            this._socket.onopen = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(WebSocketAdapterText.prototype, "isConnected", {
+        get: function () {
+            return this._isConnected;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    WebSocketAdapterText.prototype.connect = function (scheme, host, port, createStatus, token) {
+        var url = "" + scheme + host + ":" + port + "/ws?lang=en&status=" + encodeURIComponent(createStatus.toString()) + "&token=" + encodeURIComponent(token);
+        this._socket = new WebSocket(url);
+        this._isConnected = true;
+    };
+    WebSocketAdapterText.prototype.close = function () {
+        this._isConnected = false;
+        this._socket.close();
+        this._socket = undefined;
+    };
+    WebSocketAdapterText.prototype.send = function (msg) {
+        if (msg.match_data_send) {
+            msg.match_data_send.data = b64EncodeUnicode(JSON.stringify(msg.match_data_send.data));
+            msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+        }
+        if (msg.channel_message_send) {
+            msg.channel_message_send.content = JSON.stringify(msg.channel_message_send.content);
+        }
+        else if (msg.channel_message_update) {
+            msg.channel_message_update.content = JSON.stringify(msg.channel_message_update.content);
+        }
+        this._socket.send(JSON.stringify(msg));
+    };
+    return WebSocketAdapterText;
+}());
+
 var DefaultSocket = (function () {
     function DefaultSocket(host, port, useSSL, verbose) {
         if (useSSL === void 0) { useSSL = false; }
@@ -1491,6 +1588,7 @@ var DefaultSocket = (function () {
         this.port = port;
         this.useSSL = useSSL;
         this.verbose = verbose;
+        this.adapter = new WebSocketAdapterText();
         this.cIds = {};
         this.nextCid = 1;
     }
@@ -1502,43 +1600,28 @@ var DefaultSocket = (function () {
     DefaultSocket.prototype.connect = function (session, createStatus) {
         var _this = this;
         if (createStatus === void 0) { createStatus = false; }
-        if (this.socket != undefined) {
+        if (this.adapter.isConnected) {
             return Promise.resolve(session);
         }
         var scheme = (this.useSSL) ? "wss://" : "ws://";
-        var url = "" + scheme + this.host + ":" + this.port + "/ws?lang=en&status=" + encodeURIComponent(createStatus.toString()) + "&token=" + encodeURIComponent(session.token);
-        var socket = new WebSocket(url);
-        this.socket = socket;
-        socket.onclose = function (evt) {
+        this.adapter.connect(scheme, this.host, this.port, createStatus, session.token);
+        this.adapter.onClose = function (evt) {
             _this.ondisconnect(evt);
-            _this.socket = undefined;
         };
-        socket.onerror = function (evt) {
+        this.adapter.onError = function (evt) {
             _this.onerror(evt);
         };
-        socket.onmessage = function (evt) {
-            var message = JSON.parse(evt.data);
+        this.adapter.onMessage = function (message) {
             if (_this.verbose && window && window.console) {
                 console.log("Response: %o", message);
             }
             if (message.cid == undefined) {
                 if (message.notifications) {
                     message.notifications.notifications.forEach(function (n) {
-                        var notification = {
-                            code: n.code,
-                            create_time: n.create_time,
-                            id: n.id,
-                            persistent: n.persistent,
-                            sender_id: n.sender_id,
-                            subject: n.subject,
-                            content: n.content ? JSON.parse(n.content) : undefined,
-                        };
-                        _this.onnotification(notification);
+                        _this.onnotification(n);
                     });
                 }
                 else if (message.match_data) {
-                    message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
-                    message.match_data.op_code = parseInt(message.match_data.op_code);
                     _this.onmatchdata(message.match_data);
                 }
                 else if (message.match_presence_event) {
@@ -1557,7 +1640,6 @@ var DefaultSocket = (function () {
                     _this.onstreamdata(message.stream_data);
                 }
                 else if (message.channel_message) {
-                    message.channel_message.content = JSON.parse(message.channel_message.content);
                     _this.onchannelmessage(message.channel_message);
                 }
                 else if (message.channel_presence_event) {
@@ -1587,23 +1669,22 @@ var DefaultSocket = (function () {
             }
         };
         return new Promise(function (resolve, reject) {
-            socket.onopen = function (evt) {
+            _this.adapter.onOpen = function (evt) {
                 if (_this.verbose && window && window.console) {
                     console.log(evt);
                 }
                 resolve(session);
             };
-            socket.onerror = function (evt) {
+            _this.adapter.onError = function (evt) {
                 reject(evt);
-                socket.close();
-                _this.socket = undefined;
+                _this.adapter.close();
             };
         });
     };
     DefaultSocket.prototype.disconnect = function (fireDisconnectEvent) {
         if (fireDisconnectEvent === void 0) { fireDisconnectEvent = true; }
-        if (this.socket !== undefined) {
-            this.socket.close();
+        if (this.adapter.isConnected) {
+            this.adapter.close();
         }
         if (fireDisconnectEvent) {
             this.ondisconnect({});
@@ -1668,27 +1749,19 @@ var DefaultSocket = (function () {
         var _this = this;
         var m = message;
         return new Promise(function (resolve, reject) {
-            if (_this.socket === undefined) {
+            if (!_this.adapter.isConnected) {
                 reject("Socket connection has not been established yet.");
             }
             else {
                 if (m.match_data_send) {
-                    m.match_data_send.data = b64EncodeUnicode(JSON.stringify(m.match_data_send.data));
-                    m.match_data_send.op_code = m.match_data_send.op_code.toString();
-                    _this.socket.send(JSON.stringify(m));
+                    _this.adapter.send(m);
                     resolve();
                 }
                 else {
-                    if (m.channel_message_send) {
-                        m.channel_message_send.content = JSON.stringify(m.channel_message_send.content);
-                    }
-                    else if (m.channel_message_update) {
-                        m.channel_message_update.content = JSON.stringify(m.channel_message_update.content);
-                    }
                     var cid = _this.generatecid();
                     _this.cIds[cid] = { resolve: resolve, reject: reject };
                     m.cid = cid;
-                    _this.socket.send(JSON.stringify(m));
+                    _this.adapter.send(m);
                 }
             }
             if (_this.verbose && window && window.console) {
