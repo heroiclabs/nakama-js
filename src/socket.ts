@@ -553,8 +553,6 @@ export class DefaultSocket implements Socket {
         reject("Socket connection has not been established yet.");
       } else {
         if (m.match_data_send) {
-          m.match_data_send.data = b64EncodeUnicode(JSON.stringify(m.match_data_send.data));
-          m.match_data_send.op_code = m.match_data_send.op_code.toString();
           this.adapter.send(m);
           resolve();
         } else {

@@ -1,5 +1,7 @@
 import {WebSocketAdapter, SocketCloseHandler, SocketErrorHandler, SocketMessageHandler, SocketOpenHandler} from './web_socket_adapter'
 
+import {b64EncodeUnicode} from "./utils";
+
 export class WebSocketAdapterText implements WebSocketAdapter {
 
     private _isConnected : boolean = false;
@@ -55,7 +57,12 @@ export class WebSocketAdapterText implements WebSocketAdapter {
         this._socket = undefined;
     }
 
-    send (msg: any) : void { 
+    send(msg: any) : void { 
+        if (msg.match_data_send) {
+            msg.match_data_send.data = b64EncodeUnicode(JSON.stringify(msg.match_data_send.data));
+            msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+        }
+
         this._socket!.send(JSON.stringify(msg));
     }
 }
