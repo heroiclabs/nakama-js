@@ -382,8 +382,8 @@ export class DefaultSocket implements Socket {
     }
 
     const scheme = (this.useSSL) ? "wss://" : "ws://";
-    const url = `${scheme}${this.host}:${this.port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(session.token)}`;
-    const socket = new WebSocket(url);
+   
+    const socket = this.adapter.connect(scheme, this.host, this.port, createStatus, session.token);
     this.socket = socket;
 
     socket.onclose = (evt: Event) => {
