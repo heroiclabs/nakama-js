@@ -14,36 +14,21 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const TIMEOUT = 5000;
-
-// util to generate a random id.
-const generateid = () => {
-  return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
-};
+import * as nakamajs from "../src/client";
+import {createPage, generateid} from "./utils";
+import {Page} from "puppeteer"
 
 describe('Friend Tests', () => {
-  let page;
-
-  beforeAll(async () => {
-    page = await browser.newPage();
-
-    page.on('console', msg => console.log('LOG:', msg.text()));
-    page.on('error', err => console.error('ERR:', err));
-    page.on('pageerror', err => console.error('PAGE ERROR:', err));
-
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
-    await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto('about:blank');
-  }, TIMEOUT);
-
+  
   it('should add friend, then list', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
 
     const result = await page.evaluate(async (customid1, customid2) => {
-      const client1 = new nakamajs.Client();
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();      
+      const session1 = await client1.authenticateCustom({ id: customid1 })
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
@@ -57,11 +42,13 @@ describe('Friend Tests', () => {
   });
 
   it('should receive friend invite, then list', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
 
     const result = await page.evaluate(async (customid1, customid2) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
@@ -76,11 +63,13 @@ describe('Friend Tests', () => {
   });
 
   it('should block friend, then list', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
 
     const result = await page.evaluate(async (customid1, customid2) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
@@ -95,11 +84,13 @@ describe('Friend Tests', () => {
   });
 
   it('should add friend, accept, then list', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
 
     const result = await page.evaluate(async (customid1, customid2) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
@@ -115,11 +106,13 @@ describe('Friend Tests', () => {
   });
 
   it('should add friend, reject, then list', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
 
     const result = await page.evaluate(async (customid1, customid2) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
@@ -133,4 +126,4 @@ describe('Friend Tests', () => {
     expect(result.friends.length).toBe(0);
   });
 
-}, TIMEOUT);
+});

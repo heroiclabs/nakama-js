@@ -14,33 +14,17 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const base64url = require('base64url');
+import * as nakamajs from "../src/client";;
+import {createPage, generateid} from "./utils";
+import {Page} from "puppeteer"
+const base64url = require("base64url");
 const crypto = require("crypto");
 
-const TIMEOUT = 5000;
-
-// util to generate a random id.
-const generateid = () => {
-  return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
-};
-
 describe('Link / Unlink Tests', () => {
-  let page;
-
-  beforeAll(async () => {
-    page = await browser.newPage();
-
-    page.on('console', msg => console.log('LOG:', msg.text()));
-    page.on('error', err => console.error('ERR:', err));
-    page.on('pageerror', err => console.error('PAGE ERROR:', err));
-
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
-    await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto('about:blank');
-  }, TIMEOUT);
-
+  
   it('should link device ID', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
     const deviceid = generateid();
 
@@ -57,6 +41,8 @@ describe('Link / Unlink Tests', () => {
   });
 
   it('should unlink device ID', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
     const deviceid = generateid();
 
@@ -103,8 +89,8 @@ describe('Link / Unlink Tests', () => {
       return await client.getAccount(session);
     }, customid, token);
 
-    console.log("account user is...");
-    console.log(account.user);
+    ("account user is...");
+    (account.user);
     expect(account).not.toBeNull();
     expect(account.user.facebook_instant_game_id).not.toBeUndefined();
     
@@ -146,4 +132,4 @@ describe('Link / Unlink Tests', () => {
     expect(account.user.facebook_instant_game_id).toBeUndefined();
   })
 
-}, TIMEOUT);
+});

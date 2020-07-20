@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const TIMEOUT = 5000;
+import * as nakamajs from "../src/client";
+import {Page} from "puppeteer"
+import {createPage} from "./utils"
 
 describe('Client Tests', () => {
-  let page;
-
-  beforeAll(async () => {
-    page = await browser.newPage();
-
-    page.on('console', msg => console.log('LOG:', msg.text()));
-    page.on('error', err => console.error('ERR:', err));
-    page.on('pageerror', err => console.error('PAGE ERROR:', err));
-
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
-    await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto('about:blank');
-  }, TIMEOUT);
 
   it('should create object with defaults', async () => {
+    const page : Page = await createPage();
+
     const client = await page.evaluate(() => {
       return new nakamajs.Client();
     });
@@ -46,6 +36,8 @@ describe('Client Tests', () => {
   });
 
   it('should create object with configuration', async () => {
+    const page : Page = await createPage();
+
     const SERVER_KEY = "somesecret!";
     const HOST = "127.0.0.2";
     const PORT = "8080";
@@ -65,6 +57,8 @@ describe('Client Tests', () => {
   });
 
   it('should obey timeout configuration option', async () => {
+    const page : Page = await createPage();
+
     const err = await page.evaluate(() => {
       const client = new nakamajs.Client("defaultkey", "127.0.0.1", "7350", false, 0);
       return client.authenticateCustom({ "id": "timeoutuseridentifier" })
@@ -74,4 +68,4 @@ describe('Client Tests', () => {
     expect(err).not.toBeNull();
     expect(err).toBe("Request timed out.");
   });
-}, TIMEOUT);
+});

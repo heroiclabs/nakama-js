@@ -14,30 +14,16 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const TIMEOUT = 5000;
 
-// util to generate a random id.
-const generateid = () => {
-  return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
-};
+import * as nakamajs from "../src/client";
+import {createPage, generateid} from "./utils"
+import {Page} from "puppeteer"
 
 describe('Notification Tests', () => {
-  let page;
-
-  beforeAll(async () => {
-    page = await browser.newPage();
-
-    page.on('console', msg => console.log('LOG:', msg.text()));
-    page.on('error', err => console.error('ERR:', err));
-    page.on('pageerror', err => console.error('PAGE ERROR:', err));
-
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
-    await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto('about:blank');
-  }, TIMEOUT);
-
+  
   it('should rpc and list notifications', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
 
     const notifications = await page.evaluate(async (customid) => {
@@ -45,8 +31,8 @@ describe('Notification Tests', () => {
       const session = await client.authenticateCustom({ id: customid });
       await client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id});
       await client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id});
-      var notificationList = await client.listNotifications(session, "1", "");
-      var notificationList = await client.listNotifications(session, "1", notificationList.cacheable_cursor);
+      var notificationList = await client.listNotifications(session, 1, "");
+      var notificationList = await client.listNotifications(session, 1, notificationList.cacheable_cursor);
 
       return notificationList;
     }, customid);
@@ -59,13 +45,15 @@ describe('Notification Tests', () => {
   });
 
   it('should rpc and delete notification', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
 
     const response = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
       const session = await client.authenticateCustom({ id: customid });
       const rpcSuccess = await client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id});
-      const notificationsList = await client.listNotifications(session, "100", "");
+      const notificationsList = await client.listNotifications(session, 100, "");
 
       var notificationsDelete = []
       notificationsList.notifications.forEach((notification) => {
@@ -73,7 +61,7 @@ describe('Notification Tests', () => {
       });
 
       await client.deleteNotifications(session, notificationsDelete);
-      return client.listNotifications(session, "1", "");
+      return client.listNotifications(session, 1, "");
     }, customid);
 
     expect(response).not.toBeNull();
@@ -81,4 +69,4 @@ describe('Notification Tests', () => {
     expect(response.notifications.length).toEqual(0);
   });
 
-}, TIMEOUT);
+});

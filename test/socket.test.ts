@@ -14,42 +14,31 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const TIMEOUT = 5000;
+import * as nakamajs from "../src/client";
+import {StreamData} from "../src/socket"
 
-// util to generate a random id.
-const generateid = () => {
-  return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
-};
+import {createPage, generateid} from "./utils"
+import {Page} from "puppeteer"
 
 describe('Socket Message Tests', () => {
-  let page;
-
-  beforeAll(async () => {
-    page = await browser.newPage();
-
-    page.on('console', msg => console.log('LOG:', msg.text()));
-    page.on('error', err => console.error('ERR:', err));
-    page.on('pageerror', err => console.error('PAGE ERROR:', err));
-
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
-    await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto('about:blank');
-  }, TIMEOUT);
 
   it('should connect', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
 
     const session = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
       const session = await client.authenticateCustom({ id: customid });
       const socket = client.createSocket();
-      await socket.connect(session);
-      socket.disconnect();
+      await socket.connect(session, false);
+      socket.disconnect(false);
     }, customid);
   });
 
   it('should rpc and receive stream data', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
     const ID = "clientrpc.send_stream_data";
     const PAYLOAD = JSON.stringify({ "hello": "world" });
@@ -58,16 +47,16 @@ describe('Socket Message Tests', () => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false);
 
-      var promise1 = new Promise((resolve, reject) => {
+      var promise1 = new Promise<StreamData>((resolve, reject) => {
         socket.onstreamdata = (streamdata) => {
           resolve(streamdata);
         }
       });
 
       const session = await client.authenticateCustom({ id: customid })
-      await socket.connect(session);
+      await socket.connect(session, false);
       await socket.rpc(id, payload);
-      var promise2 = new Promise((resolve, reject) => {
+      var promise2 = new Promise<null>((resolve, reject) => {
         setTimeout(reject, 5000, "did not receive stream data - timed out.")
       });
 
@@ -77,4 +66,4 @@ describe('Socket Message Tests', () => {
     expect(response).not.toBeNull();
     expect(response.data).toBe(PAYLOAD);
   });
-}, TIMEOUT);
+});

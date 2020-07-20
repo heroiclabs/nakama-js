@@ -14,30 +14,16 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const TIMEOUT = 5000;
-
-// util to generate a random id.
-const generateid = () => {
-  return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
-};
+import * as nakamajs from "../src/client";
+import {createPage, generateid} from "./utils"
+import {Page} from "puppeteer"
+import { StatusPresenceEvent } from "../src/socket";
 
 describe('Status Tests', () => {
-  let page;
-
-  beforeAll(async () => {
-    page = await browser.newPage();
-
-    page.on('console', msg => console.log('LOG:', msg.text()));
-    page.on('error', err => console.error('ERR:', err));
-    page.on('pageerror', err => console.error('PAGE ERROR:', err));
-
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
-    await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto('about:blank');
-  }, TIMEOUT);
 
   it('should create status, and then update it', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
 
     const response = await page.evaluate(async (customid) => {
@@ -54,11 +40,13 @@ describe('Status Tests', () => {
   });
 
   it('should follow user2, and get status update when coming online', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
 
     const response = await page.evaluate(async (customid1, customid2) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
       const socket2 = client2.createSocket(false, false);
@@ -68,14 +56,14 @@ describe('Status Tests', () => {
       await socket1.connect(session1, true);
       await socket1.followUsers([session2.user_id]);
 
-      var promise1 = new Promise((resolve, reject) => {
+      var promise1 = new Promise<StatusPresenceEvent>((resolve, reject) => {
         socket1.onstatuspresence = (statusPresence) => {
           resolve(statusPresence);
         }
       });
 
       const promise2 = socket2.connect(session2, true).then((session) => {
-        return new Promise((resolve, reject) => {
+        return new Promise<null>((resolve, reject) => {
           setTimeout(reject, 5000, "did not receive match data - timed out.");
         });
       });
@@ -84,16 +72,17 @@ describe('Status Tests', () => {
     }, customid1, customid2);
 
     expect(response).not.toBeNull();
-    expect(response).not.toBeNull();
     expect(response.joins.length).toEqual(1);
   });
 
   it('should follow user2, and unfollow user2', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
 
     const response = await page.evaluate(async (customid1, customid2) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false);
 
@@ -107,4 +96,4 @@ describe('Status Tests', () => {
     expect(response).not.toBeNull();
   });
 
-}, TIMEOUT);
+});
