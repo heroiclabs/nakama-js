@@ -50,6 +50,7 @@ import {
   ApiWriteStorageObjectsRequest,
   ConfigurationParameters,
   NakamaApi,
+  ApiSession,
 } from "./api.gen";
 
 import { Session } from "./session";
@@ -674,7 +675,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -728,7 +729,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -783,7 +784,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -843,7 +844,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -897,7 +898,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -956,7 +957,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -1010,7 +1011,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
