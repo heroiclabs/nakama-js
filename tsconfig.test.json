@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+      "lib": [
+        "dom",
+        "es2015",
+        "es2016"
+      ],
+      "target": "es2018",
+      "module": "ES2015",
+      "declaration": true,
+      "sourceMap": true,
+      "outDir": "./dist",
+      "removeComments": true,
+      "strictFunctionTypes": true,
+      "noImplicitThis": true,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": true,
+      "moduleResolution": "node",
+      "noEmitHelpers": false,
+      "importHelpers": false,
+      "baseUrl": "./",
+      
+    },
+    "include": [
+      "./test/*",
+    ],
+    "exclude": []
+  }
+  
