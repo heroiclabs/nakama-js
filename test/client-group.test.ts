@@ -134,7 +134,8 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();      
+      const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: true });
 
       const client2 = new nakamajs.Client();
@@ -215,7 +216,8 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();      
+      const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: false });
 
       const client2 = new nakamajs.Client();

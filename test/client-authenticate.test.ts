@@ -143,5 +143,3 @@ describe('Authenticate Tests', () => {
     expect(session.token).not.toBeNull();
   });
 });
-
-export {}
