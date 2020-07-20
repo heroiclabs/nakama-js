@@ -562,6 +562,43 @@
       return __assign.apply(this, arguments);
   };
 
+  function __awaiter(thisArg, _arguments, P, generator) {
+      return new (P || (P = Promise))(function (resolve, reject) {
+          function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+          function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+          function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+          step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+  }
+
+  function __generator(thisArg, body) {
+      var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+      return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+      function verb(n) { return function (v) { return step([n, v]); }; }
+      function step(op) {
+          if (f) throw new TypeError("Generator is already executing.");
+          while (_) try {
+              if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+              if (y = 0, t) op = [op[0] & 2, t.value];
+              switch (op[0]) {
+                  case 0: case 1: t = op; break;
+                  case 4: _.label++; return { value: op[1], done: false };
+                  case 5: _.label++; y = op[1]; op = [0]; continue;
+                  case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                  default:
+                      if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                      if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                      if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                      if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                      if (t[2]) _.ops.pop();
+                      _.trys.pop(); continue;
+              }
+              op = body.call(thisArg, _);
+          } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+          if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+      }
+  }
+
   var BASE_PATH = "http://127.0.0.1:80";
   var NakamaApi = function (configuration) {
       if (configuration === void 0) { configuration = {
@@ -1496,7 +1533,7 @@
           set: function (value) {
               this._socket.onclose = value;
           },
-          enumerable: true,
+          enumerable: false,
           configurable: true
       });
       Object.defineProperty(WebSocketAdapterText.prototype, "onError", {
@@ -1506,7 +1543,7 @@
           set: function (value) {
               this._socket.onerror = value;
           },
-          enumerable: true,
+          enumerable: false,
           configurable: true
       });
       Object.defineProperty(WebSocketAdapterText.prototype, "onMessage", {
@@ -1536,7 +1573,7 @@
                   value = null;
               }
           },
-          enumerable: true,
+          enumerable: false,
           configurable: true
       });
       Object.defineProperty(WebSocketAdapterText.prototype, "onOpen", {
@@ -1546,14 +1583,14 @@
           set: function (value) {
               this._socket.onopen = value;
           },
-          enumerable: true,
+          enumerable: false,
           configurable: true
       });
       Object.defineProperty(WebSocketAdapterText.prototype, "isConnected", {
           get: function () {
               return this._isConnected;
           },
-          enumerable: true,
+          enumerable: false,
           configurable: true
       });
       WebSocketAdapterText.prototype.connect = function (scheme, host, port, createStatus, token) {
@@ -1583,14 +1620,15 @@
   }());
 
   var DefaultSocket = (function () {
-      function DefaultSocket(host, port, useSSL, verbose) {
+      function DefaultSocket(host, port, useSSL, verbose, adapter) {
           if (useSSL === void 0) { useSSL = false; }
           if (verbose === void 0) { verbose = false; }
+          if (adapter === void 0) { adapter = new WebSocketAdapterText(); }
           this.host = host;
           this.port = port;
           this.useSSL = useSSL;
           this.verbose = verbose;
-          this.adapter = new WebSocketAdapterText();
+          this.adapter = adapter;
           this.cIds = {};
           this.nextCid = 1;
       }
@@ -1772,40 +1810,93 @@
           });
       };
       DefaultSocket.prototype.addMatchmaker = function (query, minCount, maxCount, stringProperties, numericProperties) {
-          var matchMakerAdd = {
-              "matchmaker_add": {
-                  min_count: minCount,
-                  max_count: maxCount,
-                  query: query,
-                  string_properties: stringProperties,
-                  numeric_properties: numericProperties
-              }
-          };
-          return this.send(matchMakerAdd);
-      };
-      DefaultSocket.prototype.createMatch = function () {
-          return this.send({ match_create: {} });
-      };
-      DefaultSocket.prototype.followUsers = function (userIds) {
-          return this.send({ status_follow: { user_ids: userIds } });
-      };
-      DefaultSocket.prototype.joinChat = function (target, type, persistence, hidden) {
-          return this.send({
-              channel_join: {
-                  target: target,
-                  type: type,
-                  persistence: persistence,
-                  hidden: hidden
-              }
+          return __awaiter(this, void 0, void 0, function () {
+              var matchMakerAdd, response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0:
+                          matchMakerAdd = {
+                              "matchmaker_add": {
+                                  min_count: minCount,
+                                  max_count: maxCount,
+                                  query: query,
+                                  string_properties: stringProperties,
+                                  numeric_properties: numericProperties
+                              }
+                          };
+                          return [4, this.send(matchMakerAdd)];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.matchmaker_ticket];
+                  }
+              });
           });
       };
-      DefaultSocket.prototype.joinMatch = function (match_id, metadata, token) {
-          return this.send({
-              match_join: {
-                  match_id: match_id,
-                  metadata: metadata,
-                  token: token
-              }
+      DefaultSocket.prototype.createMatch = function () {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ match_create: {} })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.match];
+                  }
+              });
+          });
+      };
+      DefaultSocket.prototype.followUsers = function (userIds) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ status_follow: { user_ids: userIds } })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.status];
+                  }
+              });
+          });
+      };
+      DefaultSocket.prototype.joinChat = function (target, type, persistence, hidden) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({
+                              channel_join: {
+                                  target: target,
+                                  type: type,
+                                  persistence: persistence,
+                                  hidden: hidden
+                              }
+                          })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.channel];
+                  }
+              });
+          });
+      };
+      DefaultSocket.prototype.joinMatch = function (match_id, token, metadata) {
+          return __awaiter(this, void 0, void 0, function () {
+              var join, response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0:
+                          join = { match_join: { metadata: metadata } };
+                          if (token) {
+                              join.match_join.token = token;
+                          }
+                          else {
+                              join.match_join.match_id = match_id;
+                          }
+                          return [4, this.send(join)];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.match];
+                  }
+              });
           });
       };
       DefaultSocket.prototype.leaveChat = function (channel_id) {
@@ -1815,46 +1906,90 @@
           return this.send({ match_leave: { match_id: matchId } });
       };
       DefaultSocket.prototype.removeChatMessage = function (channel_id, message_id) {
-          return this.send({
-              channel_message_remove: {
-                  channel_id: channel_id,
-                  message_id: message_id
-              }
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({
+                              channel_message_remove: {
+                                  channel_id: channel_id,
+                                  message_id: message_id
+                              }
+                          })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.channel_message_ack];
+                  }
+              });
           });
       };
       DefaultSocket.prototype.removeMatchmaker = function (ticket) {
           return this.send({ matchmaker_remove: { ticket: ticket } });
       };
       DefaultSocket.prototype.rpc = function (id, payload, http_key) {
-          return this.send({
-              rpc: {
-                  id: id,
-                  payload: payload,
-                  http_key: http_key,
-              }
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({
+                              rpc: {
+                                  id: id,
+                                  payload: payload,
+                                  http_key: http_key,
+                              }
+                          })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.rpc];
+                  }
+              });
           });
       };
       DefaultSocket.prototype.sendMatchState = function (matchId, opCode, data, presence) {
-          return this.send({
-              match_data_send: {
-                  match_id: matchId,
-                  op_code: opCode,
-                  data: data,
-                  presence: presence
-              }
+          return __awaiter(this, void 0, void 0, function () {
+              return __generator(this, function (_a) {
+                  return [2, this.send({
+                          match_data_send: {
+                              match_id: matchId,
+                              op_code: opCode,
+                              data: data,
+                              presence: presence
+                          }
+                      })];
+              });
           });
       };
       DefaultSocket.prototype.unfollowUsers = function (user_ids) {
           return this.send({ status_unfollow: { user_ids: user_ids } });
       };
       DefaultSocket.prototype.updateChatMessage = function (channel_id, message_id, content) {
-          return this.send({ channel_message_update: { channel_id: channel_id, message_id: message_id, content: content } });
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ channel_message_update: { channel_id: channel_id, message_id: message_id, content: content } })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.channel_message_ack];
+                  }
+              });
+          });
       };
       DefaultSocket.prototype.updateStatus = function (status) {
           return this.send({ status_update: { status: status } });
       };
       DefaultSocket.prototype.writeChatMessage = function (channel_id, content) {
-          return this.send({ channel_message_send: { channel_id: channel_id, content: content } });
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ channel_message_send: { channel_id: channel_id, content: content } })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.channel_message_ack];
+                  }
+              });
+          });
       };
       return DefaultSocket;
   }());
@@ -2375,10 +2510,11 @@
               });
           });
       };
-      Client.prototype.createSocket = function (useSSL, verbose) {
+      Client.prototype.createSocket = function (useSSL, verbose, adapter) {
           if (useSSL === void 0) { useSSL = false; }
           if (verbose === void 0) { verbose = false; }
-          return new DefaultSocket(this.host, this.port, useSSL, verbose);
+          if (adapter === void 0) { adapter = new WebSocketAdapterText(); }
+          return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter);
       };
       Client.prototype.deleteFriends = function (session, ids, usernames) {
           var _this = this;
