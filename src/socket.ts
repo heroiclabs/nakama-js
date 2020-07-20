@@ -307,7 +307,7 @@ export interface Socket {
 
   // Send input to a multiplayer match on the server.
   // When no presences are supplied the new match state will be sent to all presences.
-  sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence) : Promise<MatchData>;
+  sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence) : Promise<void>;
 
   // Unfollow one or more users from their status updates.
   unfollowUsers(user_ids : string[]) : Promise<void>;
@@ -559,7 +559,7 @@ export class DefaultSocket implements Socket {
   }
 
 
-  addMatchmaker(query : string, minCount : number, maxCount : number,  
+  async addMatchmaker(query : string, minCount : number, maxCount : number,  
     stringProperties? : Record<string, string>, numericProperties? : Record<string, number>)
     : Promise<MatchmakerMatched> {
 
@@ -574,21 +574,24 @@ export class DefaultSocket implements Socket {
         }
       };
 
-      return this.send(matchMakerAdd);
+      const response = await this.send(matchMakerAdd);
+      
+      return response.matchmaker_ticket;
     }
 
-  createMatch(): Promise<Match> {
-    return this.send({match_create: {}});
+  async createMatch(): Promise<Match> {
+    const response = await this.send({match_create: {}});
+    return response.match;
   }
   
-  followUsers(userIds : string[]): Promise<Status> {
-    return this.send({status_follow: {user_ids: userIds}});
+  async followUsers(userIds : string[]): Promise<Status> {
+    const response = await this.send({status_follow: {user_ids: userIds}});
+    return response.status;
   }
   
-  joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel> {
+  async joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel> {
     
-    return this.send(
-      {
+    const response = await this.send({
         channel_join: {
             target: target,
             type: type,
@@ -597,17 +600,25 @@ export class DefaultSocket implements Socket {
         }
       }
     );
+
+    return response.channel;
   }
 
-  joinMatch(match_id?: string, metadata?: {}, token?: string): Promise<Match> {
-    return this.send(
-      {
-        match_join: {
-          match_id: match_id,
-          metadata: metadata,
-          token: token
-        }
-    });
+  async joinMatch(match_id?: string, token?: string, metadata?: {}): Promise<Match> {
+
+    const join : JoinMatch = {match_join: {metadata: metadata}}; 
+
+    if (token)
+    {
+      join.match_join.token = token;
+    }
+    else
+    {
+      join.match_join.match_id = match_id;
+    }
+
+    const response = await this.send(join);
+    return response.match;
   }
 
   leaveChat(channel_id: string): Promise<void> {
@@ -618,8 +629,8 @@ export class DefaultSocket implements Socket {
     return this.send({match_leave: {match_id: matchId}});
   }
 
-  removeChatMessage(channel_id: string, message_id: string): Promise<ChannelMessageAck> {
-    return this.send
+  async removeChatMessage(channel_id: string, message_id: string): Promise<ChannelMessageAck> {
+    const response = await this.send
     (
       {
         channel_message_remove: {
@@ -628,14 +639,16 @@ export class DefaultSocket implements Socket {
         }
       }
     );
+
+    return response.channel_message_ack;
   }
 
   removeMatchmaker(ticket: string): Promise<void> {
     return this.send({matchmaker_remove: {ticket: ticket}});
   }
 
-  rpc(id?: string, payload?: string, http_key?: string) : Promise<ApiRpc> {
-    return this.send(
+  async rpc(id?: string, payload?: string, http_key?: string) : Promise<ApiRpc> {
+    const response = await this.send(
       {
         rpc: {
           id: id,
@@ -643,9 +656,11 @@ export class DefaultSocket implements Socket {
           http_key: http_key,
         }
       });
+
+      return response.rpc;
   }
 
-  sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence): Promise<MatchData> {
+  async sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence): Promise<void> {
     return this.send(
       {
         match_data_send: {
@@ -661,15 +676,17 @@ export class DefaultSocket implements Socket {
     return this.send({status_unfollow: {user_ids: user_ids}});
   }
 
-  updateChatMessage(channel_id: string, message_id : string, content: any): Promise<ChannelMessageAck> {
-    return this.send({channel_message_update: {channel_id: channel_id, message_id: message_id, content: content}});
+  async updateChatMessage(channel_id: string, message_id : string, content: any): Promise<ChannelMessageAck> {
+    const response = await this.send({channel_message_update: {channel_id: channel_id, message_id: message_id, content: content}});
+    return response.channel_message_ack;
   }
 
   updateStatus(status?: string): Promise<void> {
     return this.send({status_update: {status: status}});
   }
 
-  writeChatMessage(channel_id: string, content: any): Promise<ChannelMessageAck> {
-    return this.send({channel_message_send: {channel_id: channel_id, content: content}});
+  async writeChatMessage(channel_id: string, content: any): Promise<ChannelMessageAck> {
+    const response = await this.send({channel_message_send: {channel_id: channel_id, content: content}});
+    return response.channel_message_ack;
   }
 };
