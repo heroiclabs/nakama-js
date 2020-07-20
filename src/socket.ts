@@ -357,13 +357,14 @@ export interface SocketError {
 export class DefaultSocket implements Socket {
   private readonly cIds: { [key: string]: PromiseExecutor };
   private nextCid: number;
-  private adapter : WebSocketAdapter = new WebSocketAdapterText();
 
   constructor(
       readonly host: string,
       readonly port: string,
       readonly useSSL: boolean = false,
-      public verbose: boolean = false) {
+      public verbose: boolean = false,
+      readonly adapter : WebSocketAdapter = new WebSocketAdapterText()
+      ) {
     this.cIds = {};
     this.nextCid = 1;
   }  
