@@ -6,7 +6,7 @@
     <title>Nakama JS Browser Test</title>
   </head>
   <body>
-    <script src="../dist/nakama-js.umd.js"></script>
+    <script src="../dist/esbuild.js"></script>
     <script>
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, true);
@@ -16,9 +16,12 @@
       client.authenticateCustom({ id: customid })
         .then(session => {
           _session = session;
+          console.log("session is...")
+          console.log(session);
           return socket.connect(session);
         }).then(session => {
         }).catch(error => {
+          console.log("error is...")
           console.log(error);
         });
     </script>

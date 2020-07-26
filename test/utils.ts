@@ -1,5 +1,6 @@
 import {Page} from "puppeteer";
-
+import * as nakamajs from "../src/index"
+import { WebSocketAdapterText, WebSocketAdapterPb } from "../src/index";
 const fs = require("fs");
 
 // util to generate a random id.
@@ -16,24 +17,48 @@ export function generateid() : string {
 
 export async function createPage() : Promise<Page>
 {
-    const page = await browser.newPage();
+    try {
 
-    page.on('console', msg => console.log('LOG:', msg.text()));
-    page.on('error', handlePageError);
-    page.on('pageerror', handlePageError);
+        const page = await browser.newPage();
 
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
-    await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto('about:blank');
 
-    return page;
+        page.on('console', msg => console.log('LOG:', msg.text()));
+        page.on('error', handlePageError);
+        page.on('pageerror', handlePageError);
+    
+        const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/esbuild.js', 'utf8');
+    
+
+        try {
+            const promise = page.evaluateOnNewDocument(nakamaJsLib);
+            promise.catch(e => {
+                console.log("caught e....");
+                console.log(e);
+
+            });
+            await promise;
+
+        }
+        catch (e) {
+            console.log("error is...");
+
+            console.log(e);
+        }
+        await page.goto('about:blank');
+    
+        return page;
+    }
+     catch (e)
+     {
+         console.log("eeeeerrror " + e.message);
+     }
 }
 
 function handlePageError(err) {
 
     let msg: string;
     
-    if (typeof(err) == "object")
+    if (err instanceof Object)
     {
         msg = JSON.stringify(err);
     }
@@ -43,5 +68,11 @@ function handlePageError(err) {
     }
 
     console.error('ERR:', msg);
-
 }
+
+export const enum AdapterType {
+    Text = 0,
+    Protobuf = 1
+} 
+
+export const adapters = [AdapterType.Text, AdapterType.Protobuf];

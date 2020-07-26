@@ -15,27 +15,26 @@
  */
 
 
-import * as nakamajs from "../src/client";
+import * as nakamajs from "../src/index";
 import {Match, MatchData} from "../src/socket"
 
-import {createPage, generateid} from "./utils"
-import {Page} from "puppeteer"
-import { create } from "core-js/fn/object";
+import {adapters, createPage, generateid, AdapterType} from "./utils"
 
 describe('Match Tests', () => {
 
-  it('should create match', async () => {
-    const page : Page = await createPage();
+  it.each(adapters)('should create match', async (adapter) => {
+    const page = await createPage();
 
     const customid = generateid();
-    const match = await page.evaluate(async (customid) => {
+    const match = await page.evaluate(async (customid, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false, 
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session, false);
       return await socket.createMatch();
-    }, customid);
+    }, customid, adapter);
 
     expect(match).not.toBeNull();
     expect(match.match_id).not.toBeNull();
@@ -45,20 +44,21 @@ describe('Match Tests', () => {
     expect(match.self.username).not.toBeNull();
   });
 
-  it('should join a match', async () => {
-    const page : Page = await createPage();
+  it.each(adapters)('should join a match', async (adapter) => {
+    const page = await createPage();
 
     const customid = generateid();
 
-    const match : Match = await page.evaluate(async (customid) => {
+    const match : Match = await page.evaluate(async (customid, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false, 
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session, false);
       const match = await socket.createMatch();
       return await socket.joinMatch(match.match_id);
-    }, customid);
+    }, customid, adapter);
 
     expect(match).not.toBeNull();
     expect(match).not.toBeNull();
@@ -70,36 +70,39 @@ describe('Match Tests', () => {
     expect(match.self.username).not.toBeNull();
   });
 
-  it('should join a match, then leave it', async () => {
-    const page : Page = await createPage();
+  it.each(adapters)('should join a match, then leave it', async (adapter) => {
+    const page = await createPage();
 
     const customid = generateid();
 
-    const response = await page.evaluate(async (customid) => {
+    const response = await page.evaluate(async (customid, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false,
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session, false);
       const match = await socket.createMatch();
       await socket.joinMatch(match.match_id);
       return await socket.leaveMatch(match.match_id);
-    }, customid);
+    }, customid, adapter);
 
     expect(response).not.toBeNull();
   });
 
-  it('should join a match, then send data, receive data', async () => {
-    const page : Page = await createPage();
+  it.each(adapters)('should join a match, then send data, receive data', async (adapter) => {
+    const page = await createPage();
 
     const customid1 = generateid();
     const customid2 = generateid();
     const PAYLOAD = { "hello": "world" };
 
-    const matchData = await page.evaluate(async (customid1, customid2, payload) => {
+    const matchData = await page.evaluate(async (customid1, customid2, payload, adapter) => {
       const client1 = new nakamajs.Client();      
       const client2 = new nakamajs.Client();
-      const socket1 = client1.createSocket(false, false);
+      const socket1 = client1.createSocket(false, false, 
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+      
       const socket2 = client2.createSocket(false, false);
 
       var promise1 = new Promise<MatchData>((resolve, reject) => {
@@ -120,21 +123,21 @@ describe('Match Tests', () => {
       });
 
       return Promise.race([promise1, promise2]);
-    }, customid1, customid2, PAYLOAD);
+    }, customid1, customid2, PAYLOAD, adapter);
 
     expect(matchData).not.toBeNull();
     expect(matchData.data).toEqual(PAYLOAD);
   });
 
-  it('should create authoritative match, and join with metadata', async () => {
-    const page : Page = await createPage();
+  it.each(adapters)('should create authoritative match, and join with metadata', async (adapter) => {
+    const page = await createPage();
 
     const customid = generateid();
     const ID = "clientrpc.create_authoritative_match";
 
-    const response = await page.evaluate(async (customid, id) => {
+    const response = await page.evaluate(async (customid, id, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session, false);
@@ -143,23 +146,25 @@ describe('Match Tests', () => {
       var match = JSON.parse(res.payload);
       var metadata = { key: "value" };
       await socket.joinMatch(match.match_id, null, metadata);
-    }, customid, ID);
+    }, customid, ID, adapter);
   });
 
-  it('should create authoritative match, list matches', async () => {
+  it.each(adapters)('should create authoritative match, list matches', async (adapter) => {
+    const page = await createPage();
+    
     const customid = generateid();
     const ID = "clientrpc.create_authoritative_match";
 
-    const page = await createPage();
-    const response = await page.evaluate(async (customid, id) => {
+    const response = await page.evaluate(async (customid, id, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false,
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session, false);
       await socket.rpc(id, "{}");
       return await client.listMatches(session, 1, true)
-    }, customid, ID);
+    }, customid, ID, adapter);
 
     expect(response).not.toBeNull();
     expect(response.matches).not.toBeNull();
@@ -168,15 +173,16 @@ describe('Match Tests', () => {
     expect(response.matches[0].authoritative).toBe(true);
   });
 
-  it('should create authoritative match, list matches with querying', async () => {
+  it.each(adapters)('should create authoritative match, list matches with querying', async (adapter) => {
+    const page = await createPage();
+
     const customid = generateid();
     const ID = "clientrpc.create_authoritative_match";
 
-    const page = await createPage();
-
-    const response = await page.evaluate(async (customid, id) => {
+    const response = await page.evaluate(async (customid, id, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false, 
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session, false);
@@ -187,7 +193,7 @@ describe('Match Tests', () => {
 
       var query = "+label.skill:>=50";
       return await client.listMatches(session, 1, true, "", 0, 100, query)
-    }, customid, ID);
+    }, customid, ID, adapter);
 
     expect(response).not.toBeNull();
     expect(response.matches).not.toBeNull();
@@ -196,8 +202,8 @@ describe('Match Tests', () => {
     expect(response.matches[0].authoritative).toBe(true);
   });
 
-  it('should create authoritative match, list matches with querying arrays', async () => {
-    const page : Page = await createPage();
+  it.each(adapters)('should create authoritative match, list matches with querying arrays', async (adapter) => {
+    const page = await createPage();
 
     const customid = generateid();
     var convoId1 = generateid();
@@ -205,9 +211,10 @@ describe('Match Tests', () => {
     var convoId3 = generateid();
     const ID = "clientrpc.create_authoritative_match";
 
-    const response = await page.evaluate(async (customid, id, convoId1, convoId2, convoId3) => {
+    const response = await page.evaluate(async (customid, id, convoId1, convoId2, convoId3, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false, 
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session, false);
@@ -218,7 +225,7 @@ describe('Match Tests', () => {
 
       var query = "+label.convo_ids:" + convoId2;
       return await client.listMatches(session, 1, true, "", 0, 100, query)
-    }, customid, ID, convoId1, convoId2, convoId3);
+    }, customid, ID, convoId1, convoId2, convoId3, adapter);
 
     expect(response).not.toBeNull();
     expect(response.matches).not.toBeNull();
