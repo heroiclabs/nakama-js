@@ -9,7 +9,6 @@ export class WebSocketAdapterText implements WebSocketAdapter {
 
     private _socket?: WebSocket;
 
-
     get onClose(): SocketCloseHandler | null {
         return this._socket!.onclose;
     }
@@ -34,18 +33,7 @@ export class WebSocketAdapterText implements WebSocketAdapter {
 
         if (value) {
             this._socket!.onmessage = (evt: MessageEvent) => {
-                const message: any = JSON.parse(evt.data);
-                if (message.notifications) {
-                    message.notifications.notifications.forEach((n: ApiNotification) => {
-                        n.content = n.content ? JSON.parse(n.content) : undefined;
-                    });
-                } else if (message.match_data) {
-                    message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
-                    message.match_data.op_code = parseInt(message.match_data.op_code);
-                } else if (message.channel_message) {
-                    message.channel_message.content = JSON.parse(message.channel_message.content);
-                }
-                
+                const message: any = JSON.parse(evt.data);                
                 value!(message);
             };
         }
@@ -79,18 +67,12 @@ export class WebSocketAdapterText implements WebSocketAdapter {
     }
 
     send(msg: any): void {
-
-        if (msg.match_data_send) {
-            msg.match_data_send.data = b64EncodeUnicode(JSON.stringify(msg.match_data_send.data));
+        if (msg.match_data_send)
+        {
+            // TODO document why this is necessary? 
             msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
         }
-
-        if (msg.channel_message_send) {
-            msg.channel_message_send.content = JSON.stringify(msg.channel_message_send.content);
-        } else if (msg.channel_message_update) {
-            msg.channel_message_update.content = JSON.stringify(msg.channel_message_update.content);
-        }
-
+        
         this._socket!.send(JSON.stringify(msg));
     }
 }
