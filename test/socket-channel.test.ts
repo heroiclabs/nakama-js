@@ -36,7 +36,6 @@ describe('Channel Tests', () => {
         const session = await client.authenticateCustom({ id: customid })
         await socket.connect(session, false);
   
-  
         //chat type: 1 = room, 2 = Direct Message 3 = Group
         return await socket.joinChat(channelid, 1, true, false);
     }, customid, channelid, adapter);

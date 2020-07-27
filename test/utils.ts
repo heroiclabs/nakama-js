@@ -29,38 +29,26 @@ export function generateid(): string {
 };
 
 export async function createPage(): Promise<Page> {
-    try {
 
-        const page = await browser.newPage();
+    const page = await browser.newPage();
 
-        page.on('console', msg => console.log('LOG:', msg.text()));
-        page.on('error', handlePageError);
-        page.on('pageerror', handlePageError);
+    page.on('console', msg => console.log('LOG:', msg.text()));
+    page.on('error', handlePageError);
+    page.on('pageerror', handlePageError);
 
-        const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.iife.js', 'utf8');
+    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.iife.js', 'utf8');
 
-        try {
-            const promise = page.evaluateOnNewDocument(nakamaJsLib);
-            promise.catch(e => {
-                console.log("caught e....");
-                console.log(e);
+    const promise = page.evaluateOnNewDocument(nakamaJsLib);
+    promise.catch(e => {
+        console.log("caught e....");
+        console.log(e);
 
-            });
-            await promise;
+    });
+    await promise;
 
-        }
-        catch (e) {
-            console.log("error is...");
+    await page.goto('about:blank');
 
-            console.log(e);
-        }
-        await page.goto('about:blank');
-
-        return page;
-    }
-    catch (e) {
-        console.log("eeeeerrror " + e.message);
-    }
+    return page;
 }
 
 function handlePageError(err) {
