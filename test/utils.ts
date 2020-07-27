@@ -14,32 +14,29 @@
  * limitations under the License.
  */
 
-import {Page} from "puppeteer";
+import { Page } from "puppeteer";
 const fs = require("fs");
 
 // util to generate a random id.
-export function generateid() : string {
-    const arr : string[] = [];
+export function generateid(): string {
+    const arr: string[] = [];
 
-    for (let i : number = 0; i < 30; i++)
-    {
+    for (let i: number = 0; i < 30; i++) {
         arr.push(Math.random().toString(36)[3]);
     }
-    
+
     return arr.join("");
 };
 
-export async function createPage() : Promise<Page>
-{
+export async function createPage(): Promise<Page> {
     try {
 
         const page = await browser.newPage();
 
-
         page.on('console', msg => console.log('LOG:', msg.text()));
         page.on('error', handlePageError);
         page.on('pageerror', handlePageError);
-    
+
         const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.iife.js', 'utf8');
 
         try {
@@ -58,25 +55,22 @@ export async function createPage() : Promise<Page>
             console.log(e);
         }
         await page.goto('about:blank');
-    
+
         return page;
     }
-     catch (e)
-     {
-         console.log("eeeeerrror " + e.message);
-     }
+    catch (e) {
+        console.log("eeeeerrror " + e.message);
+    }
 }
 
 function handlePageError(err) {
 
     let msg: string;
-    
-    if (err instanceof Object)
-    {
+
+    if (err instanceof Object) {
         msg = JSON.stringify(err);
     }
-    else
-    {
+    else {
         msg = err;
     }
 
@@ -86,6 +80,6 @@ function handlePageError(err) {
 export const enum AdapterType {
     Text = 0,
     Protobuf = 1
-} 
+}
 
 export const adapters = [AdapterType.Text, AdapterType.Protobuf];
