@@ -328,7 +328,7 @@ describe('Matchmaker Tests', () => {
       const ticket1 = await socket1.addMatchmaker("+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo +properties.id:" + testId, 2, 2, {"c4": "foo", "id": testId}, {"c3": 25});
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2, false);
-      const ticket2 = await socket2.addMatchmaker("+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo +properties.id:" + testId, 2, 2, {"c4": "foo", "id": testId},{"c3": 15});
+      const ticket2 = await socket2.addMatchmaker("+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo +properties.id:" + testId, 2, 2, {"c4": "foo", "id": testId}, {"c3": 15});
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(resolve, 2500, "did not match.")
       });
@@ -340,13 +340,16 @@ describe('Matchmaker Tests', () => {
   });
 
   it.each(adapters)('should add multiple to matchmaker and not match', async (adapter) => {
+    console.log("adapter" + adapter);
     const page = await createPage();
+
+    const testId = generateid();
 
     const customid1 = generateid();
     const customid2 = generateid();
     const customid3 = generateid();
 
-    const response = await page.evaluate(async (customid1, customid2, customid3, adapter) => {
+    const response = await page.evaluate(async (customid1, customid2, customid3, adapter, testId) => {
       const client1 = new nakamajs.Client();      
       const client2 = new nakamajs.Client();
       const client3 = new nakamajs.Client();
@@ -368,18 +371,18 @@ describe('Matchmaker Tests', () => {
 
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1, false);
-      const ticket1 = await socket1.addMatchmaker("properties.a6:bar", 2, 2, {"a6": "bar"});
+      const ticket1 = await socket1.addMatchmaker("properties.a6:bar +properties.id:" + testId, 2, 2, {"a6": "bar", "id": testId});
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2, false);
-      const ticket2 = await socket2.addMatchmaker("properties.a6:bar", 2, 2, {"a6": "bar"});
+      const ticket2 = await socket2.addMatchmaker("properties.a6:bar +properties.id:" + testId, 2, 2, {"a6": "bar", "id": testId});
       const session3 = await client3.authenticateCustom({ id: customid3 });
       await socket3.connect(session3, false);
-      const ticket3 = await socket3.addMatchmaker("properties.a6:bar", 2, 2, {"a6": "bar"});
+      const ticket3 = await socket3.addMatchmaker("properties.a6:bar +properties.id:" + testId, 2, 2, {"a6": "bar", "id": testId});
       var promise2 = new Promise((resolve, reject) => {
         setTimeout(resolve, 2500, "did not match.")
       });
       return Promise.race([promise1, promise2]);
-    }, customid1, customid2, customid3, adapter);
+    }, customid1, customid2, customid3, adapter, testId);
 
     expect(response).not.toBeNull();
     expect(response).toBe("did not match.");

@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.nakamajs = {})));
-}(this, (function (exports) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
+  (global = global || self, factory(global.nakamajs = {}, global.protobufjs));
+}(this, (function (exports, protobufjs) { 'use strict';
 
   (function () {
 
@@ -3449,8 +3449,89 @@
       return Client;
   }());
 
+  var WebSocketAdapterPb = (function () {
+      function WebSocketAdapterPb() {
+          this._isConnected = false;
+      }
+      Object.defineProperty(WebSocketAdapterPb.prototype, "onClose", {
+          get: function () {
+              return this._socket.onclose;
+          },
+          set: function (value) {
+              this._socket.onclose = value;
+          },
+          enumerable: false,
+          configurable: true
+      });
+      Object.defineProperty(WebSocketAdapterPb.prototype, "onError", {
+          get: function () {
+              return this._socket.onerror;
+          },
+          set: function (value) {
+              this._socket.onerror = value;
+          },
+          enumerable: false,
+          configurable: true
+      });
+      Object.defineProperty(WebSocketAdapterPb.prototype, "onMessage", {
+          get: function () {
+              return this._socket.onmessage;
+          },
+          set: function (value) {
+              if (value) {
+                  this._socket.onmessage = function (evt) {
+                      var message = protobufjs.Message.decode(evt.data);
+                      value(protobufjs.Message.toObject(message));
+                  };
+              }
+              else {
+                  value = null;
+              }
+          },
+          enumerable: false,
+          configurable: true
+      });
+      Object.defineProperty(WebSocketAdapterPb.prototype, "onOpen", {
+          get: function () {
+              return this._socket.onopen;
+          },
+          set: function (value) {
+              this._socket.onopen = value;
+          },
+          enumerable: false,
+          configurable: true
+      });
+      Object.defineProperty(WebSocketAdapterPb.prototype, "isConnected", {
+          get: function () {
+              return this._isConnected;
+          },
+          enumerable: false,
+          configurable: true
+      });
+      WebSocketAdapterPb.prototype.connect = function (scheme, host, port, createStatus, token) {
+          var url = "" + scheme + host + ":" + port + "/ws?lang=en&status=" + encodeURIComponent(createStatus.toString()) + "&token=" + encodeURIComponent(token) + "&format=protobuf";
+          this._socket = new WebSocket(url);
+          this._socket.binaryType = "arraybuffer";
+          this._isConnected = true;
+      };
+      WebSocketAdapterPb.prototype.close = function () {
+          this._isConnected = false;
+          this._socket.close();
+          this._socket = undefined;
+      };
+      WebSocketAdapterPb.prototype.send = function (msg) {
+          var err = protobufjs.Message.verify(msg);
+          if (err)
+              throw Error(err);
+          this._socket.send(protobufjs.Message.encode(msg).finish());
+      };
+      return WebSocketAdapterPb;
+  }());
+
   exports.Client = Client;
   exports.Session = Session;
+  exports.WebSocketAdapterPb = WebSocketAdapterPb;
+  exports.WebSocketAdapterText = WebSocketAdapterText;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
