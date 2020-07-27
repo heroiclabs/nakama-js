@@ -1,6 +1,7 @@
 import { ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";
+import { WebSocketAdapter } from "./web_socket_adapter";
 declare type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
 export interface Presence {
     user_id: string;
@@ -192,7 +193,7 @@ export interface Socket {
     removeChatMessage(channel_id: string, message_id: string): Promise<ChannelMessageAck>;
     removeMatchmaker(ticket: string): Promise<void>;
     rpc(id?: string, payload?: string, http_key?: string): Promise<ApiRpc>;
-    sendMatchState(matchId: string, opCode: number, data: any, presence?: Presence): Promise<MatchData>;
+    sendMatchState(matchId: string, opCode: number, data: any, presence?: Presence): Promise<void>;
     unfollowUsers(user_ids: string[]): Promise<void>;
     updateChatMessage(channel_id: string, message_id: string, content: any): Promise<ChannelMessageAck>;
     updateStatus(status?: string): Promise<void>;
@@ -218,10 +219,10 @@ export declare class DefaultSocket implements Socket {
     readonly port: string;
     readonly useSSL: boolean;
     verbose: boolean;
+    readonly adapter: WebSocketAdapter;
     private readonly cIds;
     private nextCid;
-    private adapter;
-    constructor(host: string, port: string, useSSL?: boolean, verbose?: boolean);
+    constructor(host: string, port: string, useSSL?: boolean, verbose?: boolean, adapter?: WebSocketAdapter);
     generatecid(): string;
     connect(session: Session, createStatus?: boolean): Promise<Session>;
     disconnect(fireDisconnectEvent?: boolean): void;
@@ -241,13 +242,13 @@ export declare class DefaultSocket implements Socket {
     createMatch(): Promise<Match>;
     followUsers(userIds: string[]): Promise<Status>;
     joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel>;
-    joinMatch(match_id?: string, metadata?: {}, token?: string): Promise<Match>;
+    joinMatch(match_id?: string, token?: string, metadata?: {}): Promise<Match>;
     leaveChat(channel_id: string): Promise<void>;
     leaveMatch(matchId: string): Promise<void>;
     removeChatMessage(channel_id: string, message_id: string): Promise<ChannelMessageAck>;
     removeMatchmaker(ticket: string): Promise<void>;
     rpc(id?: string, payload?: string, http_key?: string): Promise<ApiRpc>;
-    sendMatchState(matchId: string, opCode: number, data: any, presence?: Presence): Promise<MatchData>;
+    sendMatchState(matchId: string, opCode: number, data: any, presence?: Presence): Promise<void>;
     unfollowUsers(user_ids: string[]): Promise<void>;
     updateChatMessage(channel_id: string, message_id: string, content: any): Promise<ChannelMessageAck>;
     updateStatus(status?: string): Promise<void>;

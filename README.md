@@ -128,7 +128,7 @@ The development roadmap is managed as GitHub issues and pull requests are welcom
 
 Ensure you are using Node v12.18.1
 
-The codebase is written in TypeScript with tests in JavaScript and can be built with [Rollup.js](https://rollupjs.org/guide/en). All dependencies are managed with NPM.
+The codebase is written in TypeScript and can be built with [esbuild](https://github.com/evanw/esbuild). All dependencies are managed with NPM.
 
 ```shell
 yarn install && yarn build
@@ -141,6 +141,22 @@ To run tests you will need to run the server and database. Most tests are writte
 ```shell
 docker-compose -f ./docker-compose.yml up
 yarn build && yarn test
+```
+
+### Protocol Buffer Web Socket Adapter
+
+To update the generated Typescript required for using the protocol buffer adapter, run the following:
+
+```shell
+npx protoc \
+--plugin="./node_modules/.bin/protoc-gen-ts_proto" \
+--proto_path=$GOPATH/src \
+--ts_proto_out=src/ \
+--ts_proto_opt=snakeToCamel=false \
+--ts_proto_opt=useOptionals=true \
+--ts_proto_opt=oneof=unions \
+$GOPATH/src/github.com/heroiclabs/nakama-common/api/api.proto \
+$GOPATH/src/github.com/heroiclabs/nakama-common/rtapi/realtime.proto
 ```
 
 ### Release Process

@@ -1,6 +1,7 @@
 import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountFacebookInstantGame, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
+import { WebSocketAdapter } from "./web_socket_adapter";
 export interface AccountCustom {
     username?: string;
     create?: boolean;
@@ -277,7 +278,7 @@ export declare class Client {
     banGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group>;
-    createSocket(useSSL?: boolean, verbose?: boolean): Socket;
+    createSocket(useSSL?: boolean, verbose?: boolean, adapter?: WebSocketAdapter): Socket;
     deleteFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     deleteGroup(session: Session, groupId: string): Promise<boolean>;
     deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean>;

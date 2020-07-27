@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 The Nakama Authors
+ * Copyright 2020 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
+import * as protobuf from 'protobufjs/minimal';
+import Long from 'long';
+
+// workaround for longs in timestamps https://github.com/stephenh/ts-proto/issues/78
+// protobufjs requires the Long package to be explicitly assigned to it.
+protobuf.util.Long = Long;
+protobuf.configure();
+
 import "Base64";
 import "whatwg-fetch";
 
 export * from "./client";
 export * from "./session";
+export * from "./web_socket_adapter";
+export * from "./web_socket_adapter_pb";

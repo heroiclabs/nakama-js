@@ -14,30 +14,16 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const TIMEOUT = 5000;
 
-// util to generate a random id.
-const generateid = () => {
-  return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
-};
+import * as nakamajs from "../src/client";
+import {createPage, generateid} from "./utils";
+import {Page} from "puppeteer"
 
 describe('User Tests', () => {
-  let page;
-
-  beforeAll(async () => {
-    page = await browser.newPage();
-
-    page.on('console', msg => console.log('LOG:', msg.text()));
-    page.on('error', err => console.error('ERR:', err));
-    page.on('pageerror', err => console.error('PAGE ERROR:', err));
-
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
-    await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto('about:blank');
-  }, TIMEOUT);
 
   it('should return current user account', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
 
     const account = await page.evaluate(async (customid) => {
@@ -62,6 +48,9 @@ describe('User Tests', () => {
   });
 
   it('should update current user account', async () => {
+
+    const page : Page = await createPage();
+
     const customid = generateid();
     const displayName = "display";
     const avatar = "avatar";
@@ -73,9 +62,9 @@ describe('User Tests', () => {
       const session = await client.authenticateCustom({ id: customid });
 
       await client.updateAccount(session, {
-        displayName: displayName,
-        avatarUrl: avatar,
-        langTag: lang,
+        display_name: displayName,
+        avatar_url: avatar,
+        lang_tag: lang,
         location: loc
       });
 
@@ -94,6 +83,8 @@ describe('User Tests', () => {
   });
 
   it('should update current user with same username', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
 
     const account = await page.evaluate(async (customid) => {
@@ -110,6 +101,8 @@ describe('User Tests', () => {
   });
 
   it('should return two users', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
     const customid2 = generateid();
 
@@ -126,6 +119,8 @@ describe('User Tests', () => {
   });
 
   it('should return no users', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
 
     const response = await page.evaluate(async (customid) => {
@@ -136,4 +131,4 @@ describe('User Tests', () => {
 
     expect(response).not.toBeNull();
   });
-}, TIMEOUT);
+});

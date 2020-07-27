@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 The Nakama Authors
+ * Copyright 2020 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 import {ApiNotification, ApiRpc} from "./api.gen";
 import {Session} from "./session";
 import {Notification} from "./client";
-import {WebSocketAdapter} from "./web_socket_adapter"
-import {WebSocketAdapterText} from "./web_socket_adapter_text"
+import {WebSocketAdapter, WebSocketAdapterText} from "./web_socket_adapter"
+import {b64DecodeUnicode, b64EncodeUnicode} from "./utils";
 
 
 /** Requires the set of keys K to exist in type T. */
@@ -307,7 +307,7 @@ export interface Socket {
 
   // Send input to a multiplayer match on the server.
   // When no presences are supplied the new match state will be sent to all presences.
-  sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence) : Promise<MatchData>;
+  sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence) : Promise<void>;
 
   // Unfollow one or more users from their status updates.
   unfollowUsers(user_ids : string[]) : Promise<void>;
@@ -357,13 +357,14 @@ export interface SocketError {
 export class DefaultSocket implements Socket {
   private readonly cIds: { [key: string]: PromiseExecutor };
   private nextCid: number;
-  private adapter : WebSocketAdapter = new WebSocketAdapterText();
 
   constructor(
       readonly host: string,
       readonly port: string,
       readonly useSSL: boolean = false,
-      public verbose: boolean = false) {
+      public verbose: boolean = false,
+      readonly adapter : WebSocketAdapter = new WebSocketAdapterText()
+      ) {
     this.cIds = {};
     this.nextCid = 1;
   }  
@@ -398,10 +399,13 @@ export class DefaultSocket implements Socket {
       // Inbound message from server.
       if (message.cid == undefined) {
         if (message.notifications) {
-            message.notifications.notifications.forEach((n: ApiNotification) => {
-            this.onnotification(n);
+          message.notifications.notifications.forEach((n: ApiNotification) => {
+              n.content = n.content ? JSON.parse(n.content) : undefined;
+              this.onnotification(n);
           });
         } else if (message.match_data) {
+          message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
+          message.match_data.op_code = parseInt(message.match_data.op_code);
           this.onmatchdata(message.match_data);
         } else if (message.match_presence_event) {
           this.onmatchpresence(<MatchPresenceEvent>message.match_presence_event);
@@ -414,6 +418,7 @@ export class DefaultSocket implements Socket {
         } else if (message.stream_data) {
           this.onstreamdata(<StreamData>message.stream_data);
         } else if (message.channel_message) {
+          message.channel_message.content = JSON.parse(message.channel_message.content);
           this.onchannelmessage(<ChannelMessage>message.channel_message);
         } else if (message.channel_presence_event) {
           this.onchannelpresence(<ChannelPresenceEvent>message.channel_presence_event);
@@ -533,33 +538,44 @@ export class DefaultSocket implements Socket {
     ChannelMessageUpdate | ChannelMessageRemove | CreateMatch |
     JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove |
     Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any> {
-    const m = message as any;
+    const untypedMessage = message as any;
+
+
     return new Promise((resolve, reject) => {
       if (!this.adapter.isConnected) {
         reject("Socket connection has not been established yet.");
-      } else {
-        if (m.match_data_send) {
-          this.adapter.send(m);
+      }
+      else {
+        if (untypedMessage.match_data_send) {
+          untypedMessage.match_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.match_data_send.data));
+          this.adapter.send(untypedMessage);
           resolve();
-        } else {
+        }
+        else {
+
+          if (untypedMessage.channel_message_send) {
+            untypedMessage.channel_message_send.content = JSON.stringify(untypedMessage.channel_message_send.content);
+          } else if (untypedMessage.channel_message_update) {
+            untypedMessage.channel_message_update.content = JSON.stringify(untypedMessage.channel_message_update.content);
+          }
 
           const cid = this.generatecid();
           this.cIds[cid] = {resolve, reject};
 
           // Add id for promise executor.
-          m.cid = cid;
-          this.adapter.send(m);
+          untypedMessage.cid = cid;
+          this.adapter.send(untypedMessage);
         }
       }
 
       if (this.verbose && window && window.console) {
-        console.log("Sent message: %o", m);
+        console.log("Sent message: %o", untypedMessage);
       }
     });
   }
 
 
-  addMatchmaker(query : string, minCount : number, maxCount : number,  
+  async addMatchmaker(query : string, minCount : number, maxCount : number,  
     stringProperties? : Record<string, string>, numericProperties? : Record<string, number>)
     : Promise<MatchmakerMatched> {
 
@@ -574,21 +590,24 @@ export class DefaultSocket implements Socket {
         }
       };
 
-      return this.send(matchMakerAdd);
+      const response = await this.send(matchMakerAdd);
+      
+      return response.matchmaker_ticket;
     }
 
-  createMatch(): Promise<Match> {
-    return this.send({match_create: {}});
+  async createMatch(): Promise<Match> {
+    const response = await this.send({match_create: {}});
+    return response.match;
   }
   
-  followUsers(userIds : string[]): Promise<Status> {
-    return this.send({status_follow: {user_ids: userIds}});
+  async followUsers(userIds : string[]): Promise<Status> {
+    const response = await this.send({status_follow: {user_ids: userIds}});
+    return response.status;
   }
   
-  joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel> {
-    
-    return this.send(
-      {
+  async joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel> {
+  
+    const response = await this.send({
         channel_join: {
             target: target,
             type: type,
@@ -597,17 +616,25 @@ export class DefaultSocket implements Socket {
         }
       }
     );
+
+    return response.channel;
   }
 
-  joinMatch(match_id?: string, metadata?: {}, token?: string): Promise<Match> {
-    return this.send(
-      {
-        match_join: {
-          match_id: match_id,
-          metadata: metadata,
-          token: token
-        }
-    });
+  async joinMatch(match_id?: string, token?: string, metadata?: {}): Promise<Match> {
+
+    const join : JoinMatch = {match_join: {metadata: metadata}}; 
+
+    if (token)
+    {
+      join.match_join.token = token;
+    }
+    else
+    {
+      join.match_join.match_id = match_id;
+    }
+
+    const response = await this.send(join);
+    return response.match;
   }
 
   leaveChat(channel_id: string): Promise<void> {
@@ -618,8 +645,8 @@ export class DefaultSocket implements Socket {
     return this.send({match_leave: {match_id: matchId}});
   }
 
-  removeChatMessage(channel_id: string, message_id: string): Promise<ChannelMessageAck> {
-    return this.send
+  async removeChatMessage(channel_id: string, message_id: string): Promise<ChannelMessageAck> {
+    const response = await this.send
     (
       {
         channel_message_remove: {
@@ -628,14 +655,16 @@ export class DefaultSocket implements Socket {
         }
       }
     );
+
+    return response.channel_message_ack;
   }
 
   removeMatchmaker(ticket: string): Promise<void> {
     return this.send({matchmaker_remove: {ticket: ticket}});
   }
 
-  rpc(id?: string, payload?: string, http_key?: string) : Promise<ApiRpc> {
-    return this.send(
+  async rpc(id?: string, payload?: string, http_key?: string) : Promise<ApiRpc> {
+    const response = await this.send(
       {
         rpc: {
           id: id,
@@ -643,9 +672,11 @@ export class DefaultSocket implements Socket {
           http_key: http_key,
         }
       });
+
+      return response.rpc;
   }
 
-  sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence): Promise<MatchData> {
+  async sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence): Promise<void> {
     return this.send(
       {
         match_data_send: {
@@ -661,15 +692,17 @@ export class DefaultSocket implements Socket {
     return this.send({status_unfollow: {user_ids: user_ids}});
   }
 
-  updateChatMessage(channel_id: string, message_id : string, content: any): Promise<ChannelMessageAck> {
-    return this.send({channel_message_update: {channel_id: channel_id, message_id: message_id, content: content}});
+  async updateChatMessage(channel_id: string, message_id : string, content: any): Promise<ChannelMessageAck> {
+    const response = await this.send({channel_message_update: {channel_id: channel_id, message_id: message_id, content: content}});
+    return response.channel_message_ack;
   }
 
   updateStatus(status?: string): Promise<void> {
     return this.send({status_update: {status: status}});
   }
 
-  writeChatMessage(channel_id: string, content: any): Promise<ChannelMessageAck> {
-    return this.send({channel_message_send: {channel_id: channel_id, content: content}});
+  async writeChatMessage(channel_id: string, content: any): Promise<ChannelMessageAck> {
+    const response = await this.send({channel_message_send: {channel_id: channel_id, content: content}});
+    return response.channel_message_ack;
   }
 };

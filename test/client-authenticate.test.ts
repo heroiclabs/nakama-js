@@ -14,39 +14,24 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const base64url = require('base64url');
-const crypto = require("crypto");
-
-const TIMEOUT = 5000;
-
-// util to generate a random id.
-const generateid = () => {
-  return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
-};
+import * as nakamajs from "../src/client";
+import base64url from "base64url";
+import crypto from "crypto";
+import {createPage, generateid} from "./utils";
+import {Page} from "puppeteer";
 
 describe('Authenticate Tests', () => {
-  let page;
-
-  beforeAll(async () => {
-    page = await browser.newPage();
-
-    page.on('console', msg => console.log('LOG:', msg.text()));
-    page.on('error', err => console.error('ERR:', err));
-    page.on('pageerror', err => console.error('PAGE ERROR:', err));
-
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
-    await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto('about:blank');
-  }, TIMEOUT);
-
+  
   it('should authenticate with email', async () => {
-    const email = generateid() + "@example.com";
-    const password = generateid()
+    const page : Page = await createPage();
 
-    const session = await page.evaluate((email, password) => {
+    const email = generateid() + "@example.com";
+    const password = generateid();
+
+    const session = await page.evaluate(async (email, password) => {
       const client = new nakamajs.Client();
-      return client.authenticateEmail({ email: email, password: password });
+      const promise = client.authenticateEmail({ email: email, password: password });
+      return promise;
     }, email, password);
 
     expect(session).not.toBeNull();
@@ -54,6 +39,8 @@ describe('Authenticate Tests', () => {
   });
 
   it('should authenticate with device id', async () => {
+    const page : Page = await createPage();
+
     const deviceid = generateid();
 
     const session = await page.evaluate((deviceid) => {
@@ -66,6 +53,8 @@ describe('Authenticate Tests', () => {
   });
 
   it('should authenticate with custom id', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
 
     const session = await page.evaluate((customid) => {
@@ -78,6 +67,8 @@ describe('Authenticate Tests', () => {
   });
 
   it('should fail to authenticate with new custom id', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
     const result = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
@@ -93,6 +84,8 @@ describe('Authenticate Tests', () => {
   });
 
   it('should authenticate with custom id twice', async () => {
+    const page : Page = await createPage();
+
     const customid = "someuniquecustomid";
 
     const session = await page.evaluate(async (customid) => {
@@ -106,6 +99,8 @@ describe('Authenticate Tests', () => {
   });
 
   it('should fail authenticate with custom id', async () => {
+    const page : Page = await createPage();
+
     const result = await page.evaluate(async () => {
       const client = new nakamajs.Client();
       try {
@@ -147,5 +142,4 @@ describe('Authenticate Tests', () => {
     expect(session).not.toBeNull();
     expect(session.token).not.toBeNull();
   });
-
-}, TIMEOUT);
+});

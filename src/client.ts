@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 The Nakama Authors
+ * Copyright 2020 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,10 +50,12 @@ import {
   ApiWriteStorageObjectsRequest,
   ConfigurationParameters,
   NakamaApi,
+  ApiSession,
 } from "./api.gen";
 
 import { Session } from "./session";
 import { DefaultSocket, Socket } from "./socket";
+import { WebSocketAdapter, WebSocketAdapterText } from "./web_socket_adapter";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = "7350";
@@ -674,7 +676,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -728,7 +730,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -774,6 +776,7 @@ export class Client {
 
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
@@ -783,7 +786,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -843,7 +846,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -897,7 +900,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -956,7 +959,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -1010,7 +1013,7 @@ export class Client {
       new Promise((_, reject) =>
         setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")
       ),
-    ]).then((apiSession) => {
+    ]).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -1099,8 +1102,8 @@ export class Client {
   }
 
   /** A socket created with the client's configuration. */
-  createSocket(useSSL = false, verbose: boolean = false): Socket {
-    return new DefaultSocket(this.host, this.port, useSSL, verbose);
+  createSocket(useSSL = false, verbose: boolean = false, adapter : WebSocketAdapter = new WebSocketAdapterText()): Socket {
+    return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter);
   }
 
   /** Delete one or more users by ID or username. */

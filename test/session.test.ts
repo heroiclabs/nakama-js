@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const TIMEOUT = 5000;
+
+import * as nakamajs from "../src/session";
+import {createPage} from "./utils";
+import {Page} from "puppeteer";
 
 describe('Session Tests', () => {
-  let page;
-
-  beforeAll(async () => {
-    page = await browser.newPage();
-
-    page.on('console', msg => console.log('LOG:', msg.text()));
-    page.on('error', err => console.error('ERR:', err));
-    page.on('pageerror', err => console.error('PAGE ERROR:', err));
-
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
-    await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto('about:blank');
-  }, TIMEOUT);
 
   it('should be expired', async () => {
+    const page : Page = await createPage();
+
     const expired = await page.evaluate(() => {
       const nowUnixEpoch = Math.floor(Date.now() / 1000);
       const expiredJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTY5MTA5NzMsInVpZCI6ImY0MTU4ZjJiLTgwZjMtNDkyNi05NDZiLWE4Y2NmYzE2NTQ5MCIsInVzbiI6InZUR2RHSHl4dmwifQ.gzLaMQPaj5wEKoskOSALIeJLOYXEVFoPx3KY0Jm1EVU";
@@ -44,6 +35,8 @@ describe('Session Tests', () => {
   });
 
   it('should have username and userId', async () => {
+    const page : Page = await createPage();
+
     const session = await page.evaluate(() => {
       const expiredJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTY5MTA5NzMsInVpZCI6ImY0MTU4ZjJiLTgwZjMtNDkyNi05NDZiLWE4Y2NmYzE2NTQ5MCIsInVzbiI6InZUR2RHSHl4dmwifQ.gzLaMQPaj5wEKoskOSALIeJLOYXEVFoPx3KY0Jm1EVU";
       return nakamajs.Session.restore(expiredJwt);
@@ -54,4 +47,4 @@ describe('Session Tests', () => {
     expect(session.user_id).not.toBeNull();
     expect(session.user_id).toBe("f4158f2b-80f3-4926-946b-a8ccfc165490");
   });
-}, TIMEOUT);
+});

@@ -1,5 +1,5 @@
 import { WebSocketAdapter, SocketCloseHandler, SocketErrorHandler, SocketMessageHandler, SocketOpenHandler } from './web_socket_adapter';
-export declare class WebSocketAdapterText implements WebSocketAdapter {
+export declare class WebSocketAdapterPb implements WebSocketAdapter {
     private _isConnected;
     private _socket?;
     get onClose(): SocketCloseHandler | null;

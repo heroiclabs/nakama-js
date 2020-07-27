@@ -14,30 +14,15 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const TIMEOUT = 5000;
-
-// util to generate a random id.
-const generateid = () => {
-  return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
-};
+import * as nakamajs from "../src/client";
+import {createPage, generateid} from "./utils"
+import {Page} from "puppeteer"
 
 describe('Group Tests', () => {
-  let page;
-
-  beforeAll(async () => {
-    page = await browser.newPage();
-
-    page.on('console', msg => console.log('LOG:', msg.text()));
-    page.on('error', err => console.error('ERR:', err));
-    page.on('pageerror', err => console.error('PAGE ERROR:', err));
-
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.umd.js', 'utf8');
-    await page.evaluateOnNewDocument(nakamaJsLib);
-    await page.goto('about:blank');
-  }, TIMEOUT);
 
   it('should create group', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
     const group_name = generateid();
 
@@ -56,6 +41,9 @@ describe('Group Tests', () => {
   });
 
   it('should create then list group', async () => {
+
+    const page : Page = await createPage();
+
     const customid = generateid();
     const group_name = generateid();
 
@@ -77,6 +65,8 @@ describe('Group Tests', () => {
   });
 
   it('should create, update, then list group', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
     const group_name1 = generateid();
     const group_name2 = generateid();
@@ -100,6 +90,9 @@ describe('Group Tests', () => {
   });
 
   it('should create, delete, then list group', async () => {
+
+    const page : Page = await createPage();
+
     const customid = generateid();
     const group_name = generateid();
 
@@ -116,6 +109,8 @@ describe('Group Tests', () => {
   });
 
   it('should create then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid = generateid();
     const group_name = generateid();
 
@@ -132,12 +127,14 @@ describe('Group Tests', () => {
   });
 
   it('should create, join, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: true });
 
@@ -159,12 +156,14 @@ describe('Group Tests', () => {
   });
 
   it('should create, add, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
@@ -186,12 +185,14 @@ describe('Group Tests', () => {
   });
 
   it('should create, add, kick, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
@@ -208,12 +209,14 @@ describe('Group Tests', () => {
   });
 
   it('should create closed, request to join, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: false });
 
@@ -235,15 +238,16 @@ describe('Group Tests', () => {
   });
 
   it('should create open, join, then list user groups and see count affected', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
-      const session1 = await client1.authenticateCustom({ id: customid1 })
+      const client1 = new nakamajs.Client();      
+      const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: true });
-
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
@@ -257,15 +261,16 @@ describe('Group Tests', () => {
   });
 
   it('should create closed, request to join, then list user groups and see count unaffected', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: false });
-
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
 
@@ -279,12 +284,14 @@ describe('Group Tests', () => {
   });
 
   it('should create closed, request to join, add, then list user groups and see count affected', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();    
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: false })
 
@@ -302,12 +309,14 @@ describe('Group Tests', () => {
   });
 
   it('should create closed, request to join, promote, then list user groups and see count affected', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: false });
 
@@ -324,12 +333,14 @@ describe('Group Tests', () => {
   });
 
   it('should create open, join, leave, then list user groups and see count affected', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: true });
 
@@ -347,12 +358,14 @@ describe('Group Tests', () => {
   });
 
   it('should create closed, request to join, leave, then list user groups and see count unaffected', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: false });
       const client2 = new nakamajs.Client();
@@ -368,12 +381,14 @@ describe('Group Tests', () => {
   });
 
   it('should create closed, request to join, add, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 })
       const group = await client1.createGroup(session1, { name: group_name, open: false })
       const client2 = new nakamajs.Client();
@@ -395,12 +410,14 @@ describe('Group Tests', () => {
   });
 
   it('should create closed, request to join, promote, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: false });
       const client2 = new nakamajs.Client();
@@ -422,12 +439,14 @@ describe('Group Tests', () => {
   });
 
   it('should create closed, request to join, kick, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: false });
       const client2 = new nakamajs.Client();
@@ -443,12 +462,14 @@ describe('Group Tests', () => {
   });
 
   it('should create, add, promote, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
@@ -471,12 +492,14 @@ describe('Group Tests', () => {
   });
 
   it('should create, add, promote twice, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
@@ -495,12 +518,14 @@ describe('Group Tests', () => {
   });
 
   it('should create, join, leave, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const group = await client1.createGroup(session1, { name: group_name, open: true });
       const client2 = new nakamajs.Client();
@@ -516,12 +541,14 @@ describe('Group Tests', () => {
   });
 
   it('should create closed, request to join, leave, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 })
       const group = await client1.createGroup(session1, { name: group_name, open: false });
       const client2 = new nakamajs.Client();
@@ -537,13 +564,15 @@ describe('Group Tests', () => {
   });
 
   it('should create, add, promote, add, promote, then list group users', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const customid2 = generateid();
     const customid3 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, customid3, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
@@ -564,11 +593,13 @@ describe('Group Tests', () => {
   });
 
   it('should create, list group', async () => {
+    const page : Page = await createPage();
+
     const customid1 = generateid();
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
 
       const group = await client1.createGroup(session1, { name: group_name, open: true })
@@ -583,6 +614,9 @@ describe('Group Tests', () => {
 
 
   it('should create, add, ban, then list group users', async () => {
+
+    const page : Page = await createPage();
+
     // TODO currently no way to check if a user has been banned in a group other than checking
     // that they aren't returned in the listGroupUsers() call
 
@@ -591,7 +625,7 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();
+      const client1 = new nakamajs.Client();      
       const session1 = await client1.authenticateCustom({ id: customid1 });
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom({ id: customid2 });
@@ -607,4 +641,4 @@ describe('Group Tests', () => {
     expect(result.group_users.length).toBe(1);
   });
 
-}, TIMEOUT);
+});
