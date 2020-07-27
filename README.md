@@ -128,7 +128,7 @@ The development roadmap is managed as GitHub issues and pull requests are welcom
 
 Ensure you are using Node v12.18.1
 
-The codebase is written in TypeScript with tests in JavaScript and can be built with [Rollup.js](https://rollupjs.org/guide/en). All dependencies are managed with NPM.
+The codebase is written in TypeScript and can be built with [esbuild](https://github.com/evanw/esbuild). All dependencies are managed with NPM.
 
 ```shell
 yarn install && yarn build
