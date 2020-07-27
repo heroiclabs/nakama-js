@@ -148,10 +148,10 @@ yarn build && yarn test
 To update the generated Typescript required for using the protocol buffer adapter, run the following:
 
 ```shell
-npx protoc \ 
---plugin="./node_modules/.bin/protoc-gen-ts_proto" \ 
+npx protoc \
+--plugin="./node_modules/.bin/protoc-gen-ts_proto" \
 --proto_path=$GOPATH/src \
---ts_proto_out=src/ \ 
+--ts_proto_out=src/ \
 --ts_proto_opt=snakeToCamel=false \
 --ts_proto_opt=useOptionals=true \
 --ts_proto_opt=oneof=unions \

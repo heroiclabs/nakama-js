@@ -1,10 +1,14 @@
 import { WebSocketAdapter, SocketCloseHandler, SocketErrorHandler, SocketMessageHandler, SocketOpenHandler } from './web_socket_adapter'
-import * as protobuf from "./github.com/heroiclabs/nakama-common/rtapi/realtime"
+import * as tsproto from "./github.com/heroiclabs/nakama-common/rtapi/realtime"
+
 export class WebSocketAdapterPb implements WebSocketAdapter {
 
     private _isConnected: boolean = false;
 
     private _socket?: WebSocket;
+
+    constructor() {
+    }
 
     get onClose(): SocketCloseHandler | null {
         return this._socket!.onclose;
@@ -35,15 +39,26 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
                 const uintBuffer: Uint8Array = new Uint8Array(buffer);
                 console.log(uintBuffer.toString());
 
-                const envelopeProto = protobuf.Envelope.decode(uintBuffer);
-                const envelope : any = protobuf.Envelope.toJSON(envelopeProto);
+                const envelopeProto = tsproto.Envelope.decode(uintBuffer);
+                const envelope: any = tsproto.Envelope.toJSON(envelopeProto);
 
-                if (envelope.cid == "")
-                {
-                    //protobuf plugin always sets missing fields to default values.
+                if (envelope.cid == "") {
+                    //protobuf plugin always sets missing required fields to default values.
                     envelope.cid = undefined;
                 }
-                
+
+                if (envelope.channel_message) {
+
+                    if (envelope.channel_message.code == undefined) {
+                        //protobuf plugin does not default-initialize missing Int32Value fields
+                        envelope.channel_message.code = 0;
+                    }
+                    if (envelope.channel_message.persistent == undefined) {
+                        //protobuf plugin does not default-initialize missing Bool fields
+                        envelope.channel_message.persistent = false;
+                    }
+                }
+
                 value!(envelope);
             };
         }
@@ -78,8 +93,8 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
     }
 
     send(msg: any): void {
-        const envelope = protobuf.Envelope.fromJSON(msg);
-        const envelopeWriter = protobuf.Envelope.encode(envelope);
+        const envelope = tsproto.Envelope.fromJSON(msg);
+        const envelopeWriter = tsproto.Envelope.encode(envelope);
         const encodedMsg = envelopeWriter.finish();
         this._socket!.send(encodedMsg);
     }
