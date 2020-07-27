@@ -3392,7 +3392,7 @@ class Session {
   }
 }
 
-// src/web_socket_adapter_text.ts
+// src/web_socket_adapter.ts
 class WebSocketAdapterText {
   constructor() {
     this._isConnected = false;
@@ -5105,8 +5105,6 @@ class Client {
     });
   }
 }
-
-// src/web_socket_adapter.ts
 
 // src/google/protobuf/timestamp.ts
 const minimal3 = __toModule(require_minimal());

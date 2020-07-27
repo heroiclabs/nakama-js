@@ -17,8 +17,7 @@
 import {ApiNotification, ApiRpc} from "./api.gen";
 import {Session} from "./session";
 import {Notification} from "./client";
-import {WebSocketAdapter} from "./web_socket_adapter"
-import {WebSocketAdapterText} from "./web_socket_adapter_text"
+import {WebSocketAdapter, WebSocketAdapterText} from "./web_socket_adapter"
 import {b64DecodeUnicode, b64EncodeUnicode} from "./utils";
 
 
