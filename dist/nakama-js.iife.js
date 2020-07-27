@@ -3515,8 +3515,6 @@ var nakamajs = (() => {
         if (this.verbose && window && window.console) {
           console.log("Response: %o", message);
         }
-        console.log("envelope is...");
-        console.log(JSON.stringify(message));
         if (message.cid == void 0) {
           if (message.notifications) {
             message.notifications.notifications.forEach((n) => {
@@ -3642,8 +3640,6 @@ var nakamajs = (() => {
     }
     send(message) {
       const untypedMessage = message;
-      console.log("sending msg...");
-      console.log(JSON.stringify(untypedMessage));
       return new Promise((resolve, reject) => {
         if (!this.adapter.isConnected) {
           reject("Socket connection has not been established yet.");
@@ -9233,7 +9229,6 @@ var nakamajs = (() => {
         this._socket.onmessage = (evt) => {
           const buffer = evt.data;
           const uintBuffer = new Uint8Array(buffer);
-          console.log(uintBuffer.toString());
           const envelopeProto = Envelope.decode(uintBuffer);
           const envelope = Envelope.toJSON(envelopeProto);
           if (envelope.cid == "") {

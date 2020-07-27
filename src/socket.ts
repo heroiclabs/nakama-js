@@ -543,8 +543,6 @@ export class DefaultSocket implements Socket {
     const untypedMessage = message as any;
 
 
-    console.log("sending msg...");
-    console.log(JSON.stringify(untypedMessage));
     return new Promise((resolve, reject) => {
       if (!this.adapter.isConnected) {
         reject("Socket connection has not been established yet.");
