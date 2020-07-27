@@ -453,7 +453,6 @@ export class DefaultSocket implements Socket {
         resolve(session);
       }
       this.adapter.onError = (evt: Event) => {
-        console.log("error: " + JSON.stringify(evt));
         reject(evt);
         this.adapter.close();
       }

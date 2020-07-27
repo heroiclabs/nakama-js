@@ -3569,7 +3569,6 @@ var nakamajs = (() => {
           resolve(session3);
         };
         this.adapter.onError = (evt) => {
-          console.log("error: " + JSON.stringify(evt));
           reject(evt);
           this.adapter.close();
         };
