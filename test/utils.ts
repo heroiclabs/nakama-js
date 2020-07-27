@@ -26,8 +26,7 @@ export async function createPage() : Promise<Page>
         page.on('error', handlePageError);
         page.on('pageerror', handlePageError);
     
-        const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/esbuild.js', 'utf8');
-    
+        const nakamaJsLib = fs.readFileSync(__dirname + '/../dist/nakama-js.iife.js', 'utf8');
 
         try {
             const promise = page.evaluateOnNewDocument(nakamaJsLib);

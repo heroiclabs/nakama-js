@@ -37,7 +37,6 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
                 const buffer: ArrayBuffer = evt.data;
 
                 const uintBuffer: Uint8Array = new Uint8Array(buffer);
-                console.log(uintBuffer.toString());
 
                 const envelopeProto = tsproto.Envelope.decode(uintBuffer);
                 const envelope: any = tsproto.Envelope.toJSON(envelopeProto);
@@ -54,7 +53,7 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
                         envelope.channel_message.code = 0;
                     }
                     if (envelope.channel_message.persistent == undefined) {
-                        //protobuf plugin does not default-initialize missing Bool fields
+                        //protobuf plugin does not default-initialize missing boolean fields
                         envelope.channel_message.persistent = false;
                     }
                 }

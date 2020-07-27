@@ -397,9 +397,6 @@ export class DefaultSocket implements Socket {
         console.log("Response: %o", message);
       }
 
-      console.log("envelope is...");
-      console.log(JSON.stringify(message));
-
       // Inbound message from server.
       if (message.cid == undefined) {
         if (message.notifications) {

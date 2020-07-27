@@ -25,7 +25,7 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "build": "npx esbuild --bundle src/index.ts --outfile=dist/esbuild.js --target=es6 --global-name=nakamajs",
+    "build": "./build.sh",
     "test": "jest"
   },
   "files": [
