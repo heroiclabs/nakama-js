@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 The Nakama Authors
+ * Copyright 2020 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ import {
 
 import { Session } from "./session";
 import { DefaultSocket, Socket } from "./socket";
-import { WebSocketAdapter } from "./web_socket_adapter";
-import { WebSocketAdapterText } from "./web_socket_adapter_text";
+import { WebSocketAdapter, WebSocketAdapterText } from "./web_socket_adapter";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = "7350";

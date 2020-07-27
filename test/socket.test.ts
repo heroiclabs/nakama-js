@@ -14,38 +14,40 @@
  * limitations under the License.
  */
 
-import * as nakamajs from "../src/client";
+import * as nakamajs from "../src/index";
 import {StreamData} from "../src/socket"
-
-import {createPage, generateid} from "./utils"
-import {Page} from "puppeteer"
+import {generateid, createPage, adapters, AdapterType} from "./utils"
 
 describe('Socket Message Tests', () => {
 
-  it('should connect', async () => {
-    const page : Page = await createPage();
+  it.each(adapters)('should connect', async (adapter) => {
+    const page = await createPage();
 
     const customid = generateid();
 
-    const session = await page.evaluate(async (customid) => {
+    const session = await page.evaluate(async (customid, adapter) => {
       const client = new nakamajs.Client();
       const session = await client.authenticateCustom({ id: customid });
-      const socket = client.createSocket();
+      
+      const socket = client.createSocket(false, false, 
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        
       await socket.connect(session, false);
       socket.disconnect(false);
-    }, customid);
+    }, customid, adapter);
   });
 
-  it('should rpc and receive stream data', async () => {
-    const page : Page = await createPage();
-
+  it.each(adapters)('should rpc and receive stream data', async (adapter) => {
+    const page = await createPage();
+    
     const customid = generateid();
     const ID = "clientrpc.send_stream_data";
     const PAYLOAD = JSON.stringify({ "hello": "world" });
 
-    const response = await page.evaluate(async (customid, id, payload) => {
+    const response = await page.evaluate(async (customid, id, payload, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false, 
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<StreamData>((resolve, reject) => {
         socket.onstreamdata = (streamdata) => {
@@ -61,7 +63,7 @@ describe('Socket Message Tests', () => {
       });
 
       return Promise.race([promise1, promise2]);
-    }, customid, ID, PAYLOAD);
+    }, customid, ID, PAYLOAD, adapter);
 
     expect(response).not.toBeNull();
     expect(response.data).toBe(PAYLOAD);

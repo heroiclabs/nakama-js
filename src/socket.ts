@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 The Nakama Authors
+ * Copyright 2020 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 import {ApiNotification, ApiRpc} from "./api.gen";
 import {Session} from "./session";
 import {Notification} from "./client";
-import {WebSocketAdapter} from "./web_socket_adapter"
-import {WebSocketAdapterText} from "./web_socket_adapter_text"
+import {WebSocketAdapter, WebSocketAdapterText} from "./web_socket_adapter"
+import {b64DecodeUnicode, b64EncodeUnicode} from "./utils";
 
 
 /** Requires the set of keys K to exist in type T. */
@@ -399,10 +399,13 @@ export class DefaultSocket implements Socket {
       // Inbound message from server.
       if (message.cid == undefined) {
         if (message.notifications) {
-            message.notifications.notifications.forEach((n: ApiNotification) => {
-            this.onnotification(n);
+          message.notifications.notifications.forEach((n: ApiNotification) => {
+              n.content = n.content ? JSON.parse(n.content) : undefined;
+              this.onnotification(n);
           });
         } else if (message.match_data) {
+          message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
+          message.match_data.op_code = parseInt(message.match_data.op_code);
           this.onmatchdata(message.match_data);
         } else if (message.match_presence_event) {
           this.onmatchpresence(<MatchPresenceEvent>message.match_presence_event);
@@ -415,6 +418,7 @@ export class DefaultSocket implements Socket {
         } else if (message.stream_data) {
           this.onstreamdata(<StreamData>message.stream_data);
         } else if (message.channel_message) {
+          message.channel_message.content = JSON.parse(message.channel_message.content);
           this.onchannelmessage(<ChannelMessage>message.channel_message);
         } else if (message.channel_presence_event) {
           this.onchannelpresence(<ChannelPresenceEvent>message.channel_presence_event);
@@ -534,27 +538,38 @@ export class DefaultSocket implements Socket {
     ChannelMessageUpdate | ChannelMessageRemove | CreateMatch |
     JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove |
     Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any> {
-    const m = message as any;
+    const untypedMessage = message as any;
+
+
     return new Promise((resolve, reject) => {
       if (!this.adapter.isConnected) {
         reject("Socket connection has not been established yet.");
-      } else {
-        if (m.match_data_send) {
-          this.adapter.send(m);
+      }
+      else {
+        if (untypedMessage.match_data_send) {
+          untypedMessage.match_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.match_data_send.data));
+          this.adapter.send(untypedMessage);
           resolve();
-        } else {
+        }
+        else {
+
+          if (untypedMessage.channel_message_send) {
+            untypedMessage.channel_message_send.content = JSON.stringify(untypedMessage.channel_message_send.content);
+          } else if (untypedMessage.channel_message_update) {
+            untypedMessage.channel_message_update.content = JSON.stringify(untypedMessage.channel_message_update.content);
+          }
 
           const cid = this.generatecid();
           this.cIds[cid] = {resolve, reject};
 
           // Add id for promise executor.
-          m.cid = cid;
-          this.adapter.send(m);
+          untypedMessage.cid = cid;
+          this.adapter.send(untypedMessage);
         }
       }
 
       if (this.verbose && window && window.console) {
-        console.log("Sent message: %o", m);
+        console.log("Sent message: %o", untypedMessage);
       }
     });
   }
@@ -591,7 +606,7 @@ export class DefaultSocket implements Socket {
   }
   
   async joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel> {
-    
+  
     const response = await this.send({
         channel_join: {
             target: target,

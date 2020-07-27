@@ -15,44 +15,50 @@
  */
 
 
-import * as nakamajs from "../src/client";
-import {createPage, generateid} from "./utils";
-import {Page} from "puppeteer";
+import * as nakamajs from "../src/index";
+import {generateid, createPage, adapters, AdapterType} from "./utils";
 
 describe('Channel Tests', () => {
+  
+  it.each(adapters)('should join a channel', async (adapter) => {
 
-  it('should join a channel', async () => {
-    const page : Page = await createPage();
-
+    const page = await createPage();
     const customid = generateid();
     const channelid = generateid();
 
-    const response = await page.evaluate(async (customid, channelid) => {
-      const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
-      const session = await client.authenticateCustom({ id: customid })
-      await socket.connect(session, false);
+    const response = await page.evaluate(async (customid, channelid, adapter) => {
 
-      //chat type: 1 = room, 2 = Direct Message 3 = Group
-      return await socket.joinChat(channelid, 1, true, false);
-    }, customid, channelid);
+      const client = new nakamajs.Client();
+        
+        const socket = client.createSocket(false, false,
+           adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+  
+        const session = await client.authenticateCustom({ id: customid })
+        await socket.connect(session, false);
+  
+  
+        //chat type: 1 = room, 2 = Direct Message 3 = Group
+        return await socket.joinChat(channelid, 1, true, false);
+    }, customid, channelid, adapter);
 
     expect(response).not.toBeNull();
     expect(response.id).not.toBeNull();
     expect(response.presences).not.toBeNull();
     expect(response.self).not.toBeNull();
-
   });
 
-  it('should join a room, then leave it', async () => {
-    const page : Page = await createPage();
+  it.each(adapters)('should join a room, then leave it', async (adapter) => {
+    const page = await createPage();
 
     const customid = generateid();
     const channelid = generateid();
 
-    const response = await page.evaluate(async (customid, channelid) => {
+    const response = await page.evaluate(async (customid, channelid, adapter) => {
+      
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false, 
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session, false);
       //chat type: 1 = room, 2 = Direct Message 3 = Group
@@ -64,16 +70,18 @@ describe('Channel Tests', () => {
     expect(response).not.toBeNull();
   });
 
-  it('should join a room, then send message, receive message', async () => {
-    const page : Page = await createPage();
+  it.each(adapters)('should join a room, then send message, receive message', async (adapter) => {
+
+    const page = await createPage();
 
     const customid = generateid();
     const channelid = generateid();
     const payload = { "hello": "world" };
 
-    const message : nakamajs.ChannelMessage = await page.evaluate(async (customid, channelid, payload) => {
+    const message : nakamajs.ChannelMessage = await page.evaluate(async (customid, channelid, payload, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false, 
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<nakamajs.ChannelMessage>((resolve, reject) => {
         socket.onchannelmessage = (channelmessage) => {
@@ -94,7 +102,7 @@ describe('Channel Tests', () => {
       });
 
       return Promise.race([promise1, promise2]);
-    }, customid, channelid, payload);
+    }, customid, channelid, payload, adapter);
 
     expect(message).not.toBeNull();
     expect(message!.channel_id).not.toBeNull();
@@ -105,17 +113,18 @@ describe('Channel Tests', () => {
     expect(message!.persistent).toBe(false);
   });
 
-  it('should join a room, then send message, update message, then list messages', async () => {
-    const page : Page = await createPage();
+  it.each(adapters)('should join a room, then send message, update message, then list messages', async (adapter) => {
+    const page = await createPage();
 
     const customid = generateid();
     const channelid = generateid();
     const payload = { "hello": "world" };
     const updatedPayload = { "hello": "world2" };
 
-    const response = await page.evaluate(async (customid, channelid, payload, updatedPayload) => {
+    const response = await page.evaluate(async (customid, channelid, payload, updatedPayload, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false, 
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session, false);
@@ -130,7 +139,7 @@ describe('Channel Tests', () => {
         updatedPayload);
 
       return await client.listChannelMessages(session, ack2.channel_id, 10)
-    }, customid, channelid, payload, updatedPayload);
+    }, customid, channelid, payload, updatedPayload, adapter);
 
     expect(response).not.toBeNull();
     expect(response.messages).not.toBeNull();
@@ -143,17 +152,18 @@ describe('Channel Tests', () => {
     })
   });
 
-  it('should join a room, then send message, remove message, then list messages', async () => {
-    const page : Page = await createPage();
+  it.each(adapters)('should join a room, then send message, remove message, then list messages', async (adapter) => {
+    const page = await createPage();
 
     const customid = generateid();
     const channelid = generateid();
     const payload = { "hello": "world" };
 
-    const response = await page.evaluate(async (customid, channelid, payload) => {
+    const response = await page.evaluate(async (customid, channelid, payload, adapter) => {
 
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false);
+      const socket = client.createSocket(false, false, 
+        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session, false);
@@ -167,7 +177,7 @@ describe('Channel Tests', () => {
         ack.message_id);
 
       return await client.listChannelMessages(session, ack.channel_id, 10)
-    }, customid, channelid, payload);
+    }, customid, channelid, payload, adapter);
 
     expect(response).not.toBeNull();
     expect(response.messages).not.toBeNull();
