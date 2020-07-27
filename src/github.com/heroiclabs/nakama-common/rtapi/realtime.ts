@@ -129,7 +129,7 @@ export interface Channel {
   /**
    *  A reference to the current user's presence in the channel.
    */
-  self: UserPresence | undefined;
+  self?: UserPresence;
   /**
    *  The name of the chat room, or an empty string if this message was not sent through a chat room.
    */
@@ -163,11 +163,11 @@ export interface ChannelJoin {
   /**
    *  Whether messages sent on this channel should be persistent.
    */
-  persistence: boolean | undefined;
+  persistence?: boolean;
   /**
    *  Whether the user should appear in the channel's presence list and events.
    */
-  hidden: boolean | undefined;
+  hidden?: boolean;
 }
 
 /**
@@ -195,7 +195,7 @@ export interface ChannelMessageAck {
   /**
    *  The code representing a message type or category.
    */
-  code: number | undefined;
+  code?: number;
   /**
    *  Username of the message sender.
    */
@@ -203,15 +203,15 @@ export interface ChannelMessageAck {
   /**
    *  The UNIX time when the message was created.
    */
-  create_time: Date | undefined;
+  create_time?: Date;
   /**
    *  The UNIX time when the message was last updated.
    */
-  update_time: Date | undefined;
+  update_time?: Date;
   /**
    *  True if the message was persisted to the channel's history, false otherwise.
    */
-  persistent: boolean | undefined;
+  persistent?: boolean;
   /**
    *  The name of the chat room, or an empty string if this message was not sent through a chat room.
    */
@@ -348,7 +348,7 @@ export interface Match {
   /**
    *  Match label, if any.
    */
-  label: string | undefined;
+  label?: string;
   /**
    *  The number of users currently in the match.
    */
@@ -360,7 +360,7 @@ export interface Match {
   /**
    *  A reference to the current user's presence in the match.
    */
-  self: UserPresence | undefined;
+  self?: UserPresence;
 }
 
 /**
@@ -380,7 +380,7 @@ export interface MatchData {
   /**
    *  A reference to the user presence that sent this data, if any.
    */
-  presence: UserPresence | undefined;
+  presence?: UserPresence;
   /**
    *  Op code value.
    */
@@ -533,14 +533,14 @@ export interface MatchmakerMatched {
   /**
    *  A reference to the current user and their properties.
    */
-  self: MatchmakerMatched_MatchmakerUser | undefined;
+  self?: MatchmakerMatched_MatchmakerUser;
 }
 
 export interface MatchmakerMatched_MatchmakerUser {
   /**
    *  User info.
    */
-  presence: UserPresence | undefined;
+  presence?: UserPresence;
   /**
    *  String properties.
    */
@@ -658,7 +658,7 @@ export interface StatusUpdate {
   /**
    *  Status string to set, if not present the user will appear offline.
    */
-  status: string | undefined;
+  status?: string;
 }
 
 /**
@@ -690,11 +690,11 @@ export interface StreamData {
   /**
    *  The stream this data message relates to.
    */
-  stream: Stream | undefined;
+  stream?: Stream;
   /**
    *  The sender, if any.
    */
-  sender: UserPresence | undefined;
+  sender?: UserPresence;
   /**
    *  Arbitrary contents of the data message.
    */
@@ -712,7 +712,7 @@ export interface StreamPresenceEvent {
   /**
    *  The stream this event relates to.
    */
-  stream: Stream | undefined;
+  stream?: Stream;
   /**
    *  Presences joining the stream as part of this event, if any.
    */
@@ -746,7 +746,7 @@ export interface UserPresence {
   /**
    *  A user-set status message for this stream, if applicable.
    */
-  status: string | undefined;
+  status?: string;
 }
 
 const baseEnvelope: object = {

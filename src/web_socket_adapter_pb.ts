@@ -27,14 +27,24 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
     }
 
     set onMessage(value: SocketMessageHandler | null) {
-        
+
         if (value) {
             this._socket!.onmessage = (evt: MessageEvent) => {
-                const buffer : ArrayBuffer = evt.data;
-                const uintBuffer : Uint8Array = new Uint8Array(buffer);
+                const buffer: ArrayBuffer = evt.data;
+
+                const uintBuffer: Uint8Array = new Uint8Array(buffer);
+                console.log(uintBuffer.toString());
+
                 const envelopeProto = protobuf.Envelope.decode(uintBuffer);
-                const envelope = protobuf.Envelope.toJSON(envelopeProto);
-                value!(envelope);                
+                const envelope : any = protobuf.Envelope.toJSON(envelopeProto);
+
+                if (envelope.cid == "")
+                {
+                    //protobuf plugin always sets missing fields to default values.
+                    envelope.cid = undefined;
+                }
+                
+                value!(envelope);
             };
         }
         else {
@@ -67,8 +77,7 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
         this._isConnected = true;
     }
 
-    send(msg : any): void {
-
+    send(msg: any): void {
         const envelope = protobuf.Envelope.fromJSON(msg);
         const envelopeWriter = protobuf.Envelope.encode(envelope);
         const encodedMsg = envelopeWriter.finish();

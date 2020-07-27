@@ -397,13 +397,15 @@ export class DefaultSocket implements Socket {
         console.log("Response: %o", message);
       }
 
+      console.log("envelope is...");
+      console.log(JSON.stringify(message));
+
       // Inbound message from server.
       if (message.cid == undefined) {
         if (message.notifications) {
           message.notifications.notifications.forEach((n: ApiNotification) => {
               n.content = n.content ? JSON.parse(n.content) : undefined;
               this.onnotification(n);
-
           });
         } else if (message.match_data) {
           message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
@@ -542,6 +544,10 @@ export class DefaultSocket implements Socket {
     JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove |
     Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any> {
     const untypedMessage = message as any;
+
+
+    console.log("sending msg...");
+    console.log(JSON.stringify(untypedMessage));
     return new Promise((resolve, reject) => {
       if (!this.adapter.isConnected) {
         reject("Socket connection has not been established yet.");
