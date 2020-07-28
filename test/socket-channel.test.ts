@@ -16,8 +16,8 @@
 
 
 import * as nakamajs from "../packages/nakama-js";
+import * as nakamajsprotobuf from "../packages/nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType} from "./utils";
-import {WebSocketAdapterPb} from "../packages/nakama-js-protobuf/web_socket_adapter_pb";
 
 describe('Channel Tests', () => {
   
@@ -32,7 +32,7 @@ describe('Channel Tests', () => {
       const client = new nakamajs.Client();
         
         const socket = client.createSocket(false, false,
-           adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+           adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
   
         const session = await client.authenticateCustom({ id: customid })
         await socket.connect(session, false);
@@ -57,7 +57,7 @@ describe('Channel Tests', () => {
       
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session, false);
@@ -81,7 +81,7 @@ describe('Channel Tests', () => {
     const message : nakamajs.ChannelMessage = await page.evaluate(async (customid, channelid, payload, adapter) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<nakamajs.ChannelMessage>((resolve, reject) => {
         socket.onchannelmessage = (channelmessage) => {
@@ -124,7 +124,7 @@ describe('Channel Tests', () => {
     const response = await page.evaluate(async (customid, channelid, payload, updatedPayload, adapter) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session, false);
@@ -163,7 +163,7 @@ describe('Channel Tests', () => {
 
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid })
       await socket.connect(session, false);

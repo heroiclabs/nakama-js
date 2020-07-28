@@ -15,9 +15,9 @@
  */
 
 
-import {Page} from "puppeteer"
+import {Page} from "puppeteer";
 import * as nakamajs from "../packages/nakama-js";
-import {createPage, generateid} from "./utils"
+import {createPage, generateid} from "./utils";
 
 describe('Notification Tests', () => {
   

@@ -15,7 +15,7 @@
 # limitations under the License.
 
 build () {
-    npx esbuild --bundle web_socket_adapter_pb.ts --target=es6 --global-name=nakamajs-protobuf "$@"
+    npx esbuild --bundle index.ts --target=es6 --global-name=nakamajsprotobuf "$@"
 }
 
 build --format=cjs --outfile=dist/nakama-js-protobuf.cjs.js

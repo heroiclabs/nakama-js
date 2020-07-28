@@ -15,7 +15,7 @@
  */
 
 
-import * as nakamajs from "../src/session";
+import * as nakamajs from "../packages/nakama-js";
 import {createPage} from "./utils";
 import {Page} from "puppeteer";
 
