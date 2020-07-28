@@ -23,12 +23,29 @@ You'll need to setup the server and database before you can connect with the cli
 
     You'll now see the code in the "node_modules" folder and package listed in your "package.json".
 
+    Optionally, if you would like to use the protocol buffer wire format with your Web Sockets, you can utilize
+    the adapter found in this package:
+
+    ```shell
+    yarn add "@heroiclabs/nakama-js-protobuf"
+    ```
+
 3. Use the connection credentials to build a client object.
 
     ```js
-    // <script src="path/to/nakama-js.umd.js"></script>
+    <script src="path/to/nakama-js.iife.js"></script>
+
     var useSSL = false; // Enable if server is run with an SSL certificate.
     var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350, useSSL);
+    ```
+
+    If you are including the optional protocol buffer adapter, pass the adapter to the Client object:
+    ```js
+    <script src="path/to/nakama-js.iife.js"></script>
+    <script src="path/to/nakama-js-protobuf.iife.js"></script>
+
+    var useSSL = false; // Enable if server is run with an SSL certificate.
+    var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350, useSSL, new nakamajsprotobuf.WebSocketAdapterPb());
     ```
 
 ## Usage
@@ -128,19 +145,22 @@ The development roadmap is managed as GitHub issues and pull requests are welcom
 
 Ensure you are using Node v12.18.1
 
-The codebase is written in TypeScript and can be built with [esbuild](https://github.com/evanw/esbuild). All dependencies are managed with NPM.
+The codebase is multi-package monorepo written in TypeScript and can be built with [esbuild](https://github.com/evanw/esbuild). All dependencies are managed with Yarn.
 
 ```shell
-yarn install && yarn build
+yarn workspace @heroiclabs/nakama-js install && yarn workspace @heroiclabs/nakama-js build
+yarn workspace @heroiclabs/nakama-js-protobuf install && yarn workspace @heroiclabs/nakama-js-protobuf build
 ```
 
 ### Run Tests
 
 To run tests you will need to run the server and database. Most tests are written as integration tests which execute against the server. A quick approach we use with our test workflow is to use the Docker compose file described in the [documentation](https://heroiclabs.com/docs/install-docker-quickstart).
 
+Tests are run against each workspace bundle; if you have made source code changes, you should `yarn workspace <workspace> build` prior to running tests.
+
 ```shell
 docker-compose -f ./docker-compose.yml up
-yarn build && yarn test
+yarn test
 ```
 
 ### Protocol Buffer Web Socket Adapter
