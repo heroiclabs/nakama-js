@@ -558,15 +558,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@heroiclabs/nakama-js@workspace:.":
+"@heroiclabs/nakama-js-base@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@heroiclabs/nakama-js@workspace:."
+  resolution: "@heroiclabs/nakama-js-base@workspace:."
   dependencies:
     "@types/expect-puppeteer": ^4.4.3
     "@types/jest": ^26.0.5
     "@types/jest-environment-puppeteer": ^4.3.2
     "@types/puppeteer": ^3.0.1
-    Base64: 1.0.1
     base64url: ^3.0.1
     bufferutil: 4.0.1
     canvas: 2.6.1
@@ -580,12 +579,27 @@ __metadata:
     puppeteer: ^1.12.2
     rimraf: ^2.6.3
     ts-jest: 26.0.0
-    ts-proto: ^1.27.1
     typedoc: ^0.14.2
     typescript: 3.9.7
     utf-8-validate: 5.0.2
-    whatwg-fetch: ^2.0.3
     ws: 7.3.1
+  languageName: unknown
+  linkType: soft
+
+"@heroiclabs/nakama-js-protobuf@workspace:packages/protobuf":
+  version: 0.0.0-use.local
+  resolution: "@heroiclabs/nakama-js-protobuf@workspace:packages/protobuf"
+  dependencies:
+    ts-proto: ^1.27.1
+  languageName: unknown
+  linkType: soft
+
+"@heroiclabs/nakama-js@workspace:packages/main":
+  version: 0.0.0-use.local
+  resolution: "@heroiclabs/nakama-js@workspace:packages/main"
+  dependencies:
+    Base64: 1.0.1
+    whatwg-fetch: ^2.0.3
   languageName: unknown
   linkType: soft
 
@@ -5136,14 +5150,14 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.10, lodash@npm:^4.17.11":
+"lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.15":
   version: 4.17.15
   resolution: "lodash@npm:4.17.15"
   checksum: aec3fbb7570aa67bda500b8299b1b1821d60646bede87f76a74dfcc7666ab3445267d734ec71424d70809d52ad67a1356fab5ab694a3faa1908d68e9d48f00f5
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.15, lodash@npm:^4.17.19":
+"lodash@npm:^4.17.19":
   version: 4.17.19
   resolution: "lodash@npm:4.17.19"
   checksum: ff2b7a95f0129dba9101e346d44e0eda0f159d76bbbf23721eec1969b87a32bde3de0cfef0733218c64620e9be08040a973278d46a686540233b356115f3527c

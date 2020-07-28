@@ -1,0 +1,7 @@
+{
+    "name": "@heroiclabs/nakama-js",
+    "dependencies": {
+        "Base64": "1.0.1",
+        "whatwg-fetch": "^2.0.3"
+    }
+}

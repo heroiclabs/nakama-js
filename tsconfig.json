@@ -24,7 +24,7 @@
     "baseUrl": "./",
   },
   "include": [
-    "./src/*"
+    "./src/*", "packages/protobuf/web_socket_adapter_pb.ts", "packages/main/api.gen.ts"
   ],
   "exclude": [
     "node_modules"

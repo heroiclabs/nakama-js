@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { WebSocketAdapter, SocketCloseHandler, SocketErrorHandler, SocketMessageHandler, SocketOpenHandler } from './web_socket_adapter'
-import * as tsproto from "./github.com/heroiclabs/nakama-common/rtapi/realtime"
+import { WebSocketAdapter, SocketCloseHandler, SocketErrorHandler, SocketMessageHandler, SocketOpenHandler } from '../../src/web_socket_adapter'
+import * as tsproto from "./nakama-common/rtapi/realtime"
 
 /**
  * A protocol buffer socket adapter that accepts and transmits payloads using the protobuf binary wire format.

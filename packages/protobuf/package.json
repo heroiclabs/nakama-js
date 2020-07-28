@@ -1,0 +1,6 @@
+{
+    "name": "@heroiclabs/nakama-js-protobuf",
+    "devDependencies": {
+        "ts-proto": "^1.27.1"
+    }
+}

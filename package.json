@@ -1,5 +1,5 @@
 {
-  "name": "@heroiclabs/nakama-js",
+  "name": "@heroiclabs/nakama-js-base",
   "version": "2.0.3",
   "description": "JavaScript client for Nakama server written in TypeScript.",
   "keywords": [
@@ -12,10 +12,6 @@
   ],
   "homepage": "https://heroiclabs.com",
   "bugs": "https://github.com/heroiclabs/nakama-js/issues",
-  "main": "dist/nakama-js.cjs.js",
-  "types": "dist/index.d.ts",
-  "module": "dist/nakama-js.esm.js",
-  "browser": "dist/nakama-js.umd.js",
   "repository": "https://github.com/heroiclabs/nakama-js",
   "author": "Chris Molozian <chris@heroiclabs.com>",
   "contributors": [
@@ -27,10 +23,6 @@
     "build": "./build.sh",
     "test": "jest"
   },
-  "files": [
-    "dist",
-    "src"
-  ],
   "devDependencies": {
     "@types/expect-puppeteer": "^4.4.3",
     "@types/jest": "^26.0.5",
@@ -49,14 +41,14 @@
     "puppeteer": "^1.12.2",
     "rimraf": "^2.6.3",
     "ts-jest": "26.0.0",
-    "ts-proto": "^1.27.1",
     "typedoc": "^0.14.2",
     "typescript": "3.9.7",
     "utf-8-validate": "5.0.2",
     "ws": "7.3.1"
   },
-  "dependencies": {
-    "Base64": "1.0.1",
-    "whatwg-fetch": "^2.0.3"
-  }
+  "private": true,
+  "workspaces": [
+    "packages/main",
+    "packages/protobuf"
+  ]
 }
