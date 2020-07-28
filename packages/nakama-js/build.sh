@@ -15,7 +15,7 @@
 # limitations under the License.
 
 build () {
-    npx esbuild --bundle src/index.ts --target=es6 --global-name=nakamajs "$@"
+    npx esbuild --bundle index.ts --target=es6 --global-name=nakamajs "$@"
 } 
 
 build --format=cjs --outfile=dist/nakama-js.cjs.js

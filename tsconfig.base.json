@@ -3,14 +3,13 @@
     "lib": [
       "dom",
       "es2015",
-      "es2016",
-      "es2017" //pb only
+      "es2016"
     ],
     "target": "es6",
     "module": "es2015",
+    "outDir": "./dist",
     "declaration": true,
     "sourceMap": true,
-    "outDir": "./dist",
     "removeComments": true,
     "downlevelIteration": true,
     "noImplicitAny": true,
@@ -21,11 +20,8 @@
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
-    "baseUrl": "./",
+    "baseUrl": "./"
   },
-  "include": [
-    "./src/*", "packages/protobuf/web_socket_adapter_pb.ts", "packages/main/api.gen.ts"
-  ],
   "exclude": [
     "node_modules"
   ]

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import * as nakamajs from "../src/client";
-import {createPage, generateid} from "./utils"
 import {Page} from "puppeteer"
+import * as nakamajs from "../packages/nakama-js";
+import {createPage, generateid} from "./utils"
 
 describe('Leaderboard Tests', () => {
   

@@ -2,7 +2,7 @@
 // *
 //  The realtime protocol for Nakama server.
 //
-import { ChannelMessage, Rpc, Notification } from '../../../../github.com/heroiclabs/nakama-common/api/api';
+import { ChannelMessage, Rpc, Notification } from '../api/api';
 import { Timestamp } from '../../../../google/protobuf/timestamp';
 import * as Long from 'long';
 import { Writer, Reader } from 'protobufjs/minimal';

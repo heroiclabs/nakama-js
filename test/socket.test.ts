@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import * as nakamajs from "../src/index";
-import {StreamData} from "../src/socket"
+import * as nakamajs from "../packages/nakama-js";
+import {StreamData} from "../packages/nakama-js/socket"
 import {generateid, createPage, adapters, AdapterType} from "./utils"
+import {WebSocketAdapterPb} from "../packages/nakama-js-protobuf/web_socket_adapter_pb";
 
 describe('Socket Message Tests', () => {
 
@@ -30,7 +31,7 @@ describe('Socket Message Tests', () => {
       const session = await client.authenticateCustom({ id: customid });
       
       const socket = client.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
         
       await socket.connect(session, false);
       socket.disconnect(false);
@@ -47,7 +48,7 @@ describe('Socket Message Tests', () => {
     const response = await page.evaluate(async (customid, id, payload, adapter) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<StreamData>((resolve, reject) => {
         socket.onstreamdata = (streamdata) => {

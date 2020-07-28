@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as nakamajs from "../src/client";
 import base64url from "base64url";
 import crypto from "crypto";
-import {createPage, generateid} from "./utils";
 import {Page} from "puppeteer";
+import * as nakamajs from "../packages/nakama-js/index";
+import {createPage, generateid} from "./utils";
 
 describe('Authenticate Tests', () => {
   

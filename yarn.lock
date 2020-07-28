@@ -586,17 +586,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@heroiclabs/nakama-js-protobuf@workspace:packages/protobuf":
+"@heroiclabs/nakama-js-protobuf@workspace:packages/nakama-js-protobuf":
   version: 0.0.0-use.local
-  resolution: "@heroiclabs/nakama-js-protobuf@workspace:packages/protobuf"
+  resolution: "@heroiclabs/nakama-js-protobuf@workspace:packages/nakama-js-protobuf"
   dependencies:
     ts-proto: ^1.27.1
   languageName: unknown
   linkType: soft
 
-"@heroiclabs/nakama-js@workspace:packages/main":
+"@heroiclabs/nakama-js@workspace:packages/nakama-js":
   version: 0.0.0-use.local
-  resolution: "@heroiclabs/nakama-js@workspace:packages/main"
+  resolution: "@heroiclabs/nakama-js@workspace:packages/nakama-js"
   dependencies:
     Base64: 1.0.1
     whatwg-fetch: ^2.0.3

@@ -20,7 +20,6 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "./build.sh",
     "test": "jest"
   },
   "devDependencies": {
@@ -48,7 +47,7 @@
   },
   "private": true,
   "workspaces": [
-    "packages/main",
-    "packages/protobuf"
+    "packages/nakama-js",
+    "packages/nakama-js-protobuf"
   ]
 }

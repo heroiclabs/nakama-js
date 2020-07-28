@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import * as nakamajs from "../src/index";
+import * as nakamajs from "../packages/nakama-js/index";
+import {MatchmakerMatched} from "../packages/nakama-js/socket";
 import {generateid, createPage, adapters, AdapterType} from "./utils"
-import { MatchmakerMatched } from "../src/socket";
+import {WebSocketAdapterPb} from "../packages/nakama-js-protobuf/web_socket_adapter_pb";
 
 describe('Matchmaker Tests', () => {
 
   it.each(adapters)('should add to matchmaker', async (adapter) => {
     const page = await createPage();
-//    page.exposeFunction("adapter", adapter);
-
     const customid = generateid();
 
     const response = await page.evaluate(async (customid, adapter) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false,
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session, false);
       return await socket.addMatchmaker("properties.a1:foo", 2, 2, {"a1": "bar"});
@@ -48,7 +47,7 @@ describe('Matchmaker Tests', () => {
     const response = await page.evaluate(async (customid, adapter) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
       const session = await client.authenticateCustom({ id: customid });
       await socket.connect(session, false);
       const ticket = await socket.addMatchmaker("properties.a2:foo", 2, 2, {"a2": "bar"});
@@ -68,9 +67,9 @@ describe('Matchmaker Tests', () => {
       const client1 = new nakamajs.Client();      
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
       const socket2 = client2.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<MatchmakerMatched>((resolve, reject) => {
         socket1.onmatchmakermatched = (matchmakermatched) => {
@@ -111,8 +110,8 @@ describe('Matchmaker Tests', () => {
       const client1 = new nakamajs.Client();      
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
-      const socket2 = client2.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+      const socket2 = client2.createSocket(false, false, adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<MatchmakerMatched>((resolve, reject) => {
         socket1.onmatchmakermatched = (matchmakermatched) => {
@@ -154,9 +153,9 @@ describe('Matchmaker Tests', () => {
       const client1 = new nakamajs.Client();      
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
       const socket2 = client2.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<MatchmakerMatched>((resolve, reject) => {
         socket1.onmatchmakermatched = (matchmakermatched) => {
@@ -197,9 +196,9 @@ describe('Matchmaker Tests', () => {
       const client1 = new nakamajs.Client();      
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
       const socket2 = client2.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise((resolve, reject) => {
         socket2.onmatchmakermatched = (matchmakermatched) => {
@@ -236,9 +235,9 @@ describe('Matchmaker Tests', () => {
       const client1 = new nakamajs.Client();      
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
       const socket2 = client2.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise((resolve, reject) => {
         socket1.onmatchmakermatched = (matchmakermatched) => {
@@ -275,9 +274,9 @@ describe('Matchmaker Tests', () => {
       const client1 = new nakamajs.Client();      
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
       const socket2 = client2.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
       
       var promise1 = new Promise((resolve, reject) => {
         socket1.onmatchmakermatched = (matchmakermatched) => {
@@ -313,9 +312,9 @@ describe('Matchmaker Tests', () => {
       const client1 = new nakamajs.Client();      
       const client2 = new nakamajs.Client();
       const socket1 = client1.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
       const socket2 = client2.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise((resolve, reject) => {
         socket1.onmatchmakermatched = (matchmakermatched) => {
@@ -355,13 +354,13 @@ describe('Matchmaker Tests', () => {
       const client3 = new nakamajs.Client();
 
       const socket1 = client1.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const socket2 = client2.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const socket3 = client3.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise((resolve, reject) => {
         socket3.onmatchmakermatched = (matchmakermatched) => {
@@ -399,10 +398,10 @@ describe('Matchmaker Tests', () => {
       const client2 = new nakamajs.Client();
       
       const socket1 = client1.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const socket2 = client2.createSocket(false, false, 
-        adapter == AdapterType.Protobuf ? new nakamajs.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+        adapter == AdapterType.Protobuf ? new WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<MatchmakerMatched>((resolve, reject) => {
         socket1.onmatchmakermatched = (matchmakermatched) => {

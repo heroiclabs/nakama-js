@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {"lib": [
+    "dom",
+    "es2015",
+    "es2016"
+  ]},
+  "include": [
+    "./*", "/packages/main/web_socket_adapter.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
