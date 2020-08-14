@@ -171,7 +171,7 @@ To update the generated Typescript required for using the protocol buffer adapte
 npx protoc \
 --plugin="./node_modules/.bin/protoc-gen-ts_proto" \
 --proto_path=$GOPATH/src \
---ts_proto_out=packages/protobuf \
+--ts_proto_out=packages/nakama-js-protobuf \
 --ts_proto_opt=snakeToCamel=false \
 --ts_proto_opt=useOptionals=true \
 --ts_proto_opt=oneof=unions \
