@@ -220,7 +220,7 @@ export interface MatchData {
   match_id: string;
   op_code: number;
   data: any;
-  presence: Presence;
+  presences: Presence[];
 }
 
 /** Send a message contains match data. */
@@ -307,7 +307,7 @@ export interface Socket {
 
   // Send input to a multiplayer match on the server.
   // When no presences are supplied the new match state will be sent to all presences.
-  sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence) : Promise<void>;
+  sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence[]) : Promise<void>;
 
   // Unfollow one or more users from their status updates.
   unfollowUsers(user_ids : string[]) : Promise<void>;
@@ -676,14 +676,14 @@ export class DefaultSocket implements Socket {
       return response.rpc;
   }
 
-  async sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence): Promise<void> {
+  async sendMatchState(matchId: string, opCode : number, data: any, presences? : Presence[]): Promise<void> {
     return this.send(
       {
         match_data_send: {
           match_id : matchId,
           op_code: opCode,
           data: data,
-          presence: presence
+          presences: presences ?? []
         }
     });
   }
