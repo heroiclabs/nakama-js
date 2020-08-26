@@ -16,9 +16,10 @@
 
 
 import * as nakamajs from "../packages/nakama-js";
-import {Match, MatchData} from "../packages/nakama-js/socket"
+import {Match, MatchData, MatchPresenceEvent, Presence} from "../packages/nakama-js/socket"
 import * as nakamajsprotobuf from "../packages/nakama-js-protobuf";
 import {adapters, createPage, generateid, AdapterType} from "./utils"
+import { WebSocketAdapter } from "../packages/nakama-js";
 
 describe('Match Tests', () => {
 
@@ -28,7 +29,7 @@ describe('Match Tests', () => {
     const customid = generateid();
     const match = await page.evaluate(async (customid, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false, 
+      const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid });
@@ -51,7 +52,7 @@ describe('Match Tests', () => {
 
     const match : Match = await page.evaluate(async (customid, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false, 
+      const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid });
@@ -98,12 +99,14 @@ describe('Match Tests', () => {
     const PAYLOAD = { "hello": "world" };
 
     const matchData = await page.evaluate(async (customid1, customid2, payload, adapter) => {
-      const client1 = new nakamajs.Client();      
+      const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
-      const socket1 = client1.createSocket(false, false, 
+
+      const socket1 = client1.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
-      
-      const socket2 = client2.createSocket(false, false);
+
+      const socket2 = client2.createSocket(false, false,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<MatchData>((resolve, reject) => {
         socket2.onmatchdata = (matchdata) => {
@@ -114,6 +117,7 @@ describe('Match Tests', () => {
       const session1 = await client1.authenticateCustom({ id: customid1 });
       await socket1.connect(session1, false);
       const match = await socket1.createMatch();
+
       const session2 = await client2.authenticateCustom({ id: customid2 });
       await socket2.connect(session2, false);
       await socket2.joinMatch(match.match_id);
@@ -127,6 +131,124 @@ describe('Match Tests', () => {
 
     expect(matchData).not.toBeNull();
     expect(matchData.data).toEqual(PAYLOAD);
+  });
+
+  it.each(adapters)('should join a match, then send data to included presences', async (adapter) => {
+    const page = await createPage();
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+    const customid3 = generateid();
+
+    const PAYLOAD = { "hello": "world" };
+
+    const matchData = await page.evaluate(async (customid1, customid2, customid3, payload, adapter) => {
+      const client1 = new nakamajs.Client();
+      const client2 = new nakamajs.Client();
+      const client3 = new nakamajs.Client();
+
+      const socket1 = client1.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+      const socket2 = client2.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+      const socket3 = client3.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1, false);
+      let match = await socket1.createMatch();
+
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2, false);
+      match = await socket2.joinMatch(match.match_id);
+
+      var socket2PresencePromise = new Promise<MatchPresenceEvent>((resolve, reject) => {
+        socket2.onmatchpresence = (presenceEvt) => {
+          resolve(presenceEvt);
+        }
+      });
+
+      const presenceEvt = await socket2PresencePromise;
+
+      const session3 = await client3.authenticateCustom({ id: customid3 });
+      await socket3.connect(session3, false);
+      match = await socket3.joinMatch(match.match_id);
+      const timeout = new Promise<null>((resolve, reject) => {
+        setTimeout(reject, 5000, "did not receive match data - timed out.")
+      });
+
+      var matchDataPromise = new Promise<MatchData>((resolve, reject) => {
+        socket2.onmatchdata = (matchdata) => {
+          resolve(matchdata);
+        }
+      });
+
+      await socket1.sendMatchState(match.match_id, 20, payload, presenceEvt.joins);
+
+      return Promise.race([matchDataPromise, timeout]);
+    }, customid1, customid2, customid3, PAYLOAD, adapter);
+
+    expect(matchData).not.toBeNull();
+    expect(matchData.data).toEqual(PAYLOAD);
+  });
+
+  it.each(adapters)('should join a match, then do not send data to excluded presences', async (adapter) => {
+    const page = await createPage();
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+    const customid3 = generateid();
+
+    const PAYLOAD = { "hello": "world" };
+
+    const timeout = await page.evaluate(async (customid1, customid2, customid3, payload, adapter) => {
+      const client1 = new nakamajs.Client();
+      const client2 = new nakamajs.Client();
+      const client3 = new nakamajs.Client();
+
+      const socket1 = client1.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+      const socket2 = client2.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+      const socket3 = client3.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const session1 = await client1.authenticateCustom({ id: customid1 });
+      await socket1.connect(session1, false);
+      let match = await socket1.createMatch();
+
+      const session2 = await client2.authenticateCustom({ id: customid2 });
+      await socket2.connect(session2, false);
+      match = await socket2.joinMatch(match.match_id);
+
+      const session3 = await client3.authenticateCustom({ id: customid3 });
+      await socket3.connect(session3, false);
+
+
+      let presenceToReceive : Presence = null;
+
+      var socket3PresencePromise = new Promise((resolve, reject) => {
+        socket2.onmatchpresence = (presenceEvt) => {
+          const socket3Presence = presenceEvt.joins.find(presenceJoin => presenceJoin.user_id == session3.user_id);
+          if (socket3Presence)
+          {
+            presenceToReceive = socket3Presence;
+            resolve();
+          }
+        }
+      });
+
+      await Promise.all([socket3.joinMatch(match.match_id), socket3PresencePromise]);
+
+      const timeout = new Promise<string>((resolve, reject) => {
+        setTimeout(() => resolve("did not receive match data - timed out."), 1000)
+      });
+
+      var matchDataPromise = new Promise<MatchData>((resolve, reject) => {
+        socket2.onmatchdata = (matchdata) => {
+          reject(matchdata);
+        }
+      });
+
+      await socket1.sendMatchState(match.match_id, 20, payload, [presenceToReceive]);
+      return Promise.race([matchDataPromise, timeout]);
+    }, customid1, customid2, customid3, PAYLOAD, adapter);
+
+    expect(timeout).toEqual("did not receive match data - timed out.");
   });
 
   it.each(adapters)('should create authoritative match, and join with metadata', async (adapter) => {
@@ -151,7 +273,7 @@ describe('Match Tests', () => {
 
   it.each(adapters)('should create authoritative match, list matches', async (adapter) => {
     const page = await createPage();
-    
+
     const customid = generateid();
     const ID = "clientrpc.create_authoritative_match";
 
@@ -181,7 +303,7 @@ describe('Match Tests', () => {
 
     const response = await page.evaluate(async (customid, id, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false, 
+      const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid });
@@ -213,7 +335,7 @@ describe('Match Tests', () => {
 
     const response = await page.evaluate(async (customid, id, convoId1, convoId2, convoId3, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false, 
+      const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom({ id: customid });

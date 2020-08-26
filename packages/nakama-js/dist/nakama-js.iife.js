@@ -21,7 +21,7 @@ var nakamajs = (() => {
     __markAsModule(target);
     if (typeof module === "object" || typeof module === "function") {
       for (let key in module)
-        if (__hasOwnProperty.call(module, key) && !__hasOwnProperty.call(target, key) && key !== "default")
+        if (!__hasOwnProperty.call(target, key) && key !== "default")
           __defineProperty(target, key, {get: () => module[key], enumerable: true});
     }
     return target;
@@ -1399,12 +1399,12 @@ var nakamajs = (() => {
       ++this.nextCid;
       return cid;
     }
-    connect(session3, createStatus = false) {
+    connect(session2, createStatus = false) {
       if (this.adapter.isConnected) {
-        return Promise.resolve(session3);
+        return Promise.resolve(session2);
       }
       const scheme = this.useSSL ? "wss://" : "ws://";
-      this.adapter.connect(scheme, this.host, this.port, createStatus, session3.token);
+      this.adapter.connect(scheme, this.host, this.port, createStatus, session2.token);
       this.adapter.onClose = (evt) => {
         this.ondisconnect(evt);
       };
@@ -1466,7 +1466,7 @@ var nakamajs = (() => {
           if (this.verbose && window && window.console) {
             console.log(evt);
           }
-          resolve(session3);
+          resolve(session2);
         };
         this.adapter.onError = (evt) => {
           reject(evt);
@@ -1648,14 +1648,14 @@ var nakamajs = (() => {
         return response.rpc;
       });
     }
-    sendMatchState(matchId, opCode, data, presence) {
+    sendMatchState(matchId, opCode, data, presences) {
       return __async(this, [], function* () {
         return this.send({
           match_data_send: {
             match_id: matchId,
             op_code: opCode,
             data,
-            presence
+            presences: presences != null ? presences : []
           }
         });
       });
@@ -1702,14 +1702,14 @@ var nakamajs = (() => {
       };
       this.apiClient = NakamaApi(this.configuration);
     }
-    addGroupUsers(session3, groupId, ids) {
-      this.configuration.bearerToken = session3 && session3.token;
+    addGroupUsers(session2, groupId, ids) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.addGroupUsers(groupId, ids).then((response) => {
         return response !== void 0;
       });
     }
-    addFriends(session3, ids, usernames) {
-      this.configuration.bearerToken = session3 && session3.token;
+    addFriends(session2, ids, usernames) {
+      this.configuration.bearerToken = session2 && session2.token;
       const urlPath = "/v2/friend";
       const queryParams = {
         ids,
@@ -2060,14 +2060,14 @@ var nakamajs = (() => {
         return Session.restore(apiSession.token || "");
       });
     }
-    banGroupUsers(session3, groupId, ids) {
-      this.configuration.bearerToken = session3 && session3.token;
+    banGroupUsers(session2, groupId, ids) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.banGroupUsers(groupId, ids).then((response) => {
         return response !== void 0;
       });
     }
-    blockFriends(session3, ids, usernames) {
-      this.configuration.bearerToken = session3 && session3.token;
+    blockFriends(session2, ids, usernames) {
+      this.configuration.bearerToken = session2 && session2.token;
       const urlPath = "/v2/friend/block";
       const queryParams = {
         ids,
@@ -2108,8 +2108,8 @@ var nakamajs = (() => {
         return Promise.resolve(response != void 0);
       });
     }
-    createGroup(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    createGroup(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.createGroup(request).then((response) => {
         return Promise.resolve({
           avatar_url: response.avatar_url,
@@ -2130,8 +2130,8 @@ var nakamajs = (() => {
     createSocket(useSSL = false, verbose = false, adapter = new WebSocketAdapterText()) {
       return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter);
     }
-    deleteFriends(session3, ids, usernames) {
-      this.configuration.bearerToken = session3 && session3.token;
+    deleteFriends(session2, ids, usernames) {
+      this.configuration.bearerToken = session2 && session2.token;
       const urlPath = "/v2/friend";
       const queryParams = {
         ids,
@@ -2172,14 +2172,14 @@ var nakamajs = (() => {
         return Promise.resolve(response != void 0);
       });
     }
-    deleteGroup(session3, groupId) {
-      this.configuration.bearerToken = session3 && session3.token;
+    deleteGroup(session2, groupId) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.deleteGroup(groupId).then((response) => {
         return response !== void 0;
       });
     }
-    deleteNotifications(session3, ids) {
-      this.configuration.bearerToken = session3 && session3.token;
+    deleteNotifications(session2, ids) {
+      this.configuration.bearerToken = session2 && session2.token;
       const urlPath = "/v2/notification";
       const queryParams = {
         ids
@@ -2219,30 +2219,30 @@ var nakamajs = (() => {
         return Promise.resolve(response != void 0);
       });
     }
-    deleteStorageObjects(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    deleteStorageObjects(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.deleteStorageObjects(request).then((response) => {
         return Promise.resolve(response != void 0);
       });
     }
-    emitEvent(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    emitEvent(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.event(request).then((response) => {
         return Promise.resolve(response != void 0);
       });
     }
-    getAccount(session3) {
-      this.configuration.bearerToken = session3 && session3.token;
+    getAccount(session2) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.getAccount();
     }
-    importFacebookFriends(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    importFacebookFriends(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.importFacebookFriends(request).then((response) => {
         return response !== void 0;
       });
     }
-    getUsers(session3, ids, usernames, facebookIds) {
-      this.configuration.bearerToken = session3 && session3.token;
+    getUsers(session2, ids, usernames, facebookIds) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.getUsers(ids, usernames, facebookIds).then((response) => {
         var result = {
           users: []
@@ -2273,20 +2273,20 @@ var nakamajs = (() => {
         return Promise.resolve(result);
       });
     }
-    joinGroup(session3, groupId) {
-      this.configuration.bearerToken = session3 && session3.token;
+    joinGroup(session2, groupId) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.joinGroup(groupId, {}).then((response) => {
         return response !== void 0;
       });
     }
-    joinTournament(session3, tournamentId) {
-      this.configuration.bearerToken = session3 && session3.token;
+    joinTournament(session2, tournamentId) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.joinTournament(tournamentId, {}).then((response) => {
         return response !== void 0;
       });
     }
-    kickGroupUsers(session3, groupId, ids) {
-      this.configuration.bearerToken = session3 && session3.token;
+    kickGroupUsers(session2, groupId, ids) {
+      this.configuration.bearerToken = session2 && session2.token;
       const urlPath = "/v2/group/" + groupId + "/kick";
       const queryParams = {
         user_ids: ids
@@ -2326,14 +2326,14 @@ var nakamajs = (() => {
         return Promise.resolve(response != void 0);
       });
     }
-    leaveGroup(session3, groupId) {
-      this.configuration.bearerToken = session3 && session3.token;
+    leaveGroup(session2, groupId) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.leaveGroup(groupId, {}).then((response) => {
         return response !== void 0;
       });
     }
-    listChannelMessages(session3, channelId, limit, forward, cursor) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listChannelMessages(session2, channelId, limit, forward, cursor) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then((response) => {
         var result = {
           messages: [],
@@ -2363,8 +2363,8 @@ var nakamajs = (() => {
         return Promise.resolve(result);
       });
     }
-    listGroupUsers(session3, groupId, state, limit, cursor) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listGroupUsers(session2, groupId, state, limit, cursor) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listGroupUsers(groupId, limit, state, cursor).then((response) => {
         var result = {
           group_users: [],
@@ -2399,8 +2399,8 @@ var nakamajs = (() => {
         return Promise.resolve(result);
       });
     }
-    listUserGroups(session3, userId, state, limit, cursor) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listUserGroups(session2, userId, state, limit, cursor) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listUserGroups(userId, state, limit, cursor).then((response) => {
         var result = {
           user_groups: [],
@@ -2431,8 +2431,8 @@ var nakamajs = (() => {
         return Promise.resolve(result);
       });
     }
-    listGroups(session3, name, cursor, limit) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listGroups(session2, name, cursor, limit) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listGroups(name, cursor, limit).then((response) => {
         var result = {
           groups: []
@@ -2460,56 +2460,56 @@ var nakamajs = (() => {
         return Promise.resolve(result);
       });
     }
-    linkCustom(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    linkCustom(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.linkCustom(request).then((response) => {
         return response !== void 0;
       });
     }
-    linkDevice(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    linkDevice(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.linkDevice(request).then((response) => {
         return response !== void 0;
       });
     }
-    linkEmail(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    linkEmail(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.linkEmail(request).then((response) => {
         return response !== void 0;
       });
     }
-    linkFacebook(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    linkFacebook(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.linkFacebook(request).then((response) => {
         return response !== void 0;
       });
     }
-    linkFacebookInstantGame(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    linkFacebookInstantGame(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.linkFacebookInstantGame(request).then((response) => {
         return response !== void 0;
       });
     }
-    linkGoogle(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    linkGoogle(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.linkGoogle(request).then((response) => {
         return response !== void 0;
       });
     }
-    linkGameCenter(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    linkGameCenter(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.linkGameCenter(request).then((response) => {
         return response !== void 0;
       });
     }
-    linkSteam(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    linkSteam(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.linkSteam(request).then((response) => {
         return response !== void 0;
       });
     }
-    listFriends(session3, state, limit, cursor) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listFriends(session2, state, limit, cursor) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listFriends(limit, state, cursor).then((response) => {
         var result = {
           friends: [],
@@ -2544,8 +2544,8 @@ var nakamajs = (() => {
         return Promise.resolve(result);
       });
     }
-    listLeaderboardRecords(session3, leaderboardId, ownerIds, limit, cursor, expiry) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listLeaderboardRecords(session2, leaderboardId, ownerIds, limit, cursor, expiry) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry).then((response) => {
         var list = {
           next_cursor: response.next_cursor,
@@ -2590,8 +2590,8 @@ var nakamajs = (() => {
         return Promise.resolve(list);
       });
     }
-    listLeaderboardRecordsAroundOwner(session3, leaderboardId, ownerId, limit, expiry) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listLeaderboardRecordsAroundOwner(session2, leaderboardId, ownerId, limit, expiry) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry).then((response) => {
         var list = {
           next_cursor: response.next_cursor,
@@ -2636,12 +2636,12 @@ var nakamajs = (() => {
         return Promise.resolve(list);
       });
     }
-    listMatches(session3, limit, authoritative, label, minSize, maxSize, query) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listMatches(session2, limit, authoritative, label, minSize, maxSize, query) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize, query);
     }
-    listNotifications(session3, limit, cacheableCursor) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listNotifications(session2, limit, cacheableCursor) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listNotifications(limit, cacheableCursor).then((response) => {
         var result = {
           cacheable_cursor: response.cacheable_cursor,
@@ -2664,8 +2664,8 @@ var nakamajs = (() => {
         return Promise.resolve(result);
       });
     }
-    listStorageObjects(session3, collection, userId, limit, cursor) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listStorageObjects(session2, collection, userId, limit, cursor) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listStorageObjects(collection, userId, limit, cursor).then((response) => {
         var result = {
           objects: [],
@@ -2690,8 +2690,8 @@ var nakamajs = (() => {
         return Promise.resolve(result);
       });
     }
-    listTournaments(session3, categoryStart, categoryEnd, startTime, endTime, limit, cursor) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listTournaments(session2, categoryStart, categoryEnd, startTime, endTime, limit, cursor) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor).then((response) => {
         var list = {
           cursor: response.cursor,
@@ -2723,8 +2723,8 @@ var nakamajs = (() => {
         return Promise.resolve(list);
       });
     }
-    listTournamentRecords(session3, tournamentId, ownerIds, limit, cursor, expiry) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listTournamentRecords(session2, tournamentId, ownerIds, limit, cursor, expiry) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry).then((response) => {
         var list = {
           next_cursor: response.next_cursor,
@@ -2769,8 +2769,8 @@ var nakamajs = (() => {
         return Promise.resolve(list);
       });
     }
-    listTournamentRecordsAroundOwner(session3, tournamentId, ownerId, limit, expiry) {
-      this.configuration.bearerToken = session3 && session3.token;
+    listTournamentRecordsAroundOwner(session2, tournamentId, ownerId, limit, expiry) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry).then((response) => {
         var list = {
           next_cursor: response.next_cursor,
@@ -2815,8 +2815,8 @@ var nakamajs = (() => {
         return Promise.resolve(list);
       });
     }
-    promoteGroupUsers(session3, groupId, ids) {
-      this.configuration.bearerToken = session3 && session3.token;
+    promoteGroupUsers(session2, groupId, ids) {
+      this.configuration.bearerToken = session2 && session2.token;
       const urlPath = "/v2/group/" + groupId + "/promote";
       const queryParams = {
         user_ids: ids
@@ -2856,8 +2856,8 @@ var nakamajs = (() => {
         return Promise.resolve(response != void 0);
       });
     }
-    readStorageObjects(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    readStorageObjects(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.readStorageObjects(request).then((response) => {
         var result = {objects: []};
         if (response.objects == null) {
@@ -2879,8 +2879,8 @@ var nakamajs = (() => {
         return Promise.resolve(result);
       });
     }
-    rpc(session3, id, input) {
-      this.configuration.bearerToken = session3 && session3.token;
+    rpc(session2, id, input) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.rpcFunc(id, JSON.stringify(input)).then((response) => {
         return Promise.resolve({
           id: response.id,
@@ -2888,9 +2888,9 @@ var nakamajs = (() => {
         });
       });
     }
-    rpcGet(id, session3, httpKey, input) {
+    rpcGet(id, session2, httpKey, input) {
       if (!httpKey || httpKey == "") {
-        this.configuration.bearerToken = session3 && session3.token;
+        this.configuration.bearerToken = session2 && session2.token;
       } else {
         this.configuration.username = void 0;
         this.configuration.bearerToken = void 0;
@@ -2906,68 +2906,68 @@ var nakamajs = (() => {
         throw err;
       });
     }
-    unlinkCustom(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    unlinkCustom(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.unlinkCustom(request).then((response) => {
         return response !== void 0;
       });
     }
-    unlinkDevice(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    unlinkDevice(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.unlinkDevice(request).then((response) => {
         return response !== void 0;
       });
     }
-    unlinkEmail(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    unlinkEmail(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.unlinkEmail(request).then((response) => {
         return response !== void 0;
       });
     }
-    unlinkFacebook(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    unlinkFacebook(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.unlinkFacebook(request).then((response) => {
         return response !== void 0;
       });
     }
-    unlinkFacebookInstantGame(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    unlinkFacebookInstantGame(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.unlinkFacebookInstantGame(request).then((response) => {
         return response !== void 0;
       });
     }
-    unlinkGoogle(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    unlinkGoogle(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.unlinkGoogle(request).then((response) => {
         return response !== void 0;
       });
     }
-    unlinkGameCenter(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    unlinkGameCenter(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.unlinkGameCenter(request).then((response) => {
         return response !== void 0;
       });
     }
-    unlinkSteam(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    unlinkSteam(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.unlinkSteam(request).then((response) => {
         return response !== void 0;
       });
     }
-    updateAccount(session3, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    updateAccount(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.updateAccount(request).then((response) => {
         return response !== void 0;
       });
     }
-    updateGroup(session3, groupId, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    updateGroup(session2, groupId, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.updateGroup(groupId, request).then((response) => {
         return response !== void 0;
       });
     }
-    writeLeaderboardRecord(session3, leaderboardId, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    writeLeaderboardRecord(session2, leaderboardId, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.writeLeaderboardRecord(leaderboardId, {
         metadata: request.metadata ? JSON.stringify(request.metadata) : void 0,
         score: request.score,
@@ -2988,8 +2988,8 @@ var nakamajs = (() => {
         });
       });
     }
-    writeStorageObjects(session3, objects) {
-      this.configuration.bearerToken = session3 && session3.token;
+    writeStorageObjects(session2, objects) {
+      this.configuration.bearerToken = session2 && session2.token;
       var request = {objects: []};
       objects.forEach((o) => {
         request.objects.push({
@@ -3003,8 +3003,8 @@ var nakamajs = (() => {
       });
       return this.apiClient.writeStorageObjects(request);
     }
-    writeTournamentRecord(session3, tournamentId, request) {
-      this.configuration.bearerToken = session3 && session3.token;
+    writeTournamentRecord(session2, tournamentId, request) {
+      this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.writeTournamentRecord(tournamentId, {
         metadata: request.metadata ? JSON.stringify(request.metadata) : void 0,
         score: request.score,
