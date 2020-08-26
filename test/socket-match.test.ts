@@ -101,10 +101,12 @@ describe('Match Tests', () => {
     const matchData = await page.evaluate(async (customid1, customid2, payload, adapter) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
+
       const socket1 = client1.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const socket2 = client2.createSocket(false, false);
+      const socket2 = client2.createSocket(false, false,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<MatchData>((resolve, reject) => {
         socket2.onmatchdata = (matchdata) => {
