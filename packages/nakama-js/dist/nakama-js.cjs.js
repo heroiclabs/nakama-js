@@ -1403,8 +1403,6 @@ class DefaultSocket {
       if (this.verbose && window && window.console) {
         console.log("Response: %o", message);
       }
-      console.log("message...");
-      console.log(JSON.stringify(message));
       if (message.cid == void 0) {
         if (message.notifications) {
           message.notifications.notifications.forEach((n) => {
@@ -1529,8 +1527,6 @@ class DefaultSocket {
   }
   send(message) {
     const untypedMessage = message;
-    console.log("untyped message is...");
-    console.log(JSON.stringify(message));
     return new Promise((resolve, reject) => {
       if (!this.adapter.isConnected) {
         reject("Socket connection has not been established yet.");

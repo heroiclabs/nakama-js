@@ -396,9 +396,6 @@ export class DefaultSocket implements Socket {
         console.log("Response: %o", message);
       }
 
-      console.log("message...")
-      console.log(JSON.stringify(message));
-
       // Inbound message from server.
       if (message.cid == undefined) {
         if (message.notifications) {
@@ -542,9 +539,6 @@ export class DefaultSocket implements Socket {
     JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove |
     Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any> {
     const untypedMessage = message as any;
-
-    console.log("untyped message is...");
-    console.log(JSON.stringify(message));
 
     return new Promise((resolve, reject) => {
       if (!this.adapter.isConnected) {
