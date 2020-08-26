@@ -228,7 +228,6 @@ describe('Match Tests', () => {
           {
             presenceToReceive = socket3Presence;
             resolve();
-
           }
         }
       });
