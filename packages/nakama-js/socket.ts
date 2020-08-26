@@ -265,7 +265,7 @@ export interface Socket {
   connect(session: Session, createStatus: boolean): Promise<Session>;
   // Disconnect from the server.
   disconnect(fireDisconnectEvent: boolean): void;
-  // Send message to the server. This method remains in the API for backwards compatibility. 
+  // Send message to the server. This method remains in the API for backwards compatibility.
   // We recommend that you use the other socket-based methods below for improved
   // type checking and code readability.
   send(message: ChannelJoin | ChannelLeave | ChannelMessageSend |
@@ -274,10 +274,10 @@ export interface Socket {
     StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
 
   /// Join the matchmaker pool and search for opponents on the server.
-  addMatchmaker(query : string, minCount : number, maxCount : number,  
+  addMatchmaker(query : string, minCount : number, maxCount : number,
     stringProperties? : Record<string, string>, numericProperties? : Record<string, number>)
     : Promise<MatchmakerMatched>;
-  
+
   // Create a multiplayer match on the server.
   createMatch() : Promise<Match>;
 
@@ -288,7 +288,7 @@ export interface Socket {
   joinChat(target: string, type: number, persistence: boolean, hidden: boolean) : Promise<Channel>;
 
   // Join a multiplayer match.
-  joinMatch(match_id?: string, token?: string, metadata?: {}) : Promise<Match>; 
+  joinMatch(match_id?: string, token?: string, metadata?: {}) : Promise<Match>;
 
   // Leave a chat channel on the server.
   leaveChat(channel_id: string) : Promise<void>;
@@ -298,7 +298,7 @@ export interface Socket {
 
   // Remove a chat message from a chat channel on the server.
   removeChatMessage(channel_id: string, message_id: string) : Promise<ChannelMessageAck>;
-  
+
   // Leave the matchmaker pool with the provided ticket.
   removeMatchmaker(ticket : string) : Promise<void>;
 
@@ -367,7 +367,7 @@ export class DefaultSocket implements Socket {
       ) {
     this.cIds = {};
     this.nextCid = 1;
-  }  
+  }
 
   generatecid(): string {
     const cid = this.nextCid.toString();
@@ -395,6 +395,9 @@ export class DefaultSocket implements Socket {
       if (this.verbose && window && window.console) {
         console.log("Response: %o", message);
       }
+
+      console.log("message...")
+      console.log(JSON.stringify(message));
 
       // Inbound message from server.
       if (message.cid == undefined) {
@@ -540,6 +543,8 @@ export class DefaultSocket implements Socket {
     Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any> {
     const untypedMessage = message as any;
 
+    console.log("untyped message is...");
+    console.log(JSON.stringify(message));
 
     return new Promise((resolve, reject) => {
       if (!this.adapter.isConnected) {
@@ -575,23 +580,23 @@ export class DefaultSocket implements Socket {
   }
 
 
-  async addMatchmaker(query : string, minCount : number, maxCount : number,  
+  async addMatchmaker(query : string, minCount : number, maxCount : number,
     stringProperties? : Record<string, string>, numericProperties? : Record<string, number>)
     : Promise<MatchmakerMatched> {
 
-      const matchMakerAdd : MatchmakerAdd = 
+      const matchMakerAdd : MatchmakerAdd =
       {
         "matchmaker_add": {
-          min_count: minCount, 
-          max_count: maxCount, 
-          query: query, 
-          string_properties: stringProperties, 
+          min_count: minCount,
+          max_count: maxCount,
+          query: query,
+          string_properties: stringProperties,
           numeric_properties: numericProperties
         }
       };
 
       const response = await this.send(matchMakerAdd);
-      
+
       return response.matchmaker_ticket;
     }
 
@@ -599,20 +604,20 @@ export class DefaultSocket implements Socket {
     const response = await this.send({match_create: {}});
     return response.match;
   }
-  
+
   async followUsers(userIds : string[]): Promise<Status> {
     const response = await this.send({status_follow: {user_ids: userIds}});
     return response.status;
   }
-  
+
   async joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel> {
-  
+
     const response = await this.send({
         channel_join: {
             target: target,
             type: type,
             persistence: persistence,
-            hidden: hidden     
+            hidden: hidden
         }
       }
     );
@@ -622,7 +627,7 @@ export class DefaultSocket implements Socket {
 
   async joinMatch(match_id?: string, token?: string, metadata?: {}): Promise<Match> {
 
-    const join : JoinMatch = {match_join: {metadata: metadata}}; 
+    const join : JoinMatch = {match_join: {metadata: metadata}};
 
     if (token)
     {
@@ -640,7 +645,7 @@ export class DefaultSocket implements Socket {
   leaveChat(channel_id: string): Promise<void> {
     return this.send({channel_leave: {channel_id: channel_id}});
   }
-  
+
   leaveMatch(matchId: string): Promise<void> {
     return this.send({match_leave: {match_id: matchId}});
   }
@@ -650,7 +655,7 @@ export class DefaultSocket implements Socket {
     (
       {
         channel_message_remove: {
-          channel_id: channel_id, 
+          channel_id: channel_id,
           message_id: message_id
         }
       }
