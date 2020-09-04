@@ -791,7 +791,7 @@ export class Client {
   /** Authenticate a user with a Facebook Instant Game token against the server. */
   authenticateFacebookInstantGame(request : AccountFacebookInstantGame): Promise<Session> {
     return this.apiClient.authenticateFacebookInstantGame(
-      {signed_player_info: request.signed_player_info, vars: request.vars}, request.username, request.create);
+      {signed_player_info: request.signed_player_info, vars: request.vars}, request.create, request.username);
   }
 
   /** Authenticate a user with a Facebook OAuth token against the server. */
