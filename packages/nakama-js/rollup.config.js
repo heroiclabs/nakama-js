@@ -23,7 +23,7 @@ export default {
     input: './index.ts',
     output: [
         {
-            "file": "dist/nakamajs.umd.js",
+            "file": "dist/nakama-js.umd.js",
             "format": 'umd',
             "name": 'nakamajs',
         }],
