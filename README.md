@@ -139,13 +139,15 @@ socket.writeChatMessage(channel.channel.id, message);
 
 ## Contribute
 
-The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested to enhance the code please open an issue to discuss the changes or drop in and discuss it in the [community forum](https://forum.heroiclabs.com).
+The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested in enhancing the code please open an issue to discuss the changes or drop in and discuss it in the [community forum](https://forum.heroiclabs.com).
 
 ### Source Builds
 
 Ensure you are using Node v12.18.1
 
 The codebase is multi-package monorepo written in TypeScript and can be built with [esbuild](https://github.com/evanw/esbuild). All dependencies are managed with Yarn.
+
+To build from source, install dependencies and build the `nakama-js` and `nakama-js-protobuf` subrepositories:
 
 ```shell
 yarn workspace @heroiclabs/nakama-js install && yarn workspace @heroiclabs/nakama-js build
