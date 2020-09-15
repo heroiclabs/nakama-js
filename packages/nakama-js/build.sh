@@ -16,8 +16,11 @@
 
 build () {
     npx esbuild --bundle index.ts --target=es6 --global-name=nakamajs "$@"
-} 
+}
 
 build --format=cjs --outfile=dist/nakama-js.cjs.js
 build --format=esm --outfile=dist/nakama-js.esm.js
 build --format=iife --outfile=dist/nakama-js.iife.js
+
+## legacy build for cocos-2d-js
+npx rollup -c

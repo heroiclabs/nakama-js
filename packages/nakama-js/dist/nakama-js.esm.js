@@ -1548,7 +1548,7 @@ class DefaultSocket {
     });
   }
   addMatchmaker(query, minCount, maxCount, stringProperties, numericProperties) {
-    return __async(this, [], function* () {
+    return __async(this, null, function* () {
       const matchMakerAdd = {
         matchmaker_add: {
           min_count: minCount,
@@ -1563,19 +1563,19 @@ class DefaultSocket {
     });
   }
   createMatch() {
-    return __async(this, [], function* () {
+    return __async(this, null, function* () {
       const response = yield this.send({match_create: {}});
       return response.match;
     });
   }
   followUsers(userIds) {
-    return __async(this, [], function* () {
+    return __async(this, null, function* () {
       const response = yield this.send({status_follow: {user_ids: userIds}});
       return response.status;
     });
   }
   joinChat(target, type, persistence, hidden) {
-    return __async(this, [], function* () {
+    return __async(this, null, function* () {
       const response = yield this.send({
         channel_join: {
           target,
@@ -1588,7 +1588,7 @@ class DefaultSocket {
     });
   }
   joinMatch(match_id, token, metadata) {
-    return __async(this, [], function* () {
+    return __async(this, null, function* () {
       const join = {match_join: {metadata}};
       if (token) {
         join.match_join.token = token;
@@ -1606,7 +1606,7 @@ class DefaultSocket {
     return this.send({match_leave: {match_id: matchId}});
   }
   removeChatMessage(channel_id, message_id) {
-    return __async(this, [], function* () {
+    return __async(this, null, function* () {
       const response = yield this.send({
         channel_message_remove: {
           channel_id,
@@ -1620,7 +1620,7 @@ class DefaultSocket {
     return this.send({matchmaker_remove: {ticket}});
   }
   rpc(id, payload, http_key) {
-    return __async(this, [], function* () {
+    return __async(this, null, function* () {
       const response = yield this.send({
         rpc: {
           id,
@@ -1632,7 +1632,7 @@ class DefaultSocket {
     });
   }
   sendMatchState(matchId, opCode, data, presences) {
-    return __async(this, [], function* () {
+    return __async(this, null, function* () {
       return this.send({
         match_data_send: {
           match_id: matchId,
@@ -1647,7 +1647,7 @@ class DefaultSocket {
     return this.send({status_unfollow: {user_ids}});
   }
   updateChatMessage(channel_id, message_id, content) {
-    return __async(this, [], function* () {
+    return __async(this, null, function* () {
       const response = yield this.send({channel_message_update: {channel_id, message_id, content}});
       return response.channel_message_ack;
     });
@@ -1656,7 +1656,7 @@ class DefaultSocket {
     return this.send({status_update: {status}});
   }
   writeChatMessage(channel_id, content) {
-    return __async(this, [], function* () {
+    return __async(this, null, function* () {
       const response = yield this.send({channel_message_send: {channel_id, content}});
       return response.channel_message_ack;
     });

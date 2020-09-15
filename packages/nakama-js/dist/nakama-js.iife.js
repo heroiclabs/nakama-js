@@ -1565,7 +1565,7 @@ var nakamajs = (() => {
       });
     }
     addMatchmaker(query, minCount, maxCount, stringProperties, numericProperties) {
-      return __async(this, [], function* () {
+      return __async(this, null, function* () {
         const matchMakerAdd = {
           matchmaker_add: {
             min_count: minCount,
@@ -1580,19 +1580,19 @@ var nakamajs = (() => {
       });
     }
     createMatch() {
-      return __async(this, [], function* () {
+      return __async(this, null, function* () {
         const response = yield this.send({match_create: {}});
         return response.match;
       });
     }
     followUsers(userIds) {
-      return __async(this, [], function* () {
+      return __async(this, null, function* () {
         const response = yield this.send({status_follow: {user_ids: userIds}});
         return response.status;
       });
     }
     joinChat(target, type, persistence, hidden) {
-      return __async(this, [], function* () {
+      return __async(this, null, function* () {
         const response = yield this.send({
           channel_join: {
             target,
@@ -1605,7 +1605,7 @@ var nakamajs = (() => {
       });
     }
     joinMatch(match_id, token, metadata) {
-      return __async(this, [], function* () {
+      return __async(this, null, function* () {
         const join = {match_join: {metadata}};
         if (token) {
           join.match_join.token = token;
@@ -1623,7 +1623,7 @@ var nakamajs = (() => {
       return this.send({match_leave: {match_id: matchId}});
     }
     removeChatMessage(channel_id, message_id) {
-      return __async(this, [], function* () {
+      return __async(this, null, function* () {
         const response = yield this.send({
           channel_message_remove: {
             channel_id,
@@ -1637,7 +1637,7 @@ var nakamajs = (() => {
       return this.send({matchmaker_remove: {ticket}});
     }
     rpc(id, payload, http_key) {
-      return __async(this, [], function* () {
+      return __async(this, null, function* () {
         const response = yield this.send({
           rpc: {
             id,
@@ -1649,7 +1649,7 @@ var nakamajs = (() => {
       });
     }
     sendMatchState(matchId, opCode, data, presences) {
-      return __async(this, [], function* () {
+      return __async(this, null, function* () {
         return this.send({
           match_data_send: {
             match_id: matchId,
@@ -1664,7 +1664,7 @@ var nakamajs = (() => {
       return this.send({status_unfollow: {user_ids}});
     }
     updateChatMessage(channel_id, message_id, content) {
-      return __async(this, [], function* () {
+      return __async(this, null, function* () {
         const response = yield this.send({channel_message_update: {channel_id, message_id, content}});
         return response.channel_message_ack;
       });
@@ -1673,7 +1673,7 @@ var nakamajs = (() => {
       return this.send({status_update: {status}});
     }
     writeChatMessage(channel_id, content) {
-      return __async(this, [], function* () {
+      return __async(this, null, function* () {
         const response = yield this.send({channel_message_send: {channel_id, content}});
         return response.channel_message_ack;
       });

@@ -1,0 +1,36 @@
+/*
+ * Copyright 2020 Heroic Labs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Rollup is the legacy build system for nakama-js and is only used for cocos2d-x-js support.
+
+import packagejson from './package.json';
+import typescript from 'rollup-plugin-typescript2';
+
+export default {
+    input: './index.ts',
+    output: [
+        {
+            "file": "dist/nakamajs.umd.js",
+            "format": 'umd',
+            "name": 'nakamajs',
+        }],
+    plugins: [
+        typescript()
+    ],
+    moduleContext: {
+        [require.resolve('whatwg-fetch')]: 'window'
+    }
+};
