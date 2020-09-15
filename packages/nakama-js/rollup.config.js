@@ -16,7 +16,6 @@
 
 // Rollup is the legacy build system for nakama-js and is only used for cocos2d-x-js support.
 
-import packagejson from './package.json';
 import typescript from 'rollup-plugin-typescript2';
 
 export default {
