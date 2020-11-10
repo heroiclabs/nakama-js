@@ -3234,4 +3234,4 @@ var Client = (function () {
     return Client;
 }());
 
-export { Client, Session };
+export { Client, Session, DefaultSocket };

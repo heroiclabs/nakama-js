@@ -3242,6 +3242,7 @@
 
   exports.Client = Client;
   exports.Session = Session;
+  exports.DefaultSocket = DefaultSocket;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

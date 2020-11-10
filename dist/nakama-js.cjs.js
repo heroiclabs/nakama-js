@@ -3240,3 +3240,4 @@ var Client = (function () {
 
 exports.Client = Client;
 exports.Session = Session;
+exports.DefaultSocket = DefaultSocket;
