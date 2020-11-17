@@ -12,6 +12,10 @@
   ],
   "homepage": "https://heroiclabs.com",
   "bugs": "https://github.com/heroiclabs/nakama-js/issues",
+  "main": "packages/nakama-js/dist/nakama-js.cjs.js",
+  "types": "packages/nakama-js/dist/index.d.ts",
+  "module": "packages/nakama-js/dist/nakama-js.esm.js",
+  "browser": "packages/nakama-js/dist/nakama-js.iife.js",
   "repository": "https://github.com/heroiclabs/nakama-js",
   "author": "Chris Molozian <chris@heroiclabs.com>",
   "contributors": [
