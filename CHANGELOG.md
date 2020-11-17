@@ -9,7 +9,7 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 - Added interface for Session object.
 - Support for Tournaments.
 - Support for events.
-- Update to support features in Nakama 2.7.0.
+- Update to support features in Nakama 2.12.0
 - Implemented base64 encoder and decoder for unicode characters
 - Added support for protocol buffer payloads via Web Sockets
 - Added support for Facebook Instant Game Authentication
