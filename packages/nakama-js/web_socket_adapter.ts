@@ -104,7 +104,6 @@ export class WebSocketAdapterText implements WebSocketAdapter {
     }
 
     set onMessage(value: SocketMessageHandler | null) {
-
         if (value) {
             this._socket!.onmessage = (evt: MessageEvent) => {
                 const message: any = JSON.parse(evt.data);
