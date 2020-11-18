@@ -1,6 +1,11 @@
-var __defineProperty = Object.defineProperty;
-var __hasOwnProperty = Object.prototype.hasOwnProperty;
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __assign = Object.assign;
+var __markAsModule = (target) => __defProp(target, "__esModule", {value: true});
 var __commonJS = (callback, module) => () => {
   if (!module) {
     module = {exports: {}};
@@ -8,22 +13,19 @@ var __commonJS = (callback, module) => () => {
   }
   return module.exports;
 };
-var __markAsModule = (target) => {
-  return __defineProperty(target, "__esModule", {value: true});
-};
-var __exportStar = (target, module) => {
+var __exportStar = (target, module, desc) => {
   __markAsModule(target);
-  if (typeof module === "object" || typeof module === "function") {
-    for (let key in module)
-      if (!__hasOwnProperty.call(target, key) && key !== "default")
-        __defineProperty(target, key, {get: () => module[key], enumerable: true});
+  if (module && typeof module === "object" || typeof module === "function") {
+    for (let key of __getOwnPropNames(module))
+      if (!__hasOwnProp.call(target, key) && key !== "default")
+        __defProp(target, key, {get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable});
   }
   return target;
 };
 var __toModule = (module) => {
   if (module && module.__esModule)
     return module;
-  return __exportStar(__defineProperty({}, "default", {value: module, enumerable: true}), module);
+  return __exportStar(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", {value: module, enumerable: true}), module);
 };
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
@@ -484,6 +486,10 @@ var require_fetch = __commonJS((exports) => {
     self2.fetch.polyfill = true;
   })(typeof self !== "undefined" ? self : exports);
 });
+
+// index.ts
+const Base64 = __toModule(require_base64());
+const whatwg_fetch = __toModule(require_fetch());
 
 // api.gen.ts
 const BASE_PATH = "http://127.0.0.1:80";
@@ -3009,10 +3015,6 @@ class Client {
     });
   }
 }
-
-// index.ts
-const Base64 = __toModule(require_base64());
-const whatwg_fetch = __toModule(require_fetch());
 export {
   Client,
   Session,

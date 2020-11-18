@@ -1,35 +1,37 @@
-var __defineProperty = Object.defineProperty;
-var __hasOwnProperty = Object.prototype.hasOwnProperty;
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __assign = Object.assign;
-var __commonJS = (callback, module) => () => {
-  if (!module) {
-    module = {exports: {}};
-    callback(module.exports, module);
+var __markAsModule = (target) => __defProp(target, "__esModule", {value: true});
+var __commonJS = (callback, module2) => () => {
+  if (!module2) {
+    module2 = {exports: {}};
+    callback(module2.exports, module2);
   }
-  return module.exports;
+  return module2.exports;
 };
-var __markAsModule = (target) => {
-  return __defineProperty(target, "__esModule", {value: true});
-};
-var __exportStar = (target, module) => {
+var __exportStar = (target, module2, desc) => {
   __markAsModule(target);
-  if (typeof module === "object" || typeof module === "function") {
-    for (let key in module)
-      if (__hasOwnProperty.call(module, key) && !__hasOwnProperty.call(target, key) && key !== "default")
-        __defineProperty(target, key, {get: () => module[key], enumerable: true});
+  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
+    for (let key of __getOwnPropNames(module2))
+      if (!__hasOwnProp.call(target, key) && key !== "default")
+        __defProp(target, key, {get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable});
   }
   return target;
 };
-var __toModule = (module) => {
-  if (module && module.__esModule)
-    return module;
-  return __exportStar(__defineProperty({}, "default", {value: module, enumerable: true}), module);
+var __toModule = (module2) => {
+  if (module2 && module2.__esModule)
+    return module2;
+  return __exportStar(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", {value: module2, enumerable: true}), module2);
 };
 
 // ../../node_modules/@protobufjs/aspromise/index.js
-var require_aspromise = __commonJS((exports, module) => {
+var require_aspromise = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = asPromise;
+  module2.exports = asPromise;
   function asPromise(fn, ctx) {
     var params = new Array(arguments.length - 1), offset = 0, index = 2, pending = true;
     while (index < arguments.length)
@@ -61,9 +63,9 @@ var require_aspromise = __commonJS((exports, module) => {
 });
 
 // ../../node_modules/@protobufjs/base64/index.js
-var require_base64 = __commonJS((exports) => {
+var require_base64 = __commonJS((exports2) => {
   "use strict";
-  var base64 = exports;
+  var base64 = exports2;
   base64.length = function length(string) {
     var p = string.length;
     if (!p)
@@ -158,9 +160,9 @@ var require_base64 = __commonJS((exports) => {
 });
 
 // ../../node_modules/@protobufjs/eventemitter/index.js
-var require_eventemitter = __commonJS((exports, module) => {
+var require_eventemitter = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = EventEmitter;
+  module2.exports = EventEmitter;
   function EventEmitter() {
     this._listeners = {};
   }
@@ -202,10 +204,10 @@ var require_eventemitter = __commonJS((exports, module) => {
 });
 
 // ../../node_modules/@protobufjs/float/index.js
-var require_float = __commonJS((exports, module) => {
+var require_float = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = factory(factory);
-  function factory(exports2) {
+  module2.exports = factory(factory);
+  function factory(exports3) {
     if (typeof Float32Array !== "undefined")
       (function() {
         var f32 = new Float32Array([-0]), f8b = new Uint8Array(f32.buffer), le = f8b[3] === 128;
@@ -223,8 +225,8 @@ var require_float = __commonJS((exports, module) => {
           buf[pos + 2] = f8b[1];
           buf[pos + 3] = f8b[0];
         }
-        exports2.writeFloatLE = le ? writeFloat_f32_cpy : writeFloat_f32_rev;
-        exports2.writeFloatBE = le ? writeFloat_f32_rev : writeFloat_f32_cpy;
+        exports3.writeFloatLE = le ? writeFloat_f32_cpy : writeFloat_f32_rev;
+        exports3.writeFloatBE = le ? writeFloat_f32_rev : writeFloat_f32_cpy;
         function readFloat_f32_cpy(buf, pos) {
           f8b[0] = buf[pos];
           f8b[1] = buf[pos + 1];
@@ -239,8 +241,8 @@ var require_float = __commonJS((exports, module) => {
           f8b[0] = buf[pos + 3];
           return f32[0];
         }
-        exports2.readFloatLE = le ? readFloat_f32_cpy : readFloat_f32_rev;
-        exports2.readFloatBE = le ? readFloat_f32_rev : readFloat_f32_cpy;
+        exports3.readFloatLE = le ? readFloat_f32_cpy : readFloat_f32_rev;
+        exports3.readFloatBE = le ? readFloat_f32_rev : readFloat_f32_cpy;
       })();
     else
       (function() {
@@ -261,14 +263,14 @@ var require_float = __commonJS((exports, module) => {
             writeUint((sign << 31 | exponent + 127 << 23 | mantissa) >>> 0, buf, pos);
           }
         }
-        exports2.writeFloatLE = writeFloat_ieee754.bind(null, writeUintLE);
-        exports2.writeFloatBE = writeFloat_ieee754.bind(null, writeUintBE);
+        exports3.writeFloatLE = writeFloat_ieee754.bind(null, writeUintLE);
+        exports3.writeFloatBE = writeFloat_ieee754.bind(null, writeUintBE);
         function readFloat_ieee754(readUint, buf, pos) {
           var uint = readUint(buf, pos), sign = (uint >> 31) * 2 + 1, exponent = uint >>> 23 & 255, mantissa = uint & 8388607;
           return exponent === 255 ? mantissa ? NaN : sign * Infinity : exponent === 0 ? sign * 1401298464324817e-60 * mantissa : sign * Math.pow(2, exponent - 150) * (mantissa + 8388608);
         }
-        exports2.readFloatLE = readFloat_ieee754.bind(null, readUintLE);
-        exports2.readFloatBE = readFloat_ieee754.bind(null, readUintBE);
+        exports3.readFloatLE = readFloat_ieee754.bind(null, readUintLE);
+        exports3.readFloatBE = readFloat_ieee754.bind(null, readUintBE);
       })();
     if (typeof Float64Array !== "undefined")
       (function() {
@@ -295,8 +297,8 @@ var require_float = __commonJS((exports, module) => {
           buf[pos + 6] = f8b[1];
           buf[pos + 7] = f8b[0];
         }
-        exports2.writeDoubleLE = le ? writeDouble_f64_cpy : writeDouble_f64_rev;
-        exports2.writeDoubleBE = le ? writeDouble_f64_rev : writeDouble_f64_cpy;
+        exports3.writeDoubleLE = le ? writeDouble_f64_cpy : writeDouble_f64_rev;
+        exports3.writeDoubleBE = le ? writeDouble_f64_rev : writeDouble_f64_cpy;
         function readDouble_f64_cpy(buf, pos) {
           f8b[0] = buf[pos];
           f8b[1] = buf[pos + 1];
@@ -319,8 +321,8 @@ var require_float = __commonJS((exports, module) => {
           f8b[0] = buf[pos + 7];
           return f64[0];
         }
-        exports2.readDoubleLE = le ? readDouble_f64_cpy : readDouble_f64_rev;
-        exports2.readDoubleBE = le ? readDouble_f64_rev : readDouble_f64_cpy;
+        exports3.readDoubleLE = le ? readDouble_f64_cpy : readDouble_f64_rev;
+        exports3.readDoubleBE = le ? readDouble_f64_rev : readDouble_f64_cpy;
       })();
     else
       (function() {
@@ -353,17 +355,17 @@ var require_float = __commonJS((exports, module) => {
             }
           }
         }
-        exports2.writeDoubleLE = writeDouble_ieee754.bind(null, writeUintLE, 0, 4);
-        exports2.writeDoubleBE = writeDouble_ieee754.bind(null, writeUintBE, 4, 0);
+        exports3.writeDoubleLE = writeDouble_ieee754.bind(null, writeUintLE, 0, 4);
+        exports3.writeDoubleBE = writeDouble_ieee754.bind(null, writeUintBE, 4, 0);
         function readDouble_ieee754(readUint, off0, off1, buf, pos) {
           var lo = readUint(buf, pos + off0), hi = readUint(buf, pos + off1);
           var sign = (hi >> 31) * 2 + 1, exponent = hi >>> 20 & 2047, mantissa = 4294967296 * (hi & 1048575) + lo;
           return exponent === 2047 ? mantissa ? NaN : sign * Infinity : exponent === 0 ? sign * 5e-324 * mantissa : sign * Math.pow(2, exponent - 1075) * (mantissa + 4503599627370496);
         }
-        exports2.readDoubleLE = readDouble_ieee754.bind(null, readUintLE, 0, 4);
-        exports2.readDoubleBE = readDouble_ieee754.bind(null, readUintBE, 4, 0);
+        exports3.readDoubleLE = readDouble_ieee754.bind(null, readUintLE, 0, 4);
+        exports3.readDoubleBE = readDouble_ieee754.bind(null, readUintBE, 4, 0);
       })();
-    return exports2;
+    return exports3;
   }
   function writeUintLE(val, buf, pos) {
     buf[pos] = val & 255;
@@ -401,9 +403,9 @@ var require_inquire = __commonJS((exports, module) => {
 });
 
 // ../../node_modules/@protobufjs/utf8/index.js
-var require_utf8 = __commonJS((exports) => {
+var require_utf8 = __commonJS((exports2) => {
   "use strict";
-  var utf8 = exports;
+  var utf8 = exports2;
   utf8.length = function utf8_length(string) {
     var len = 0, c = 0;
     for (var i = 0; i < string.length; ++i) {
@@ -476,9 +478,9 @@ var require_utf8 = __commonJS((exports) => {
 });
 
 // ../../node_modules/@protobufjs/pool/index.js
-var require_pool = __commonJS((exports, module) => {
+var require_pool = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = pool;
+  module2.exports = pool;
   function pool(alloc, slice, size) {
     var SIZE = size || 8192;
     var MAX = SIZE >>> 1;
@@ -500,10 +502,10 @@ var require_pool = __commonJS((exports, module) => {
 });
 
 // ../../node_modules/protobufjs/src/util/longbits.js
-var require_longbits = __commonJS((exports, module) => {
+var require_longbits = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = LongBits;
-  var util2 = require_minimal2();
+  module2.exports = LongBits;
+  var util2 = require_minimal();
   function LongBits(lo, hi) {
     this.lo = lo >>> 0;
     this.hi = hi >>> 0;
@@ -588,9 +590,9 @@ var require_longbits = __commonJS((exports, module) => {
 });
 
 // ../../node_modules/protobufjs/src/util/minimal.js
-var require_minimal2 = __commonJS((exports) => {
+var require_minimal = __commonJS((exports2) => {
   "use strict";
-  var util2 = exports;
+  var util2 = exports2;
   util2.asPromise = require_aspromise();
   util2.base64 = require_base64();
   util2.EventEmitter = require_eventemitter();
@@ -600,7 +602,7 @@ var require_minimal2 = __commonJS((exports) => {
   util2.pool = require_pool();
   util2.LongBits = require_longbits();
   util2.isNode = Boolean(typeof global !== "undefined" && global && global.process && global.process.versions && global.process.versions.node);
-  util2.global = util2.isNode && global || typeof window !== "undefined" && window || typeof self !== "undefined" && self || exports;
+  util2.global = util2.isNode && global || typeof window !== "undefined" && window || typeof self !== "undefined" && self || exports2;
   util2.emptyArray = Object.freeze ? Object.freeze([]) : [];
   util2.emptyObject = Object.freeze ? Object.freeze({}) : {};
   util2.isInteger = Number.isInteger || function isInteger(value) {
@@ -719,10 +721,10 @@ var require_minimal2 = __commonJS((exports) => {
 });
 
 // ../../node_modules/protobufjs/src/writer.js
-var require_writer = __commonJS((exports, module) => {
+var require_writer = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = Writer5;
-  var util2 = require_minimal2();
+  module2.exports = Writer5;
+  var util2 = require_minimal();
   var BufferWriter;
   var LongBits = util2.LongBits;
   var base64 = util2.base64;
@@ -905,12 +907,12 @@ var require_writer = __commonJS((exports, module) => {
 });
 
 // ../../node_modules/protobufjs/src/writer_buffer.js
-var require_writer_buffer = __commonJS((exports, module) => {
+var require_writer_buffer = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = BufferWriter;
+  module2.exports = BufferWriter;
   var Writer5 = require_writer();
   (BufferWriter.prototype = Object.create(Writer5.prototype)).constructor = BufferWriter;
-  var util2 = require_minimal2();
+  var util2 = require_minimal();
   function BufferWriter() {
     Writer5.call(this);
   }
@@ -954,10 +956,10 @@ var require_writer_buffer = __commonJS((exports, module) => {
 });
 
 // ../../node_modules/protobufjs/src/reader.js
-var require_reader = __commonJS((exports, module) => {
+var require_reader = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = Reader5;
-  var util2 = require_minimal2();
+  module2.exports = Reader5;
+  var util2 = require_minimal();
   var BufferReader;
   var LongBits = util2.LongBits;
   var utf8 = util2.utf8;
@@ -1172,12 +1174,12 @@ var require_reader = __commonJS((exports, module) => {
 });
 
 // ../../node_modules/protobufjs/src/reader_buffer.js
-var require_reader_buffer = __commonJS((exports, module) => {
+var require_reader_buffer = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = BufferReader;
+  module2.exports = BufferReader;
   var Reader5 = require_reader();
   (BufferReader.prototype = Object.create(Reader5.prototype)).constructor = BufferReader;
-  var util2 = require_minimal2();
+  var util2 = require_minimal();
   function BufferReader(buffer) {
     Reader5.call(this, buffer);
   }
@@ -1193,10 +1195,10 @@ var require_reader_buffer = __commonJS((exports, module) => {
 });
 
 // ../../node_modules/protobufjs/src/rpc/service.js
-var require_service = __commonJS((exports, module) => {
+var require_service = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = Service;
-  var util2 = require_minimal2();
+  module2.exports = Service;
+  var util2 = require_minimal();
   (Service.prototype = Object.create(util2.EventEmitter.prototype)).constructor = Service;
   function Service(rpcImpl, requestDelimited, responseDelimited) {
     if (typeof rpcImpl !== "function")
@@ -1259,28 +1261,28 @@ var require_service = __commonJS((exports, module) => {
 });
 
 // ../../node_modules/protobufjs/src/rpc.js
-var require_rpc = __commonJS((exports) => {
+var require_rpc = __commonJS((exports2) => {
   "use strict";
-  var rpc = exports;
+  var rpc = exports2;
   rpc.Service = require_service();
 });
 
 // ../../node_modules/protobufjs/src/roots.js
-var require_roots = __commonJS((exports, module) => {
+var require_roots = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = {};
+  module2.exports = {};
 });
 
 // ../../node_modules/protobufjs/src/index-minimal.js
-var require_index_minimal = __commonJS((exports) => {
+var require_index_minimal = __commonJS((exports2) => {
   "use strict";
-  var protobuf2 = exports;
+  var protobuf2 = exports2;
   protobuf2.build = "minimal";
   protobuf2.Writer = require_writer();
   protobuf2.BufferWriter = require_writer_buffer();
   protobuf2.Reader = require_reader();
   protobuf2.BufferReader = require_reader_buffer();
-  protobuf2.util = require_minimal2();
+  protobuf2.util = require_minimal();
   protobuf2.rpc = require_rpc();
   protobuf2.roots = require_roots();
   protobuf2.configure = configure2;
@@ -1293,14 +1295,14 @@ var require_index_minimal = __commonJS((exports) => {
 });
 
 // ../../node_modules/protobufjs/minimal.js
-var require_minimal = __commonJS((exports, module) => {
+var require_minimal2 = __commonJS((exports2, module2) => {
   "use strict";
-  module.exports = require_index_minimal();
+  module2.exports = require_index_minimal();
 });
 
 // ../../node_modules/long/src/long.js
-var require_long = __commonJS((exports, module) => {
-  module.exports = Long6;
+var require_long = __commonJS((exports2, module2) => {
+  module2.exports = Long2;
   var wasm = null;
   try {
     wasm = new WebAssembly.Instance(new WebAssembly.Module(new Uint8Array([
@@ -1593,17 +1595,17 @@ var require_long = __commonJS((exports, module) => {
     ])), {}).exports;
   } catch (e) {
   }
-  function Long6(low, high, unsigned) {
+  function Long2(low, high, unsigned) {
     this.low = low | 0;
     this.high = high | 0;
     this.unsigned = !!unsigned;
   }
-  Long6.prototype.__isLong__;
-  Object.defineProperty(Long6.prototype, "__isLong__", {value: true});
+  Long2.prototype.__isLong__;
+  Object.defineProperty(Long2.prototype, "__isLong__", {value: true});
   function isLong(obj) {
     return (obj && obj["__isLong__"]) === true;
   }
-  Long6.isLong = isLong;
+  Long2.isLong = isLong;
   var INT_CACHE = {};
   var UINT_CACHE = {};
   function fromInt(value, unsigned) {
@@ -1632,7 +1634,7 @@ var require_long = __commonJS((exports, module) => {
       return obj;
     }
   }
-  Long6.fromInt = fromInt;
+  Long2.fromInt = fromInt;
   function fromNumber(value, unsigned) {
     if (isNaN(value))
       return unsigned ? UZERO : ZERO;
@@ -1651,11 +1653,11 @@ var require_long = __commonJS((exports, module) => {
       return fromNumber(-value, unsigned).neg();
     return fromBits(value % TWO_PWR_32_DBL | 0, value / TWO_PWR_32_DBL | 0, unsigned);
   }
-  Long6.fromNumber = fromNumber;
+  Long2.fromNumber = fromNumber;
   function fromBits(lowBits, highBits, unsigned) {
-    return new Long6(lowBits, highBits, unsigned);
+    return new Long2(lowBits, highBits, unsigned);
   }
-  Long6.fromBits = fromBits;
+  Long2.fromBits = fromBits;
   var pow_dbl = Math.pow;
   function fromString(str, unsigned, radix) {
     if (str.length === 0)
@@ -1691,7 +1693,7 @@ var require_long = __commonJS((exports, module) => {
     result.unsigned = unsigned;
     return result;
   }
-  Long6.fromString = fromString;
+  Long2.fromString = fromString;
   function fromValue(val, unsigned) {
     if (typeof val === "number")
       return fromNumber(val, unsigned);
@@ -1699,7 +1701,7 @@ var require_long = __commonJS((exports, module) => {
       return fromString(val, unsigned);
     return fromBits(val.low, val.high, typeof unsigned === "boolean" ? unsigned : val.unsigned);
   }
-  Long6.fromValue = fromValue;
+  Long2.fromValue = fromValue;
   var TWO_PWR_16_DBL = 1 << 16;
   var TWO_PWR_24_DBL = 1 << 24;
   var TWO_PWR_32_DBL = TWO_PWR_16_DBL * TWO_PWR_16_DBL;
@@ -1707,22 +1709,22 @@ var require_long = __commonJS((exports, module) => {
   var TWO_PWR_63_DBL = TWO_PWR_64_DBL / 2;
   var TWO_PWR_24 = fromInt(TWO_PWR_24_DBL);
   var ZERO = fromInt(0);
-  Long6.ZERO = ZERO;
+  Long2.ZERO = ZERO;
   var UZERO = fromInt(0, true);
-  Long6.UZERO = UZERO;
+  Long2.UZERO = UZERO;
   var ONE = fromInt(1);
-  Long6.ONE = ONE;
+  Long2.ONE = ONE;
   var UONE = fromInt(1, true);
-  Long6.UONE = UONE;
+  Long2.UONE = UONE;
   var NEG_ONE = fromInt(-1);
-  Long6.NEG_ONE = NEG_ONE;
+  Long2.NEG_ONE = NEG_ONE;
   var MAX_VALUE = fromBits(4294967295 | 0, 2147483647 | 0, false);
-  Long6.MAX_VALUE = MAX_VALUE;
+  Long2.MAX_VALUE = MAX_VALUE;
   var MAX_UNSIGNED_VALUE = fromBits(4294967295 | 0, 4294967295 | 0, true);
-  Long6.MAX_UNSIGNED_VALUE = MAX_UNSIGNED_VALUE;
+  Long2.MAX_UNSIGNED_VALUE = MAX_UNSIGNED_VALUE;
   var MIN_VALUE = fromBits(0, 2147483648 | 0, false);
-  Long6.MIN_VALUE = MIN_VALUE;
-  var LongPrototype = Long6.prototype;
+  Long2.MIN_VALUE = MIN_VALUE;
+  var LongPrototype = Long2.prototype;
   LongPrototype.toInt = function toInt() {
     return this.unsigned ? this.low >>> 0 : this.low;
   };
@@ -2110,44 +2112,48 @@ var require_long = __commonJS((exports, module) => {
       lo & 255
     ];
   };
-  Long6.fromBytes = function fromBytes(bytes, unsigned, le) {
-    return le ? Long6.fromBytesLE(bytes, unsigned) : Long6.fromBytesBE(bytes, unsigned);
+  Long2.fromBytes = function fromBytes(bytes, unsigned, le) {
+    return le ? Long2.fromBytesLE(bytes, unsigned) : Long2.fromBytesBE(bytes, unsigned);
   };
-  Long6.fromBytesLE = function fromBytesLE(bytes, unsigned) {
-    return new Long6(bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24, bytes[4] | bytes[5] << 8 | bytes[6] << 16 | bytes[7] << 24, unsigned);
+  Long2.fromBytesLE = function fromBytesLE(bytes, unsigned) {
+    return new Long2(bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24, bytes[4] | bytes[5] << 8 | bytes[6] << 16 | bytes[7] << 24, unsigned);
   };
-  Long6.fromBytesBE = function fromBytesBE(bytes, unsigned) {
-    return new Long6(bytes[4] << 24 | bytes[5] << 16 | bytes[6] << 8 | bytes[7], bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], unsigned);
+  Long2.fromBytesBE = function fromBytesBE(bytes, unsigned) {
+    return new Long2(bytes[4] << 24 | bytes[5] << 16 | bytes[6] << 8 | bytes[7], bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], unsigned);
   };
 });
 
+// index.ts
+const protobuf = __toModule(require_minimal2());
+const long = __toModule(require_long());
+
 // google/protobuf/timestamp.ts
-const minimal3 = __toModule(require_minimal());
+const minimal = __toModule(require_minimal2());
 const baseTimestamp = {
   seconds: 0,
   nanos: 0
 };
-function longToNumber3(long2) {
+function longToNumber(long2) {
   if (long2.gt(Number.MAX_SAFE_INTEGER)) {
     throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
   return long2.toNumber();
 }
 const Timestamp = {
-  encode(message, writer = minimal3.Writer.create()) {
+  encode(message, writer = minimal.Writer.create()) {
     writer.uint32(8).int64(message.seconds);
     writer.uint32(16).int32(message.nanos);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal3.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseTimestamp);
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.seconds = longToNumber3(reader.int64());
+          message.seconds = longToNumber(reader.int64());
           break;
         case 2:
           message.nanos = reader.int32();
@@ -2187,8 +2193,11 @@ const Timestamp = {
   }
 };
 
+// github.com/heroiclabs/nakama-common/api/api.ts
+const minimal3 = __toModule(require_minimal2());
+
 // google/protobuf/wrappers.ts
-const minimal4 = __toModule(require_minimal());
+const minimal2 = __toModule(require_minimal2());
 const baseInt32Value = {
   value: 0
 };
@@ -2199,12 +2208,12 @@ const baseStringValue = {
   value: ""
 };
 const Int32Value = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = minimal2.Writer.create()) {
     writer.uint32(8).int32(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseInt32Value);
     while (reader.pos < end) {
@@ -2241,12 +2250,12 @@ const Int32Value = {
   }
 };
 const BoolValue = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = minimal2.Writer.create()) {
     writer.uint32(8).bool(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseBoolValue);
     while (reader.pos < end) {
@@ -2283,12 +2292,12 @@ const BoolValue = {
   }
 };
 const StringValue = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = minimal2.Writer.create()) {
     writer.uint32(10).string(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStringValue);
     while (reader.pos < end) {
@@ -2324,12 +2333,11 @@ const StringValue = {
     return obj;
   }
 };
-const windowBase642 = globalThis;
-const atob2 = windowBase642.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
-const btoa2 = windowBase642.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
+const windowBase64 = globalThis;
+const atob = windowBase64.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
+const btoa = windowBase64.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
 
 // github.com/heroiclabs/nakama-common/api/api.ts
-const minimal = __toModule(require_minimal());
 const baseChannelMessage = {
   channel_id: "",
   message_id: "",
@@ -2374,7 +2382,7 @@ function fromTimestamp(t) {
   return new Date(millis);
 }
 const ChannelMessage = {
-  encode(message, writer = minimal.Writer.create()) {
+  encode(message, writer = minimal3.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
     if (message.code !== void 0 && message.code !== void 0) {
@@ -2399,7 +2407,7 @@ const ChannelMessage = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal3.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelMessage);
     while (reader.pos < end) {
@@ -2556,7 +2564,7 @@ const ChannelMessage = {
   }
 };
 const Notification = {
-  encode(message, writer = minimal.Writer.create()) {
+  encode(message, writer = minimal3.Writer.create()) {
     writer.uint32(10).string(message.id);
     writer.uint32(18).string(message.subject);
     writer.uint32(26).string(message.content);
@@ -2569,7 +2577,7 @@ const Notification = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal3.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseNotification);
     while (reader.pos < end) {
@@ -2666,14 +2674,14 @@ const Notification = {
   }
 };
 const Rpc = {
-  encode(message, writer = minimal.Writer.create()) {
+  encode(message, writer = minimal3.Writer.create()) {
     writer.uint32(10).string(message.id);
     writer.uint32(18).string(message.payload);
     writer.uint32(26).string(message.http_key);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal3.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseRpc);
     while (reader.pos < end) {
@@ -2731,7 +2739,7 @@ const Rpc = {
 };
 
 // github.com/heroiclabs/nakama-common/rtapi/realtime.ts
-const minimal2 = __toModule(require_minimal());
+const minimal4 = __toModule(require_minimal2());
 const baseEnvelope = {
   cid: ""
 };
@@ -2786,7 +2794,7 @@ const baseError_ContextEntry = {
   key: "",
   value: ""
 };
-const baseMatch2 = {
+const baseMatch = {
   match_id: "",
   authoritative: false,
   size: 0
@@ -2900,7 +2908,7 @@ function longToNumber2(long2) {
   return long2.toNumber();
 }
 const Envelope = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja;
     writer.uint32(10).string(message.cid);
     if (((_a = message.message) == null ? void 0 : _a.$case) === "channel" && ((_b = message.message) == null ? void 0 : _b.channel) !== void 0) {
@@ -2934,7 +2942,7 @@ const Envelope = {
       Error2.encode(message.message.error, writer.uint32(90).fork()).ldelim();
     }
     if (((_u = message.message) == null ? void 0 : _u.$case) === "match" && ((_v = message.message) == null ? void 0 : _v.match) !== void 0) {
-      Match2.encode(message.message.match, writer.uint32(98).fork()).ldelim();
+      Match.encode(message.message.match, writer.uint32(98).fork()).ldelim();
     }
     if (((_w = message.message) == null ? void 0 : _w.$case) === "match_create" && ((_x = message.message) == null ? void 0 : _x.match_create) !== void 0) {
       MatchCreate.encode(message.message.match_create, writer.uint32(106).fork()).ldelim();
@@ -3002,7 +3010,7 @@ const Envelope = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseEnvelope);
     while (reader.pos < end) {
@@ -3042,7 +3050,7 @@ const Envelope = {
           message.message = {$case: "error", error: Error2.decode(reader, reader.uint32())};
           break;
         case 12:
-          message.message = {$case: "match", match: Match2.decode(reader, reader.uint32())};
+          message.message = {$case: "match", match: Match.decode(reader, reader.uint32())};
           break;
         case 13:
           message.message = {$case: "match_create", match_create: MatchCreate.decode(reader, reader.uint32())};
@@ -3150,7 +3158,7 @@ const Envelope = {
       message.message = {$case: "error", error: Error2.fromJSON(object.error)};
     }
     if (object.match !== void 0 && object.match !== null) {
-      message.message = {$case: "match", match: Match2.fromJSON(object.match)};
+      message.message = {$case: "match", match: Match.fromJSON(object.match)};
     }
     if (object.match_create !== void 0 && object.match_create !== null) {
       message.message = {$case: "match_create", match_create: MatchCreate.fromJSON(object.match_create)};
@@ -3254,7 +3262,7 @@ const Envelope = {
       message.message = {$case: "error", error: Error2.fromPartial(object.message.error)};
     }
     if (((_E = object.message) == null ? void 0 : _E.$case) === "match" && ((_F = object.message) == null ? void 0 : _F.match) !== void 0 && ((_G = object.message) == null ? void 0 : _G.match) !== null) {
-      message.message = {$case: "match", match: Match2.fromPartial(object.message.match)};
+      message.message = {$case: "match", match: Match.fromPartial(object.message.match)};
     }
     if (((_H = object.message) == null ? void 0 : _H.$case) === "match_create" && ((_I = object.message) == null ? void 0 : _I.match_create) !== void 0 && ((_J = object.message) == null ? void 0 : _J.match_create) !== null) {
       message.message = {$case: "match_create", match_create: MatchCreate.fromPartial(object.message.match_create)};
@@ -3335,7 +3343,7 @@ const Envelope = {
     obj.channel_message_remove = ((_v = message.message) == null ? void 0 : _v.$case) === "channel_message_remove" && ((_w = message.message) == null ? void 0 : _w.channel_message_remove) ? ChannelMessageRemove.toJSON((_x = message.message) == null ? void 0 : _x.channel_message_remove) : void 0;
     obj.channel_presence_event = ((_y = message.message) == null ? void 0 : _y.$case) === "channel_presence_event" && ((_z = message.message) == null ? void 0 : _z.channel_presence_event) ? ChannelPresenceEvent.toJSON((_A = message.message) == null ? void 0 : _A.channel_presence_event) : void 0;
     obj.error = ((_B = message.message) == null ? void 0 : _B.$case) === "error" && ((_C = message.message) == null ? void 0 : _C.error) ? Error2.toJSON((_D = message.message) == null ? void 0 : _D.error) : void 0;
-    obj.match = ((_E = message.message) == null ? void 0 : _E.$case) === "match" && ((_F = message.message) == null ? void 0 : _F.match) ? Match2.toJSON((_G = message.message) == null ? void 0 : _G.match) : void 0;
+    obj.match = ((_E = message.message) == null ? void 0 : _E.$case) === "match" && ((_F = message.message) == null ? void 0 : _F.match) ? Match.toJSON((_G = message.message) == null ? void 0 : _G.match) : void 0;
     obj.match_create = ((_H = message.message) == null ? void 0 : _H.$case) === "match_create" && ((_I = message.message) == null ? void 0 : _I.match_create) ? MatchCreate.toJSON((_J = message.message) == null ? void 0 : _J.match_create) : void 0;
     obj.match_data = ((_K = message.message) == null ? void 0 : _K.$case) === "match_data" && ((_L = message.message) == null ? void 0 : _L.match_data) ? MatchData.toJSON((_M = message.message) == null ? void 0 : _M.match_data) : void 0;
     obj.match_data_send = ((_N = message.message) == null ? void 0 : _N.$case) === "match_data_send" && ((_O = message.message) == null ? void 0 : _O.match_data_send) ? MatchDataSend.toJSON((_P = message.message) == null ? void 0 : _P.match_data_send) : void 0;
@@ -3361,7 +3369,7 @@ const Envelope = {
   }
 };
 const Channel = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.id);
     for (const v of message.presences) {
       UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
@@ -3376,7 +3384,7 @@ const Channel = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannel);
     message.presences = [];
@@ -3484,7 +3492,7 @@ const Channel = {
   }
 };
 const ChannelJoin = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.target);
     writer.uint32(16).int32(message.type);
     if (message.persistence !== void 0 && message.persistence !== void 0) {
@@ -3496,7 +3504,7 @@ const ChannelJoin = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelJoin);
     while (reader.pos < end) {
@@ -3563,12 +3571,12 @@ const ChannelJoin = {
   }
 };
 const ChannelLeave = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelLeave);
     while (reader.pos < end) {
@@ -3605,7 +3613,7 @@ const ChannelLeave = {
   }
 };
 const ChannelMessageAck = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
     if (message.code !== void 0 && message.code !== void 0) {
@@ -3628,7 +3636,7 @@ const ChannelMessageAck = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelMessageAck);
     while (reader.pos < end) {
@@ -3765,13 +3773,13 @@ const ChannelMessageAck = {
   }
 };
 const ChannelMessageSend = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.content);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelMessageSend);
     while (reader.pos < end) {
@@ -3818,14 +3826,14 @@ const ChannelMessageSend = {
   }
 };
 const ChannelMessageUpdate = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
     writer.uint32(26).string(message.content);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelMessageUpdate);
     while (reader.pos < end) {
@@ -3882,13 +3890,13 @@ const ChannelMessageUpdate = {
   }
 };
 const ChannelMessageRemove = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelMessageRemove);
     while (reader.pos < end) {
@@ -3935,7 +3943,7 @@ const ChannelMessageRemove = {
   }
 };
 const ChannelPresenceEvent = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     for (const v of message.joins) {
       UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
@@ -3950,7 +3958,7 @@ const ChannelPresenceEvent = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelPresenceEvent);
     message.joins = [];
@@ -4069,7 +4077,7 @@ const ChannelPresenceEvent = {
   }
 };
 const Error2 = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(8).int32(message.code);
     writer.uint32(18).string(message.message);
     Object.entries(message.context).forEach(([key, value]) => {
@@ -4078,7 +4086,7 @@ const Error2 = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseError);
     message.context = {};
@@ -4147,13 +4155,13 @@ const Error2 = {
   }
 };
 const Error_ContextEntry = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseError_ContextEntry);
     while (reader.pos < end) {
@@ -4199,8 +4207,8 @@ const Error_ContextEntry = {
     return obj;
   }
 };
-const Match2 = {
-  encode(message, writer = minimal2.Writer.create()) {
+const Match = {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     writer.uint32(16).bool(message.authoritative);
     if (message.label !== void 0 && message.label !== void 0) {
@@ -4216,9 +4224,9 @@ const Match2 = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
-    const message = __assign({}, baseMatch2);
+    const message = __assign({}, baseMatch);
     message.presences = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -4249,7 +4257,7 @@ const Match2 = {
     return message;
   },
   fromJSON(object) {
-    const message = __assign({}, baseMatch2);
+    const message = __assign({}, baseMatch);
     message.presences = [];
     if (object.match_id !== void 0 && object.match_id !== null) {
       message.match_id = String(object.match_id);
@@ -4274,7 +4282,7 @@ const Match2 = {
     return message;
   },
   fromPartial(object) {
-    const message = __assign({}, baseMatch2);
+    const message = __assign({}, baseMatch);
     message.presences = [];
     if (object.match_id !== void 0 && object.match_id !== null) {
       message.match_id = object.match_id;
@@ -4314,11 +4322,11 @@ const Match2 = {
   }
 };
 const MatchCreate = {
-  encode(_, writer = minimal2.Writer.create()) {
+  encode(_, writer = minimal4.Writer.create()) {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchCreate);
     while (reader.pos < end) {
@@ -4345,7 +4353,7 @@ const MatchCreate = {
   }
 };
 const MatchData = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     if (message.presence !== void 0 && message.presence !== void 0) {
       UserPresence.encode(message.presence, writer.uint32(18).fork()).ldelim();
@@ -4356,7 +4364,7 @@ const MatchData = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchData);
     while (reader.pos < end) {
@@ -4433,7 +4441,7 @@ const MatchData = {
   }
 };
 const MatchDataSend = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     writer.uint32(16).int64(message.op_code);
     writer.uint32(26).bytes(message.data);
@@ -4444,7 +4452,7 @@ const MatchDataSend = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchDataSend);
     message.presences = [];
@@ -4532,7 +4540,7 @@ const MatchDataSend = {
   }
 };
 const MatchJoin = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     var _a, _b, _c, _d;
     if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = message.id) == null ? void 0 : _b.match_id) !== "") {
       writer.uint32(10).string(message.id.match_id);
@@ -4546,7 +4554,7 @@ const MatchJoin = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchJoin);
     message.metadata = {};
@@ -4617,13 +4625,13 @@ const MatchJoin = {
   }
 };
 const MatchJoin_MetadataEntry = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchJoin_MetadataEntry);
     while (reader.pos < end) {
@@ -4670,12 +4678,12 @@ const MatchJoin_MetadataEntry = {
   }
 };
 const MatchLeave = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchLeave);
     while (reader.pos < end) {
@@ -4712,7 +4720,7 @@ const MatchLeave = {
   }
 };
 const MatchPresenceEvent = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     for (const v of message.joins) {
       UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
@@ -4723,7 +4731,7 @@ const MatchPresenceEvent = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchPresenceEvent);
     message.joins = [];
@@ -4802,7 +4810,7 @@ const MatchPresenceEvent = {
   }
 };
 const MatchmakerAdd = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(8).int32(message.min_count);
     writer.uint32(16).int32(message.max_count);
     writer.uint32(26).string(message.query);
@@ -4815,7 +4823,7 @@ const MatchmakerAdd = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerAdd);
     message.string_properties = {};
@@ -4916,13 +4924,13 @@ const MatchmakerAdd = {
   }
 };
 const MatchmakerAdd_StringPropertiesEntry = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerAdd_StringPropertiesEntry);
     while (reader.pos < end) {
@@ -4969,13 +4977,13 @@ const MatchmakerAdd_StringPropertiesEntry = {
   }
 };
 const MatchmakerAdd_NumericPropertiesEntry = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(17).double(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerAdd_NumericPropertiesEntry);
     while (reader.pos < end) {
@@ -5022,7 +5030,7 @@ const MatchmakerAdd_NumericPropertiesEntry = {
   }
 };
 const MatchmakerMatched = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     var _a, _b, _c, _d;
     writer.uint32(10).string(message.ticket);
     if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = message.id) == null ? void 0 : _b.match_id) !== "") {
@@ -5040,7 +5048,7 @@ const MatchmakerMatched = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerMatched);
     message.users = [];
@@ -5130,7 +5138,7 @@ const MatchmakerMatched = {
   }
 };
 const MatchmakerMatched_MatchmakerUser = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     if (message.presence !== void 0 && message.presence !== void 0) {
       UserPresence.encode(message.presence, writer.uint32(10).fork()).ldelim();
     }
@@ -5143,7 +5151,7 @@ const MatchmakerMatched_MatchmakerUser = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerMatched_MatchmakerUser);
     message.string_properties = {};
@@ -5224,13 +5232,13 @@ const MatchmakerMatched_MatchmakerUser = {
   }
 };
 const MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerMatched_MatchmakerUser_StringPropertiesEntry);
     while (reader.pos < end) {
@@ -5277,13 +5285,13 @@ const MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
   }
 };
 const MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(17).double(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerMatched_MatchmakerUser_NumericPropertiesEntry);
     while (reader.pos < end) {
@@ -5330,12 +5338,12 @@ const MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
   }
 };
 const MatchmakerRemove = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.ticket);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerRemove);
     while (reader.pos < end) {
@@ -5372,12 +5380,12 @@ const MatchmakerRemove = {
   }
 };
 const MatchmakerTicket = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.ticket);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerTicket);
     while (reader.pos < end) {
@@ -5414,14 +5422,14 @@ const MatchmakerTicket = {
   }
 };
 const Notifications = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     for (const v of message.notifications) {
       Notification.encode(v, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseNotifications);
     message.notifications = [];
@@ -5469,11 +5477,11 @@ const Notifications = {
   }
 };
 const Ping = {
-  encode(_, writer = minimal2.Writer.create()) {
+  encode(_, writer = minimal4.Writer.create()) {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, basePing);
     while (reader.pos < end) {
@@ -5500,11 +5508,11 @@ const Ping = {
   }
 };
 const Pong = {
-  encode(_, writer = minimal2.Writer.create()) {
+  encode(_, writer = minimal4.Writer.create()) {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, basePong);
     while (reader.pos < end) {
@@ -5531,14 +5539,14 @@ const Pong = {
   }
 };
 const Status = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     for (const v of message.presences) {
       UserPresence.encode(v, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStatus);
     message.presences = [];
@@ -5586,7 +5594,7 @@ const Status = {
   }
 };
 const StatusFollow = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     for (const v of message.user_ids) {
       writer.uint32(10).string(v);
     }
@@ -5596,7 +5604,7 @@ const StatusFollow = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStatusFollow);
     message.user_ids = [];
@@ -5665,7 +5673,7 @@ const StatusFollow = {
   }
 };
 const StatusPresenceEvent = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     for (const v of message.joins) {
       UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
     }
@@ -5675,7 +5683,7 @@ const StatusPresenceEvent = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStatusPresenceEvent);
     message.joins = [];
@@ -5744,14 +5752,14 @@ const StatusPresenceEvent = {
   }
 };
 const StatusUnfollow = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     for (const v of message.user_ids) {
       writer.uint32(10).string(v);
     }
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStatusUnfollow);
     message.user_ids = [];
@@ -5799,14 +5807,14 @@ const StatusUnfollow = {
   }
 };
 const StatusUpdate = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     if (message.status !== void 0 && message.status !== void 0) {
       StringValue.encode({value: message.status}, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStatusUpdate);
     while (reader.pos < end) {
@@ -5843,7 +5851,7 @@ const StatusUpdate = {
   }
 };
 const Stream = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(8).int32(message.mode);
     writer.uint32(18).string(message.subject);
     writer.uint32(26).string(message.subcontext);
@@ -5851,7 +5859,7 @@ const Stream = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStream);
     while (reader.pos < end) {
@@ -5918,7 +5926,7 @@ const Stream = {
   }
 };
 const StreamData = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     if (message.stream !== void 0 && message.stream !== void 0) {
       Stream.encode(message.stream, writer.uint32(10).fork()).ldelim();
     }
@@ -5930,7 +5938,7 @@ const StreamData = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStreamData);
     while (reader.pos < end) {
@@ -5997,7 +6005,7 @@ const StreamData = {
   }
 };
 const StreamPresenceEvent = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     if (message.stream !== void 0 && message.stream !== void 0) {
       Stream.encode(message.stream, writer.uint32(10).fork()).ldelim();
     }
@@ -6010,7 +6018,7 @@ const StreamPresenceEvent = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStreamPresenceEvent);
     message.joins = [];
@@ -6089,7 +6097,7 @@ const StreamPresenceEvent = {
   }
 };
 const UserPresence = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.user_id);
     writer.uint32(18).string(message.session_id);
     writer.uint32(26).string(message.username);
@@ -6100,7 +6108,7 @@ const UserPresence = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseUserPresence);
     while (reader.pos < end) {
@@ -6176,11 +6184,11 @@ const UserPresence = {
     return obj;
   }
 };
-const windowBase64 = globalThis;
-const atob = windowBase64.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
-const btoa = windowBase64.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
+const windowBase642 = globalThis;
+const atob2 = windowBase642.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
+const btoa2 = windowBase642.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
 function bytesFromBase64(b64) {
-  const bin = atob(b64);
+  const bin = atob2(b64);
   const arr = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; ++i) {
     arr[i] = bin.charCodeAt(i);
@@ -6192,7 +6200,7 @@ function base64FromBytes(arr) {
   for (let i = 0; i < arr.byteLength; ++i) {
     bin.push(String.fromCharCode(arr[i]));
   }
-  return btoa(bin.join(""));
+  return btoa2(bin.join(""));
 }
 
 // web_socket_adapter_pb.ts
@@ -6268,8 +6276,6 @@ class WebSocketAdapterPb {
 }
 
 // index.ts
-const protobuf = __toModule(require_minimal());
-const long = __toModule(require_long());
 protobuf.util.Long = long.default;
 protobuf.configure();
 export {

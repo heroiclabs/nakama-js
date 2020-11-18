@@ -20,8 +20,13 @@
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "alwaysStrict": true,
   },
+
   "exclude": [
     "node_modules"
   ]

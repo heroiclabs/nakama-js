@@ -1,6 +1,11 @@
-var __defineProperty = Object.defineProperty;
-var __hasOwnProperty = Object.prototype.hasOwnProperty;
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __assign = Object.assign;
+var __markAsModule = (target) => __defProp(target, "__esModule", {value: true});
 var __commonJS = (callback, module2) => () => {
   if (!module2) {
     module2 = {exports: {}};
@@ -8,27 +13,24 @@ var __commonJS = (callback, module2) => () => {
   }
   return module2.exports;
 };
-var __markAsModule = (target) => {
-  return __defineProperty(target, "__esModule", {value: true});
-};
 var __export = (target, all) => {
   __markAsModule(target);
   for (var name in all)
-    __defineProperty(target, name, {get: all[name], enumerable: true});
+    __defProp(target, name, {get: all[name], enumerable: true});
 };
-var __exportStar = (target, module2) => {
+var __exportStar = (target, module2, desc) => {
   __markAsModule(target);
-  if (typeof module2 === "object" || typeof module2 === "function") {
-    for (let key in module2)
-      if (!__hasOwnProperty.call(target, key) && key !== "default")
-        __defineProperty(target, key, {get: () => module2[key], enumerable: true});
+  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
+    for (let key of __getOwnPropNames(module2))
+      if (!__hasOwnProp.call(target, key) && key !== "default")
+        __defProp(target, key, {get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable});
   }
   return target;
 };
 var __toModule = (module2) => {
   if (module2 && module2.__esModule)
     return module2;
-  return __exportStar(__defineProperty({}, "default", {value: module2, enumerable: true}), module2);
+  return __exportStar(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", {value: module2, enumerable: true}), module2);
 };
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
@@ -489,6 +491,15 @@ var require_fetch = __commonJS((exports2) => {
     self2.fetch.polyfill = true;
   })(typeof self !== "undefined" ? self : exports2);
 });
+
+// index.ts
+__export(exports, {
+  Client: () => Client,
+  Session: () => Session,
+  WebSocketAdapterText: () => WebSocketAdapterText
+});
+const Base64 = __toModule(require_base64());
+const whatwg_fetch = __toModule(require_fetch());
 
 // api.gen.ts
 const BASE_PATH = "http://127.0.0.1:80";
@@ -3014,12 +3025,3 @@ class Client {
     });
   }
 }
-
-// index.ts
-__export(exports, {
-  Client: () => Client,
-  Session: () => Session,
-  WebSocketAdapterText: () => WebSocketAdapterText
-});
-const Base64 = __toModule(require_base64());
-const whatwg_fetch = __toModule(require_fetch());
