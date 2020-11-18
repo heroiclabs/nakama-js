@@ -497,6 +497,7 @@ var nakamajs = (() => {
   var require_nakama_js = __commonJS((exports) => {
     __export(exports, {
       Client: () => Client,
+      DefaultSocket: () => DefaultSocket,
       Session: () => Session,
       WebSocketAdapterText: () => WebSocketAdapterText
     });
@@ -1883,7 +1884,7 @@ var nakamajs = (() => {
       });
     }
     authenticateFacebookInstantGame(request) {
-      return this.apiClient.authenticateFacebookInstantGame({signed_player_info: request.signed_player_info, vars: request.vars}, request.username, request.create);
+      return this.apiClient.authenticateFacebookInstantGame({signed_player_info: request.signed_player_info, vars: request.vars}, request.create, request.username);
     }
     authenticateFacebook(request) {
       const urlPath = "/v2/account/authenticate/facebook";
