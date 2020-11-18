@@ -1,0 +1,10 @@
+{
+    "name": "@heroiclabs/nakama-js",
+    "scripts": {
+        "build": "node build.js"
+    },
+    "dependencies": {
+        "Base64": "1.0.1",
+        "whatwg-fetch": "^2.0.3"
+    }
+}

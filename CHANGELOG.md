@@ -9,13 +9,18 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 - Added interface for Session object.
 - Support for Tournaments.
 - Support for events.
-- Update to support features in Nakama 2.7.0.
+- Update to support features in Nakama 2.12.0
 - Implemented base64 encoder and decoder for unicode characters
+- Added support for protocol buffer payloads via Web Sockets
+- Added support for Facebook Instant Game Authentication
 
 ### Changed
 - Simplified the way callback IDs are generated. (Thanks @dimon4eg).
 - Small improvements to TypeScript typings. (Thanks @Blaizer).
 - Updated minimum TypeScript language to 3.5 version. (Thanks @Blaizer).
+- Migrated test suite to Typescript
+- Migrated build system to esbuild
+- Updated Yarn version to 2.0
 
 ### Fixed
 - Typo fix in Match interface to use Presences.

@@ -23,12 +23,29 @@ You'll need to setup the server and database before you can connect with the cli
 
     You'll now see the code in the "node_modules" folder and package listed in your "package.json".
 
+    Optionally, if you would like to use the protocol buffer wire format with your Web Sockets, you can utilize
+    the adapter found in this package:
+
+    ```shell
+    yarn add "@heroiclabs/nakama-js-protobuf"
+    ```
+
 3. Use the connection credentials to build a client object.
 
     ```js
-    // <script src="path/to/nakama-js.umd.js"></script>
+    <script src="path/to/nakama-js.iife.js"></script>
+
     var useSSL = false; // Enable if server is run with an SSL certificate.
     var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350, useSSL);
+    ```
+
+    If you are including the optional protocol buffer adapter, pass the adapter to the Client object:
+    ```js
+    <script src="path/to/nakama-js.iife.js"></script>
+    <script src="path/to/nakama-js-protobuf.iife.js"></script>
+
+    var useSSL = false; // Enable if server is run with an SSL certificate.
+    var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350, useSSL, new nakamajsprotobuf.WebSocketAdapterPb());
     ```
 
 ## Usage
@@ -122,25 +139,46 @@ socket.writeChatMessage(channel.channel.id, message);
 
 ## Contribute
 
-The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested to enhance the code please open an issue to discuss the changes or drop in and discuss it in the [community forum](https://forum.heroiclabs.com).
+The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested in enhancing the code please open an issue to discuss the changes or drop in and discuss it in the [community forum](https://forum.heroiclabs.com).
 
 ### Source Builds
 
 Ensure you are using Node v12.18.1
 
-The codebase is written in TypeScript with tests in JavaScript and can be built with [Rollup.js](https://rollupjs.org/guide/en). All dependencies are managed with NPM.
+The codebase is multi-package monorepo written in TypeScript and can be built with [esbuild](https://github.com/evanw/esbuild). All dependencies are managed with Yarn.
+
+To build from source, install dependencies and build the `nakama-js` and `nakama-js-protobuf` subrepositories:
 
 ```shell
-yarn install && yarn build
+yarn workspace @heroiclabs/nakama-js install && yarn workspace @heroiclabs/nakama-js build
+yarn workspace @heroiclabs/nakama-js-protobuf install && yarn workspace @heroiclabs/nakama-js-protobuf build
 ```
 
 ### Run Tests
 
 To run tests you will need to run the server and database. Most tests are written as integration tests which execute against the server. A quick approach we use with our test workflow is to use the Docker compose file described in the [documentation](https://heroiclabs.com/docs/install-docker-quickstart).
 
+Tests are run against each workspace bundle; if you have made source code changes, you should `yarn workspace <workspace> build` prior to running tests.
+
 ```shell
 docker-compose -f ./docker-compose.yml up
-yarn build && yarn test
+yarn test
+```
+
+### Protocol Buffer Web Socket Adapter
+
+To update the generated Typescript required for using the protocol buffer adapter, run the following:
+
+```shell
+npx protoc \
+--plugin="./node_modules/.bin/protoc-gen-ts_proto" \
+--proto_path=$GOPATH/src \
+--ts_proto_out=packages/nakama-js-protobuf \
+--ts_proto_opt=snakeToCamel=false \
+--ts_proto_opt=useOptionals=true \
+--ts_proto_opt=oneof=unions \
+$GOPATH/src/github.com/heroiclabs/nakama-common/api/api.proto \
+$GOPATH/src/github.com/heroiclabs/nakama-common/rtapi/realtime.proto
 ```
 
 ### Release Process
@@ -148,8 +186,10 @@ yarn build && yarn test
 To release onto NPM if you have access to the "@heroiclabs" organization you can use Yarn.
 
 ```shell
-yarn run build && yarn publish --access=public
+yarn workspace <workspace> run build && yarn workspace <workspace> publish --access=public
 ```
+
+You can use `yarn foreach <cmd>` to do this for each NPM package distributed by this repository.
 
 ### License
 
