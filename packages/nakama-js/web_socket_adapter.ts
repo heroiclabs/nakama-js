@@ -15,10 +15,10 @@
  */
 
 /**
- * An interface used by Nakama's web socket to determine the payload protocol. 
+ * An interface used by Nakama's web socket to determine the payload protocol.
  */
 export interface WebSocketAdapter {
-    
+
     /**
      * Dispatched when the web socket closes.
      */
@@ -45,18 +45,31 @@ export interface WebSocketAdapter {
     send(msg : any) : void;
 }
 
+/**
+ * SocketCloseHandler defines a lambda that handles WebSocket close events.
+ */
 export interface SocketCloseHandler {
     (this : WebSocket, evt: CloseEvent): void;
 }
 
+/**
+ * SocketErrorHandler defines a lambda that handles responses from the server via WebSocket
+ * that indicate an error.
+ */
 export interface SocketErrorHandler {
     (this : WebSocket, evt: Event): void;
 }
 
+/**
+ * SocketMessageHandler defines a lambda that handles valid WebSocket messages.
+ */
 export interface SocketMessageHandler {
     (message: any): void;
 }
 
+/**
+ * SocketOpenHandler defines a lambda that handles WebSocket open events.
+ */
 export interface SocketOpenHandler {
     (this : WebSocket, evt : Event) : void
 }
@@ -94,7 +107,7 @@ export class WebSocketAdapterText implements WebSocketAdapter {
 
         if (value) {
             this._socket!.onmessage = (evt: MessageEvent) => {
-                const message: any = JSON.parse(evt.data);                
+                const message: any = JSON.parse(evt.data);
                 value!(message);
             };
         }
@@ -133,7 +146,7 @@ export class WebSocketAdapterText implements WebSocketAdapter {
             // TODO document why this is necessary, if at all.
             msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
         }
-        
+
         this._socket!.send(JSON.stringify(msg));
     }
 }
