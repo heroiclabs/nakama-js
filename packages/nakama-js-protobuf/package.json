@@ -1,7 +1,7 @@
 {
     "name": "@heroiclabs/nakama-js-protobuf",
     "scripts": {
-        "build": "./build.sh"
+        "build": "node build.js"
     },
     "devDependencies": {
         "ts-proto": "^1.27.1"

@@ -1,7 +1,7 @@
 {
     "name": "@heroiclabs/nakama-js",
     "scripts": {
-        "build": "./build.sh"
+        "build": "node build.js"
     },
     "dependencies": {
         "Base64": "1.0.1",
