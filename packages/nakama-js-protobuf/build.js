@@ -18,6 +18,9 @@ function build(args) {
     exec("npx esbuild --bundle index.ts --target=es6 --global-name=nakamajsprotobuf " + args)
 }
 
+// emit .d.ts files and perform type checking
+exec("npx typescript --project packages/nakama-js/tsconfig.json")
+
 build(" --format=cjs --outfile=dist/nakama-js-protobuf.cjs.js")
 build(" --format=esm --outfile=dist/nakama-js-protobuf.esm.js")
 build(" --format=iife --outfile=dist/nakama-js-protobuf.iife.js")

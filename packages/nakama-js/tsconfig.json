@@ -3,4 +3,7 @@
   "include": [
     "./*",
   ],
+  "compilerOptions": {
+    "outDir": "dist"
+  }
 }
