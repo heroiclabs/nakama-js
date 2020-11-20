@@ -167,7 +167,7 @@ describe('Match Tests', () => {
 
       const presenceEvt = await socket2PresencePromise;
 
-      const session3 = await client3.authenticateCustom({ id: customid3 });
+      const session3 = await client3.authenticateCustom(customid3);
       await socket3.connect(session3, false);
       match = await socket3.joinMatch(match.match_id);
       const timeout = new Promise<null>((resolve, reject) => {
@@ -215,7 +215,7 @@ describe('Match Tests', () => {
       await socket2.connect(session2, false);
       match = await socket2.joinMatch(match.match_id);
 
-      const session3 = await client3.authenticateCustom({ id: customid3 });
+      const session3 = await client3.authenticateCustom(customid3);
       await socket3.connect(session3, false);
 
 

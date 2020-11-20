@@ -373,7 +373,7 @@ describe('Matchmaker Tests', () => {
       const session2 = await client2.authenticateCustom(customid2);
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("properties.a6:bar +properties.id:" + testId, 2, 2, {"a6": "bar", "id": testId});
-      const session3 = await client3.authenticateCustom({ id: customid3 });
+      const session3 = await client3.authenticateCustom(customid3);
       await socket3.connect(session3, false);
       const ticket3 = await socket3.addMatchmaker("properties.a6:bar +properties.id:" + testId, 2, 2, {"a6": "bar", "id": testId});
       var promise2 = new Promise((resolve, reject) => {
