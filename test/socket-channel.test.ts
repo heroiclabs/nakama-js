@@ -20,7 +20,7 @@ import * as nakamajsprotobuf from "../packages/nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType} from "./utils";
 
 describe('Channel Tests', () => {
-  
+
   it.each(adapters)('should join a channel', async (adapter) => {
 
     const page = await createPage();
@@ -30,13 +30,13 @@ describe('Channel Tests', () => {
     const response = await page.evaluate(async (customid, channelid, adapter) => {
 
       const client = new nakamajs.Client();
-        
+
         const socket = client.createSocket(false, false,
            adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
-  
-        const session = await client.authenticateCustom({ id: customid })
+
+        const session = await client.authenticateCustom(customid)
         await socket.connect(session, false);
-  
+
         //chat type: 1 = room, 2 = Direct Message 3 = Group
         return await socket.joinChat(channelid, 1, true, false);
     }, customid, channelid, adapter);
@@ -54,12 +54,12 @@ describe('Channel Tests', () => {
     const channelid = generateid();
 
     const response = await page.evaluate(async (customid, channelid, adapter) => {
-      
+
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false, 
+      const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       await socket.connect(session, false);
       //chat type: 1 = room, 2 = Direct Message 3 = Group
       const channel = await socket.joinChat(channelid, 1, true, false);
@@ -80,7 +80,7 @@ describe('Channel Tests', () => {
 
     const message : nakamajs.ChannelMessage = await page.evaluate(async (customid, channelid, payload, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false, 
+      const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<nakamajs.ChannelMessage>((resolve, reject) => {
@@ -89,14 +89,14 @@ describe('Channel Tests', () => {
         }
       });
 
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       await socket.connect(session, false);
 
       // chat type: 1 = room, 2 = Direct Message 3 = Group
       const channel = await socket.joinChat(channelid, 1, false, false);
 
       await socket.writeChatMessage(channel.id, payload);
-      
+
       var promise2 = new Promise<null>((resolve, reject) => {
         setTimeout(reject, 5000, "did not receive channel message - timed out.")
       });
@@ -123,10 +123,10 @@ describe('Channel Tests', () => {
 
     const response = await page.evaluate(async (customid, channelid, payload, updatedPayload, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false, 
+      const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       await socket.connect(session, false);
 
       //chat type: 1 = room, 2 = Direct Message 3 = Group
@@ -162,10 +162,10 @@ describe('Channel Tests', () => {
     const response = await page.evaluate(async (customid, channelid, payload, adapter) => {
 
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false, 
+      const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       await socket.connect(session, false);
 
       // chat type: 1 = room, 2 = Direct Message 3 = Group

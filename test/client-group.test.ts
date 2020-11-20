@@ -28,7 +28,7 @@ describe('Group Tests', () => {
 
     const result = await page.evaluate(async (customid, group_name) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       return await client.createGroup(session, { name: group_name, open: true });
     }, customid, group_name);
 
@@ -49,7 +49,7 @@ describe('Group Tests', () => {
 
     const result = await page.evaluate(async (customid, group_name) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       const group = await client.createGroup(session, { name: group_name, open: true });
       return await client.listUserGroups(session, session.user_id);
     }, customid, group_name);
@@ -73,7 +73,7 @@ describe('Group Tests', () => {
 
     const result = await page.evaluate(async (customid, group_name1, group_name2) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       const group = await client.createGroup(session, { name: group_name1, open: true });
       await client.updateGroup(session, group.id, { name: group_name2 });
       return await client.listUserGroups(session, session.user_id);
@@ -98,7 +98,7 @@ describe('Group Tests', () => {
 
     const result = await page.evaluate(async (customid, group_name) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       const group = await client.createGroup(session, { name: group_name, open: true });
       await client.deleteGroup(session, group.id);
       return await client.listUserGroups(session, session.user_id);
@@ -116,7 +116,7 @@ describe('Group Tests', () => {
 
     const result = await page.evaluate(async (customid, group_name) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       const group = await client.createGroup(session, { name: group_name, open: true });
       return await client.listGroupUsers(session, group.id);
     }, customid, group_name);
@@ -134,12 +134,12 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const group = await client1.createGroup(session1, { name: group_name, open: true });
 
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
       await client2.joinGroup(session2, group.id);
       return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
@@ -163,10 +163,10 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
 
       const group = await client1.createGroup(session1, { name: group_name, open: true })
       await client1.addGroupUsers(session1, group.id, [session2.user_id]);
@@ -192,10 +192,10 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
 
       const group = await client1.createGroup(session1, { name: group_name, open: true });
       await client1.addGroupUsers(session1, group.id, [session2.user_id]);
@@ -216,12 +216,12 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(id: customid1);
       const group = await client1.createGroup(session1, { name: group_name, open: false });
 
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(id: customid2);
       await client2.joinGroup(session2, group.id);
       return await client1.listGroupUsers(session1, group.id);
     }, customid1, customid2, group_name);
@@ -245,11 +245,11 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const group = await client1.createGroup(session1, { name: group_name, open: true });
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
 
       await client2.joinGroup(session2, group.id);
       return await client1.listUserGroups(session1, session1.user_id);
@@ -268,11 +268,11 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const group = await client1.createGroup(session1, { name: group_name, open: false });
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
 
       await client2.joinGroup(session2, group.id);
       return await client1.listUserGroups(session1, session1.user_id);
@@ -291,12 +291,12 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();    
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const group = await client1.createGroup(session1, { name: group_name, open: false })
 
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
 
       await client2.joinGroup(session2, group.id);
       await client1.addGroupUsers(session1, group.id, [session2.user_id]);
@@ -316,12 +316,12 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const group = await client1.createGroup(session1, { name: group_name, open: false });
 
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
       await client2.joinGroup(session2, group.id);
       await client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
       return await client1.listUserGroups(session1, session1.user_id);
@@ -340,12 +340,12 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const group = await client1.createGroup(session1, { name: group_name, open: true });
 
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
 
       await client2.joinGroup(session2, group.id);
       await client2.leaveGroup(session2, group.id);
@@ -365,11 +365,11 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const group = await client1.createGroup(session1, { name: group_name, open: false });
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
       await client2.joinGroup(session2, group.id);
       await client2.leaveGroup(session2, group.id);
       return await client1.listUserGroups(session1, session1.user_id);
@@ -388,11 +388,11 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 })
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1)
       const group = await client1.createGroup(session1, { name: group_name, open: false })
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 })
+      const session2 = await client2.authenticateCustom(customid2)
       await client2.joinGroup(session2, group.id)
       await client1.addGroupUsers(session1, group.id, [session2.user_id]);
       return await client1.listGroupUsers(session1, group.id);
@@ -417,11 +417,11 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const group = await client1.createGroup(session1, { name: group_name, open: false });
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 })
+      const session2 = await client2.authenticateCustom(customid2)
       await client2.joinGroup(session2, group.id)
       await client1.promoteGroupUsers(session1, group.id, [session2.user_id]);
       return await client1.listGroupUsers(session1, group.id);
@@ -446,11 +446,11 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const group = await client1.createGroup(session1, { name: group_name, open: false });
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
       await client2.joinGroup(session2, group.id)
       await client1.kickGroupUsers(session1, group.id, [session2.user_id]);
       return await client1.listGroupUsers(session1, group.id);
@@ -469,10 +469,10 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
 
       const group = await client1.createGroup(session1, { name: group_name, open: true })
       await client1.addGroupUsers(session1, group.id, [session2.user_id]);
@@ -499,10 +499,10 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
 
       const group = await client1.createGroup(session1, { name: group_name, open: true });
       await client1.addGroupUsers(session1, group.id, [session2.user_id])
@@ -525,11 +525,11 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const group = await client1.createGroup(session1, { name: group_name, open: true });
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
       await client2.joinGroup(session2, group.id)
       await client2.leaveGroup(session2, group.id);
       return await client1.listGroupUsers(session1, group.id);
@@ -548,11 +548,11 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 })
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1)
       const group = await client1.createGroup(session1, { name: group_name, open: false });
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
       await client2.joinGroup(session2, group.id)
       await client2.leaveGroup(session2, group.id);
       return await client1.listGroupUsers(session1, group.id);
@@ -572,10 +572,10 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, customid3, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
       const client3 = new nakamajs.Client();
       const session3 = await client3.authenticateCustom({ id: customid3 });
 
@@ -599,8 +599,8 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
 
       const group = await client1.createGroup(session1, { name: group_name, open: true })
       return await client1.listGroups(session1, "%" + group_name + "%");
@@ -625,10 +625,10 @@ describe('Group Tests', () => {
     const group_name = generateid();
 
     const result = await page.evaluate(async (customid1, customid2, group_name) => {
-      const client1 = new nakamajs.Client();      
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
 
       const group = await client1.createGroup(session1, { name: group_name, open: true });
       await client1.addGroupUsers(session1, group.id, [session2.user_id])

@@ -28,7 +28,7 @@ describe('User Tests', () => {
 
     const account = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid })
+      return client.authenticateCustom(customid)
         .then(session => {
           return client.getAccount(session);
         });
@@ -59,7 +59,7 @@ describe('User Tests', () => {
 
     const account = await page.evaluate(async (customid, displayName, avatar, lang, loc) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
 
       await client.updateAccount(session, {
         display_name: displayName,
@@ -89,7 +89,7 @@ describe('User Tests', () => {
 
     const account = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       const success = await client.updateAccount(session, {
         username: session.username
       });
@@ -108,8 +108,8 @@ describe('User Tests', () => {
 
     const users = await page.evaluate(async (customid, customid2) => {
       const client = new nakamajs.Client();
-      const session1 = await client.authenticateCustom({ id: customid });
-      const session2 = await client.authenticateCustom({ id: customid2 })
+      const session1 = await client.authenticateCustom(customid);
+      const session2 = await client.authenticateCustom(customid2)
       return await client.getUsers(session2, [session1.user_id], [session2.username], []);
     }, customid, customid2);
 
@@ -125,7 +125,7 @@ describe('User Tests', () => {
 
     const response = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       return await client.getUsers(session, [], [], []);
     }, customid);
 

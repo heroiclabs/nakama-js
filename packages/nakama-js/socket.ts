@@ -540,7 +540,7 @@ export class DefaultSocket implements Socket {
     Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any> {
     const untypedMessage = message as any;
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (!this.adapter.isConnected) {
         reject("Socket connection has not been established yet.");
       }

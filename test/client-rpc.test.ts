@@ -29,7 +29,7 @@ describe('RPC Tests', () => {
 
     const rpcResult = await page.evaluate(async (customid, rpcid) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       return await client.rpcGet(rpcid, session);
     }, customid, rpcid);
 
@@ -47,7 +47,7 @@ describe('RPC Tests', () => {
 
     const rpcResult = await page.evaluate(async (customid, rpcid, request) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       return await client.rpc(session, rpcid, request);
     }, customid, rpcid, request);
 

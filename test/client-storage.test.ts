@@ -20,7 +20,7 @@ import * as nakamajs from "../packages/nakama-js";
 import {createPage, generateid} from "./utils"
 
 describe('Storage Tests', () => {
-  
+
   it('should write and read storage', async () => {
 
     const page : Page = await createPage();
@@ -32,7 +32,7 @@ describe('Storage Tests', () => {
 
     const result = await page.evaluate(async (customid, collection, key, value) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await client.writeStorageObjects(session, [
         {
           "collection": collection,
@@ -70,7 +70,7 @@ describe('Storage Tests', () => {
 
     const result = await page.evaluate(async (customid, collection, key, value) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await client.writeStorageObjects(session,[
         {
           "collection": collection,
@@ -109,7 +109,7 @@ describe('Storage Tests', () => {
 
     const result = await page.evaluate(async (customid, collection, key, value) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
 
       await client.writeStorageObjects(session,[
         {
