@@ -132,11 +132,11 @@ describe('Leaderboard Tests', () => {
     }, customid, rpcid, operator, score);
 
     expect(result).not.toBeNull();
-    expect(result.records[0].score).toBe(10);
-    expect(result.records[0].subscore).toBe(1);
-    expect(result.records[0].metadata).not.toBeNull();
-    expect((<any> result.records[0].metadata).key).toBe("value");
-    expect(result.records[0].rank).toBe(1);
+    expect(result.records![0].score).toBe(10);
+    expect(result.records![0].subscore).toBe(1);
+    expect(result.records![0].metadata).not.toBeNull();
+    expect((<any> result.records![0].metadata).key).toBe("value");
+    expect(result.records![0].rank).toBe(1);
   });
 
 });

@@ -37,7 +37,7 @@ describe('Link / Unlink Tests', () => {
 
     expect(account).not.toBeNull();
     expect(account.custom_id).not.toBeNull();
-    expect(account.devices[0]).not.toBeNull();
+    expect(account.devices![0]).not.toBeNull();
   });
 
   it('should unlink device ID', async () => {
@@ -92,7 +92,7 @@ describe('Link / Unlink Tests', () => {
     ("account user is...");
     (account.user);
     expect(account).not.toBeNull();
-    expect(account.user.facebook_instant_game_id).not.toBeUndefined();
+    expect(account.user!.facebook_instant_game_id).not.toBeUndefined();
 
   });
 
@@ -129,7 +129,7 @@ describe('Link / Unlink Tests', () => {
     }, customid, token);
 
     expect(account).not.toBeNull();
-    expect(account.user.facebook_instant_game_id).toBeUndefined();
+    expect(account.user!.facebook_instant_game_id).toBeUndefined();
   })
 
 });

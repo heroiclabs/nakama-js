@@ -37,8 +37,8 @@ describe('Friend Tests', () => {
     }, customid1, customid2);
 
     expect(result).not.toBeNull();
-    expect(result.friends.length).toBe(1);
-    expect(result.friends[0].state).toBe(1);
+    expect(result.friends!.length).toBe(1);
+    expect(result.friends![0].state).toBe(1);
   });
 
   it('should receive friend invite, then list', async () => {
@@ -58,8 +58,8 @@ describe('Friend Tests', () => {
     }, customid1, customid2);
 
     expect(result).not.toBeNull();
-    expect(result.friends.length).toBe(1);
-    expect(result.friends[0].state).toBe(2);
+    expect(result.friends!.length).toBe(1);
+    expect(result.friends![0].state).toBe(2);
   });
 
   it('should block friend, then list', async () => {
@@ -79,8 +79,8 @@ describe('Friend Tests', () => {
     }, customid1, customid2);
 
     expect(result).not.toBeNull();
-    expect(result.friends.length).toBe(1);
-    expect(result.friends[0].state).toBe(3);
+    expect(result.friends!.length).toBe(1);
+    expect(result.friends![0].state).toBe(3);
   });
 
   it('should add friend, accept, then list', async () => {
@@ -101,8 +101,8 @@ describe('Friend Tests', () => {
     }, customid1, customid2);
 
     expect(result).not.toBeNull();
-    expect(result.friends.length).toBe(1);
-    expect(result.friends[0].state).toBe(0);
+    expect(result.friends!.length).toBe(1);
+    expect(result.friends![0].state).toBe(0);
   });
 
   it('should add friend, reject, then list', async () => {
@@ -123,7 +123,7 @@ describe('Friend Tests', () => {
     }, customid1, customid2);
 
     expect(result).not.toBeNull();
-    expect(result.friends.length).toBe(0);
+    expect(result.friends!.length).toBe(0);
   });
 
 });

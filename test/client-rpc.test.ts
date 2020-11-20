@@ -64,7 +64,7 @@ describe('RPC Tests', () => {
 
     const rpcResult = await page.evaluate(async (rpcid, HTTP_KEY) => {
       const client = new nakamajs.Client();
-      return await client.rpcGet(rpcid, null, HTTP_KEY);
+      return await client.rpcGet(rpcid, null!, HTTP_KEY);
     }, rpcid, HTTP_KEY);
 
     expect(rpcResult).not.toBeNull();
