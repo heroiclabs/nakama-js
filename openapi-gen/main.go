@@ -106,8 +106,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const fetchOptions = {...{ method: method /*, keepalive: true */ }, ...options};
       fetchOptions.headers = {...options.headers};
 
-      const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "useCredentials");
-      // in Cocos Creator, XMLHttpRequest.useCredentials is not writable, so make the fetch
+      const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+      // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
       // polyfill avoid writing to it.
       if (!descriptor?.set) {
         fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include

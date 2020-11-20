@@ -16,18 +16,19 @@
 
 // Rollup is the legacy build system for nakama-js and is only used for cocos2d-x-js support.
 
-import typescript from 'rollup-plugin-typescript2';
+import typescript from '@rollup/plugin-typescript';
 
 export default {
     input: './index.ts',
-    output: [
-        {
-            "file": "dist/nakama-js.umd.js",
-            "format": 'umd',
-            "name": 'nakamajs',
-        }],
+    output:  {
+        dir: "dist",
+        format: 'umd',
+        name: 'nakamajs',
+    },
     plugins: [
-        typescript()
+        typescript({
+            include: ["**/*.ts"],
+        })
     ],
     moduleContext: {
         [require.resolve('whatwg-fetch')]: 'window'

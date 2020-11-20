@@ -611,6 +611,13 @@ export class Client {
 
     fetchOptions.headers = {...headers};
 
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
+
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
         if (response.status >= 200 && response.status < 300) {
@@ -664,6 +671,13 @@ export class Client {
       id: request.id,
       vars: request.vars
     });
+
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
 
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -719,6 +733,13 @@ export class Client {
       vars: request.vars
     });
 
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
+
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
         if (response.status >= 200 && response.status < 300) {
@@ -773,6 +794,13 @@ export class Client {
       password: request.password,
       vars: request.vars
     });
+
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
 
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -835,6 +863,13 @@ export class Client {
       vars: request.vars
     });
 
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
+
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
         if (response.status >= 200 && response.status < 300) {
@@ -888,6 +923,13 @@ export class Client {
       token: request.token,
       vars: request.vars
     });
+
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
 
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -948,6 +990,13 @@ export class Client {
       vars: request.vars
     });
 
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
+
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
         if (response.status >= 200 && response.status < 300) {
@@ -1001,6 +1050,13 @@ export class Client {
     fetchOptions.body = JSON.stringify({
       token: request.token
     });
+
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
 
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -1063,6 +1119,13 @@ export class Client {
     }
 
     fetchOptions.headers = {...headers};
+
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
 
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -1144,6 +1207,13 @@ export class Client {
 
     fetchOptions.headers = {...headers};
 
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
+
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
         if (response.status >= 200 && response.status < 300) {
@@ -1204,6 +1274,13 @@ export class Client {
     }
 
     fetchOptions.headers = {...headers};
+
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
 
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -1338,6 +1415,13 @@ export class Client {
     }
 
     fetchOptions.headers = {...headers};
+
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
 
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
@@ -1951,6 +2035,13 @@ export class Client {
     }
 
     fetchOptions.headers = {...headers};
+
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+    // polyfill avoid writing to it.
+    if (!descriptor?.set) {
+      fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+    }
 
     return Promise.race([
       fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
