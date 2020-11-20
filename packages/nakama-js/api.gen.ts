@@ -59,6 +59,13 @@ export interface ApiAccount {
   // The user's wallet data.
   wallet?: string;
 }
+/** Send a Apple Sign In token to the server. Used with authenticate/link/unlink. */
+export interface ApiAccountApple {
+  // The ID token received from Apple to validate.
+  token?: string;
+  // Extra information that will be bundled in the session token.
+  vars?: Map<string, string>;
+}
 /** Send a custom ID to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountCustom {
   // A custom identifier.
@@ -209,6 +216,8 @@ export interface ApiEvent {
 export interface ApiFriend {
   // The friend status.
   state?: number;
+  // Time of the latest relationship update.
+  update_time?: string;
   // The user object.
   user?: ApiUser;
 }
@@ -504,6 +513,8 @@ export interface ApiUpdateGroupRequest {
 }
 /** A user in the server. */
 export interface ApiUser {
+  // The Apple Sign In ID in the user's account.
+  apple_id?: string;
   // A URL for an avatar image.
   avatar_url?: string;
   // The UNIX time when the user was created.
@@ -514,7 +525,7 @@ export interface ApiUser {
   edge_count?: number;
   // The Facebook id in the user's account.
   facebook_id?: string;
-  // The Facebook Instant Game id in the user's account.
+  // The Facebook Instant Game ID in the user's account.
   facebook_instant_game_id?: string;
   // The Apple Game Center in of the user's account.
   gamecenter_id?: string;
@@ -571,6 +582,22 @@ export interface ApiWriteStorageObjectsRequest {
   // The objects to store on the server.
   objects?: Array<ApiWriteStorageObject>;
 }
+/**  */
+export interface ProtobufAny {
+  // 
+  type_url?: string;
+  // 
+  value?: string;
+}
+/**  */
+export interface RpcStatus {
+  // 
+  code?: number;
+  // 
+  details?: Array<ProtobufAny>;
+  // 
+  message?: string;
+}
 
 export const NakamaApi = (configuration: ConfigurationParameters = {
   basePath: BASE_PATH,
@@ -598,6 +625,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const fetchOptions = {...{ method: method /*, keepalive: true */ }, ...options};
       fetchOptions.headers = {...options.headers};
+
+      const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "useCredentials");
+      // in Cocos Creator, XMLHttpRequest.useCredentials is not writable, so make the fetch
+      // polyfill avoid writing to it.
+      if (!descriptor?.set) {
+        fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+      }
+
       if (configuration.bearerToken) {
         fetchOptions.headers["Authorization"] = "Bearer " + configuration.bearerToken;
       } else if (configuration.username) {
@@ -667,6 +702,23 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       _body = JSON.stringify(body || {});
 
       return napi.doFetch(urlPath, "PUT", queryParams, _body, options)
+    },
+    /** Authenticate a user with an Apple ID against the server. */
+    authenticateApple(body: ApiAccountApple, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/apple";
+
+      const queryParams = {
+        create: create,
+        username: username,
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
     /** Authenticate a user with a custom id against the server. */
     authenticateCustom(body: ApiAccountCustom, create?: boolean, username?: string, options: any = {}): Promise<ApiSession> {
@@ -805,6 +857,21 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       return napi.doFetch(urlPath, "POST", queryParams, _body, options)
     },
+    /** Add an Apple ID to the social profiles on the current user's account. */
+    linkApple(body: ApiAccountApple, options: any = {}): Promise<any> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/apple";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
     /** Add a custom ID to the social profiles on the current user's account. */
     linkCustom(body: ApiAccountCustom, options: any = {}): Promise<any> {
       if (body === null || body === undefined) {
@@ -917,6 +984,21 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/link/steam";
+
+      const queryParams = {
+      } as any;
+
+      let _body = null;
+      _body = JSON.stringify(body || {});
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
+    /** Remove the Apple ID from the social profiles on the current user's account. */
+    unlinkApple(body: ApiAccountApple, options: any = {}): Promise<any> {
+      if (body === null || body === undefined) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/apple";
 
       const queryParams = {
       } as any;
@@ -1051,8 +1133,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (channelId === null || channelId === undefined) {
         throw new Error("'channelId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/channel/{channel_id}"
-         .replace("{channel_id}", encodeURIComponent(String(channelId)));
+      const urlPath = "/v2/channel/{channelId}"
+         .replace("{channelId}", encodeURIComponent(String(channelId)));
 
       const queryParams = {
         limit: limit,
@@ -1182,8 +1264,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/group/{group_id}"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
+      const urlPath = "/v2/group/{groupId}"
+         .replace("{groupId}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
       } as any;
@@ -1200,8 +1282,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/group/{group_id}"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
+      const urlPath = "/v2/group/{groupId}"
+         .replace("{groupId}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
       } as any;
@@ -1216,8 +1298,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/group/{group_id}/add"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
+      const urlPath = "/v2/group/{groupId}/add"
+         .replace("{groupId}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
         user_ids: userIds,
@@ -1232,8 +1314,27 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/group/{group_id}/ban"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
+      const urlPath = "/v2/group/{groupId}/ban"
+         .replace("{groupId}", encodeURIComponent(String(groupId)));
+
+      const queryParams = {
+        user_ids: userIds,
+      } as any;
+
+      let _body = null;
+
+      return napi.doFetch(urlPath, "POST", queryParams, _body, options)
+    },
+    /** Demote a set of users in a group to the next role down. */
+    demoteGroupUsers(groupId: string, userIds: Array<string>, options: any = {}): Promise<any> {
+      if (groupId === null || groupId === undefined) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      if (userIds === null || userIds === undefined) {
+        throw new Error("'userIds' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{groupId}/demote"
+         .replace("{groupId}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
         user_ids: userIds,
@@ -1248,8 +1349,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/group/{group_id}/join"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
+      const urlPath = "/v2/group/{groupId}/join"
+         .replace("{groupId}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
       } as any;
@@ -1263,8 +1364,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/group/{group_id}/kick"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
+      const urlPath = "/v2/group/{groupId}/kick"
+         .replace("{groupId}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
         user_ids: userIds,
@@ -1279,8 +1380,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/group/{group_id}/leave"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
+      const urlPath = "/v2/group/{groupId}/leave"
+         .replace("{groupId}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
       } as any;
@@ -1294,8 +1395,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/group/{group_id}/promote"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
+      const urlPath = "/v2/group/{groupId}/promote"
+         .replace("{groupId}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
         user_ids: userIds,
@@ -1310,8 +1411,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (groupId === null || groupId === undefined) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/group/{group_id}/user"
-         .replace("{group_id}", encodeURIComponent(String(groupId)));
+      const urlPath = "/v2/group/{groupId}/user"
+         .replace("{groupId}", encodeURIComponent(String(groupId)));
 
       const queryParams = {
         limit: limit,
@@ -1328,8 +1429,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (leaderboardId === null || leaderboardId === undefined) {
         throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/leaderboard/{leaderboard_id}"
-         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+      const urlPath = "/v2/leaderboard/{leaderboardId}"
+         .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
 
       const queryParams = {
       } as any;
@@ -1343,11 +1444,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (leaderboardId === null || leaderboardId === undefined) {
         throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/leaderboard/{leaderboard_id}"
-         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+      const urlPath = "/v2/leaderboard/{leaderboardId}"
+         .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
 
       const queryParams = {
-        owner_ids: ownerIds,
+        ownerIds: ownerIds,
         limit: limit,
         cursor: cursor,
         expiry: expiry,
@@ -1365,8 +1466,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/leaderboard/{leaderboard_id}"
-         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+      const urlPath = "/v2/leaderboard/{leaderboardId}"
+         .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
 
       const queryParams = {
       } as any;
@@ -1384,9 +1485,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (ownerId === null || ownerId === undefined) {
         throw new Error("'ownerId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/leaderboard/{leaderboard_id}/owner/{owner_id}"
-         .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)))
-         .replace("{owner_id}", encodeURIComponent(String(ownerId)));
+      const urlPath = "/v2/leaderboard/{leaderboardId}/owner/{ownerId}"
+         .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)))
+         .replace("{ownerId}", encodeURIComponent(String(ownerId)));
 
       const queryParams = {
         limit: limit,
@@ -1405,8 +1506,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
         limit: limit,
         authoritative: authoritative,
         label: label,
-        min_size: minSize,
-        max_size: maxSize,
+        minSize: minSize,
+        maxSize: maxSize,
         query: query,
       } as any;
 
@@ -1432,7 +1533,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
         limit: limit,
-        cacheable_cursor: cacheableCursor,
+        cacheableCursor: cacheableCursor,
       } as any;
 
       let _body = null;
@@ -1449,7 +1550,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
         payload: payload,
-        http_key: httpKey,
+        httpKey: httpKey,
       } as any;
 
       let _body = null;
@@ -1457,7 +1558,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       return napi.doFetch(urlPath, "GET", queryParams, _body, options)
     },
     /** Execute a Lua function on the server. */
-    rpcFunc(id: string, body: string, options: any = {}): Promise<ApiRpc> {
+    rpcFunc(id: string, body: string, httpKey?: string, options: any = {}): Promise<ApiRpc> {
       if (id === null || id === undefined) {
         throw new Error("'id' is a required parameter but is null or undefined.");
       }
@@ -1468,6 +1569,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{id}", encodeURIComponent(String(id)));
 
       const queryParams = {
+        httpKey: httpKey,
       } as any;
 
       let _body = null;
@@ -1529,7 +1631,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
          .replace("{collection}", encodeURIComponent(String(collection)));
 
       const queryParams = {
-        user_id: userId,
+        userId: userId,
         limit: limit,
         cursor: cursor,
       } as any;
@@ -1546,9 +1648,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (userId === null || userId === undefined) {
         throw new Error("'userId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/storage/{collection}/{user_id}"
+      const urlPath = "/v2/storage/{collection}/{userId}"
          .replace("{collection}", encodeURIComponent(String(collection)))
-         .replace("{user_id}", encodeURIComponent(String(userId)));
+         .replace("{userId}", encodeURIComponent(String(userId)));
 
       const queryParams = {
         limit: limit,
@@ -1564,10 +1666,10 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const urlPath = "/v2/tournament";
 
       const queryParams = {
-        category_start: categoryStart,
-        category_end: categoryEnd,
-        start_time: startTime,
-        end_time: endTime,
+        categoryStart: categoryStart,
+        categoryEnd: categoryEnd,
+        startTime: startTime,
+        endTime: endTime,
         limit: limit,
         cursor: cursor,
       } as any;
@@ -1581,11 +1683,11 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (tournamentId === null || tournamentId === undefined) {
         throw new Error("'tournamentId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/tournament/{tournament_id}"
-         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+      const urlPath = "/v2/tournament/{tournamentId}"
+         .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
 
       const queryParams = {
-        owner_ids: ownerIds,
+        ownerIds: ownerIds,
         limit: limit,
         cursor: cursor,
         expiry: expiry,
@@ -1603,8 +1705,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (body === null || body === undefined) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/tournament/{tournament_id}"
-         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+      const urlPath = "/v2/tournament/{tournamentId}"
+         .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
 
       const queryParams = {
       } as any;
@@ -1619,8 +1721,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (tournamentId === null || tournamentId === undefined) {
         throw new Error("'tournamentId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/tournament/{tournament_id}/join"
-         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+      const urlPath = "/v2/tournament/{tournamentId}/join"
+         .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
 
       const queryParams = {
       } as any;
@@ -1637,9 +1739,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (ownerId === null || ownerId === undefined) {
         throw new Error("'ownerId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/tournament/{tournament_id}/owner/{owner_id}"
-         .replace("{tournament_id}", encodeURIComponent(String(tournamentId)))
-         .replace("{owner_id}", encodeURIComponent(String(ownerId)));
+      const urlPath = "/v2/tournament/{tournamentId}/owner/{ownerId}"
+         .replace("{tournamentId}", encodeURIComponent(String(tournamentId)))
+         .replace("{ownerId}", encodeURIComponent(String(ownerId)));
 
       const queryParams = {
         limit: limit,
@@ -1657,7 +1759,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       const queryParams = {
         ids: ids,
         usernames: usernames,
-        facebook_ids: facebookIds,
+        facebookIds: facebookIds,
       } as any;
 
       let _body = null;
@@ -1669,8 +1771,8 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
       if (userId === null || userId === undefined) {
         throw new Error("'userId' is a required parameter but is null or undefined.");
       }
-      const urlPath = "/v2/user/{user_id}/group"
-         .replace("{user_id}", encodeURIComponent(String(userId)));
+      const urlPath = "/v2/user/{userId}/group"
+         .replace("{userId}", encodeURIComponent(String(userId)));
 
       const queryParams = {
         limit: limit,

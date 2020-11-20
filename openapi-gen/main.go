@@ -41,7 +41,8 @@ export interface ConfigurationParameters {
 {{- range $classname, $definition := .Definitions}}
 /** {{$definition.Description}} */
 export interface {{$classname | title}} {
-  {{- range $fieldname, $property := $definition.Properties}}
+  {{- range $key, $property := $definition.Properties}}
+  {{- $fieldname := snakeCase $key }}
   // {{$property.Description}}
   {{- if eq $property.Type "integer"}}
   {{$fieldname}}?: number;
@@ -104,6 +105,14 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const fetchOptions = {...{ method: method /*, keepalive: true */ }, ...options};
       fetchOptions.headers = {...options.headers};
+
+      const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "useCredentials");
+      // in Cocos Creator, XMLHttpRequest.useCredentials is not writable, so make the fetch
+      // polyfill avoid writing to it.
+      if (!descriptor?.set) {
+        fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+      }
+
       if (configuration.bearerToken) {
         fetchOptions.headers["Authorization"] = "Bearer " + configuration.bearerToken;
       } else if (configuration.username) {
@@ -140,7 +149,7 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
   {{- range $url, $path := .Paths}}
     {{- range $method, $operation := $path}}
     /** {{$operation.Summary}} */
-    {{$operation.OperationId | camelCase}}(
+    {{$operation.OperationId | stripOperationPrefix | camelCase }}(
     {{- range $parameter := $operation.Parameters}}
     {{- $camelcase := $parameter.Name | camelCase}}
     {{- if eq $parameter.In "path"}}
@@ -180,9 +189,9 @@ export const NakamaApi = (configuration: ConfigurationParameters = {
 
       const queryParams = {
       {{- range $parameter := $operation.Parameters}}
-      {{- $camelcase := $parameter.Name | camelCase}}
+      {{- $snakeCase := $parameter.Name | snakeCase}}
       {{- if eq $parameter.In "query"}}
-        {{$parameter.Name}}: {{$camelcase}},
+        {{$parameter.Name}}: {{$parameter.Name | camelCase}},
       {{- end}}
       {{- end}}
       } as any;
@@ -227,9 +236,47 @@ func snakeCaseToCamelCase(input string) (camelCase string) {
 	return
 }
 
+func stripOperationPrefix(input string) string {
+	return strings.Replace(input, "Nakama_", "", 1)
+}
+
 func convertRefToClassName(input string) (className string) {
 	cleanRef := strings.TrimPrefix(input, "#/definitions/")
 	className = strings.Title(cleanRef)
+	return
+}
+
+func isSnakeCase(input string) (output bool) {
+
+	output = true
+
+	for _, v := range input {
+		vString := string(v)
+		if vString != "_" && strings.ToUpper(vString) == vString {
+			output = false
+		}
+	}
+
+	return
+}
+
+func camelCaseToSnakeCase(input string) (output string) {
+	output = ""
+
+	if isSnakeCase(input) {
+		output = input
+		return
+	}
+
+	for _, v := range input {
+		vString := string(v)
+		if vString == strings.ToUpper(vString) {
+			output += "_" + strings.ToLower(vString)
+		} else {
+			output += vString
+		}
+	}
+
 	return
 }
 
@@ -246,10 +293,12 @@ func main() {
 	}
 
 	fmap := template.FuncMap{
-		"camelCase": snakeCaseToCamelCase,
-		"cleanRef":  convertRefToClassName,
-		"title":     strings.Title,
-		"uppercase": strings.ToUpper,
+		"camelCase":            snakeCaseToCamelCase,
+		"cleanRef":             convertRefToClassName,
+		"title":                strings.Title,
+		"snakeCase":            camelCaseToSnakeCase,
+		"uppercase":            strings.ToUpper,
+		"stripOperationPrefix": stripOperationPrefix,
 	}
 
 	input := inputs[0]
