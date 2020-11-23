@@ -51,6 +51,7 @@ import {
   ConfigurationParameters,
   NakamaApi,
   ApiSession,
+  ApiAccountApple,
 } from "./api.gen";
 
 import { Session } from "./session";
@@ -896,6 +897,14 @@ export class Client {
     });
   }
 
+  /** Add an Apple ID to the social profiles on the current user's account. */
+  linkApple(session: Session, request: ApiAccountApple): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.linkApple(request).then((response: any) => {
+      return response !== undefined;
+    });
+  }
+
   /** Add a custom ID to the social profiles on the current user's account. */
   linkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
@@ -1369,6 +1378,15 @@ export class Client {
         throw err;
       });
   }
+
+  /** Remove the Apple ID from the social profiles on the current user's account. */
+  unlinkApple(session: Session, request: ApiAccountApple): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.unlinkApple(request).then((response: any) => {
+      return response !== undefined;
+    });
+  }
+
 
   /** Remove custom ID from the social profiles on the current user's account. */
   unlinkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
