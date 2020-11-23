@@ -61,8 +61,8 @@ describe('Client Tests', () => {
 
     const err = await page.evaluate(() => {
       const client = new nakamajs.Client("defaultkey", "127.0.0.1", "7350", false, 0);
-      return client.authenticateCustom({ "id": "timeoutuseridentifier" })
-          .catch(err => err);
+      return client.authenticateCustom("timeoutuseridentifier")
+      .catch(err => err);
     });
 
     expect(err).not.toBeNull();

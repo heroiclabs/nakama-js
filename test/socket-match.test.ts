@@ -32,7 +32,7 @@ describe('Match Tests', () => {
       const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await socket.connect(session, false);
       return await socket.createMatch();
     }, customid, adapter);
@@ -55,7 +55,7 @@ describe('Match Tests', () => {
       const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await socket.connect(session, false);
       const match = await socket.createMatch();
       return await socket.joinMatch(match.match_id);
@@ -81,7 +81,7 @@ describe('Match Tests', () => {
       const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await socket.connect(session, false);
       const match = await socket.createMatch();
       await socket.joinMatch(match.match_id);
@@ -114,11 +114,11 @@ describe('Match Tests', () => {
         }
       });
 
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const session1 = await client1.authenticateCustom(customid1);
       await socket1.connect(session1, false);
       const match = await socket1.createMatch();
 
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
       await socket2.connect(session2, false);
       await socket2.joinMatch(match.match_id);
       await socket1.sendMatchState(match.match_id, 20,  payload);
@@ -151,11 +151,11 @@ describe('Match Tests', () => {
       const socket2 = client2.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
       const socket3 = client3.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const session1 = await client1.authenticateCustom(customid1);
       await socket1.connect(session1, false);
       let match = await socket1.createMatch();
 
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
       await socket2.connect(session2, false);
       match = await socket2.joinMatch(match.match_id);
 
@@ -167,7 +167,7 @@ describe('Match Tests', () => {
 
       const presenceEvt = await socket2PresencePromise;
 
-      const session3 = await client3.authenticateCustom({ id: customid3 });
+      const session3 = await client3.authenticateCustom(customid3);
       await socket3.connect(session3, false);
       match = await socket3.joinMatch(match.match_id);
       const timeout = new Promise<null>((resolve, reject) => {
@@ -207,15 +207,15 @@ describe('Match Tests', () => {
       const socket2 = client2.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
       const socket3 = client3.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session1 = await client1.authenticateCustom({ id: customid1 });
+      const session1 = await client1.authenticateCustom(customid1);
       await socket1.connect(session1, false);
       let match = await socket1.createMatch();
 
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session2 = await client2.authenticateCustom(customid2);
       await socket2.connect(session2, false);
       match = await socket2.joinMatch(match.match_id);
 
-      const session3 = await client3.authenticateCustom({ id: customid3 });
+      const session3 = await client3.authenticateCustom(customid3);
       await socket3.connect(session3, false);
 
 
@@ -261,7 +261,7 @@ describe('Match Tests', () => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false, adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await socket.connect(session, false);
 
       var res = await socket.rpc(id, "{}");
@@ -282,7 +282,7 @@ describe('Match Tests', () => {
       const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await socket.connect(session, false);
       await socket.rpc(id, "{}");
       return await client.listMatches(session, 1, true)
@@ -306,7 +306,7 @@ describe('Match Tests', () => {
       const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await socket.connect(session, false);
 
       var label = { skill: 60 };
@@ -338,7 +338,7 @@ describe('Match Tests', () => {
       const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await socket.connect(session, false);
 
       var label = { convo_ids: [convoId1, convoId2, convoId3] };

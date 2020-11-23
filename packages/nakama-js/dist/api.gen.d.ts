@@ -32,6 +32,10 @@ export interface ApiAccount {
     verify_time?: string;
     wallet?: string;
 }
+export interface ApiAccountApple {
+    token?: string;
+    vars?: Map<string, string>;
+}
 export interface ApiAccountCustom {
     id?: string;
     vars?: Map<string, string>;
@@ -114,6 +118,7 @@ export interface ApiEvent {
 }
 export interface ApiFriend {
     state?: number;
+    update_time?: string;
     user?: ApiUser;
 }
 export interface ApiFriendList {
@@ -274,6 +279,7 @@ export interface ApiUpdateGroupRequest {
     open?: boolean;
 }
 export interface ApiUser {
+    apple_id?: string;
     avatar_url?: string;
     create_time?: string;
     display_name?: string;
@@ -310,11 +316,23 @@ export interface ApiWriteStorageObject {
 export interface ApiWriteStorageObjectsRequest {
     objects?: Array<ApiWriteStorageObject>;
 }
-export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
+export interface ProtobufAny {
+    type_url?: string;
+    value?: string;
+}
+export interface RpcStatus {
+    code?: number;
+    details?: Array<ProtobufAny>;
+    message?: string;
+}
+export declare class NakamaApi {
+    configuration: ConfigurationParameters;
+    constructor(configuration: ConfigurationParameters);
     doFetch(urlPath: string, method: string, queryParams: any, body?: any, options?: any): Promise<any>;
     healthcheck(options?: any): Promise<any>;
     getAccount(options?: any): Promise<ApiAccount>;
     updateAccount(body: ApiUpdateAccountRequest, options?: any): Promise<any>;
+    authenticateApple(body: ApiAccountApple, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     authenticateCustom(body: ApiAccountCustom, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     authenticateDevice(body: ApiAccountDevice, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     authenticateEmail(body: ApiAccountEmail, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
@@ -323,6 +341,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     authenticateGameCenter(body: ApiAccountGameCenter, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     authenticateGoogle(body: ApiAccountGoogle, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     authenticateSteam(body: ApiAccountSteam, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
+    linkApple(body: ApiAccountApple, options?: any): Promise<any>;
     linkCustom(body: ApiAccountCustom, options?: any): Promise<any>;
     linkDevice(body: ApiAccountDevice, options?: any): Promise<any>;
     linkEmail(body: ApiAccountEmail, options?: any): Promise<any>;
@@ -331,6 +350,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     linkGameCenter(body: ApiAccountGameCenter, options?: any): Promise<any>;
     linkGoogle(body: ApiAccountGoogle, options?: any): Promise<any>;
     linkSteam(body: ApiAccountSteam, options?: any): Promise<any>;
+    unlinkApple(body: ApiAccountApple, options?: any): Promise<any>;
     unlinkCustom(body: ApiAccountCustom, options?: any): Promise<any>;
     unlinkDevice(body: ApiAccountDevice, options?: any): Promise<any>;
     unlinkEmail(body: ApiAccountEmail, options?: any): Promise<any>;
@@ -352,6 +372,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     updateGroup(groupId: string, body: ApiUpdateGroupRequest, options?: any): Promise<any>;
     addGroupUsers(groupId: string, userIds?: Array<string>, options?: any): Promise<any>;
     banGroupUsers(groupId: string, userIds?: Array<string>, options?: any): Promise<any>;
+    demoteGroupUsers(groupId: string, userIds: Array<string>, options?: any): Promise<any>;
     joinGroup(groupId: string, options?: any): Promise<any>;
     kickGroupUsers(groupId: string, userIds?: Array<string>, options?: any): Promise<any>;
     leaveGroup(groupId: string, options?: any): Promise<any>;
@@ -365,7 +386,7 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     deleteNotifications(ids?: Array<string>, options?: any): Promise<any>;
     listNotifications(limit?: number, cacheableCursor?: string, options?: any): Promise<ApiNotificationList>;
     rpcFunc2(id: string, payload?: string, httpKey?: string, options?: any): Promise<ApiRpc>;
-    rpcFunc(id: string, body: string, options?: any): Promise<ApiRpc>;
+    rpcFunc(id: string, body: string, httpKey?: string, options?: any): Promise<ApiRpc>;
     readStorageObjects(body: ApiReadStorageObjectsRequest, options?: any): Promise<ApiStorageObjects>;
     writeStorageObjects(body: ApiWriteStorageObjectsRequest, options?: any): Promise<ApiStorageObjectAcks>;
     deleteStorageObjects(body: ApiDeleteStorageObjectsRequest, options?: any): Promise<any>;
@@ -378,4 +399,4 @@ export declare const NakamaApi: (configuration?: ConfigurationParameters) => {
     listTournamentRecordsAroundOwner(tournamentId: string, ownerId: string, limit?: number, expiry?: string, options?: any): Promise<ApiTournamentRecordList>;
     getUsers(ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>, options?: any): Promise<ApiUsers>;
     listUserGroups(userId: string, limit?: number, state?: number, cursor?: string, options?: any): Promise<ApiUserGroupList>;
-};
+}

@@ -21,7 +21,7 @@ import * as nakamajs from "../packages/nakama-js/index";
 import {createPage, generateid} from "./utils";
 
 describe('Authenticate Tests', () => {
-  
+
   it('should authenticate with email', async () => {
     const page : Page = await createPage();
 
@@ -30,7 +30,7 @@ describe('Authenticate Tests', () => {
 
     const session = await page.evaluate(async (email, password) => {
       const client = new nakamajs.Client();
-      const promise = client.authenticateEmail({ email: email, password: password });
+      const promise = client.authenticateEmail(email, password);
       return promise;
     }, email, password);
 
@@ -45,7 +45,7 @@ describe('Authenticate Tests', () => {
 
     const session = await page.evaluate((deviceid) => {
       const client = new nakamajs.Client();
-      return client.authenticateDevice({ id: deviceid });
+      return client.authenticateDevice(deviceid);
     }, deviceid);
 
     expect(session).not.toBeNull();
@@ -59,7 +59,7 @@ describe('Authenticate Tests', () => {
 
     const session = await page.evaluate((customid) => {
       const client = new nakamajs.Client();
-      return client.authenticateCustom({ id: customid });
+      return client.authenticateCustom(customid);
     }, customid);
 
     expect(session).not.toBeNull();
@@ -74,7 +74,7 @@ describe('Authenticate Tests', () => {
       const client = new nakamajs.Client();
       try {
         // Expects exception.
-        return await client.authenticateCustom({ id: customid, create: false });
+        return await client.authenticateCustom(customid, false);
       } catch (err) {
         return err;
       }
@@ -90,8 +90,8 @@ describe('Authenticate Tests', () => {
 
     const session = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      await client.authenticateCustom({ id: customid });
-      return await client.authenticateCustom({ id: customid });
+      await client.authenticateCustom(customid);
+      return await client.authenticateCustom(customid);
     }, customid);
 
     expect(session).not.toBeNull();
@@ -105,7 +105,7 @@ describe('Authenticate Tests', () => {
       const client = new nakamajs.Client();
       try {
         // Expects exception.
-        return await client.authenticateCustom({ id: "" });
+        return await client.authenticateCustom("");
       } catch (err) {
         return err;
       }
@@ -114,13 +114,13 @@ describe('Authenticate Tests', () => {
     expect(result).not.toBeNull();
   });
 
-  // optional test: ensure server has been configured with the 
+  // optional test: ensure server has been configured with the
   // facebook instant secret used in the test and then remove `.skip()` to run.
   it.skip('should authenticate with facebook instant games', async () => {
     const testSecret = "fb-instant-test-secret";
 
-    const mockFbInstantPayload = JSON.stringify({ 
-      algorithm: "HMAC-SHA256", 
+    const mockFbInstantPayload = JSON.stringify({
+      algorithm: "HMAC-SHA256",
       issued_at: 1594867628,
       player_id: "a-fb-id",
       request_payload: ""
@@ -135,8 +135,7 @@ describe('Authenticate Tests', () => {
 
     const session = await page.evaluate((token, ) => {
       const client = new nakamajs.Client();
-      const authObj = { signed_player_info: token };
-      return client.authenticateFacebookInstantGame(authObj);
+      return client.authenticateFacebookInstantGame(token);
     }, token);
 
     expect(session).not.toBeNull();

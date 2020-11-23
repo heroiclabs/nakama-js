@@ -6,5 +6,8 @@
     "dependencies": {
         "Base64": "1.0.1",
         "whatwg-fetch": "^2.0.3"
+    },
+    "devDependencies": {
+        "tslib": "^2.0.3"
     }
 }

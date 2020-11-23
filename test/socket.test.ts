@@ -28,11 +28,11 @@ describe('Socket Message Tests', () => {
 
     const session = await page.evaluate(async (customid, adapter) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
-      
-      const socket = client.createSocket(false, false, 
+      const session = await client.authenticateCustom(customid);
+
+      const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
-        
+
       await socket.connect(session, false);
       socket.disconnect(false);
     }, customid, adapter);
@@ -40,14 +40,14 @@ describe('Socket Message Tests', () => {
 
   it.each(adapters)('should rpc and receive stream data', async (adapter) => {
     const page = await createPage();
-    
+
     const customid = generateid();
     const ID = "clientrpc.send_stream_data";
     const PAYLOAD = JSON.stringify({ "hello": "world" });
 
     const response = await page.evaluate(async (customid, id, payload, adapter) => {
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false, 
+      const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       var promise1 = new Promise<StreamData>((resolve, reject) => {
@@ -56,7 +56,7 @@ describe('Socket Message Tests', () => {
         }
       });
 
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       await socket.connect(session, false);
       await socket.rpc(id, payload);
       var promise2 = new Promise<null>((resolve, reject) => {

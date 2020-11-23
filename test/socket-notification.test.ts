@@ -20,7 +20,7 @@ import * as nakamajs from "../packages/nakama-js";
 import {createPage, generateid} from "./utils";
 
 describe('Notification Tests', () => {
-  
+
   it('should rpc and list notifications', async () => {
     const page : Page = await createPage();
 
@@ -28,7 +28,7 @@ describe('Notification Tests', () => {
 
     const notifications = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id});
       await client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id});
       var notificationList = await client.listNotifications(session, 1, "");
@@ -51,7 +51,7 @@ describe('Notification Tests', () => {
 
     const response = await page.evaluate(async (customid) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       const rpcSuccess = await client.rpc(session, "clientrpc.send_notification", {"user_id": session.user_id});
       const notificationsList = await client.listNotifications(session, 100, "");
 

@@ -21,7 +21,7 @@ import * as nakamajs from "../packages/nakama-js";
 import {createPage, generateid} from "./utils";
 
 describe('Link / Unlink Tests', () => {
-  
+
   it('should link device ID', async () => {
     const page : Page = await createPage();
 
@@ -30,14 +30,14 @@ describe('Link / Unlink Tests', () => {
 
     const account = await page.evaluate(async (customid, deviceid) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       await client.linkDevice(session, { id: deviceid });
       return await client.getAccount(session);
     }, customid, deviceid);
 
     expect(account).not.toBeNull();
     expect(account.custom_id).not.toBeNull();
-    expect(account.devices[0]).not.toBeNull();
+    expect(account.devices![0]).not.toBeNull();
   });
 
   it('should unlink device ID', async () => {
@@ -48,7 +48,7 @@ describe('Link / Unlink Tests', () => {
 
     const account = await page.evaluate(async (customid, deviceid) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await client.linkDevice(session, { id: deviceid });
       await client.unlinkDevice(session, {id: deviceid });
       return await client.getAccount(session);
@@ -66,8 +66,8 @@ describe('Link / Unlink Tests', () => {
 
     const testSecret = "fb-instant-test-secret";
 
-    const mockFbInstantPayload = JSON.stringify({ 
-      algorithm: "HMAC-SHA256", 
+    const mockFbInstantPayload = JSON.stringify({
+      algorithm: "HMAC-SHA256",
       issued_at: 1594867628,
       player_id: fbid,
       request_payload: ""
@@ -84,7 +84,7 @@ describe('Link / Unlink Tests', () => {
 
     const account = await page.evaluate(async (customid, token) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await client.linkFacebookInstantGame(session, { signed_player_info: token });
       return await client.getAccount(session);
     }, customid, token);
@@ -92,19 +92,19 @@ describe('Link / Unlink Tests', () => {
     ("account user is...");
     (account.user);
     expect(account).not.toBeNull();
-    expect(account.user.facebook_instant_game_id).not.toBeUndefined();
-    
+    expect(account.user!.facebook_instant_game_id).not.toBeUndefined();
+
   });
 
   //optional test
   it.skip('should unlink to facebook instant games', async () => {
-    
+
     const fbid = generateid();
 
     const testSecret = "fb-instant-test-secret";
 
-    const mockFbInstantPayload = JSON.stringify({ 
-      algorithm: "HMAC-SHA256", 
+    const mockFbInstantPayload = JSON.stringify({
+      algorithm: "HMAC-SHA256",
       issued_at: 1594867628,
       player_id: fbid,
       request_payload: ""
@@ -121,7 +121,7 @@ describe('Link / Unlink Tests', () => {
 
     const account = await page.evaluate(async (customid, token) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await client.linkFacebookInstantGame(session, { signed_player_info: token });
       await client.unlinkFacebookInstantGame(session, { signed_player_info: token });
 
@@ -129,7 +129,7 @@ describe('Link / Unlink Tests', () => {
     }, customid, token);
 
     expect(account).not.toBeNull();
-    expect(account.user.facebook_instant_game_id).toBeUndefined();
+    expect(account.user!.facebook_instant_game_id).toBeUndefined();
   })
 
 });

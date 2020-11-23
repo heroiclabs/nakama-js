@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.nakamajs = {})));
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.nakamajs = {}));
 }(this, (function (exports) { 'use strict';
 
   (function () {
@@ -562,6 +562,10 @@
                   .join("");
               const fetchOptions = Object.assign({ method: method }, options);
               fetchOptions.headers = Object.assign({}, options.headers);
+              const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+              if (!(descriptor === null || descriptor === void 0 ? void 0 : descriptor.set)) {
+                  fetchOptions.credentials = 'cocos-ignore';
+              }
               if (configuration.bearerToken) {
                   fetchOptions.headers["Authorization"] = "Bearer " + configuration.bearerToken;
               }
@@ -616,6 +620,19 @@
               let _body = null;
               _body = JSON.stringify(body || {});
               return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
+          },
+          authenticateApple(body, create, username, options = {}) {
+              if (body === null || body === undefined) {
+                  throw new Error("'body' is a required parameter but is null or undefined.");
+              }
+              const urlPath = "/v2/account/authenticate/apple";
+              const queryParams = {
+                  create: create,
+                  username: username,
+              };
+              let _body = null;
+              _body = JSON.stringify(body || {});
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
           authenticateCustom(body, create, username, options = {}) {
               if (body === null || body === undefined) {
@@ -722,6 +739,16 @@
               _body = JSON.stringify(body || {});
               return napi.doFetch(urlPath, "POST", queryParams, _body, options);
           },
+          linkApple(body, options = {}) {
+              if (body === null || body === undefined) {
+                  throw new Error("'body' is a required parameter but is null or undefined.");
+              }
+              const urlPath = "/v2/account/link/apple";
+              const queryParams = {};
+              let _body = null;
+              _body = JSON.stringify(body || {});
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+          },
           linkCustom(body, options = {}) {
               if (body === null || body === undefined) {
                   throw new Error("'body' is a required parameter but is null or undefined.");
@@ -799,6 +826,16 @@
                   throw new Error("'body' is a required parameter but is null or undefined.");
               }
               const urlPath = "/v2/account/link/steam";
+              const queryParams = {};
+              let _body = null;
+              _body = JSON.stringify(body || {});
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+          },
+          unlinkApple(body, options = {}) {
+              if (body === null || body === undefined) {
+                  throw new Error("'body' is a required parameter but is null or undefined.");
+              }
+              const urlPath = "/v2/account/unlink/apple";
               const queryParams = {};
               let _body = null;
               _body = JSON.stringify(body || {});
@@ -888,8 +925,8 @@
               if (channelId === null || channelId === undefined) {
                   throw new Error("'channelId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/channel/{channel_id}"
-                  .replace("{channel_id}", encodeURIComponent(String(channelId)));
+              const urlPath = "/v2/channel/{channelId}"
+                  .replace("{channelId}", encodeURIComponent(String(channelId)));
               const queryParams = {
                   limit: limit,
                   forward: forward,
@@ -981,8 +1018,8 @@
               if (groupId === null || groupId === undefined) {
                   throw new Error("'groupId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/group/{group_id}"
-                  .replace("{group_id}", encodeURIComponent(String(groupId)));
+              const urlPath = "/v2/group/{groupId}"
+                  .replace("{groupId}", encodeURIComponent(String(groupId)));
               const queryParams = {};
               let _body = null;
               return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
@@ -994,8 +1031,8 @@
               if (body === null || body === undefined) {
                   throw new Error("'body' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/group/{group_id}"
-                  .replace("{group_id}", encodeURIComponent(String(groupId)));
+              const urlPath = "/v2/group/{groupId}"
+                  .replace("{groupId}", encodeURIComponent(String(groupId)));
               const queryParams = {};
               let _body = null;
               _body = JSON.stringify(body || {});
@@ -1005,8 +1042,8 @@
               if (groupId === null || groupId === undefined) {
                   throw new Error("'groupId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/group/{group_id}/add"
-                  .replace("{group_id}", encodeURIComponent(String(groupId)));
+              const urlPath = "/v2/group/{groupId}/add"
+                  .replace("{groupId}", encodeURIComponent(String(groupId)));
               const queryParams = {
                   user_ids: userIds,
               };
@@ -1017,8 +1054,23 @@
               if (groupId === null || groupId === undefined) {
                   throw new Error("'groupId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/group/{group_id}/ban"
-                  .replace("{group_id}", encodeURIComponent(String(groupId)));
+              const urlPath = "/v2/group/{groupId}/ban"
+                  .replace("{groupId}", encodeURIComponent(String(groupId)));
+              const queryParams = {
+                  user_ids: userIds,
+              };
+              let _body = null;
+              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
+          },
+          demoteGroupUsers(groupId, userIds, options = {}) {
+              if (groupId === null || groupId === undefined) {
+                  throw new Error("'groupId' is a required parameter but is null or undefined.");
+              }
+              if (userIds === null || userIds === undefined) {
+                  throw new Error("'userIds' is a required parameter but is null or undefined.");
+              }
+              const urlPath = "/v2/group/{groupId}/demote"
+                  .replace("{groupId}", encodeURIComponent(String(groupId)));
               const queryParams = {
                   user_ids: userIds,
               };
@@ -1029,8 +1081,8 @@
               if (groupId === null || groupId === undefined) {
                   throw new Error("'groupId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/group/{group_id}/join"
-                  .replace("{group_id}", encodeURIComponent(String(groupId)));
+              const urlPath = "/v2/group/{groupId}/join"
+                  .replace("{groupId}", encodeURIComponent(String(groupId)));
               const queryParams = {};
               let _body = null;
               return napi.doFetch(urlPath, "POST", queryParams, _body, options);
@@ -1039,8 +1091,8 @@
               if (groupId === null || groupId === undefined) {
                   throw new Error("'groupId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/group/{group_id}/kick"
-                  .replace("{group_id}", encodeURIComponent(String(groupId)));
+              const urlPath = "/v2/group/{groupId}/kick"
+                  .replace("{groupId}", encodeURIComponent(String(groupId)));
               const queryParams = {
                   user_ids: userIds,
               };
@@ -1051,8 +1103,8 @@
               if (groupId === null || groupId === undefined) {
                   throw new Error("'groupId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/group/{group_id}/leave"
-                  .replace("{group_id}", encodeURIComponent(String(groupId)));
+              const urlPath = "/v2/group/{groupId}/leave"
+                  .replace("{groupId}", encodeURIComponent(String(groupId)));
               const queryParams = {};
               let _body = null;
               return napi.doFetch(urlPath, "POST", queryParams, _body, options);
@@ -1061,8 +1113,8 @@
               if (groupId === null || groupId === undefined) {
                   throw new Error("'groupId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/group/{group_id}/promote"
-                  .replace("{group_id}", encodeURIComponent(String(groupId)));
+              const urlPath = "/v2/group/{groupId}/promote"
+                  .replace("{groupId}", encodeURIComponent(String(groupId)));
               const queryParams = {
                   user_ids: userIds,
               };
@@ -1073,8 +1125,8 @@
               if (groupId === null || groupId === undefined) {
                   throw new Error("'groupId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/group/{group_id}/user"
-                  .replace("{group_id}", encodeURIComponent(String(groupId)));
+              const urlPath = "/v2/group/{groupId}/user"
+                  .replace("{groupId}", encodeURIComponent(String(groupId)));
               const queryParams = {
                   limit: limit,
                   state: state,
@@ -1087,8 +1139,8 @@
               if (leaderboardId === null || leaderboardId === undefined) {
                   throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/leaderboard/{leaderboard_id}"
-                  .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+              const urlPath = "/v2/leaderboard/{leaderboardId}"
+                  .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
               const queryParams = {};
               let _body = null;
               return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
@@ -1097,10 +1149,10 @@
               if (leaderboardId === null || leaderboardId === undefined) {
                   throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/leaderboard/{leaderboard_id}"
-                  .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+              const urlPath = "/v2/leaderboard/{leaderboardId}"
+                  .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
               const queryParams = {
-                  owner_ids: ownerIds,
+                  ownerIds: ownerIds,
                   limit: limit,
                   cursor: cursor,
                   expiry: expiry,
@@ -1115,8 +1167,8 @@
               if (body === null || body === undefined) {
                   throw new Error("'body' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/leaderboard/{leaderboard_id}"
-                  .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)));
+              const urlPath = "/v2/leaderboard/{leaderboardId}"
+                  .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
               const queryParams = {};
               let _body = null;
               _body = JSON.stringify(body || {});
@@ -1129,9 +1181,9 @@
               if (ownerId === null || ownerId === undefined) {
                   throw new Error("'ownerId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/leaderboard/{leaderboard_id}/owner/{owner_id}"
-                  .replace("{leaderboard_id}", encodeURIComponent(String(leaderboardId)))
-                  .replace("{owner_id}", encodeURIComponent(String(ownerId)));
+              const urlPath = "/v2/leaderboard/{leaderboardId}/owner/{ownerId}"
+                  .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)))
+                  .replace("{ownerId}", encodeURIComponent(String(ownerId)));
               const queryParams = {
                   limit: limit,
                   expiry: expiry,
@@ -1145,8 +1197,8 @@
                   limit: limit,
                   authoritative: authoritative,
                   label: label,
-                  min_size: minSize,
-                  max_size: maxSize,
+                  minSize: minSize,
+                  maxSize: maxSize,
                   query: query,
               };
               let _body = null;
@@ -1164,7 +1216,7 @@
               const urlPath = "/v2/notification";
               const queryParams = {
                   limit: limit,
-                  cacheable_cursor: cacheableCursor,
+                  cacheableCursor: cacheableCursor,
               };
               let _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
@@ -1177,12 +1229,12 @@
                   .replace("{id}", encodeURIComponent(String(id)));
               const queryParams = {
                   payload: payload,
-                  http_key: httpKey,
+                  httpKey: httpKey,
               };
               let _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
           },
-          rpcFunc(id, body, options = {}) {
+          rpcFunc(id, body, httpKey, options = {}) {
               if (id === null || id === undefined) {
                   throw new Error("'id' is a required parameter but is null or undefined.");
               }
@@ -1191,7 +1243,9 @@
               }
               const urlPath = "/v2/rpc/{id}"
                   .replace("{id}", encodeURIComponent(String(id)));
-              const queryParams = {};
+              const queryParams = {
+                  httpKey: httpKey,
+              };
               let _body = null;
               _body = JSON.stringify(body || {});
               return napi.doFetch(urlPath, "POST", queryParams, _body, options);
@@ -1233,7 +1287,7 @@
               const urlPath = "/v2/storage/{collection}"
                   .replace("{collection}", encodeURIComponent(String(collection)));
               const queryParams = {
-                  user_id: userId,
+                  userId: userId,
                   limit: limit,
                   cursor: cursor,
               };
@@ -1247,9 +1301,9 @@
               if (userId === null || userId === undefined) {
                   throw new Error("'userId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/storage/{collection}/{user_id}"
+              const urlPath = "/v2/storage/{collection}/{userId}"
                   .replace("{collection}", encodeURIComponent(String(collection)))
-                  .replace("{user_id}", encodeURIComponent(String(userId)));
+                  .replace("{userId}", encodeURIComponent(String(userId)));
               const queryParams = {
                   limit: limit,
                   cursor: cursor,
@@ -1260,10 +1314,10 @@
           listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor, options = {}) {
               const urlPath = "/v2/tournament";
               const queryParams = {
-                  category_start: categoryStart,
-                  category_end: categoryEnd,
-                  start_time: startTime,
-                  end_time: endTime,
+                  categoryStart: categoryStart,
+                  categoryEnd: categoryEnd,
+                  startTime: startTime,
+                  endTime: endTime,
                   limit: limit,
                   cursor: cursor,
               };
@@ -1274,10 +1328,10 @@
               if (tournamentId === null || tournamentId === undefined) {
                   throw new Error("'tournamentId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/tournament/{tournament_id}"
-                  .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+              const urlPath = "/v2/tournament/{tournamentId}"
+                  .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
               const queryParams = {
-                  owner_ids: ownerIds,
+                  ownerIds: ownerIds,
                   limit: limit,
                   cursor: cursor,
                   expiry: expiry,
@@ -1292,8 +1346,8 @@
               if (body === null || body === undefined) {
                   throw new Error("'body' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/tournament/{tournament_id}"
-                  .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+              const urlPath = "/v2/tournament/{tournamentId}"
+                  .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
               const queryParams = {};
               let _body = null;
               _body = JSON.stringify(body || {});
@@ -1303,8 +1357,8 @@
               if (tournamentId === null || tournamentId === undefined) {
                   throw new Error("'tournamentId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/tournament/{tournament_id}/join"
-                  .replace("{tournament_id}", encodeURIComponent(String(tournamentId)));
+              const urlPath = "/v2/tournament/{tournamentId}/join"
+                  .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
               const queryParams = {};
               let _body = null;
               return napi.doFetch(urlPath, "POST", queryParams, _body, options);
@@ -1316,9 +1370,9 @@
               if (ownerId === null || ownerId === undefined) {
                   throw new Error("'ownerId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/tournament/{tournament_id}/owner/{owner_id}"
-                  .replace("{tournament_id}", encodeURIComponent(String(tournamentId)))
-                  .replace("{owner_id}", encodeURIComponent(String(ownerId)));
+              const urlPath = "/v2/tournament/{tournamentId}/owner/{ownerId}"
+                  .replace("{tournamentId}", encodeURIComponent(String(tournamentId)))
+                  .replace("{ownerId}", encodeURIComponent(String(ownerId)));
               const queryParams = {
                   limit: limit,
                   expiry: expiry,
@@ -1331,7 +1385,7 @@
               const queryParams = {
                   ids: ids,
                   usernames: usernames,
-                  facebook_ids: facebookIds,
+                  facebookIds: facebookIds,
               };
               let _body = null;
               return napi.doFetch(urlPath, "GET", queryParams, _body, options);
@@ -1340,8 +1394,8 @@
               if (userId === null || userId === undefined) {
                   throw new Error("'userId' is a required parameter but is null or undefined.");
               }
-              const urlPath = "/v2/user/{user_id}/group"
-                  .replace("{user_id}", encodeURIComponent(String(userId)));
+              const urlPath = "/v2/user/{userId}/group"
+                  .replace("{userId}", encodeURIComponent(String(userId)));
               const queryParams = {
                   limit: limit,
                   state: state,
@@ -1354,50 +1408,27 @@
       return napi;
   };
 
-  class Session {
-      constructor(token, created_at, expires_at, username, user_id, vars) {
-          this.token = token;
-          this.created_at = created_at;
-          this.expires_at = expires_at;
-          this.username = username;
-          this.user_id = user_id;
-          this.vars = vars;
-      }
-      isexpired(currenttime) {
-          return (this.expires_at - currenttime) < 0;
-      }
-      static restore(jwt) {
-          const createdAt = Math.floor(new Date().getTime() / 1000);
-          const parts = jwt.split('.');
-          if (parts.length != 3) {
-              throw 'jwt is not valid.';
-          }
-          const decoded = JSON.parse(atob(parts[1]));
-          const expiresAt = Math.floor(parseInt(decoded['exp']));
-          return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid'], decoded['vrs']);
-      }
-  }
-
   /*! *****************************************************************************
-  Copyright (c) Microsoft Corporation. All rights reserved.
-  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-  this file except in compliance with the License. You may obtain a copy of the
-  License at http://www.apache.org/licenses/LICENSE-2.0
+  Copyright (c) Microsoft Corporation.
 
-  THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-  WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-  MERCHANTABLITY OR NON-INFRINGEMENT.
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted.
 
-  See the Apache Version 2.0 License for specific language governing permissions
-  and limitations under the License.
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+  REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+  AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+  INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+  LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+  OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+  PERFORMANCE OF THIS SOFTWARE.
   ***************************************************************************** */
 
   function __awaiter(thisArg, _arguments, P, generator) {
+      function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
       return new (P || (P = Promise))(function (resolve, reject) {
           function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
           function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-          function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+          function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
           step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
   }
@@ -1810,388 +1841,66 @@
       }
       addFriends(session, ids, usernames) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/friend";
-          const queryParams = {
-              ids: ids,
-              usernames: usernames
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
-              return Promise.resolve(response != undefined);
+          return this.apiClient.addFriends(ids, usernames).then((response) => {
+              return response !== undefined;
           });
       }
-      authenticateCustom(request) {
-          const urlPath = "/v2/account/authenticate/custom";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateCustom(id, vars) {
+          const request = {
+              "id": id,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              id: request.id,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateCustom(request);
       }
-      authenticateDevice(request) {
-          const urlPath = "/v2/account/authenticate/device";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateDevice(id, vars) {
+          const request = {
+              "id": id,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              id: request.id,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateDevice(request);
       }
-      authenticateEmail(request) {
-          const urlPath = "/v2/account/authenticate/email";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateEmail(email, password, vars) {
+          const request = {
+              "email": email,
+              "password": password,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              email: request.email,
-              password: request.password,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateEmail(request);
       }
-      authenticateFacebookInstantGame(request) {
-          return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, request.username, request.create);
+      authenticateFacebookInstantGame(signedPlayerInfo, vars, create, username, options = {}) {
+          const request = {
+              "signed_player_info": signedPlayerInfo,
+              "vars": vars
+          };
+          return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options);
       }
-      authenticateFacebook(request) {
-          const urlPath = "/v2/account/authenticate/facebook";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateFacebook(token, vars, create, username, sync, options = {}) {
+          const request = {
+              "token": token,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              token: request.token,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateFacebook(request, create, username, sync, options);
       }
-      authenticateGoogle(request) {
-          const urlPath = "/v2/account/authenticate/google";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateGoogle(token, vars, create, username, options = {}) {
+          const request = {
+              "token": token,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              token: request.token,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateGoogle(request, create, username, options);
       }
-      authenticateGameCenter(request) {
-          const urlPath = "/v2/account/authenticate/gamecenter";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateGameCenter(token, vars) {
+          const request = {
+              "token": token,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              bundle_id: request.bundle_id,
-              player_id: request.player_id,
-              public_key_url: request.public_key_url,
-              salt: request.salt,
-              signature: request.signature,
-              timestamp_seconds: request.timestamp_seconds,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateGameCenter(request);
       }
-      authenticateSteam(request) {
-          const urlPath = "/v2/account/authenticate/steam";
-          const queryParams = {
-              username: request.username,
-              create: request.create,
-              vars: request.vars
+      authenticateSteam(token, vars) {
+          const request = {
+              "token": token,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              token: request.token
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateSteam(request);
       }
       banGroupUsers(session, groupId, ids) {
           this.configuration.bearerToken = (session && session.token);
@@ -2201,48 +1910,7 @@
       }
       blockFriends(session, ids, usernames) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/friend/block";
-          const queryParams = {
-              ids: ids,
-              usernames: usernames
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
+          return this.apiClient.blockFriends(ids, usernames).then((response) => {
               return Promise.resolve(response != undefined);
           });
       }
@@ -2270,49 +1938,8 @@
       }
       deleteFriends(session, ids, usernames) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/friend";
-          const queryParams = {
-              ids: ids,
-              usernames: usernames
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "DELETE" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
-              return Promise.resolve(response != undefined);
+          return this.apiClient.deleteFriends(ids, usernames).then((response) => {
+              return response !== undefined;
           });
       }
       deleteGroup(session, groupId) {
@@ -2323,47 +1950,7 @@
       }
       deleteNotifications(session, ids) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/notification";
-          const queryParams = {
-              ids: ids
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "DELETE" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
+          return this.apiClient.deleteNotifications(ids).then((response) => {
               return Promise.resolve(response != undefined);
           });
       }
@@ -2435,47 +2022,7 @@
       }
       kickGroupUsers(session, groupId, ids) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/group/" + groupId + "/kick";
-          const queryParams = {
-              user_ids: ids
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
+          return this.apiClient.kickGroupUsers(groupId, ids).then((response) => {
               return Promise.resolve(response != undefined);
           });
       }
@@ -2970,49 +2517,7 @@
       }
       promoteGroupUsers(session, groupId, ids) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/group/" + groupId + "/promote";
-          const queryParams = {
-              user_ids: ids
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
-              return Promise.resolve(response != undefined);
-          });
+          return this.apiClient.promoteGroupUsers(groupId, ids);
       }
       readStorageObjects(session, request) {
           this.configuration.bearerToken = (session && session.token);
@@ -3187,7 +2692,32 @@
       }
   }
 
+  class Session {
+      constructor(token, created_at, expires_at, username, user_id, vars) {
+          this.token = token;
+          this.created_at = created_at;
+          this.expires_at = expires_at;
+          this.username = username;
+          this.user_id = user_id;
+          this.vars = vars;
+      }
+      isexpired(currenttime) {
+          return (this.expires_at - currenttime) < 0;
+      }
+      static restore(jwt) {
+          const createdAt = Math.floor(new Date().getTime() / 1000);
+          const parts = jwt.split('.');
+          if (parts.length != 3) {
+              throw 'jwt is not valid.';
+          }
+          const decoded = JSON.parse(atob(parts[1]));
+          const expiresAt = Math.floor(parseInt(decoded['exp']));
+          return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid'], decoded['vrs']);
+      }
+  }
+
   exports.Client = Client;
+  exports.DefaultSocket = DefaultSocket;
   exports.Session = Session;
   exports.WebSocketAdapterText = WebSocketAdapterText;
 

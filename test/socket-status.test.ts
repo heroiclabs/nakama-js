@@ -29,10 +29,10 @@ describe('Status Tests', () => {
     const response = await page.evaluate(async (customid, adapter) => {
 
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false, 
+      const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       await socket.connect(session, true);
 
       return socket.updateStatus("hello-world");
@@ -48,16 +48,16 @@ describe('Status Tests', () => {
     const customid2 = generateid();
 
     const response = await page.evaluate(async (customid1, customid2, adapter) => {
-      const client1 = new nakamajs.Client();      
+      const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
-      const socket2 = client2.createSocket(false, false, 
+      const socket2 = client2.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const socket1 = client1.createSocket(false, false, 
+      const socket1 = client1.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session1 = await client1.authenticateCustom({ id: customid1 });
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session1 = await client1.authenticateCustom(customid1);
+      const session2 = await client2.authenticateCustom(customid2);
       await socket1.connect(session1, true);
       await socket1.followUsers([session2.user_id]);
 
@@ -87,13 +87,13 @@ describe('Status Tests', () => {
     const customid2 = generateid();
 
     const response = await page.evaluate(async (customid1, customid2, adapter) => {
-      const client1 = new nakamajs.Client();      
+      const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
-      const socket1 = client1.createSocket(false, false, 
+      const socket1 = client1.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const session1 = await client1.authenticateCustom({ id: customid1 });
-      const session2 = await client2.authenticateCustom({ id: customid2 });
+      const session1 = await client1.authenticateCustom(customid1);
+      const session2 = await client2.authenticateCustom(customid2);
       await socket1.connect(session1, true);
       await socket1.followUsers([session2.user_id]);
       return socket1.unfollowUsers([session2.user_id]);

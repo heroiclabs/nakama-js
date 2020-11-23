@@ -19,7 +19,7 @@ import * as nakamajs from "../packages/nakama-js";
 import {createPage, generateid} from "./utils"
 
 describe('Leaderboard Tests', () => {
-  
+
   it('should create leaderboard with Set operator and write record', async () => {
     const page : Page = await createPage();
 
@@ -34,7 +34,7 @@ describe('Leaderboard Tests', () => {
 
     const result = await page.evaluate(async (customid, rpcid, operator, score) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       const result = await client.rpc(session, rpcid, {"operator": operator});
       const leaderboardId =(<any>result.payload).leaderboard_id;
       return await client.writeLeaderboardRecord(session, leaderboardId, score)
@@ -61,7 +61,7 @@ describe('Leaderboard Tests', () => {
 
     const result = await page.evaluate(async (customid, rpcid, operator, score) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid })
+      const session = await client.authenticateCustom(customid)
       const result = await client.rpc(session, rpcid, {"operator": operator});
       const leaderboardId = (<any>result.payload).leaderboard_id;
       await client.writeLeaderboardRecord(session, leaderboardId, score)
@@ -92,7 +92,7 @@ describe('Leaderboard Tests', () => {
 
     const result = await page.evaluate(async (customid, rpcid, operator, score) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
       const result = await client.rpc(session, rpcid, {"operator": operator});
       const leaderboardId = (<any>result.payload).leaderboard_id;
       await client.writeLeaderboardRecord(session, leaderboardId, score);
@@ -123,7 +123,7 @@ describe('Leaderboard Tests', () => {
 
     const result = await page.evaluate(async (customid, rpcid, operator, score) => {
       const client = new nakamajs.Client();
-      const session = await client.authenticateCustom({ id: customid });
+      const session = await client.authenticateCustom(customid);
 
       const result = await client.rpc(session, rpcid, {"operator": operator});
       const leaderboardId = (<any>result.payload).leaderboard_id;
@@ -132,11 +132,11 @@ describe('Leaderboard Tests', () => {
     }, customid, rpcid, operator, score);
 
     expect(result).not.toBeNull();
-    expect(result.records[0].score).toBe(10);
-    expect(result.records[0].subscore).toBe(1);
-    expect(result.records[0].metadata).not.toBeNull();
-    expect((<any> result.records[0].metadata).key).toBe("value");
-    expect(result.records[0].rank).toBe(1);
+    expect(result.records![0].score).toBe(10);
+    expect(result.records![0].subscore).toBe(1);
+    expect(result.records![0].metadata).not.toBeNull();
+    expect((<any> result.records![0].metadata).key).toBe("value");
+    expect(result.records![0].rank).toBe(1);
   });
 
 });

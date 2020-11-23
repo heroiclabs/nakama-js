@@ -15,7 +15,7 @@
       const customid = "someuniqueidentifier";
       var _session;
 
-      client.authenticateCustom({ id: customid })
+      client.authenticateCustom(customid)
         .then(session => {
           _session = session;
           console.log("session is...")
