@@ -9,10 +9,11 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 - Added interface for Session object.
 - Support for Tournaments.
 - Support for events.
-- Update to support features in Nakama 2.12.0
+- Update to support features through Nakama 2.14.0
 - Implemented base64 encoder and decoder for unicode characters
-- Added support for protocol buffer payloads via Web Sockets
-- Added support for Facebook Instant Game Authentication
+- Added support for protocol buffer payloads via Web Sockets.
+- Added support for Facebook Instant Game Authentication.
+- Added support for Apple authentication.
 
 ### Changed
 - Simplified the way callback IDs are generated. (Thanks @dimon4eg).
@@ -20,12 +21,16 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 - Updated minimum TypeScript language to 3.5 version. (Thanks @Blaizer).
 - Migrated test suite to Typescript
 - Migrated build system to esbuild
+- Update rollup.js which is still used for Cocos support.
 - Updated Yarn version to 2.0
+- Signatures for all Client.ts methods have been flattened to take primitives rather than composite objects.
 
 ### Fixed
 - Typo fix in Match interface to use Presences.
 - Add missing MatchmakerUser typescript interface definition.
 - Authentication functions no longer check for session tokens.
+- Fix for Cocos Creator support that allows the setting of XmlHttpRequest.withCredentials to be bypassed if the property does not have a setter.
+- Internal type-checking for the generated client methods.
 
 ## [2.0.1] - 2018-05-19
 ### Added
