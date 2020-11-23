@@ -1408,30 +1408,6 @@
       return napi;
   };
 
-  class Session {
-      constructor(token, created_at, expires_at, username, user_id, vars) {
-          this.token = token;
-          this.created_at = created_at;
-          this.expires_at = expires_at;
-          this.username = username;
-          this.user_id = user_id;
-          this.vars = vars;
-      }
-      isexpired(currenttime) {
-          return (this.expires_at - currenttime) < 0;
-      }
-      static restore(jwt) {
-          const createdAt = Math.floor(new Date().getTime() / 1000);
-          const parts = jwt.split('.');
-          if (parts.length != 3) {
-              throw 'jwt is not valid.';
-          }
-          const decoded = JSON.parse(atob(parts[1]));
-          const expiresAt = Math.floor(parseInt(decoded['exp']));
-          return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid'], decoded['vrs']);
-      }
-  }
-
   /*! *****************************************************************************
   Copyright (c) Microsoft Corporation.
 
@@ -1865,388 +1841,66 @@
       }
       addFriends(session, ids, usernames) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/friend";
-          const queryParams = {
-              ids: ids,
-              usernames: usernames
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
-              return Promise.resolve(response != undefined);
+          return this.apiClient.addFriends(ids, usernames).then((response) => {
+              return response !== undefined;
           });
       }
-      authenticateCustom(request) {
-          const urlPath = "/v2/account/authenticate/custom";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateCustom(id, vars) {
+          const request = {
+              "id": id,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              id: request.id,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateCustom(request);
       }
-      authenticateDevice(request) {
-          const urlPath = "/v2/account/authenticate/device";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateDevice(id, vars) {
+          const request = {
+              "id": id,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              id: request.id,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateDevice(request);
       }
-      authenticateEmail(request) {
-          const urlPath = "/v2/account/authenticate/email";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateEmail(email, password, vars) {
+          const request = {
+              "email": email,
+              "password": password,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              email: request.email,
-              password: request.password,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateEmail(request);
       }
-      authenticateFacebookInstantGame(request) {
-          return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, request.create, request.username);
+      authenticateFacebookInstantGame(signedPlayerInfo, vars, create, username, options = {}) {
+          const request = {
+              "signed_player_info": signedPlayerInfo,
+              "vars": vars
+          };
+          return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options);
       }
-      authenticateFacebook(request) {
-          const urlPath = "/v2/account/authenticate/facebook";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateFacebook(token, vars, create, username, sync, options = {}) {
+          const request = {
+              "token": token,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              token: request.token,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateFacebook(request, create, username, sync, options);
       }
-      authenticateGoogle(request) {
-          const urlPath = "/v2/account/authenticate/google";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateGoogle(token, vars, create, username, options = {}) {
+          const request = {
+              "token": token,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              token: request.token,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateGoogle(request, create, username, options);
       }
-      authenticateGameCenter(request) {
-          const urlPath = "/v2/account/authenticate/gamecenter";
-          const queryParams = {
-              username: request.username,
-              create: request.create
+      authenticateGameCenter(token, vars) {
+          const request = {
+              "token": token,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              bundle_id: request.bundle_id,
-              player_id: request.player_id,
-              public_key_url: request.public_key_url,
-              salt: request.salt,
-              signature: request.signature,
-              timestamp_seconds: request.timestamp_seconds,
-              vars: request.vars
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateGameCenter(request);
       }
-      authenticateSteam(request) {
-          const urlPath = "/v2/account/authenticate/steam";
-          const queryParams = {
-              username: request.username,
-              create: request.create,
-              vars: request.vars
+      authenticateSteam(token, vars) {
+          const request = {
+              "token": token,
+              "vars": vars
           };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          fetchOptions.body = JSON.stringify({
-              token: request.token
-          });
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((apiSession) => {
-              return Session.restore(apiSession.token || "");
-          });
+          return this.apiClient.authenticateSteam(request);
       }
       banGroupUsers(session, groupId, ids) {
           this.configuration.bearerToken = (session && session.token);
@@ -2256,48 +1910,7 @@
       }
       blockFriends(session, ids, usernames) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/friend/block";
-          const queryParams = {
-              ids: ids,
-              usernames: usernames
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
+          return this.apiClient.blockFriends(ids, usernames).then((response) => {
               return Promise.resolve(response != undefined);
           });
       }
@@ -2325,49 +1938,8 @@
       }
       deleteFriends(session, ids, usernames) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/friend";
-          const queryParams = {
-              ids: ids,
-              usernames: usernames
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "DELETE" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
-              return Promise.resolve(response != undefined);
+          return this.apiClient.deleteFriends(ids, usernames).then((response) => {
+              return response !== undefined;
           });
       }
       deleteGroup(session, groupId) {
@@ -2378,47 +1950,7 @@
       }
       deleteNotifications(session, ids) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/notification";
-          const queryParams = {
-              ids: ids
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "DELETE" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
+          return this.apiClient.deleteNotifications(ids).then((response) => {
               return Promise.resolve(response != undefined);
           });
       }
@@ -2490,47 +2022,7 @@
       }
       kickGroupUsers(session, groupId, ids) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/group/" + groupId + "/kick";
-          const queryParams = {
-              user_ids: ids
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
+          return this.apiClient.kickGroupUsers(groupId, ids).then((response) => {
               return Promise.resolve(response != undefined);
           });
       }
@@ -3025,49 +2517,7 @@
       }
       promoteGroupUsers(session, groupId, ids) {
           this.configuration.bearerToken = (session && session.token);
-          const urlPath = "/v2/group/" + groupId + "/promote";
-          const queryParams = {
-              user_ids: ids
-          };
-          const urlQuery = "?" + Object.keys(queryParams)
-              .map(k => {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce((prev, curr) => {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          const fetchOptions = Object.assign({ method: "POST" });
-          const headers = {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-          };
-          if (this.configuration.bearerToken) {
-              headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-          }
-          fetchOptions.headers = Object.assign({}, headers);
-          return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                  if (response.status >= 200 && response.status < 300) {
-                      return response.json();
-                  }
-                  else {
-                      throw response;
-                  }
-              }),
-              new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out.")),
-          ]).then((response) => {
-              return Promise.resolve(response != undefined);
-          });
+          return this.apiClient.promoteGroupUsers(groupId, ids);
       }
       readStorageObjects(session, request) {
           this.configuration.bearerToken = (session && session.token);
@@ -3239,6 +2689,30 @@
                   rank: response.rank ? Number(response.rank) : 0,
               });
           });
+      }
+  }
+
+  class Session {
+      constructor(token, created_at, expires_at, username, user_id, vars) {
+          this.token = token;
+          this.created_at = created_at;
+          this.expires_at = expires_at;
+          this.username = username;
+          this.user_id = user_id;
+          this.vars = vars;
+      }
+      isexpired(currenttime) {
+          return (this.expires_at - currenttime) < 0;
+      }
+      static restore(jwt) {
+          const createdAt = Math.floor(new Date().getTime() / 1000);
+          const parts = jwt.split('.');
+          if (parts.length != 3) {
+              throw 'jwt is not valid.';
+          }
+          const decoded = JSON.parse(atob(parts[1]));
+          const expiresAt = Math.floor(parseInt(decoded['exp']));
+          return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid'], decoded['vrs']);
       }
   }
 

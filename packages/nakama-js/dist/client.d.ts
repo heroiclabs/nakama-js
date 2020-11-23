@@ -2,74 +2,6 @@ import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAcc
 import { Session } from "./session";
 import { Socket } from "./socket";
 import { WebSocketAdapter } from "./web_socket_adapter";
-export interface AccountCustom {
-    username?: string;
-    create?: boolean;
-    id?: string;
-    vars?: {
-        [key: string]: string;
-    };
-}
-export interface AccountDevice {
-    username?: string;
-    create?: boolean;
-    id?: string;
-    vars?: {
-        [key: string]: string;
-    };
-}
-export interface AccountEmail {
-    username?: string;
-    create?: boolean;
-    email?: string;
-    password?: string;
-    vars?: {
-        [key: string]: string;
-    };
-}
-export interface AccountFacebook {
-    username?: string;
-    create?: boolean;
-    token?: string;
-    vars?: {
-        [key: string]: string;
-    };
-}
-export interface AccountFacebookInstantGame {
-    username?: string;
-    create?: boolean;
-    signed_player_info?: string;
-    vars?: Map<string, string>;
-}
-export interface AccountGameCenter {
-    username?: string;
-    create?: boolean;
-    bundle_id?: string;
-    player_id?: string;
-    public_key_url?: string;
-    salt?: string;
-    signature?: string;
-    timestamp_seconds?: string;
-    vars?: {
-        [key: string]: string;
-    };
-}
-export interface AccountGoogle {
-    username?: string;
-    create?: boolean;
-    token?: string;
-    vars?: {
-        [key: string]: string;
-    };
-}
-export interface AccountSteam {
-    username?: string;
-    create?: boolean;
-    token?: string;
-    vars?: {
-        [key: string]: string;
-    };
-}
 export interface RpcResponse {
     id?: string;
     payload?: object;
@@ -267,14 +199,15 @@ export declare class Client {
     constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number);
     addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
-    authenticateCustom(request: AccountCustom): Promise<Session>;
-    authenticateDevice(request: AccountDevice): Promise<Session>;
-    authenticateEmail(request: AccountEmail): Promise<Session>;
-    authenticateFacebookInstantGame(request: AccountFacebookInstantGame): Promise<Session>;
-    authenticateFacebook(request: AccountFacebook): Promise<Session>;
-    authenticateGoogle(request: AccountGoogle): Promise<Session>;
-    authenticateGameCenter(request: AccountGameCenter): Promise<Session>;
-    authenticateSteam(request: AccountSteam): Promise<Session>;
+    authenticateApple(token: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
+    authenticateCustom(id: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
+    authenticateDevice(id: string, vars?: Map<string, string>): Promise<Session>;
+    authenticateEmail(email: string, password: string, vars?: Map<string, string>): Promise<Session>;
+    authenticateFacebookInstantGame(signedPlayerInfo: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
+    authenticateFacebook(token: string, create?: boolean, username?: string, sync?: boolean, vars?: Map<string, string>, options?: any): Promise<Session>;
+    authenticateGoogle(token: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
+    authenticateGameCenter(token: string, vars?: Map<string, string>): Promise<Session>;
+    authenticateSteam(token: string, vars?: Map<string, string>): Promise<Session>;
     banGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group>;
@@ -283,6 +216,7 @@ export declare class Client {
     deleteGroup(session: Session, groupId: string): Promise<boolean>;
     deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean>;
     deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean>;
+    demoteGroupUsers(session: Session, groupId: string, ids: Array<string>): Promise<boolean>;
     emitEvent(session: Session, request: ApiEvent): Promise<boolean>;
     getAccount(session: Session): Promise<ApiAccount>;
     importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean>;

@@ -24,6 +24,7 @@ export default {
         dir: "dist",
         format: 'umd',
         name: 'nakamajs',
+        file: "nakama-js.umd.js"
     },
     plugins: [
         typescript({

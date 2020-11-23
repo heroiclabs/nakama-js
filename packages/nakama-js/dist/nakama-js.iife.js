@@ -506,844 +506,837 @@ var nakamajs = (() => {
   });
 
   // api.gen.ts
-  const BASE_PATH = "http://127.0.0.1:80";
-  const NakamaApi = (configuration = {
-    basePath: BASE_PATH,
-    bearerToken: "",
-    password: "",
-    username: "",
-    timeoutMs: 5e3
-  }) => {
-    const napi = {
-      doFetch(urlPath, method, queryParams, body, options) {
-        const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-          if (queryParams[k] instanceof Array) {
-            return queryParams[k].reduce((prev, curr) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-          } else {
-            if (queryParams[k] != null) {
-              return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-            }
+  class NakamaApi {
+    constructor(configuration) {
+      this.configuration = configuration;
+    }
+    doFetch(urlPath, method, queryParams, body, options) {
+      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
+        if (queryParams[k] instanceof Array) {
+          return queryParams[k].reduce((prev, curr) => {
+            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+          }, "");
+        } else {
+          if (queryParams[k] != null) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
           }
-        }).join("");
-        const fetchOptions = __assign(__assign({}, {method}), options);
-        fetchOptions.headers = __assign({}, options.headers);
-        const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
-        if (!(descriptor == null ? void 0 : descriptor.set)) {
-          fetchOptions.credentials = "cocos-ignore";
         }
-        if (configuration.bearerToken) {
-          fetchOptions.headers["Authorization"] = "Bearer " + configuration.bearerToken;
-        } else if (configuration.username) {
-          fetchOptions.headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-        }
-        if (!Object.keys(fetchOptions.headers).includes("Accept")) {
-          fetchOptions.headers["Accept"] = "application/json";
-        }
-        if (!Object.keys(fetchOptions.headers).includes("Content-Type")) {
-          fetchOptions.headers["Content-Type"] = "application/json";
-        }
-        Object.keys(fetchOptions.headers).forEach((key) => {
-          if (!fetchOptions.headers[key]) {
-            delete fetchOptions.headers[key];
-          }
-        });
-        fetchOptions.body = body;
-        return Promise.race([
-          fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-            if (response.status == 204) {
-              return response;
-            } else if (response.status >= 200 && response.status < 300) {
-              return response.json();
-            } else {
-              throw response;
-            }
-          }),
-          new Promise((_, reject) => setTimeout(reject, configuration.timeoutMs, "Request timed out."))
-        ]);
-      },
-      healthcheck(options = {}) {
-        const urlPath = "/healthcheck";
-        const queryParams = {};
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      getAccount(options = {}) {
-        const urlPath = "/v2/account";
-        const queryParams = {};
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      updateAccount(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
-      },
-      authenticateApple(body, create, username, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/authenticate/apple";
-        const queryParams = {
-          create,
-          username
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      authenticateCustom(body, create, username, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/authenticate/custom";
-        const queryParams = {
-          create,
-          username
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      authenticateDevice(body, create, username, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/authenticate/device";
-        const queryParams = {
-          create,
-          username
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      authenticateEmail(body, create, username, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/authenticate/email";
-        const queryParams = {
-          create,
-          username
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      authenticateFacebook(body, create, username, sync, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/authenticate/facebook";
-        const queryParams = {
-          create,
-          username,
-          sync
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      authenticateFacebookInstantGame(body, create, username, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/authenticate/facebookinstantgame";
-        const queryParams = {
-          create,
-          username
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      authenticateGameCenter(body, create, username, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/authenticate/gamecenter";
-        const queryParams = {
-          create,
-          username
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      authenticateGoogle(body, create, username, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/authenticate/google";
-        const queryParams = {
-          create,
-          username
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      authenticateSteam(body, create, username, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/authenticate/steam";
-        const queryParams = {
-          create,
-          username
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      linkApple(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/link/apple";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      linkCustom(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/link/custom";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      linkDevice(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/link/device";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      linkEmail(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/link/email";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      linkFacebook(body, sync, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/link/facebook";
-        const queryParams = {
-          sync
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      linkFacebookInstantGame(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/link/facebookinstantgame";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      linkGameCenter(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/link/gamecenter";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      linkGoogle(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/link/google";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      linkSteam(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/link/steam";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      unlinkApple(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/unlink/apple";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      unlinkCustom(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/unlink/custom";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      unlinkDevice(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/unlink/device";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      unlinkEmail(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/unlink/email";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      unlinkFacebook(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/unlink/facebook";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      unlinkFacebookInstantGame(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/unlink/facebookinstantgame";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      unlinkGameCenter(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/unlink/gamecenter";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      unlinkGoogle(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/unlink/google";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      unlinkSteam(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/account/unlink/steam";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      listChannelMessages(channelId, limit, forward, cursor, options = {}) {
-        if (channelId === null || channelId === void 0) {
-          throw new Error("'channelId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/channel/{channelId}".replace("{channelId}", encodeURIComponent(String(channelId)));
-        const queryParams = {
-          limit,
-          forward,
-          cursor
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      event(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/event";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      deleteFriends(ids, usernames, options = {}) {
-        const urlPath = "/v2/friend";
-        const queryParams = {
-          ids,
-          usernames
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
-      },
-      listFriends(limit, state, cursor, options = {}) {
-        const urlPath = "/v2/friend";
-        const queryParams = {
-          limit,
-          state,
-          cursor
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      addFriends(ids, usernames, options = {}) {
-        const urlPath = "/v2/friend";
-        const queryParams = {
-          ids,
-          usernames
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      blockFriends(ids, usernames, options = {}) {
-        const urlPath = "/v2/friend/block";
-        const queryParams = {
-          ids,
-          usernames
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      importFacebookFriends(body, reset, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/friend/facebook";
-        const queryParams = {
-          reset
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      listGroups(name, cursor, limit, options = {}) {
-        const urlPath = "/v2/group";
-        const queryParams = {
-          name,
-          cursor,
-          limit
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      createGroup(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/group";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      deleteGroup(groupId, options = {}) {
-        if (groupId === null || groupId === void 0) {
-          throw new Error("'groupId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/group/{groupId}".replace("{groupId}", encodeURIComponent(String(groupId)));
-        const queryParams = {};
-        let _body = null;
-        return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
-      },
-      updateGroup(groupId, body, options = {}) {
-        if (groupId === null || groupId === void 0) {
-          throw new Error("'groupId' is a required parameter but is null or undefined.");
-        }
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/group/{groupId}".replace("{groupId}", encodeURIComponent(String(groupId)));
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
-      },
-      addGroupUsers(groupId, userIds, options = {}) {
-        if (groupId === null || groupId === void 0) {
-          throw new Error("'groupId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/group/{groupId}/add".replace("{groupId}", encodeURIComponent(String(groupId)));
-        const queryParams = {
-          user_ids: userIds
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      banGroupUsers(groupId, userIds, options = {}) {
-        if (groupId === null || groupId === void 0) {
-          throw new Error("'groupId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/group/{groupId}/ban".replace("{groupId}", encodeURIComponent(String(groupId)));
-        const queryParams = {
-          user_ids: userIds
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      demoteGroupUsers(groupId, userIds, options = {}) {
-        if (groupId === null || groupId === void 0) {
-          throw new Error("'groupId' is a required parameter but is null or undefined.");
-        }
-        if (userIds === null || userIds === void 0) {
-          throw new Error("'userIds' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/group/{groupId}/demote".replace("{groupId}", encodeURIComponent(String(groupId)));
-        const queryParams = {
-          user_ids: userIds
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      joinGroup(groupId, options = {}) {
-        if (groupId === null || groupId === void 0) {
-          throw new Error("'groupId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/group/{groupId}/join".replace("{groupId}", encodeURIComponent(String(groupId)));
-        const queryParams = {};
-        let _body = null;
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      kickGroupUsers(groupId, userIds, options = {}) {
-        if (groupId === null || groupId === void 0) {
-          throw new Error("'groupId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/group/{groupId}/kick".replace("{groupId}", encodeURIComponent(String(groupId)));
-        const queryParams = {
-          user_ids: userIds
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      leaveGroup(groupId, options = {}) {
-        if (groupId === null || groupId === void 0) {
-          throw new Error("'groupId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/group/{groupId}/leave".replace("{groupId}", encodeURIComponent(String(groupId)));
-        const queryParams = {};
-        let _body = null;
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      promoteGroupUsers(groupId, userIds, options = {}) {
-        if (groupId === null || groupId === void 0) {
-          throw new Error("'groupId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/group/{groupId}/promote".replace("{groupId}", encodeURIComponent(String(groupId)));
-        const queryParams = {
-          user_ids: userIds
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      listGroupUsers(groupId, limit, state, cursor, options = {}) {
-        if (groupId === null || groupId === void 0) {
-          throw new Error("'groupId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/group/{groupId}/user".replace("{groupId}", encodeURIComponent(String(groupId)));
-        const queryParams = {
-          limit,
-          state,
-          cursor
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      deleteLeaderboardRecord(leaderboardId, options = {}) {
-        if (leaderboardId === null || leaderboardId === void 0) {
-          throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-        const queryParams = {};
-        let _body = null;
-        return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
-      },
-      listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry, options = {}) {
-        if (leaderboardId === null || leaderboardId === void 0) {
-          throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-        const queryParams = {
-          ownerIds,
-          limit,
-          cursor,
-          expiry
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      writeLeaderboardRecord(leaderboardId, body, options = {}) {
-        if (leaderboardId === null || leaderboardId === void 0) {
-          throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-        }
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry, options = {}) {
-        if (leaderboardId === null || leaderboardId === void 0) {
-          throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-        }
-        if (ownerId === null || ownerId === void 0) {
-          throw new Error("'ownerId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/leaderboard/{leaderboardId}/owner/{ownerId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId))).replace("{ownerId}", encodeURIComponent(String(ownerId)));
-        const queryParams = {
-          limit,
-          expiry
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      listMatches(limit, authoritative, label, minSize, maxSize, query, options = {}) {
-        const urlPath = "/v2/match";
-        const queryParams = {
-          limit,
-          authoritative,
-          label,
-          minSize,
-          maxSize,
-          query
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      deleteNotifications(ids, options = {}) {
-        const urlPath = "/v2/notification";
-        const queryParams = {
-          ids
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
-      },
-      listNotifications(limit, cacheableCursor, options = {}) {
-        const urlPath = "/v2/notification";
-        const queryParams = {
-          limit,
-          cacheableCursor
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      rpcFunc2(id, payload, httpKey, options = {}) {
-        if (id === null || id === void 0) {
-          throw new Error("'id' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/rpc/{id}".replace("{id}", encodeURIComponent(String(id)));
-        const queryParams = {
-          payload,
-          httpKey
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      rpcFunc(id, body, httpKey, options = {}) {
-        if (id === null || id === void 0) {
-          throw new Error("'id' is a required parameter but is null or undefined.");
-        }
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/rpc/{id}".replace("{id}", encodeURIComponent(String(id)));
-        const queryParams = {
-          httpKey
-        };
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      readStorageObjects(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/storage";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      writeStorageObjects(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/storage";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
-      },
-      deleteStorageObjects(body, options = {}) {
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/storage/delete";
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
-      },
-      listStorageObjects(collection, userId, limit, cursor, options = {}) {
-        if (collection === null || collection === void 0) {
-          throw new Error("'collection' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/storage/{collection}".replace("{collection}", encodeURIComponent(String(collection)));
-        const queryParams = {
-          userId,
-          limit,
-          cursor
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      listStorageObjects2(collection, userId, limit, cursor, options = {}) {
-        if (collection === null || collection === void 0) {
-          throw new Error("'collection' is a required parameter but is null or undefined.");
-        }
-        if (userId === null || userId === void 0) {
-          throw new Error("'userId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/storage/{collection}/{userId}".replace("{collection}", encodeURIComponent(String(collection))).replace("{userId}", encodeURIComponent(String(userId)));
-        const queryParams = {
-          limit,
-          cursor
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor, options = {}) {
-        const urlPath = "/v2/tournament";
-        const queryParams = {
-          categoryStart,
-          categoryEnd,
-          startTime,
-          endTime,
-          limit,
-          cursor
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry, options = {}) {
-        if (tournamentId === null || tournamentId === void 0) {
-          throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-        const queryParams = {
-          ownerIds,
-          limit,
-          cursor,
-          expiry
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      writeTournamentRecord(tournamentId, body, options = {}) {
-        if (tournamentId === null || tournamentId === void 0) {
-          throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-        }
-        if (body === null || body === void 0) {
-          throw new Error("'body' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-        const queryParams = {};
-        let _body = null;
-        _body = JSON.stringify(body || {});
-        return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
-      },
-      joinTournament(tournamentId, options = {}) {
-        if (tournamentId === null || tournamentId === void 0) {
-          throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/tournament/{tournamentId}/join".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-        const queryParams = {};
-        let _body = null;
-        return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-      },
-      listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry, options = {}) {
-        if (tournamentId === null || tournamentId === void 0) {
-          throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-        }
-        if (ownerId === null || ownerId === void 0) {
-          throw new Error("'ownerId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/tournament/{tournamentId}/owner/{ownerId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId))).replace("{ownerId}", encodeURIComponent(String(ownerId)));
-        const queryParams = {
-          limit,
-          expiry
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      getUsers(ids, usernames, facebookIds, options = {}) {
-        const urlPath = "/v2/user";
-        const queryParams = {
-          ids,
-          usernames,
-          facebookIds
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-      },
-      listUserGroups(userId, limit, state, cursor, options = {}) {
-        if (userId === null || userId === void 0) {
-          throw new Error("'userId' is a required parameter but is null or undefined.");
-        }
-        const urlPath = "/v2/user/{userId}/group".replace("{userId}", encodeURIComponent(String(userId)));
-        const queryParams = {
-          limit,
-          state,
-          cursor
-        };
-        let _body = null;
-        return napi.doFetch(urlPath, "GET", queryParams, _body, options);
+      }).join("");
+      const fetchOptions = __assign(__assign({}, {method}), options);
+      fetchOptions.headers = __assign({}, options.headers);
+      const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+      if (!(descriptor == null ? void 0 : descriptor.set)) {
+        fetchOptions.credentials = "cocos-ignore";
       }
-    };
-    return napi;
-  };
+      if (this.configuration.bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+      } else if (this.configuration.username) {
+        fetchOptions.headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+      }
+      if (!Object.keys(fetchOptions.headers).includes("Accept")) {
+        fetchOptions.headers["Accept"] = "application/json";
+      }
+      if (!Object.keys(fetchOptions.headers).includes("Content-Type")) {
+        fetchOptions.headers["Content-Type"] = "application/json";
+      }
+      Object.keys(fetchOptions.headers).forEach((key) => {
+        if (!fetchOptions.headers[key]) {
+          delete fetchOptions.headers[key];
+        }
+      });
+      fetchOptions.body = body;
+      return Promise.race([
+        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
+      ]);
+    }
+    healthcheck(options = {}) {
+      const urlPath = "/healthcheck";
+      const queryParams = {};
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    getAccount(options = {}) {
+      const urlPath = "/v2/account";
+      const queryParams = {};
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    updateAccount(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+    }
+    authenticateApple(body, create, username, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/apple";
+      const queryParams = {
+        create,
+        username
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    authenticateCustom(body, create, username, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/custom";
+      const queryParams = {
+        create,
+        username
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    authenticateDevice(body, create, username, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/device";
+      const queryParams = {
+        create,
+        username
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    authenticateEmail(body, create, username, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/email";
+      const queryParams = {
+        create,
+        username
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    authenticateFacebook(body, create, username, sync, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/facebook";
+      const queryParams = {
+        create,
+        username,
+        sync
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    authenticateFacebookInstantGame(body, create, username, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/facebookinstantgame";
+      const queryParams = {
+        create,
+        username
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    authenticateGameCenter(body, create, username, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/gamecenter";
+      const queryParams = {
+        create,
+        username
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    authenticateGoogle(body, create, username, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/google";
+      const queryParams = {
+        create,
+        username
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    authenticateSteam(body, create, username, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/authenticate/steam";
+      const queryParams = {
+        create,
+        username
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    linkApple(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/apple";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    linkCustom(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/custom";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    linkDevice(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/device";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    linkEmail(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/email";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    linkFacebook(body, sync, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/facebook";
+      const queryParams = {
+        sync
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    linkFacebookInstantGame(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/facebookinstantgame";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    linkGameCenter(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/gamecenter";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    linkGoogle(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/google";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    linkSteam(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/link/steam";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    unlinkApple(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/apple";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    unlinkCustom(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/custom";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    unlinkDevice(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/device";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    unlinkEmail(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/email";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    unlinkFacebook(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/facebook";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    unlinkFacebookInstantGame(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/facebookinstantgame";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    unlinkGameCenter(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/gamecenter";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    unlinkGoogle(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/google";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    unlinkSteam(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/unlink/steam";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    listChannelMessages(channelId, limit, forward, cursor, options = {}) {
+      if (channelId === null || channelId === void 0) {
+        throw new Error("'channelId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/channel/{channelId}".replace("{channelId}", encodeURIComponent(String(channelId)));
+      const queryParams = {
+        limit,
+        forward,
+        cursor
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    event(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/event";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    deleteFriends(ids, usernames, options = {}) {
+      const urlPath = "/v2/friend";
+      const queryParams = {
+        ids,
+        usernames
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+    }
+    listFriends(limit, state, cursor, options = {}) {
+      const urlPath = "/v2/friend";
+      const queryParams = {
+        limit,
+        state,
+        cursor
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    addFriends(ids, usernames, options = {}) {
+      const urlPath = "/v2/friend";
+      const queryParams = {
+        ids,
+        usernames
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    blockFriends(ids, usernames, options = {}) {
+      const urlPath = "/v2/friend/block";
+      const queryParams = {
+        ids,
+        usernames
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    importFacebookFriends(body, reset, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/friend/facebook";
+      const queryParams = {
+        reset
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    listGroups(name, cursor, limit, options = {}) {
+      const urlPath = "/v2/group";
+      const queryParams = {
+        name,
+        cursor,
+        limit
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    createGroup(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    deleteGroup(groupId, options = {}) {
+      if (groupId === null || groupId === void 0) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{groupId}".replace("{groupId}", encodeURIComponent(String(groupId)));
+      const queryParams = {};
+      let _body = null;
+      return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+    }
+    updateGroup(groupId, body, options = {}) {
+      if (groupId === null || groupId === void 0) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{groupId}".replace("{groupId}", encodeURIComponent(String(groupId)));
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+    }
+    addGroupUsers(groupId, userIds, options = {}) {
+      if (groupId === null || groupId === void 0) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{groupId}/add".replace("{groupId}", encodeURIComponent(String(groupId)));
+      const queryParams = {
+        user_ids: userIds
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    banGroupUsers(groupId, userIds, options = {}) {
+      if (groupId === null || groupId === void 0) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{groupId}/ban".replace("{groupId}", encodeURIComponent(String(groupId)));
+      const queryParams = {
+        user_ids: userIds
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    demoteGroupUsers(groupId, userIds, options = {}) {
+      if (groupId === null || groupId === void 0) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      if (userIds === null || userIds === void 0) {
+        throw new Error("'userIds' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{groupId}/demote".replace("{groupId}", encodeURIComponent(String(groupId)));
+      const queryParams = {
+        user_ids: userIds
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    joinGroup(groupId, options = {}) {
+      if (groupId === null || groupId === void 0) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{groupId}/join".replace("{groupId}", encodeURIComponent(String(groupId)));
+      const queryParams = {};
+      let _body = null;
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    kickGroupUsers(groupId, userIds, options = {}) {
+      if (groupId === null || groupId === void 0) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{groupId}/kick".replace("{groupId}", encodeURIComponent(String(groupId)));
+      const queryParams = {
+        user_ids: userIds
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    leaveGroup(groupId, options = {}) {
+      if (groupId === null || groupId === void 0) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{groupId}/leave".replace("{groupId}", encodeURIComponent(String(groupId)));
+      const queryParams = {};
+      let _body = null;
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    promoteGroupUsers(groupId, userIds, options = {}) {
+      if (groupId === null || groupId === void 0) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{groupId}/promote".replace("{groupId}", encodeURIComponent(String(groupId)));
+      const queryParams = {
+        user_ids: userIds
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    listGroupUsers(groupId, limit, state, cursor, options = {}) {
+      if (groupId === null || groupId === void 0) {
+        throw new Error("'groupId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/group/{groupId}/user".replace("{groupId}", encodeURIComponent(String(groupId)));
+      const queryParams = {
+        limit,
+        state,
+        cursor
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    deleteLeaderboardRecord(leaderboardId, options = {}) {
+      if (leaderboardId === null || leaderboardId === void 0) {
+        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
+      const queryParams = {};
+      let _body = null;
+      return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+    }
+    listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry, options = {}) {
+      if (leaderboardId === null || leaderboardId === void 0) {
+        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
+      const queryParams = {
+        ownerIds,
+        limit,
+        cursor,
+        expiry
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    writeLeaderboardRecord(leaderboardId, body, options = {}) {
+      if (leaderboardId === null || leaderboardId === void 0) {
+        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry, options = {}) {
+      if (leaderboardId === null || leaderboardId === void 0) {
+        throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+      }
+      if (ownerId === null || ownerId === void 0) {
+        throw new Error("'ownerId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/leaderboard/{leaderboardId}/owner/{ownerId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId))).replace("{ownerId}", encodeURIComponent(String(ownerId)));
+      const queryParams = {
+        limit,
+        expiry
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    listMatches(limit, authoritative, label, minSize, maxSize, query, options = {}) {
+      const urlPath = "/v2/match";
+      const queryParams = {
+        limit,
+        authoritative,
+        label,
+        minSize,
+        maxSize,
+        query
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    deleteNotifications(ids, options = {}) {
+      const urlPath = "/v2/notification";
+      const queryParams = {
+        ids
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+    }
+    listNotifications(limit, cacheableCursor, options = {}) {
+      const urlPath = "/v2/notification";
+      const queryParams = {
+        limit,
+        cacheableCursor
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    rpcFunc2(id, payload, httpKey, options = {}) {
+      if (id === null || id === void 0) {
+        throw new Error("'id' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/rpc/{id}".replace("{id}", encodeURIComponent(String(id)));
+      const queryParams = {
+        payload,
+        httpKey
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    rpcFunc(id, body, httpKey, options = {}) {
+      if (id === null || id === void 0) {
+        throw new Error("'id' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/rpc/{id}".replace("{id}", encodeURIComponent(String(id)));
+      const queryParams = {
+        httpKey
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    readStorageObjects(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/storage";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    writeStorageObjects(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/storage";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+    }
+    deleteStorageObjects(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/storage/delete";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+    }
+    listStorageObjects(collection, userId, limit, cursor, options = {}) {
+      if (collection === null || collection === void 0) {
+        throw new Error("'collection' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/storage/{collection}".replace("{collection}", encodeURIComponent(String(collection)));
+      const queryParams = {
+        userId,
+        limit,
+        cursor
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    listStorageObjects2(collection, userId, limit, cursor, options = {}) {
+      if (collection === null || collection === void 0) {
+        throw new Error("'collection' is a required parameter but is null or undefined.");
+      }
+      if (userId === null || userId === void 0) {
+        throw new Error("'userId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/storage/{collection}/{userId}".replace("{collection}", encodeURIComponent(String(collection))).replace("{userId}", encodeURIComponent(String(userId)));
+      const queryParams = {
+        limit,
+        cursor
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor, options = {}) {
+      const urlPath = "/v2/tournament";
+      const queryParams = {
+        categoryStart,
+        categoryEnd,
+        startTime,
+        endTime,
+        limit,
+        cursor
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry, options = {}) {
+      if (tournamentId === null || tournamentId === void 0) {
+        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
+      const queryParams = {
+        ownerIds,
+        limit,
+        cursor,
+        expiry
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    writeTournamentRecord(tournamentId, body, options = {}) {
+      if (tournamentId === null || tournamentId === void 0) {
+        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+    }
+    joinTournament(tournamentId, options = {}) {
+      if (tournamentId === null || tournamentId === void 0) {
+        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/tournament/{tournamentId}/join".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
+      const queryParams = {};
+      let _body = null;
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry, options = {}) {
+      if (tournamentId === null || tournamentId === void 0) {
+        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+      }
+      if (ownerId === null || ownerId === void 0) {
+        throw new Error("'ownerId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/tournament/{tournamentId}/owner/{ownerId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId))).replace("{ownerId}", encodeURIComponent(String(ownerId)));
+      const queryParams = {
+        limit,
+        expiry
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    getUsers(ids, usernames, facebookIds, options = {}) {
+      const urlPath = "/v2/user";
+      const queryParams = {
+        ids,
+        usernames,
+        facebookIds
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    listUserGroups(userId, limit, state, cursor, options = {}) {
+      if (userId === null || userId === void 0) {
+        throw new Error("'userId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/user/{userId}/group".replace("{userId}", encodeURIComponent(String(userId)));
+      const queryParams = {
+        limit,
+        state,
+        cursor
+      };
+      let _body = null;
+      return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+  }
 
   // session.ts
   class Session {
@@ -1756,7 +1749,7 @@ var nakamajs = (() => {
         password: "",
         timeoutMs: timeout
       };
-      this.apiClient = NakamaApi(this.configuration);
+      this.apiClient = new NakamaApi(this.configuration);
     }
     addGroupUsers(session2, groupId, ids) {
       this.configuration.bearerToken = session2 && session2.token;
@@ -1766,353 +1759,89 @@ var nakamajs = (() => {
     }
     addFriends(session2, ids, usernames) {
       this.configuration.bearerToken = session2 && session2.token;
-      const urlPath = "/v2/friend";
-      const queryParams = {
-        ids,
-        usernames
-      };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "POST"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-      } else if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((response) => {
-        return Promise.resolve(response != void 0);
+      return this.apiClient.addFriends(ids, usernames).then((response) => {
+        return response !== void 0;
       });
     }
-    authenticateCustom(request) {
-      const urlPath = "/v2/account/authenticate/custom";
-      const queryParams = {
-        username: request.username,
-        create: request.create
+    authenticateApple(token, create, username, vars = new Map(), options = {}) {
+      const request = {
+        token,
+        vars
       };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "POST"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      fetchOptions.body = JSON.stringify({
-        id: request.id,
-        vars: request.vars
-      });
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((apiSession) => {
+      return this.apiClient.authenticateApple(request, create, username, options).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
-    authenticateDevice(request) {
-      const urlPath = "/v2/account/authenticate/device";
-      const queryParams = {
-        username: request.username,
-        create: request.create
+    authenticateCustom(id, create, username, vars = new Map(), options = {}) {
+      const request = {
+        id,
+        vars
       };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "POST"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      fetchOptions.body = JSON.stringify({
-        id: request.id,
-        vars: request.vars
-      });
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((apiSession) => {
+      return this.apiClient.authenticateCustom(request, create, username, options).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
-    authenticateEmail(request) {
-      const urlPath = "/v2/account/authenticate/email";
-      const queryParams = {
-        username: request.username,
-        create: request.create
+    authenticateDevice(id, vars) {
+      const request = {
+        id,
+        vars
       };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "POST"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      fetchOptions.body = JSON.stringify({
-        email: request.email,
-        password: request.password,
-        vars: request.vars
-      });
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((apiSession) => {
+      return this.apiClient.authenticateDevice(request).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
-    authenticateFacebookInstantGame(request) {
-      return this.apiClient.authenticateFacebookInstantGame({signed_player_info: request.signed_player_info, vars: request.vars}, request.create, request.username);
-    }
-    authenticateFacebook(request) {
-      const urlPath = "/v2/account/authenticate/facebook";
-      const queryParams = {
-        username: request.username,
-        create: request.create
+    authenticateEmail(email, password, vars) {
+      const request = {
+        email,
+        password,
+        vars
       };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "POST"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      fetchOptions.body = JSON.stringify({
-        token: request.token,
-        vars: request.vars
-      });
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((apiSession) => {
+      return this.apiClient.authenticateEmail(request).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
-    authenticateGoogle(request) {
-      const urlPath = "/v2/account/authenticate/google";
-      const queryParams = {
-        username: request.username,
-        create: request.create
+    authenticateFacebookInstantGame(signedPlayerInfo, create, username, vars, options = {}) {
+      const request = {
+        signed_player_info: signedPlayerInfo,
+        vars
       };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "POST"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      fetchOptions.body = JSON.stringify({
-        token: request.token,
-        vars: request.vars
-      });
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((apiSession) => {
+      return this.apiClient.authenticateFacebookInstantGame({signed_player_info: request.signed_player_info, vars: request.vars}, create, username, options).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
-    authenticateGameCenter(request) {
-      const urlPath = "/v2/account/authenticate/gamecenter";
-      const queryParams = {
-        username: request.username,
-        create: request.create
+    authenticateFacebook(token, create, username, sync, vars, options = {}) {
+      const request = {
+        token,
+        vars
       };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "POST"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      fetchOptions.body = JSON.stringify({
-        bundle_id: request.bundle_id,
-        player_id: request.player_id,
-        public_key_url: request.public_key_url,
-        salt: request.salt,
-        signature: request.signature,
-        timestamp_seconds: request.timestamp_seconds,
-        vars: request.vars
-      });
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((apiSession) => {
+      return this.apiClient.authenticateFacebook(request, create, username, sync, options).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
-    authenticateSteam(request) {
-      const urlPath = "/v2/account/authenticate/steam";
-      const queryParams = {
-        username: request.username,
-        create: request.create,
-        vars: request.vars
+    authenticateGoogle(token, create, username, vars, options = {}) {
+      const request = {
+        token,
+        vars
       };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "POST"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      fetchOptions.body = JSON.stringify({
-        token: request.token
+      return this.apiClient.authenticateGoogle(request, create, username, options).then((apiSession) => {
+        return Session.restore(apiSession.token || "");
       });
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((apiSession) => {
+    }
+    authenticateGameCenter(token, vars) {
+      const request = {
+        token,
+        vars
+      };
+      return this.apiClient.authenticateGameCenter(request).then((apiSession) => {
+        return Session.restore(apiSession.token || "");
+      });
+    }
+    authenticateSteam(token, vars) {
+      const request = {
+        token,
+        vars
+      };
+      return this.apiClient.authenticateSteam(request).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
@@ -2124,43 +1853,7 @@ var nakamajs = (() => {
     }
     blockFriends(session2, ids, usernames) {
       this.configuration.bearerToken = session2 && session2.token;
-      const urlPath = "/v2/friend/block";
-      const queryParams = {
-        ids,
-        usernames
-      };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "POST"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-      } else if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((response) => {
+      return this.apiClient.blockFriends(ids, usernames).then((response) => {
         return Promise.resolve(response != void 0);
       });
     }
@@ -2188,44 +1881,8 @@ var nakamajs = (() => {
     }
     deleteFriends(session2, ids, usernames) {
       this.configuration.bearerToken = session2 && session2.token;
-      const urlPath = "/v2/friend";
-      const queryParams = {
-        ids,
-        usernames
-      };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "DELETE"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-      } else if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((response) => {
-        return Promise.resolve(response != void 0);
+      return this.apiClient.deleteFriends(ids, usernames).then((response) => {
+        return response !== void 0;
       });
     }
     deleteGroup(session2, groupId) {
@@ -2236,42 +1893,7 @@ var nakamajs = (() => {
     }
     deleteNotifications(session2, ids) {
       this.configuration.bearerToken = session2 && session2.token;
-      const urlPath = "/v2/notification";
-      const queryParams = {
-        ids
-      };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "DELETE"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-      } else if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((response) => {
+      return this.apiClient.deleteNotifications(ids).then((response) => {
         return Promise.resolve(response != void 0);
       });
     }
@@ -2280,6 +1902,10 @@ var nakamajs = (() => {
       return this.apiClient.deleteStorageObjects(request).then((response) => {
         return Promise.resolve(response != void 0);
       });
+    }
+    demoteGroupUsers(session2, groupId, ids) {
+      this.configuration.bearerToken = session2 && session2.token;
+      return this.apiClient.demoteGroupUsers(groupId, ids);
     }
     emitEvent(session2, request) {
       this.configuration.bearerToken = session2 && session2.token;
@@ -2343,42 +1969,7 @@ var nakamajs = (() => {
     }
     kickGroupUsers(session2, groupId, ids) {
       this.configuration.bearerToken = session2 && session2.token;
-      const urlPath = "/v2/group/" + groupId + "/kick";
-      const queryParams = {
-        user_ids: ids
-      };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "POST"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-      } else if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((response) => {
+      return this.apiClient.kickGroupUsers(groupId, ids).then((response) => {
         return Promise.resolve(response != void 0);
       });
     }
@@ -2873,44 +2464,7 @@ var nakamajs = (() => {
     }
     promoteGroupUsers(session2, groupId, ids) {
       this.configuration.bearerToken = session2 && session2.token;
-      const urlPath = "/v2/group/" + groupId + "/promote";
-      const queryParams = {
-        user_ids: ids
-      };
-      const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-        if (queryParams[k] instanceof Array) {
-          return queryParams[k].reduce((prev, curr) => {
-            return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-          }, "");
-        } else {
-          if (queryParams[k] != null) {
-            return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-          }
-        }
-      }).join("");
-      const fetchOptions = __assign({}, {method: "POST"});
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      };
-      if (this.configuration.bearerToken) {
-        headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-      } else if (this.configuration.username) {
-        headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-      }
-      fetchOptions.headers = __assign({}, headers);
-      return Promise.race([
-        fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            throw response;
-          }
-        }),
-        new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
-      ]).then((response) => {
-        return Promise.resolve(response != void 0);
-      });
+      return this.apiClient.promoteGroupUsers(groupId, ids);
     }
     readStorageObjects(session2, request) {
       this.configuration.bearerToken = session2 && session2.token;
