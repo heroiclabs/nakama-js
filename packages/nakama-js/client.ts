@@ -474,6 +474,18 @@ export class Client {
     });
   }
 
+  /** Authenticate a user with an Apple ID against the server. */
+  authenticateApple(token: string, create?: boolean, username?: string, vars: Map<string, string> = new Map<string, string>(), options: any = {}) {
+    const request = {
+      "token": token,
+      "vars": vars
+    };
+
+    return this.apiClient.authenticateApple(request, create, username, options).then((apiSession : ApiSession) => {
+      return Session.restore(apiSession.token || "");
+    });
+  }
+
   /** Authenticate a user with a custom id against the server. */
   authenticateCustom(id: string, create?: boolean, username?: string, vars: Map<string, string> = new Map<string, string>(), options: any = {}): Promise<Session> {
     const request = {
@@ -643,6 +655,12 @@ export class Client {
     return this.apiClient.deleteStorageObjects(request).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
+  }
+
+  /** Demote a set of users in a group to the next role down. */
+  demoteGroupUsers(session: Session, groupId: string, ids: Array<string>): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.demoteGroupUsers(groupId, ids);
   }
 
   /** Submit an event for processing in the server's registered runtime custom events handler. */

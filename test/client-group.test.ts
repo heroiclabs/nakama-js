@@ -641,4 +641,68 @@ describe('Group Tests', () => {
     expect(result.group_users!.length).toBe(1);
   });
 
+  it('should create group and fail to demote superadmin', async () => {
+    const page : Page = await createPage();
+
+    const customid = generateid();
+    const group_name = generateid();
+
+    const result = await page.evaluate(async (customid, group_name) => {
+      const client = new nakamajs.Client();
+      const session = await client.authenticateCustom(customid);
+      const group = await client.createGroup(session, { name: group_name, open: true });
+      await client.demoteGroupUsers(session, group.id, [session.user_id]);
+      return await client.listGroupUsers(session, group.id, 0);
+    }, customid, group_name);
+
+    expect(result.group_users[0].state).toBe(0);
+  });
+
+  it('should create group, add user and promote and demote them', async () => {
+    const page : Page = await createPage();
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+
+    const group_name = generateid();
+
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
+      const client1 = new nakamajs.Client();
+      const client2 = new nakamajs.Client();
+
+      const session1 = await client1.authenticateCustom(customid1);
+      const session2 = await client2.authenticateCustom(customid2);
+      const group = await client1.createGroup(session1, { name: group_name, open: true });
+      await client1.addGroupUsers(session1, group.id, [session2.user_id]);
+      await client1.promoteGroupUsers(session1, group.id, [session1.user_id])
+      await client1.demoteGroupUsers(session1, group.id, [session1.user_id]);
+      return await client1.listGroupUsers(session1, group.id, 2);
+    }, customid1, customid2, group_name);
+
+    expect(result.group_users.length).toBe(1);
+  });
+
+  it('should create group, add user and fail to demote lowest-ranking user', async () => {
+    const page : Page = await createPage();
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+
+    const group_name = generateid();
+
+    const result = await page.evaluate(async (customid1, customid2, group_name) => {
+      const client1 = new nakamajs.Client();
+      const client2 = new nakamajs.Client();
+
+      const session1 = await client1.authenticateCustom(customid1);
+      const session2 = await client2.authenticateCustom(customid2);
+      const group = await client1.createGroup(session1, { name: group_name, open: true });
+      await client1.addGroupUsers(session1, group.id, [session2.user_id]);
+      await client1.demoteGroupUsers(session1, group.id, [session1.user_id]);
+      return await client1.listGroupUsers(session1, group.id, 2);
+    }, customid1, customid2, group_name);
+
+    expect(result.group_users.length).toBe(1);
+  });
+
 });
