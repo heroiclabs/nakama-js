@@ -23,8 +23,7 @@ You'll need to setup the server and database before you can connect with the cli
 
     You'll now see the code in the "node_modules" folder and package listed in your "package.json".
 
-    Optionally, if you would like to use the protocol buffer wire format with your Web Sockets, you can utilize
-    the adapter found in this package:
+    Optionally, if you would like to use the Protocol Buffers wire format with your sockets, you can import the adapter found in this package:
 
     ```shell
     yarn add "@heroiclabs/nakama-js-protobuf"
@@ -33,16 +32,17 @@ You'll need to setup the server and database before you can connect with the cli
 3. Use the connection credentials to build a client object.
 
     ```js
-    <script src="path/to/nakama-js.iife.js"></script>
+    // <script src="path/to/nakama-js.iife.js"></script>
 
     var useSSL = false; // Enable if server is run with an SSL certificate.
     var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350, useSSL);
     ```
 
     If you are including the optional protocol buffer adapter, pass the adapter to the Client object:
+
     ```js
-    <script src="path/to/nakama-js.iife.js"></script>
-    <script src="path/to/nakama-js-protobuf.iife.js"></script>
+    // <script src="path/to/nakama-js.iife.js"></script>
+    // <script src="path/to/nakama-js-protobuf.iife.js"></script>
 
     var useSSL = false; // Enable if server is run with an SSL certificate.
     var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350, useSSL, new nakamajsprotobuf.WebSocketAdapterPb());
@@ -59,7 +59,7 @@ There's a variety of ways to [authenticate](https://heroiclabs.com/docs/authenti
 ```js
 var email = "super@heroes.com";
 var password = "batsignal";
-const session = await client.authenticateEmail({ email: email, password: password });
+const session = await client.authenticateEmail(email, password);
 console.info(session);
 ```
 
@@ -105,7 +105,7 @@ console.info(account.wallet);
 The client can create one or more sockets with the server. Each socket can have it's own event listeners registered for responses received from the server.
 
 ```js
-const secure = false; // enable if server is run with an SSL certificate
+const secure = false; // Enable if server is run with an SSL certificate
 const trace = false;
 const socket = client.createSocket(secure, trace);
 socket.ondisconnect = (evt) => {
@@ -143,7 +143,7 @@ The development roadmap is managed as GitHub issues and pull requests are welcom
 
 ### Source Builds
 
-Ensure you are using Node v12.18.1
+Ensure you are using Node v12.18.1.
 
 The codebase is multi-package monorepo written in TypeScript and can be built with [esbuild](https://github.com/evanw/esbuild). All dependencies are managed with Yarn.
 
