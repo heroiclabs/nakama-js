@@ -189,7 +189,7 @@ To release onto NPM if you have access to the "@heroiclabs" organization you can
 yarn workspace <workspace> run build && yarn workspace <workspace> publish --access=public
 ```
 
-You can use `yarn foreach <cmd>` to do this for each NPM package distributed by this repository.
+You can use `yarn workspaces foreach <cmd>` to do this for each NPM package distributed by this repository.
 
 ### License
 
