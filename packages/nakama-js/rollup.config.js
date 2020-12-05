@@ -21,14 +21,15 @@ import typescript from '@rollup/plugin-typescript';
 export default {
     input: './index.ts',
     output:  {
-        dir: "dist",
         format: 'umd',
         name: 'nakamajs',
-        file: "nakama-js.umd.js"
+        dir: "dist",
+        entryFileNames: "nakama-js.umd.js" // workaround for TS requirement that dir is specified in config
     },
     plugins: [
         typescript({
             include: ["**/*.ts"],
+            target: "es5"
         })
     ],
     moduleContext: {

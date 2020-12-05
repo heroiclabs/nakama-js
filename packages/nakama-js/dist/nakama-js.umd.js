@@ -536,878 +536,6 @@
     self.fetch.polyfill = true;
   })(typeof self !== 'undefined' ? self : window);
 
-  const BASE_PATH = "http://127.0.0.1:80";
-  const NakamaApi = (configuration = {
-      basePath: BASE_PATH,
-      bearerToken: "",
-      password: "",
-      username: "",
-      timeoutMs: 5000,
-  }) => {
-      const napi = {
-          doFetch(urlPath, method, queryParams, body, options) {
-              const urlQuery = "?" + Object.keys(queryParams)
-                  .map(k => {
-                  if (queryParams[k] instanceof Array) {
-                      return queryParams[k].reduce((prev, curr) => {
-                          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                      }, "");
-                  }
-                  else {
-                      if (queryParams[k] != null) {
-                          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                      }
-                  }
-              })
-                  .join("");
-              const fetchOptions = Object.assign({ method: method }, options);
-              fetchOptions.headers = Object.assign({}, options.headers);
-              const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
-              if (!(descriptor === null || descriptor === void 0 ? void 0 : descriptor.set)) {
-                  fetchOptions.credentials = 'cocos-ignore';
-              }
-              if (configuration.bearerToken) {
-                  fetchOptions.headers["Authorization"] = "Bearer " + configuration.bearerToken;
-              }
-              else if (configuration.username) {
-                  fetchOptions.headers["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
-              }
-              if (!Object.keys(fetchOptions.headers).includes("Accept")) {
-                  fetchOptions.headers["Accept"] = "application/json";
-              }
-              if (!Object.keys(fetchOptions.headers).includes("Content-Type")) {
-                  fetchOptions.headers["Content-Type"] = "application/json";
-              }
-              Object.keys(fetchOptions.headers).forEach((key) => {
-                  if (!fetchOptions.headers[key]) {
-                      delete fetchOptions.headers[key];
-                  }
-              });
-              fetchOptions.body = body;
-              return Promise.race([
-                  fetch(configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
-                      if (response.status == 204) {
-                          return response;
-                      }
-                      else if (response.status >= 200 && response.status < 300) {
-                          return response.json();
-                      }
-                      else {
-                          throw response;
-                      }
-                  }),
-                  new Promise((_, reject) => setTimeout(reject, configuration.timeoutMs, "Request timed out.")),
-              ]);
-          },
-          healthcheck(options = {}) {
-              const urlPath = "/healthcheck";
-              const queryParams = {};
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          getAccount(options = {}) {
-              const urlPath = "/v2/account";
-              const queryParams = {};
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          updateAccount(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
-          },
-          authenticateApple(body, create, username, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/authenticate/apple";
-              const queryParams = {
-                  create: create,
-                  username: username,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          authenticateCustom(body, create, username, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/authenticate/custom";
-              const queryParams = {
-                  create: create,
-                  username: username,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          authenticateDevice(body, create, username, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/authenticate/device";
-              const queryParams = {
-                  create: create,
-                  username: username,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          authenticateEmail(body, create, username, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/authenticate/email";
-              const queryParams = {
-                  create: create,
-                  username: username,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          authenticateFacebook(body, create, username, sync, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/authenticate/facebook";
-              const queryParams = {
-                  create: create,
-                  username: username,
-                  sync: sync,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          authenticateFacebookInstantGame(body, create, username, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/authenticate/facebookinstantgame";
-              const queryParams = {
-                  create: create,
-                  username: username,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          authenticateGameCenter(body, create, username, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/authenticate/gamecenter";
-              const queryParams = {
-                  create: create,
-                  username: username,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          authenticateGoogle(body, create, username, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/authenticate/google";
-              const queryParams = {
-                  create: create,
-                  username: username,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          authenticateSteam(body, create, username, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/authenticate/steam";
-              const queryParams = {
-                  create: create,
-                  username: username,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          linkApple(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/link/apple";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          linkCustom(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/link/custom";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          linkDevice(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/link/device";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          linkEmail(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/link/email";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          linkFacebook(body, sync, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/link/facebook";
-              const queryParams = {
-                  sync: sync,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          linkFacebookInstantGame(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/link/facebookinstantgame";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          linkGameCenter(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/link/gamecenter";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          linkGoogle(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/link/google";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          linkSteam(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/link/steam";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          unlinkApple(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/unlink/apple";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          unlinkCustom(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/unlink/custom";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          unlinkDevice(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/unlink/device";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          unlinkEmail(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/unlink/email";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          unlinkFacebook(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/unlink/facebook";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          unlinkFacebookInstantGame(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/unlink/facebookinstantgame";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          unlinkGameCenter(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/unlink/gamecenter";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          unlinkGoogle(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/unlink/google";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          unlinkSteam(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/account/unlink/steam";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          listChannelMessages(channelId, limit, forward, cursor, options = {}) {
-              if (channelId === null || channelId === undefined) {
-                  throw new Error("'channelId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/channel/{channelId}"
-                  .replace("{channelId}", encodeURIComponent(String(channelId)));
-              const queryParams = {
-                  limit: limit,
-                  forward: forward,
-                  cursor: cursor,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          event(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/event";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          deleteFriends(ids, usernames, options = {}) {
-              const urlPath = "/v2/friend";
-              const queryParams = {
-                  ids: ids,
-                  usernames: usernames,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
-          },
-          listFriends(limit, state, cursor, options = {}) {
-              const urlPath = "/v2/friend";
-              const queryParams = {
-                  limit: limit,
-                  state: state,
-                  cursor: cursor,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          addFriends(ids, usernames, options = {}) {
-              const urlPath = "/v2/friend";
-              const queryParams = {
-                  ids: ids,
-                  usernames: usernames,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          blockFriends(ids, usernames, options = {}) {
-              const urlPath = "/v2/friend/block";
-              const queryParams = {
-                  ids: ids,
-                  usernames: usernames,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          importFacebookFriends(body, reset, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/friend/facebook";
-              const queryParams = {
-                  reset: reset,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          listGroups(name, cursor, limit, options = {}) {
-              const urlPath = "/v2/group";
-              const queryParams = {
-                  name: name,
-                  cursor: cursor,
-                  limit: limit,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          createGroup(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/group";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          deleteGroup(groupId, options = {}) {
-              if (groupId === null || groupId === undefined) {
-                  throw new Error("'groupId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/group/{groupId}"
-                  .replace("{groupId}", encodeURIComponent(String(groupId)));
-              const queryParams = {};
-              let _body = null;
-              return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
-          },
-          updateGroup(groupId, body, options = {}) {
-              if (groupId === null || groupId === undefined) {
-                  throw new Error("'groupId' is a required parameter but is null or undefined.");
-              }
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/group/{groupId}"
-                  .replace("{groupId}", encodeURIComponent(String(groupId)));
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
-          },
-          addGroupUsers(groupId, userIds, options = {}) {
-              if (groupId === null || groupId === undefined) {
-                  throw new Error("'groupId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/group/{groupId}/add"
-                  .replace("{groupId}", encodeURIComponent(String(groupId)));
-              const queryParams = {
-                  user_ids: userIds,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          banGroupUsers(groupId, userIds, options = {}) {
-              if (groupId === null || groupId === undefined) {
-                  throw new Error("'groupId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/group/{groupId}/ban"
-                  .replace("{groupId}", encodeURIComponent(String(groupId)));
-              const queryParams = {
-                  user_ids: userIds,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          demoteGroupUsers(groupId, userIds, options = {}) {
-              if (groupId === null || groupId === undefined) {
-                  throw new Error("'groupId' is a required parameter but is null or undefined.");
-              }
-              if (userIds === null || userIds === undefined) {
-                  throw new Error("'userIds' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/group/{groupId}/demote"
-                  .replace("{groupId}", encodeURIComponent(String(groupId)));
-              const queryParams = {
-                  user_ids: userIds,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          joinGroup(groupId, options = {}) {
-              if (groupId === null || groupId === undefined) {
-                  throw new Error("'groupId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/group/{groupId}/join"
-                  .replace("{groupId}", encodeURIComponent(String(groupId)));
-              const queryParams = {};
-              let _body = null;
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          kickGroupUsers(groupId, userIds, options = {}) {
-              if (groupId === null || groupId === undefined) {
-                  throw new Error("'groupId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/group/{groupId}/kick"
-                  .replace("{groupId}", encodeURIComponent(String(groupId)));
-              const queryParams = {
-                  user_ids: userIds,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          leaveGroup(groupId, options = {}) {
-              if (groupId === null || groupId === undefined) {
-                  throw new Error("'groupId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/group/{groupId}/leave"
-                  .replace("{groupId}", encodeURIComponent(String(groupId)));
-              const queryParams = {};
-              let _body = null;
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          promoteGroupUsers(groupId, userIds, options = {}) {
-              if (groupId === null || groupId === undefined) {
-                  throw new Error("'groupId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/group/{groupId}/promote"
-                  .replace("{groupId}", encodeURIComponent(String(groupId)));
-              const queryParams = {
-                  user_ids: userIds,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          listGroupUsers(groupId, limit, state, cursor, options = {}) {
-              if (groupId === null || groupId === undefined) {
-                  throw new Error("'groupId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/group/{groupId}/user"
-                  .replace("{groupId}", encodeURIComponent(String(groupId)));
-              const queryParams = {
-                  limit: limit,
-                  state: state,
-                  cursor: cursor,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          deleteLeaderboardRecord(leaderboardId, options = {}) {
-              if (leaderboardId === null || leaderboardId === undefined) {
-                  throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/leaderboard/{leaderboardId}"
-                  .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-              const queryParams = {};
-              let _body = null;
-              return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
-          },
-          listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry, options = {}) {
-              if (leaderboardId === null || leaderboardId === undefined) {
-                  throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/leaderboard/{leaderboardId}"
-                  .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-              const queryParams = {
-                  ownerIds: ownerIds,
-                  limit: limit,
-                  cursor: cursor,
-                  expiry: expiry,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          writeLeaderboardRecord(leaderboardId, body, options = {}) {
-              if (leaderboardId === null || leaderboardId === undefined) {
-                  throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-              }
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/leaderboard/{leaderboardId}"
-                  .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry, options = {}) {
-              if (leaderboardId === null || leaderboardId === undefined) {
-                  throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
-              }
-              if (ownerId === null || ownerId === undefined) {
-                  throw new Error("'ownerId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/leaderboard/{leaderboardId}/owner/{ownerId}"
-                  .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)))
-                  .replace("{ownerId}", encodeURIComponent(String(ownerId)));
-              const queryParams = {
-                  limit: limit,
-                  expiry: expiry,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          listMatches(limit, authoritative, label, minSize, maxSize, query, options = {}) {
-              const urlPath = "/v2/match";
-              const queryParams = {
-                  limit: limit,
-                  authoritative: authoritative,
-                  label: label,
-                  minSize: minSize,
-                  maxSize: maxSize,
-                  query: query,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          deleteNotifications(ids, options = {}) {
-              const urlPath = "/v2/notification";
-              const queryParams = {
-                  ids: ids,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "DELETE", queryParams, _body, options);
-          },
-          listNotifications(limit, cacheableCursor, options = {}) {
-              const urlPath = "/v2/notification";
-              const queryParams = {
-                  limit: limit,
-                  cacheableCursor: cacheableCursor,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          rpcFunc2(id, payload, httpKey, options = {}) {
-              if (id === null || id === undefined) {
-                  throw new Error("'id' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/rpc/{id}"
-                  .replace("{id}", encodeURIComponent(String(id)));
-              const queryParams = {
-                  payload: payload,
-                  httpKey: httpKey,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          rpcFunc(id, body, httpKey, options = {}) {
-              if (id === null || id === undefined) {
-                  throw new Error("'id' is a required parameter but is null or undefined.");
-              }
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/rpc/{id}"
-                  .replace("{id}", encodeURIComponent(String(id)));
-              const queryParams = {
-                  httpKey: httpKey,
-              };
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          readStorageObjects(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/storage";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          writeStorageObjects(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/storage";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
-          },
-          deleteStorageObjects(body, options = {}) {
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/storage/delete";
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
-          },
-          listStorageObjects(collection, userId, limit, cursor, options = {}) {
-              if (collection === null || collection === undefined) {
-                  throw new Error("'collection' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/storage/{collection}"
-                  .replace("{collection}", encodeURIComponent(String(collection)));
-              const queryParams = {
-                  userId: userId,
-                  limit: limit,
-                  cursor: cursor,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          listStorageObjects2(collection, userId, limit, cursor, options = {}) {
-              if (collection === null || collection === undefined) {
-                  throw new Error("'collection' is a required parameter but is null or undefined.");
-              }
-              if (userId === null || userId === undefined) {
-                  throw new Error("'userId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/storage/{collection}/{userId}"
-                  .replace("{collection}", encodeURIComponent(String(collection)))
-                  .replace("{userId}", encodeURIComponent(String(userId)));
-              const queryParams = {
-                  limit: limit,
-                  cursor: cursor,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor, options = {}) {
-              const urlPath = "/v2/tournament";
-              const queryParams = {
-                  categoryStart: categoryStart,
-                  categoryEnd: categoryEnd,
-                  startTime: startTime,
-                  endTime: endTime,
-                  limit: limit,
-                  cursor: cursor,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry, options = {}) {
-              if (tournamentId === null || tournamentId === undefined) {
-                  throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/tournament/{tournamentId}"
-                  .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-              const queryParams = {
-                  ownerIds: ownerIds,
-                  limit: limit,
-                  cursor: cursor,
-                  expiry: expiry,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          writeTournamentRecord(tournamentId, body, options = {}) {
-              if (tournamentId === null || tournamentId === undefined) {
-                  throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-              }
-              if (body === null || body === undefined) {
-                  throw new Error("'body' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/tournament/{tournamentId}"
-                  .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-              const queryParams = {};
-              let _body = null;
-              _body = JSON.stringify(body || {});
-              return napi.doFetch(urlPath, "PUT", queryParams, _body, options);
-          },
-          joinTournament(tournamentId, options = {}) {
-              if (tournamentId === null || tournamentId === undefined) {
-                  throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/tournament/{tournamentId}/join"
-                  .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-              const queryParams = {};
-              let _body = null;
-              return napi.doFetch(urlPath, "POST", queryParams, _body, options);
-          },
-          listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry, options = {}) {
-              if (tournamentId === null || tournamentId === undefined) {
-                  throw new Error("'tournamentId' is a required parameter but is null or undefined.");
-              }
-              if (ownerId === null || ownerId === undefined) {
-                  throw new Error("'ownerId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/tournament/{tournamentId}/owner/{ownerId}"
-                  .replace("{tournamentId}", encodeURIComponent(String(tournamentId)))
-                  .replace("{ownerId}", encodeURIComponent(String(ownerId)));
-              const queryParams = {
-                  limit: limit,
-                  expiry: expiry,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          getUsers(ids, usernames, facebookIds, options = {}) {
-              const urlPath = "/v2/user";
-              const queryParams = {
-                  ids: ids,
-                  usernames: usernames,
-                  facebookIds: facebookIds,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-          listUserGroups(userId, limit, state, cursor, options = {}) {
-              if (userId === null || userId === undefined) {
-                  throw new Error("'userId' is a required parameter but is null or undefined.");
-              }
-              const urlPath = "/v2/user/{userId}/group"
-                  .replace("{userId}", encodeURIComponent(String(userId)));
-              const queryParams = {
-                  limit: limit,
-                  state: state,
-                  cursor: cursor,
-              };
-              let _body = null;
-              return napi.doFetch(urlPath, "GET", queryParams, _body, options);
-          },
-      };
-      return napi;
-  };
-
   /*! *****************************************************************************
   Copyright (c) Microsoft Corporation.
 
@@ -1423,6 +551,17 @@
   PERFORMANCE OF THIS SOFTWARE.
   ***************************************************************************** */
 
+  var __assign = function() {
+      __assign = Object.assign || function __assign(t) {
+          for (var s, i = 1, n = arguments.length; i < n; i++) {
+              s = arguments[i];
+              for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+          }
+          return t;
+      };
+      return __assign.apply(this, arguments);
+  };
+
   function __awaiter(thisArg, _arguments, P, generator) {
       function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
       return new (P || (P = Promise))(function (resolve, reject) {
@@ -1433,62 +572,1075 @@
       });
   }
 
-  class WebSocketAdapterText {
-      constructor() {
+  function __generator(thisArg, body) {
+      var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+      return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+      function verb(n) { return function (v) { return step([n, v]); }; }
+      function step(op) {
+          if (f) throw new TypeError("Generator is already executing.");
+          while (_) try {
+              if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+              if (y = 0, t) op = [op[0] & 2, t.value];
+              switch (op[0]) {
+                  case 0: case 1: t = op; break;
+                  case 4: _.label++; return { value: op[1], done: false };
+                  case 5: _.label++; y = op[1]; op = [0]; continue;
+                  case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                  default:
+                      if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                      if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                      if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                      if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                      if (t[2]) _.ops.pop();
+                      _.trys.pop(); continue;
+              }
+              op = body.call(thisArg, _);
+          } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+          if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+      }
+  }
+
+  var NakamaApi = (function () {
+      function NakamaApi(configuration) {
+          this.configuration = configuration;
+      }
+      NakamaApi.prototype.doFetch = function (urlPath, method, queryParams, body, options) {
+          var _this = this;
+          var urlQuery = "?" + Object.keys(queryParams)
+              .map(function (k) {
+              if (queryParams[k] instanceof Array) {
+                  return queryParams[k].reduce(function (prev, curr) {
+                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                  }, "");
+              }
+              else {
+                  if (queryParams[k] != null) {
+                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
+                  }
+              }
+          })
+              .join("");
+          var fetchOptions = __assign({ method: method }, options);
+          fetchOptions.headers = __assign({}, options.headers);
+          var descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+          if (!(descriptor === null || descriptor === void 0 ? void 0 : descriptor.set)) {
+              fetchOptions.credentials = 'cocos-ignore';
+          }
+          if (this.configuration.bearerToken) {
+              fetchOptions.headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
+          }
+          else if (this.configuration.username) {
+              fetchOptions.headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+          }
+          if (!Object.keys(fetchOptions.headers).includes("Accept")) {
+              fetchOptions.headers["Accept"] = "application/json";
+          }
+          if (!Object.keys(fetchOptions.headers).includes("Content-Type")) {
+              fetchOptions.headers["Content-Type"] = "application/json";
+          }
+          Object.keys(fetchOptions.headers).forEach(function (key) {
+              if (!fetchOptions.headers[key]) {
+                  delete fetchOptions.headers[key];
+              }
+          });
+          fetchOptions.body = body;
+          return Promise.race([
+              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+              }),
+          ]);
+      };
+      NakamaApi.prototype.healthcheck = function (options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/healthcheck";
+          var queryParams = {};
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.getAccount = function (options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/v2/account";
+          var queryParams = {};
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.updateAccount = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+      };
+      NakamaApi.prototype.authenticateApple = function (body, create, username, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/authenticate/apple";
+          var queryParams = {
+              create: create,
+              username: username,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.authenticateCustom = function (body, create, username, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/authenticate/custom";
+          var queryParams = {
+              create: create,
+              username: username,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.authenticateDevice = function (body, create, username, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/authenticate/device";
+          var queryParams = {
+              create: create,
+              username: username,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.authenticateEmail = function (body, create, username, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/authenticate/email";
+          var queryParams = {
+              create: create,
+              username: username,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.authenticateFacebook = function (body, create, username, sync, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/authenticate/facebook";
+          var queryParams = {
+              create: create,
+              username: username,
+              sync: sync,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.authenticateFacebookInstantGame = function (body, create, username, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/authenticate/facebookinstantgame";
+          var queryParams = {
+              create: create,
+              username: username,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.authenticateGameCenter = function (body, create, username, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/authenticate/gamecenter";
+          var queryParams = {
+              create: create,
+              username: username,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.authenticateGoogle = function (body, create, username, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/authenticate/google";
+          var queryParams = {
+              create: create,
+              username: username,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.authenticateSteam = function (body, create, username, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/authenticate/steam";
+          var queryParams = {
+              create: create,
+              username: username,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.linkApple = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/link/apple";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.linkCustom = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/link/custom";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.linkDevice = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/link/device";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.linkEmail = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/link/email";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.linkFacebook = function (body, sync, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/link/facebook";
+          var queryParams = {
+              sync: sync,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.linkFacebookInstantGame = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/link/facebookinstantgame";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.linkGameCenter = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/link/gamecenter";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.linkGoogle = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/link/google";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.linkSteam = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/link/steam";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.unlinkApple = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/unlink/apple";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.unlinkCustom = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/unlink/custom";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.unlinkDevice = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/unlink/device";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.unlinkEmail = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/unlink/email";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.unlinkFacebook = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/unlink/facebook";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.unlinkFacebookInstantGame = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/unlink/facebookinstantgame";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.unlinkGameCenter = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/unlink/gamecenter";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.unlinkGoogle = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/unlink/google";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.unlinkSteam = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/unlink/steam";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listChannelMessages = function (channelId, limit, forward, cursor, options) {
+          if (options === void 0) { options = {}; }
+          if (channelId === null || channelId === undefined) {
+              throw new Error("'channelId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/channel/{channelId}"
+              .replace("{channelId}", encodeURIComponent(String(channelId)));
+          var queryParams = {
+              limit: limit,
+              forward: forward,
+              cursor: cursor,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.event = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/event";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.deleteFriends = function (ids, usernames, options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/v2/friend";
+          var queryParams = {
+              ids: ids,
+              usernames: usernames,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listFriends = function (limit, state, cursor, options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/v2/friend";
+          var queryParams = {
+              limit: limit,
+              state: state,
+              cursor: cursor,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.addFriends = function (ids, usernames, options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/v2/friend";
+          var queryParams = {
+              ids: ids,
+              usernames: usernames,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.blockFriends = function (ids, usernames, options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/v2/friend/block";
+          var queryParams = {
+              ids: ids,
+              usernames: usernames,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.importFacebookFriends = function (body, reset, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/friend/facebook";
+          var queryParams = {
+              reset: reset,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listGroups = function (name, cursor, limit, options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/v2/group";
+          var queryParams = {
+              name: name,
+              cursor: cursor,
+              limit: limit,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.createGroup = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/group";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.deleteGroup = function (groupId, options) {
+          if (options === void 0) { options = {}; }
+          if (groupId === null || groupId === undefined) {
+              throw new Error("'groupId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/group/{groupId}"
+              .replace("{groupId}", encodeURIComponent(String(groupId)));
+          var queryParams = {};
+          var _body = null;
+          return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+      };
+      NakamaApi.prototype.updateGroup = function (groupId, body, options) {
+          if (options === void 0) { options = {}; }
+          if (groupId === null || groupId === undefined) {
+              throw new Error("'groupId' is a required parameter but is null or undefined.");
+          }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/group/{groupId}"
+              .replace("{groupId}", encodeURIComponent(String(groupId)));
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+      };
+      NakamaApi.prototype.addGroupUsers = function (groupId, userIds, options) {
+          if (options === void 0) { options = {}; }
+          if (groupId === null || groupId === undefined) {
+              throw new Error("'groupId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/group/{groupId}/add"
+              .replace("{groupId}", encodeURIComponent(String(groupId)));
+          var queryParams = {
+              user_ids: userIds,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.banGroupUsers = function (groupId, userIds, options) {
+          if (options === void 0) { options = {}; }
+          if (groupId === null || groupId === undefined) {
+              throw new Error("'groupId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/group/{groupId}/ban"
+              .replace("{groupId}", encodeURIComponent(String(groupId)));
+          var queryParams = {
+              user_ids: userIds,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.demoteGroupUsers = function (groupId, userIds, options) {
+          if (options === void 0) { options = {}; }
+          if (groupId === null || groupId === undefined) {
+              throw new Error("'groupId' is a required parameter but is null or undefined.");
+          }
+          if (userIds === null || userIds === undefined) {
+              throw new Error("'userIds' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/group/{groupId}/demote"
+              .replace("{groupId}", encodeURIComponent(String(groupId)));
+          var queryParams = {
+              user_ids: userIds,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.joinGroup = function (groupId, options) {
+          if (options === void 0) { options = {}; }
+          if (groupId === null || groupId === undefined) {
+              throw new Error("'groupId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/group/{groupId}/join"
+              .replace("{groupId}", encodeURIComponent(String(groupId)));
+          var queryParams = {};
+          var _body = null;
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.kickGroupUsers = function (groupId, userIds, options) {
+          if (options === void 0) { options = {}; }
+          if (groupId === null || groupId === undefined) {
+              throw new Error("'groupId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/group/{groupId}/kick"
+              .replace("{groupId}", encodeURIComponent(String(groupId)));
+          var queryParams = {
+              user_ids: userIds,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.leaveGroup = function (groupId, options) {
+          if (options === void 0) { options = {}; }
+          if (groupId === null || groupId === undefined) {
+              throw new Error("'groupId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/group/{groupId}/leave"
+              .replace("{groupId}", encodeURIComponent(String(groupId)));
+          var queryParams = {};
+          var _body = null;
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.promoteGroupUsers = function (groupId, userIds, options) {
+          if (options === void 0) { options = {}; }
+          if (groupId === null || groupId === undefined) {
+              throw new Error("'groupId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/group/{groupId}/promote"
+              .replace("{groupId}", encodeURIComponent(String(groupId)));
+          var queryParams = {
+              user_ids: userIds,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listGroupUsers = function (groupId, limit, state, cursor, options) {
+          if (options === void 0) { options = {}; }
+          if (groupId === null || groupId === undefined) {
+              throw new Error("'groupId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/group/{groupId}/user"
+              .replace("{groupId}", encodeURIComponent(String(groupId)));
+          var queryParams = {
+              limit: limit,
+              state: state,
+              cursor: cursor,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.deleteLeaderboardRecord = function (leaderboardId, options) {
+          if (options === void 0) { options = {}; }
+          if (leaderboardId === null || leaderboardId === undefined) {
+              throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/leaderboard/{leaderboardId}"
+              .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
+          var queryParams = {};
+          var _body = null;
+          return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listLeaderboardRecords = function (leaderboardId, ownerIds, limit, cursor, expiry, options) {
+          if (options === void 0) { options = {}; }
+          if (leaderboardId === null || leaderboardId === undefined) {
+              throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/leaderboard/{leaderboardId}"
+              .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
+          var queryParams = {
+              ownerIds: ownerIds,
+              limit: limit,
+              cursor: cursor,
+              expiry: expiry,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.writeLeaderboardRecord = function (leaderboardId, body, options) {
+          if (options === void 0) { options = {}; }
+          if (leaderboardId === null || leaderboardId === undefined) {
+              throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+          }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/leaderboard/{leaderboardId}"
+              .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listLeaderboardRecordsAroundOwner = function (leaderboardId, ownerId, limit, expiry, options) {
+          if (options === void 0) { options = {}; }
+          if (leaderboardId === null || leaderboardId === undefined) {
+              throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
+          }
+          if (ownerId === null || ownerId === undefined) {
+              throw new Error("'ownerId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/leaderboard/{leaderboardId}/owner/{ownerId}"
+              .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)))
+              .replace("{ownerId}", encodeURIComponent(String(ownerId)));
+          var queryParams = {
+              limit: limit,
+              expiry: expiry,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listMatches = function (limit, authoritative, label, minSize, maxSize, query, options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/v2/match";
+          var queryParams = {
+              limit: limit,
+              authoritative: authoritative,
+              label: label,
+              minSize: minSize,
+              maxSize: maxSize,
+              query: query,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.deleteNotifications = function (ids, options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/v2/notification";
+          var queryParams = {
+              ids: ids,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listNotifications = function (limit, cacheableCursor, options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/v2/notification";
+          var queryParams = {
+              limit: limit,
+              cacheableCursor: cacheableCursor,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.rpcFunc2 = function (id, payload, httpKey, options) {
+          if (options === void 0) { options = {}; }
+          if (id === null || id === undefined) {
+              throw new Error("'id' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/rpc/{id}"
+              .replace("{id}", encodeURIComponent(String(id)));
+          var queryParams = {
+              payload: payload,
+              httpKey: httpKey,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.rpcFunc = function (id, body, httpKey, options) {
+          if (options === void 0) { options = {}; }
+          if (id === null || id === undefined) {
+              throw new Error("'id' is a required parameter but is null or undefined.");
+          }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/rpc/{id}"
+              .replace("{id}", encodeURIComponent(String(id)));
+          var queryParams = {
+              httpKey: httpKey,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.readStorageObjects = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/storage";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.writeStorageObjects = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/storage";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+      };
+      NakamaApi.prototype.deleteStorageObjects = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/storage/delete";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listStorageObjects = function (collection, userId, limit, cursor, options) {
+          if (options === void 0) { options = {}; }
+          if (collection === null || collection === undefined) {
+              throw new Error("'collection' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/storage/{collection}"
+              .replace("{collection}", encodeURIComponent(String(collection)));
+          var queryParams = {
+              userId: userId,
+              limit: limit,
+              cursor: cursor,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listStorageObjects2 = function (collection, userId, limit, cursor, options) {
+          if (options === void 0) { options = {}; }
+          if (collection === null || collection === undefined) {
+              throw new Error("'collection' is a required parameter but is null or undefined.");
+          }
+          if (userId === null || userId === undefined) {
+              throw new Error("'userId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/storage/{collection}/{userId}"
+              .replace("{collection}", encodeURIComponent(String(collection)))
+              .replace("{userId}", encodeURIComponent(String(userId)));
+          var queryParams = {
+              limit: limit,
+              cursor: cursor,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listTournaments = function (categoryStart, categoryEnd, startTime, endTime, limit, cursor, options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/v2/tournament";
+          var queryParams = {
+              categoryStart: categoryStart,
+              categoryEnd: categoryEnd,
+              startTime: startTime,
+              endTime: endTime,
+              limit: limit,
+              cursor: cursor,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listTournamentRecords = function (tournamentId, ownerIds, limit, cursor, expiry, options) {
+          if (options === void 0) { options = {}; }
+          if (tournamentId === null || tournamentId === undefined) {
+              throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/tournament/{tournamentId}"
+              .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
+          var queryParams = {
+              ownerIds: ownerIds,
+              limit: limit,
+              cursor: cursor,
+              expiry: expiry,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.writeTournamentRecord = function (tournamentId, body, options) {
+          if (options === void 0) { options = {}; }
+          if (tournamentId === null || tournamentId === undefined) {
+              throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+          }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/tournament/{tournamentId}"
+              .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+      };
+      NakamaApi.prototype.joinTournament = function (tournamentId, options) {
+          if (options === void 0) { options = {}; }
+          if (tournamentId === null || tournamentId === undefined) {
+              throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/tournament/{tournamentId}/join"
+              .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
+          var queryParams = {};
+          var _body = null;
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listTournamentRecordsAroundOwner = function (tournamentId, ownerId, limit, expiry, options) {
+          if (options === void 0) { options = {}; }
+          if (tournamentId === null || tournamentId === undefined) {
+              throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+          }
+          if (ownerId === null || ownerId === undefined) {
+              throw new Error("'ownerId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/tournament/{tournamentId}/owner/{ownerId}"
+              .replace("{tournamentId}", encodeURIComponent(String(tournamentId)))
+              .replace("{ownerId}", encodeURIComponent(String(ownerId)));
+          var queryParams = {
+              limit: limit,
+              expiry: expiry,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.getUsers = function (ids, usernames, facebookIds, options) {
+          if (options === void 0) { options = {}; }
+          var urlPath = "/v2/user";
+          var queryParams = {
+              ids: ids,
+              usernames: usernames,
+              facebookIds: facebookIds,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.listUserGroups = function (userId, limit, state, cursor, options) {
+          if (options === void 0) { options = {}; }
+          if (userId === null || userId === undefined) {
+              throw new Error("'userId' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/user/{userId}/group"
+              .replace("{userId}", encodeURIComponent(String(userId)));
+          var queryParams = {
+              limit: limit,
+              state: state,
+              cursor: cursor,
+          };
+          var _body = null;
+          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      return NakamaApi;
+  }());
+
+  var Session = (function () {
+      function Session(token, created_at, expires_at, username, user_id, vars) {
+          this.token = token;
+          this.created_at = created_at;
+          this.expires_at = expires_at;
+          this.username = username;
+          this.user_id = user_id;
+          this.vars = vars;
+      }
+      Session.prototype.isexpired = function (currenttime) {
+          return (this.expires_at - currenttime) < 0;
+      };
+      Session.restore = function (jwt) {
+          var createdAt = Math.floor(new Date().getTime() / 1000);
+          var parts = jwt.split('.');
+          if (parts.length != 3) {
+              throw 'jwt is not valid.';
+          }
+          var decoded = JSON.parse(atob(parts[1]));
+          var expiresAt = Math.floor(parseInt(decoded['exp']));
+          return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid'], decoded['vrs']);
+      };
+      return Session;
+  }());
+
+  var WebSocketAdapterText = (function () {
+      function WebSocketAdapterText() {
           this._isConnected = false;
       }
-      get onClose() {
-          return this._socket.onclose;
-      }
-      set onClose(value) {
-          this._socket.onclose = value;
-      }
-      get onError() {
-          return this._socket.onerror;
-      }
-      set onError(value) {
-          this._socket.onerror = value;
-      }
-      get onMessage() {
-          return this._socket.onmessage;
-      }
-      set onMessage(value) {
-          if (value) {
-              this._socket.onmessage = (evt) => {
-                  const message = JSON.parse(evt.data);
-                  value(message);
-              };
-          }
-          else {
-              value = null;
-          }
-      }
-      get onOpen() {
-          return this._socket.onopen;
-      }
-      set onOpen(value) {
-          this._socket.onopen = value;
-      }
-      get isConnected() {
-          return this._isConnected;
-      }
-      connect(scheme, host, port, createStatus, token) {
-          const url = `${scheme}${host}:${port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(token)}`;
+      Object.defineProperty(WebSocketAdapterText.prototype, "onClose", {
+          get: function () {
+              return this._socket.onclose;
+          },
+          set: function (value) {
+              this._socket.onclose = value;
+          },
+          enumerable: false,
+          configurable: true
+      });
+      Object.defineProperty(WebSocketAdapterText.prototype, "onError", {
+          get: function () {
+              return this._socket.onerror;
+          },
+          set: function (value) {
+              this._socket.onerror = value;
+          },
+          enumerable: false,
+          configurable: true
+      });
+      Object.defineProperty(WebSocketAdapterText.prototype, "onMessage", {
+          get: function () {
+              return this._socket.onmessage;
+          },
+          set: function (value) {
+              if (value) {
+                  this._socket.onmessage = function (evt) {
+                      var message = JSON.parse(evt.data);
+                      value(message);
+                  };
+              }
+              else {
+                  value = null;
+              }
+          },
+          enumerable: false,
+          configurable: true
+      });
+      Object.defineProperty(WebSocketAdapterText.prototype, "onOpen", {
+          get: function () {
+              return this._socket.onopen;
+          },
+          set: function (value) {
+              this._socket.onopen = value;
+          },
+          enumerable: false,
+          configurable: true
+      });
+      Object.defineProperty(WebSocketAdapterText.prototype, "isConnected", {
+          get: function () {
+              return this._isConnected;
+          },
+          enumerable: false,
+          configurable: true
+      });
+      WebSocketAdapterText.prototype.connect = function (scheme, host, port, createStatus, token) {
+          var url = "" + scheme + host + ":" + port + "/ws?lang=en&status=" + encodeURIComponent(createStatus.toString()) + "&token=" + encodeURIComponent(token);
           this._socket = new WebSocket(url);
           this._isConnected = true;
-      }
-      close() {
+      };
+      WebSocketAdapterText.prototype.close = function () {
           this._isConnected = false;
           this._socket.close();
           this._socket = undefined;
-      }
-      send(msg) {
+      };
+      WebSocketAdapterText.prototype.send = function (msg) {
           if (msg.match_data_send) {
               msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
           }
           this._socket.send(JSON.stringify(msg));
-      }
-  }
+      };
+      return WebSocketAdapterText;
+  }());
 
   function b64EncodeUnicode(str) {
       return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
@@ -1501,8 +1653,11 @@
       }).join(''));
   }
 
-  class DefaultSocket {
-      constructor(host, port, useSSL = false, verbose = false, adapter = new WebSocketAdapterText()) {
+  var DefaultSocket = (function () {
+      function DefaultSocket(host, port, useSSL, verbose, adapter) {
+          if (useSSL === void 0) { useSSL = false; }
+          if (verbose === void 0) { verbose = false; }
+          if (adapter === void 0) { adapter = new WebSocketAdapterText(); }
           this.host = host;
           this.port = port;
           this.useSSL = useSSL;
@@ -1511,76 +1666,78 @@
           this.cIds = {};
           this.nextCid = 1;
       }
-      generatecid() {
-          const cid = this.nextCid.toString();
+      DefaultSocket.prototype.generatecid = function () {
+          var cid = this.nextCid.toString();
           ++this.nextCid;
           return cid;
-      }
-      connect(session, createStatus = false) {
+      };
+      DefaultSocket.prototype.connect = function (session, createStatus) {
+          var _this = this;
+          if (createStatus === void 0) { createStatus = false; }
           if (this.adapter.isConnected) {
               return Promise.resolve(session);
           }
-          const scheme = (this.useSSL) ? "wss://" : "ws://";
+          var scheme = (this.useSSL) ? "wss://" : "ws://";
           this.adapter.connect(scheme, this.host, this.port, createStatus, session.token);
-          this.adapter.onClose = (evt) => {
-              this.ondisconnect(evt);
+          this.adapter.onClose = function (evt) {
+              _this.ondisconnect(evt);
           };
-          this.adapter.onError = (evt) => {
-              this.onerror(evt);
+          this.adapter.onError = function (evt) {
+              _this.onerror(evt);
           };
-          this.adapter.onMessage = (message) => {
-              if (this.verbose && window && window.console) {
+          this.adapter.onMessage = function (message) {
+              if (_this.verbose && window && window.console) {
                   console.log("Response: %o", message);
               }
               if (message.cid == undefined) {
                   if (message.notifications) {
-                      message.notifications.notifications.forEach((n) => {
+                      message.notifications.notifications.forEach(function (n) {
                           n.content = n.content ? JSON.parse(n.content) : undefined;
-                          this.onnotification(n);
+                          _this.onnotification(n);
                       });
                   }
                   else if (message.match_data) {
                       message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
                       message.match_data.op_code = parseInt(message.match_data.op_code);
-                      this.onmatchdata(message.match_data);
+                      _this.onmatchdata(message.match_data);
                   }
                   else if (message.match_presence_event) {
-                      this.onmatchpresence(message.match_presence_event);
+                      _this.onmatchpresence(message.match_presence_event);
                   }
                   else if (message.matchmaker_matched) {
-                      this.onmatchmakermatched(message.matchmaker_matched);
+                      _this.onmatchmakermatched(message.matchmaker_matched);
                   }
                   else if (message.status_presence_event) {
-                      this.onstatuspresence(message.status_presence_event);
+                      _this.onstatuspresence(message.status_presence_event);
                   }
                   else if (message.stream_presence_event) {
-                      this.onstreampresence(message.stream_presence_event);
+                      _this.onstreampresence(message.stream_presence_event);
                   }
                   else if (message.stream_data) {
-                      this.onstreamdata(message.stream_data);
+                      _this.onstreamdata(message.stream_data);
                   }
                   else if (message.channel_message) {
                       message.channel_message.content = JSON.parse(message.channel_message.content);
-                      this.onchannelmessage(message.channel_message);
+                      _this.onchannelmessage(message.channel_message);
                   }
                   else if (message.channel_presence_event) {
-                      this.onchannelpresence(message.channel_presence_event);
+                      _this.onchannelpresence(message.channel_presence_event);
                   }
                   else {
-                      if (this.verbose && window && window.console) {
+                      if (_this.verbose && window && window.console) {
                           console.log("Unrecognized message received: %o", message);
                       }
                   }
               }
               else {
-                  const executor = this.cIds[message.cid];
+                  var executor = _this.cIds[message.cid];
                   if (!executor) {
-                      if (this.verbose && window && window.console) {
+                      if (_this.verbose && window && window.console) {
                           console.error("No promise executor for message: %o", message);
                       }
                       return;
                   }
-                  delete this.cIds[message.cid];
+                  delete _this.cIds[message.cid];
                   if (message.error) {
                       executor.reject(message.error);
                   }
@@ -1589,92 +1746,94 @@
                   }
               }
           };
-          return new Promise((resolve, reject) => {
-              this.adapter.onOpen = (evt) => {
-                  if (this.verbose && window && window.console) {
+          return new Promise(function (resolve, reject) {
+              _this.adapter.onOpen = function (evt) {
+                  if (_this.verbose && window && window.console) {
                       console.log(evt);
                   }
                   resolve(session);
               };
-              this.adapter.onError = (evt) => {
+              _this.adapter.onError = function (evt) {
                   reject(evt);
-                  this.adapter.close();
+                  _this.adapter.close();
               };
           });
-      }
-      disconnect(fireDisconnectEvent = true) {
+      };
+      DefaultSocket.prototype.disconnect = function (fireDisconnectEvent) {
+          if (fireDisconnectEvent === void 0) { fireDisconnectEvent = true; }
           if (this.adapter.isConnected) {
               this.adapter.close();
           }
           if (fireDisconnectEvent) {
               this.ondisconnect({});
           }
-      }
-      ondisconnect(evt) {
+      };
+      DefaultSocket.prototype.ondisconnect = function (evt) {
           if (this.verbose && window && window.console) {
               console.log(evt);
           }
-      }
-      onerror(evt) {
+      };
+      DefaultSocket.prototype.onerror = function (evt) {
           if (this.verbose && window && window.console) {
               console.log(evt);
           }
-      }
-      onchannelmessage(channelMessage) {
+      };
+      DefaultSocket.prototype.onchannelmessage = function (channelMessage) {
           if (this.verbose && window && window.console) {
               console.log(channelMessage);
           }
-      }
-      onchannelpresence(channelPresence) {
+      };
+      DefaultSocket.prototype.onchannelpresence = function (channelPresence) {
           if (this.verbose && window && window.console) {
               console.log(channelPresence);
           }
-      }
-      onnotification(notification) {
+      };
+      DefaultSocket.prototype.onnotification = function (notification) {
           if (this.verbose && window && window.console) {
               console.log(notification);
           }
-      }
-      onmatchdata(matchData) {
+      };
+      DefaultSocket.prototype.onmatchdata = function (matchData) {
           if (this.verbose && window && window.console) {
               console.log(matchData);
           }
-      }
-      onmatchpresence(matchPresence) {
+      };
+      DefaultSocket.prototype.onmatchpresence = function (matchPresence) {
           if (this.verbose && window && window.console) {
               console.log(matchPresence);
           }
-      }
-      onmatchmakermatched(matchmakerMatched) {
+      };
+      DefaultSocket.prototype.onmatchmakermatched = function (matchmakerMatched) {
           if (this.verbose && window && window.console) {
               console.log(matchmakerMatched);
           }
-      }
-      onstatuspresence(statusPresence) {
+      };
+      DefaultSocket.prototype.onstatuspresence = function (statusPresence) {
           if (this.verbose && window && window.console) {
               console.log(statusPresence);
           }
-      }
-      onstreampresence(streamPresence) {
+      };
+      DefaultSocket.prototype.onstreampresence = function (streamPresence) {
           if (this.verbose && window && window.console) {
               console.log(streamPresence);
           }
-      }
-      onstreamdata(streamData) {
+      };
+      DefaultSocket.prototype.onstreamdata = function (streamData) {
           if (this.verbose && window && window.console) {
               console.log(streamData);
           }
-      }
-      send(message) {
-          const untypedMessage = message;
-          return new Promise((resolve, reject) => {
-              if (!this.adapter.isConnected) {
+      };
+      DefaultSocket.prototype.send = function (message) {
+          var _this = this;
+          var untypedMessage = message;
+          return new Promise(function (resolve, reject) {
+              if (!_this.adapter.isConnected) {
                   reject("Socket connection has not been established yet.");
               }
               else {
                   if (untypedMessage.match_data_send) {
                       untypedMessage.match_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.match_data_send.data));
-                      this.adapter.send(untypedMessage);
+                      _this.adapter.send(untypedMessage);
                       resolve();
                   }
                   else {
@@ -1684,239 +1843,344 @@
                       else if (untypedMessage.channel_message_update) {
                           untypedMessage.channel_message_update.content = JSON.stringify(untypedMessage.channel_message_update.content);
                       }
-                      const cid = this.generatecid();
-                      this.cIds[cid] = { resolve, reject };
+                      var cid = _this.generatecid();
+                      _this.cIds[cid] = { resolve: resolve, reject: reject };
                       untypedMessage.cid = cid;
-                      this.adapter.send(untypedMessage);
+                      _this.adapter.send(untypedMessage);
                   }
               }
-              if (this.verbose && window && window.console) {
+              if (_this.verbose && window && window.console) {
                   console.log("Sent message: %o", untypedMessage);
               }
           });
-      }
-      addMatchmaker(query, minCount, maxCount, stringProperties, numericProperties) {
-          return __awaiter(this, void 0, void 0, function* () {
-              const matchMakerAdd = {
-                  "matchmaker_add": {
-                      min_count: minCount,
-                      max_count: maxCount,
-                      query: query,
-                      string_properties: stringProperties,
-                      numeric_properties: numericProperties
-                  }
-              };
-              const response = yield this.send(matchMakerAdd);
-              return response.matchmaker_ticket;
-          });
-      }
-      createMatch() {
-          return __awaiter(this, void 0, void 0, function* () {
-              const response = yield this.send({ match_create: {} });
-              return response.match;
-          });
-      }
-      followUsers(userIds) {
-          return __awaiter(this, void 0, void 0, function* () {
-              const response = yield this.send({ status_follow: { user_ids: userIds } });
-              return response.status;
-          });
-      }
-      joinChat(target, type, persistence, hidden) {
-          return __awaiter(this, void 0, void 0, function* () {
-              const response = yield this.send({
-                  channel_join: {
-                      target: target,
-                      type: type,
-                      persistence: persistence,
-                      hidden: hidden
+      };
+      DefaultSocket.prototype.addMatchmaker = function (query, minCount, maxCount, stringProperties, numericProperties) {
+          return __awaiter(this, void 0, void 0, function () {
+              var matchMakerAdd, response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0:
+                          matchMakerAdd = {
+                              "matchmaker_add": {
+                                  min_count: minCount,
+                                  max_count: maxCount,
+                                  query: query,
+                                  string_properties: stringProperties,
+                                  numeric_properties: numericProperties
+                              }
+                          };
+                          return [4, this.send(matchMakerAdd)];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.matchmaker_ticket];
                   }
               });
-              return response.channel;
           });
-      }
-      joinMatch(match_id, token, metadata) {
-          return __awaiter(this, void 0, void 0, function* () {
-              const join = { match_join: { metadata: metadata } };
-              if (token) {
-                  join.match_join.token = token;
-              }
-              else {
-                  join.match_join.match_id = match_id;
-              }
-              const response = yield this.send(join);
-              return response.match;
+      };
+      DefaultSocket.prototype.createMatch = function () {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ match_create: {} })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.match];
+                  }
+              });
           });
-      }
-      leaveChat(channel_id) {
+      };
+      DefaultSocket.prototype.followUsers = function (userIds) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ status_follow: { user_ids: userIds } })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.status];
+                  }
+              });
+          });
+      };
+      DefaultSocket.prototype.joinChat = function (target, type, persistence, hidden) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({
+                              channel_join: {
+                                  target: target,
+                                  type: type,
+                                  persistence: persistence,
+                                  hidden: hidden
+                              }
+                          })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.channel];
+                  }
+              });
+          });
+      };
+      DefaultSocket.prototype.joinMatch = function (match_id, token, metadata) {
+          return __awaiter(this, void 0, void 0, function () {
+              var join, response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0:
+                          join = { match_join: { metadata: metadata } };
+                          if (token) {
+                              join.match_join.token = token;
+                          }
+                          else {
+                              join.match_join.match_id = match_id;
+                          }
+                          return [4, this.send(join)];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.match];
+                  }
+              });
+          });
+      };
+      DefaultSocket.prototype.leaveChat = function (channel_id) {
           return this.send({ channel_leave: { channel_id: channel_id } });
-      }
-      leaveMatch(matchId) {
+      };
+      DefaultSocket.prototype.leaveMatch = function (matchId) {
           return this.send({ match_leave: { match_id: matchId } });
-      }
-      removeChatMessage(channel_id, message_id) {
-          return __awaiter(this, void 0, void 0, function* () {
-              const response = yield this.send({
-                  channel_message_remove: {
-                      channel_id: channel_id,
-                      message_id: message_id
+      };
+      DefaultSocket.prototype.removeChatMessage = function (channel_id, message_id) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({
+                              channel_message_remove: {
+                                  channel_id: channel_id,
+                                  message_id: message_id
+                              }
+                          })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.channel_message_ack];
                   }
               });
-              return response.channel_message_ack;
           });
-      }
-      removeMatchmaker(ticket) {
+      };
+      DefaultSocket.prototype.removeMatchmaker = function (ticket) {
           return this.send({ matchmaker_remove: { ticket: ticket } });
-      }
-      rpc(id, payload, http_key) {
-          return __awaiter(this, void 0, void 0, function* () {
-              const response = yield this.send({
-                  rpc: {
-                      id: id,
-                      payload: payload,
-                      http_key: http_key,
-                  }
-              });
-              return response.rpc;
-          });
-      }
-      sendMatchState(matchId, opCode, data, presences) {
-          return __awaiter(this, void 0, void 0, function* () {
-              return this.send({
-                  match_data_send: {
-                      match_id: matchId,
-                      op_code: opCode,
-                      data: data,
-                      presences: presences !== null && presences !== void 0 ? presences : []
+      };
+      DefaultSocket.prototype.rpc = function (id, payload, http_key) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({
+                              rpc: {
+                                  id: id,
+                                  payload: payload,
+                                  http_key: http_key,
+                              }
+                          })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.rpc];
                   }
               });
           });
-      }
-      unfollowUsers(user_ids) {
+      };
+      DefaultSocket.prototype.sendMatchState = function (matchId, opCode, data, presences) {
+          return __awaiter(this, void 0, void 0, function () {
+              return __generator(this, function (_a) {
+                  return [2, this.send({
+                          match_data_send: {
+                              match_id: matchId,
+                              op_code: opCode,
+                              data: data,
+                              presences: presences !== null && presences !== void 0 ? presences : []
+                          }
+                      })];
+              });
+          });
+      };
+      DefaultSocket.prototype.unfollowUsers = function (user_ids) {
           return this.send({ status_unfollow: { user_ids: user_ids } });
-      }
-      updateChatMessage(channel_id, message_id, content) {
-          return __awaiter(this, void 0, void 0, function* () {
-              const response = yield this.send({ channel_message_update: { channel_id: channel_id, message_id: message_id, content: content } });
-              return response.channel_message_ack;
+      };
+      DefaultSocket.prototype.updateChatMessage = function (channel_id, message_id, content) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ channel_message_update: { channel_id: channel_id, message_id: message_id, content: content } })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.channel_message_ack];
+                  }
+              });
           });
-      }
-      updateStatus(status) {
+      };
+      DefaultSocket.prototype.updateStatus = function (status) {
           return this.send({ status_update: { status: status } });
-      }
-      writeChatMessage(channel_id, content) {
-          return __awaiter(this, void 0, void 0, function* () {
-              const response = yield this.send({ channel_message_send: { channel_id: channel_id, content: content } });
-              return response.channel_message_ack;
+      };
+      DefaultSocket.prototype.writeChatMessage = function (channel_id, content) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ channel_message_send: { channel_id: channel_id, content: content } })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.channel_message_ack];
+                  }
+              });
           });
-      }
-  }
+      };
+      return DefaultSocket;
+  }());
 
-  const DEFAULT_HOST = "127.0.0.1";
-  const DEFAULT_PORT = "7350";
-  const DEFAULT_SERVER_KEY = "defaultkey";
-  const DEFAULT_TIMEOUT_MS = 7000;
-  class Client {
-      constructor(serverkey = DEFAULT_SERVER_KEY, host = DEFAULT_HOST, port = DEFAULT_PORT, useSSL = false, timeout = DEFAULT_TIMEOUT_MS) {
+  var DEFAULT_HOST = "127.0.0.1";
+  var DEFAULT_PORT = "7350";
+  var DEFAULT_SERVER_KEY = "defaultkey";
+  var DEFAULT_TIMEOUT_MS = 7000;
+  var Client = (function () {
+      function Client(serverkey, host, port, useSSL, timeout) {
+          if (serverkey === void 0) { serverkey = DEFAULT_SERVER_KEY; }
+          if (host === void 0) { host = DEFAULT_HOST; }
+          if (port === void 0) { port = DEFAULT_PORT; }
+          if (useSSL === void 0) { useSSL = false; }
+          if (timeout === void 0) { timeout = DEFAULT_TIMEOUT_MS; }
           this.serverkey = serverkey;
           this.host = host;
           this.port = port;
           this.useSSL = useSSL;
           this.timeout = timeout;
-          const scheme = (useSSL) ? "https://" : "http://";
-          const basePath = `${scheme}${host}:${port}`;
+          var scheme = (useSSL) ? "https://" : "http://";
+          var basePath = "" + scheme + host + ":" + port;
           this.configuration = {
               basePath: basePath,
               username: serverkey,
               password: "",
               timeoutMs: timeout,
           };
-          this.apiClient = NakamaApi(this.configuration);
+          this.apiClient = new NakamaApi(this.configuration);
       }
-      addGroupUsers(session, groupId, ids) {
+      Client.prototype.addGroupUsers = function (session, groupId, ids) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.addGroupUsers(groupId, ids).then((response) => {
+          return this.apiClient.addGroupUsers(groupId, ids).then(function (response) {
               return response !== undefined;
           });
-      }
-      addFriends(session, ids, usernames) {
+      };
+      Client.prototype.addFriends = function (session, ids, usernames) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.addFriends(ids, usernames).then((response) => {
+          return this.apiClient.addFriends(ids, usernames).then(function (response) {
               return response !== undefined;
           });
-      }
-      authenticateCustom(id, vars) {
-          const request = {
+      };
+      Client.prototype.authenticateApple = function (token, create, username, vars, options) {
+          if (vars === void 0) { vars = new Map(); }
+          if (options === void 0) { options = {}; }
+          var request = {
+              "token": token,
+              "vars": vars
+          };
+          return this.apiClient.authenticateApple(request, create, username, options).then(function (apiSession) {
+              return Session.restore(apiSession.token || "");
+          });
+      };
+      Client.prototype.authenticateCustom = function (id, create, username, vars, options) {
+          if (vars === void 0) { vars = new Map(); }
+          if (options === void 0) { options = {}; }
+          var request = {
               "id": id,
               "vars": vars
           };
-          return this.apiClient.authenticateCustom(request);
-      }
-      authenticateDevice(id, vars) {
-          const request = {
+          return this.apiClient.authenticateCustom(request, create, username, options).then(function (apiSession) {
+              return Session.restore(apiSession.token || "");
+          });
+      };
+      Client.prototype.authenticateDevice = function (id, vars) {
+          var request = {
               "id": id,
               "vars": vars
           };
-          return this.apiClient.authenticateDevice(request);
-      }
-      authenticateEmail(email, password, vars) {
-          const request = {
+          return this.apiClient.authenticateDevice(request).then(function (apiSession) {
+              return Session.restore(apiSession.token || "");
+          });
+      };
+      Client.prototype.authenticateEmail = function (email, password, vars) {
+          var request = {
               "email": email,
               "password": password,
               "vars": vars
           };
-          return this.apiClient.authenticateEmail(request);
-      }
-      authenticateFacebookInstantGame(signedPlayerInfo, vars, create, username, options = {}) {
-          const request = {
+          return this.apiClient.authenticateEmail(request).then(function (apiSession) {
+              return Session.restore(apiSession.token || "");
+          });
+      };
+      Client.prototype.authenticateFacebookInstantGame = function (signedPlayerInfo, create, username, vars, options) {
+          if (options === void 0) { options = {}; }
+          var request = {
               "signed_player_info": signedPlayerInfo,
               "vars": vars
           };
-          return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options);
-      }
-      authenticateFacebook(token, vars, create, username, sync, options = {}) {
-          const request = {
+          return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then(function (apiSession) {
+              return Session.restore(apiSession.token || "");
+          });
+      };
+      Client.prototype.authenticateFacebook = function (token, create, username, sync, vars, options) {
+          if (options === void 0) { options = {}; }
+          var request = {
               "token": token,
               "vars": vars
           };
-          return this.apiClient.authenticateFacebook(request, create, username, sync, options);
-      }
-      authenticateGoogle(token, vars, create, username, options = {}) {
-          const request = {
+          return this.apiClient.authenticateFacebook(request, create, username, sync, options).then(function (apiSession) {
+              return Session.restore(apiSession.token || "");
+          });
+      };
+      Client.prototype.authenticateGoogle = function (token, create, username, vars, options) {
+          if (options === void 0) { options = {}; }
+          var request = {
               "token": token,
               "vars": vars
           };
-          return this.apiClient.authenticateGoogle(request, create, username, options);
-      }
-      authenticateGameCenter(token, vars) {
-          const request = {
+          return this.apiClient.authenticateGoogle(request, create, username, options).then(function (apiSession) {
+              return Session.restore(apiSession.token || "");
+          });
+      };
+      Client.prototype.authenticateGameCenter = function (token, vars) {
+          var request = {
               "token": token,
               "vars": vars
           };
-          return this.apiClient.authenticateGameCenter(request);
-      }
-      authenticateSteam(token, vars) {
-          const request = {
+          return this.apiClient.authenticateGameCenter(request).then(function (apiSession) {
+              return Session.restore(apiSession.token || "");
+          });
+      };
+      Client.prototype.authenticateSteam = function (token, vars) {
+          var request = {
               "token": token,
               "vars": vars
           };
-          return this.apiClient.authenticateSteam(request);
-      }
-      banGroupUsers(session, groupId, ids) {
+          return this.apiClient.authenticateSteam(request).then(function (apiSession) {
+              return Session.restore(apiSession.token || "");
+          });
+      };
+      Client.prototype.banGroupUsers = function (session, groupId, ids) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.banGroupUsers(groupId, ids).then((response) => {
+          return this.apiClient.banGroupUsers(groupId, ids).then(function (response) {
               return response !== undefined;
           });
-      }
-      blockFriends(session, ids, usernames) {
+      };
+      Client.prototype.blockFriends = function (session, ids, usernames) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.blockFriends(ids, usernames).then((response) => {
+          return this.apiClient.blockFriends(ids, usernames).then(function (response) {
               return Promise.resolve(response != undefined);
           });
-      }
-      createGroup(session, request) {
+      };
+      Client.prototype.createGroup = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.createGroup(request).then((response) => {
+          return this.apiClient.createGroup(request).then(function (response) {
               return Promise.resolve({
                   avatar_url: response.avatar_url,
                   create_time: response.create_time,
@@ -1932,60 +2196,67 @@
                   update_time: response.update_time
               });
           });
-      }
-      createSocket(useSSL = false, verbose = false, adapter = new WebSocketAdapterText()) {
+      };
+      Client.prototype.createSocket = function (useSSL, verbose, adapter) {
+          if (useSSL === void 0) { useSSL = false; }
+          if (verbose === void 0) { verbose = false; }
+          if (adapter === void 0) { adapter = new WebSocketAdapterText(); }
           return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter);
-      }
-      deleteFriends(session, ids, usernames) {
+      };
+      Client.prototype.deleteFriends = function (session, ids, usernames) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.deleteFriends(ids, usernames).then((response) => {
+          return this.apiClient.deleteFriends(ids, usernames).then(function (response) {
               return response !== undefined;
           });
-      }
-      deleteGroup(session, groupId) {
+      };
+      Client.prototype.deleteGroup = function (session, groupId) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.deleteGroup(groupId).then((response) => {
+          return this.apiClient.deleteGroup(groupId).then(function (response) {
               return response !== undefined;
           });
-      }
-      deleteNotifications(session, ids) {
+      };
+      Client.prototype.deleteNotifications = function (session, ids) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.deleteNotifications(ids).then((response) => {
+          return this.apiClient.deleteNotifications(ids).then(function (response) {
               return Promise.resolve(response != undefined);
           });
-      }
-      deleteStorageObjects(session, request) {
+      };
+      Client.prototype.deleteStorageObjects = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.deleteStorageObjects(request).then((response) => {
+          return this.apiClient.deleteStorageObjects(request).then(function (response) {
               return Promise.resolve(response != undefined);
           });
-      }
-      emitEvent(session, request) {
+      };
+      Client.prototype.demoteGroupUsers = function (session, groupId, ids) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.event(request).then((response) => {
+          return this.apiClient.demoteGroupUsers(groupId, ids);
+      };
+      Client.prototype.emitEvent = function (session, request) {
+          this.configuration.bearerToken = (session && session.token);
+          return this.apiClient.event(request).then(function (response) {
               return Promise.resolve(response != undefined);
           });
-      }
-      getAccount(session) {
+      };
+      Client.prototype.getAccount = function (session) {
           this.configuration.bearerToken = (session && session.token);
           return this.apiClient.getAccount();
-      }
-      importFacebookFriends(session, request) {
+      };
+      Client.prototype.importFacebookFriends = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.importFacebookFriends(request).then((response) => {
+          return this.apiClient.importFacebookFriends(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      getUsers(session, ids, usernames, facebookIds) {
+      };
+      Client.prototype.getUsers = function (session, ids, usernames, facebookIds) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.getUsers(ids, usernames, facebookIds).then((response) => {
+          return this.apiClient.getUsers(ids, usernames, facebookIds).then(function (response) {
               var result = {
                   users: []
               };
               if (response.users == null) {
                   return Promise.resolve(result);
               }
-              response.users.forEach(u => {
+              response.users.forEach(function (u) {
                   result.users.push({
                       avatar_url: u.avatar_url,
                       create_time: u.create_time,
@@ -2007,34 +2278,34 @@
               });
               return Promise.resolve(result);
           });
-      }
-      joinGroup(session, groupId) {
+      };
+      Client.prototype.joinGroup = function (session, groupId) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.joinGroup(groupId, {}).then((response) => {
+          return this.apiClient.joinGroup(groupId, {}).then(function (response) {
               return response !== undefined;
           });
-      }
-      joinTournament(session, tournamentId) {
+      };
+      Client.prototype.joinTournament = function (session, tournamentId) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.joinTournament(tournamentId, {}).then((response) => {
+          return this.apiClient.joinTournament(tournamentId, {}).then(function (response) {
               return response !== undefined;
           });
-      }
-      kickGroupUsers(session, groupId, ids) {
+      };
+      Client.prototype.kickGroupUsers = function (session, groupId, ids) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.kickGroupUsers(groupId, ids).then((response) => {
+          return this.apiClient.kickGroupUsers(groupId, ids).then(function (response) {
               return Promise.resolve(response != undefined);
           });
-      }
-      leaveGroup(session, groupId) {
+      };
+      Client.prototype.leaveGroup = function (session, groupId) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.leaveGroup(groupId, {}).then((response) => {
+          return this.apiClient.leaveGroup(groupId, {}).then(function (response) {
               return response !== undefined;
           });
-      }
-      listChannelMessages(session, channelId, limit, forward, cursor) {
+      };
+      Client.prototype.listChannelMessages = function (session, channelId, limit, forward, cursor) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then((response) => {
+          return this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then(function (response) {
               var result = {
                   messages: [],
                   next_cursor: response.next_cursor,
@@ -2043,7 +2314,7 @@
               if (response.messages == null) {
                   return Promise.resolve(result);
               }
-              response.messages.forEach(m => {
+              response.messages.forEach(function (m) {
                   result.messages.push({
                       channel_id: m.channel_id,
                       code: m.code ? Number(m.code) : 0,
@@ -2062,10 +2333,10 @@
               });
               return Promise.resolve(result);
           });
-      }
-      listGroupUsers(session, groupId, state, limit, cursor) {
+      };
+      Client.prototype.listGroupUsers = function (session, groupId, state, limit, cursor) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listGroupUsers(groupId, limit, state, cursor).then((response) => {
+          return this.apiClient.listGroupUsers(groupId, limit, state, cursor).then(function (response) {
               var result = {
                   group_users: [],
                   cursor: response.cursor
@@ -2073,7 +2344,7 @@
               if (response.group_users == null) {
                   return Promise.resolve(result);
               }
-              response.group_users.forEach(gu => {
+              response.group_users.forEach(function (gu) {
                   result.group_users.push({
                       user: {
                           avatar_url: gu.user.avatar_url,
@@ -2098,10 +2369,10 @@
               });
               return Promise.resolve(result);
           });
-      }
-      listUserGroups(session, userId, state, limit, cursor) {
+      };
+      Client.prototype.listUserGroups = function (session, userId, state, limit, cursor) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listUserGroups(userId, state, limit, cursor).then((response) => {
+          return this.apiClient.listUserGroups(userId, state, limit, cursor).then(function (response) {
               var result = {
                   user_groups: [],
                   cursor: response.cursor,
@@ -2109,7 +2380,7 @@
               if (response.user_groups == null) {
                   return Promise.resolve(result);
               }
-              response.user_groups.forEach(ug => {
+              response.user_groups.forEach(function (ug) {
                   result.user_groups.push({
                       group: {
                           avatar_url: ug.group.avatar_url,
@@ -2130,10 +2401,10 @@
               });
               return Promise.resolve(result);
           });
-      }
-      listGroups(session, name, cursor, limit) {
+      };
+      Client.prototype.listGroups = function (session, name, cursor, limit) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listGroups(name, cursor, limit).then((response) => {
+          return this.apiClient.listGroups(name, cursor, limit).then(function (response) {
               var result = {
                   groups: []
               };
@@ -2141,7 +2412,7 @@
                   return Promise.resolve(result);
               }
               result.cursor = response.cursor;
-              response.groups.forEach(ug => {
+              response.groups.forEach(function (ug) {
                   result.groups.push({
                       avatar_url: ug.avatar_url,
                       create_time: ug.create_time,
@@ -2159,58 +2430,64 @@
               });
               return Promise.resolve(result);
           });
-      }
-      linkCustom(session, request) {
+      };
+      Client.prototype.linkApple = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.linkCustom(request).then((response) => {
+          return this.apiClient.linkApple(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      linkDevice(session, request) {
+      };
+      Client.prototype.linkCustom = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.linkDevice(request).then((response) => {
+          return this.apiClient.linkCustom(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      linkEmail(session, request) {
+      };
+      Client.prototype.linkDevice = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.linkEmail(request).then((response) => {
+          return this.apiClient.linkDevice(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      linkFacebook(session, request) {
+      };
+      Client.prototype.linkEmail = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.linkFacebook(request).then((response) => {
+          return this.apiClient.linkEmail(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      linkFacebookInstantGame(session, request) {
+      };
+      Client.prototype.linkFacebook = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.linkFacebookInstantGame(request).then((response) => {
+          return this.apiClient.linkFacebook(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      linkGoogle(session, request) {
+      };
+      Client.prototype.linkFacebookInstantGame = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.linkGoogle(request).then((response) => {
+          return this.apiClient.linkFacebookInstantGame(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      linkGameCenter(session, request) {
+      };
+      Client.prototype.linkGoogle = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.linkGameCenter(request).then((response) => {
+          return this.apiClient.linkGoogle(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      linkSteam(session, request) {
+      };
+      Client.prototype.linkGameCenter = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.linkSteam(request).then((response) => {
+          return this.apiClient.linkGameCenter(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      listFriends(session, state, limit, cursor) {
+      };
+      Client.prototype.linkSteam = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listFriends(limit, state, cursor).then((response) => {
+          return this.apiClient.linkSteam(request).then(function (response) {
+              return response !== undefined;
+          });
+      };
+      Client.prototype.listFriends = function (session, state, limit, cursor) {
+          this.configuration.bearerToken = (session && session.token);
+          return this.apiClient.listFriends(limit, state, cursor).then(function (response) {
               var result = {
                   friends: [],
                   cursor: response.cursor
@@ -2218,7 +2495,7 @@
               if (response.friends == null) {
                   return Promise.resolve(result);
               }
-              response.friends.forEach(f => {
+              response.friends.forEach(function (f) {
                   result.friends.push({
                       user: {
                           avatar_url: f.user.avatar_url,
@@ -2243,10 +2520,10 @@
               });
               return Promise.resolve(result);
           });
-      }
-      listLeaderboardRecords(session, leaderboardId, ownerIds, limit, cursor, expiry) {
+      };
+      Client.prototype.listLeaderboardRecords = function (session, leaderboardId, ownerIds, limit, cursor, expiry) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry).then((response) => {
+          return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry).then(function (response) {
               var list = {
                   next_cursor: response.next_cursor,
                   prev_cursor: response.prev_cursor,
@@ -2254,7 +2531,7 @@
                   records: []
               };
               if (response.owner_records != null) {
-                  response.owner_records.forEach(o => {
+                  response.owner_records.forEach(function (o) {
                       list.owner_records.push({
                           expiry_time: o.expiry_time,
                           leaderboard_id: o.leaderboard_id,
@@ -2271,7 +2548,7 @@
                   });
               }
               if (response.records != null) {
-                  response.records.forEach(o => {
+                  response.records.forEach(function (o) {
                       list.records.push({
                           expiry_time: o.expiry_time,
                           leaderboard_id: o.leaderboard_id,
@@ -2289,10 +2566,10 @@
               }
               return Promise.resolve(list);
           });
-      }
-      listLeaderboardRecordsAroundOwner(session, leaderboardId, ownerId, limit, expiry) {
+      };
+      Client.prototype.listLeaderboardRecordsAroundOwner = function (session, leaderboardId, ownerId, limit, expiry) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry).then((response) => {
+          return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry).then(function (response) {
               var list = {
                   next_cursor: response.next_cursor,
                   prev_cursor: response.prev_cursor,
@@ -2300,7 +2577,7 @@
                   records: []
               };
               if (response.owner_records != null) {
-                  response.owner_records.forEach(o => {
+                  response.owner_records.forEach(function (o) {
                       list.owner_records.push({
                           expiry_time: o.expiry_time,
                           leaderboard_id: o.leaderboard_id,
@@ -2317,7 +2594,7 @@
                   });
               }
               if (response.records != null) {
-                  response.records.forEach(o => {
+                  response.records.forEach(function (o) {
                       list.records.push({
                           expiry_time: o.expiry_time,
                           leaderboard_id: o.leaderboard_id,
@@ -2335,14 +2612,14 @@
               }
               return Promise.resolve(list);
           });
-      }
-      listMatches(session, limit, authoritative, label, minSize, maxSize, query) {
+      };
+      Client.prototype.listMatches = function (session, limit, authoritative, label, minSize, maxSize, query) {
           this.configuration.bearerToken = (session && session.token);
           return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize, query);
-      }
-      listNotifications(session, limit, cacheableCursor) {
+      };
+      Client.prototype.listNotifications = function (session, limit, cacheableCursor) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listNotifications(limit, cacheableCursor).then((response) => {
+          return this.apiClient.listNotifications(limit, cacheableCursor).then(function (response) {
               var result = {
                   cacheable_cursor: response.cacheable_cursor,
                   notifications: [],
@@ -2350,7 +2627,7 @@
               if (response.notifications == null) {
                   return Promise.resolve(result);
               }
-              response.notifications.forEach(n => {
+              response.notifications.forEach(function (n) {
                   result.notifications.push({
                       code: n.code ? Number(n.code) : 0,
                       create_time: n.create_time,
@@ -2363,10 +2640,10 @@
               });
               return Promise.resolve(result);
           });
-      }
-      listStorageObjects(session, collection, userId, limit, cursor) {
+      };
+      Client.prototype.listStorageObjects = function (session, collection, userId, limit, cursor) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listStorageObjects(collection, userId, limit, cursor).then((response) => {
+          return this.apiClient.listStorageObjects(collection, userId, limit, cursor).then(function (response) {
               var result = {
                   objects: [],
                   cursor: response.cursor
@@ -2374,7 +2651,7 @@
               if (response.objects == null) {
                   return Promise.resolve(result);
               }
-              response.objects.forEach(o => {
+              response.objects.forEach(function (o) {
                   result.objects.push({
                       collection: o.collection,
                       key: o.key,
@@ -2389,16 +2666,16 @@
               });
               return Promise.resolve(result);
           });
-      }
-      listTournaments(session, categoryStart, categoryEnd, startTime, endTime, limit, cursor) {
+      };
+      Client.prototype.listTournaments = function (session, categoryStart, categoryEnd, startTime, endTime, limit, cursor) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor).then((response) => {
+          return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor).then(function (response) {
               var list = {
                   cursor: response.cursor,
                   tournaments: [],
               };
               if (response.tournaments != null) {
-                  response.tournaments.forEach(o => {
+                  response.tournaments.forEach(function (o) {
                       list.tournaments.push({
                           id: o.id,
                           title: o.title,
@@ -2422,10 +2699,10 @@
               }
               return Promise.resolve(list);
           });
-      }
-      listTournamentRecords(session, tournamentId, ownerIds, limit, cursor, expiry) {
+      };
+      Client.prototype.listTournamentRecords = function (session, tournamentId, ownerIds, limit, cursor, expiry) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry).then((response) => {
+          return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry).then(function (response) {
               var list = {
                   next_cursor: response.next_cursor,
                   prev_cursor: response.prev_cursor,
@@ -2433,7 +2710,7 @@
                   records: []
               };
               if (response.owner_records != null) {
-                  response.owner_records.forEach(o => {
+                  response.owner_records.forEach(function (o) {
                       list.owner_records.push({
                           expiry_time: o.expiry_time,
                           leaderboard_id: o.leaderboard_id,
@@ -2450,7 +2727,7 @@
                   });
               }
               if (response.records != null) {
-                  response.records.forEach(o => {
+                  response.records.forEach(function (o) {
                       list.records.push({
                           expiry_time: o.expiry_time,
                           leaderboard_id: o.leaderboard_id,
@@ -2468,10 +2745,10 @@
               }
               return Promise.resolve(list);
           });
-      }
-      listTournamentRecordsAroundOwner(session, tournamentId, ownerId, limit, expiry) {
+      };
+      Client.prototype.listTournamentRecordsAroundOwner = function (session, tournamentId, ownerId, limit, expiry) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry).then((response) => {
+          return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry).then(function (response) {
               var list = {
                   next_cursor: response.next_cursor,
                   prev_cursor: response.prev_cursor,
@@ -2479,7 +2756,7 @@
                   records: []
               };
               if (response.owner_records != null) {
-                  response.owner_records.forEach(o => {
+                  response.owner_records.forEach(function (o) {
                       list.owner_records.push({
                           expiry_time: o.expiry_time,
                           leaderboard_id: o.leaderboard_id,
@@ -2496,7 +2773,7 @@
                   });
               }
               if (response.records != null) {
-                  response.records.forEach(o => {
+                  response.records.forEach(function (o) {
                       list.records.push({
                           expiry_time: o.expiry_time,
                           leaderboard_id: o.leaderboard_id,
@@ -2514,19 +2791,19 @@
               }
               return Promise.resolve(list);
           });
-      }
-      promoteGroupUsers(session, groupId, ids) {
+      };
+      Client.prototype.promoteGroupUsers = function (session, groupId, ids) {
           this.configuration.bearerToken = (session && session.token);
           return this.apiClient.promoteGroupUsers(groupId, ids);
-      }
-      readStorageObjects(session, request) {
+      };
+      Client.prototype.readStorageObjects = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.readStorageObjects(request).then((response) => {
+          return this.apiClient.readStorageObjects(request).then(function (response) {
               var result = { objects: [] };
               if (response.objects == null) {
                   return Promise.resolve(result);
               }
-              response.objects.forEach(o => {
+              response.objects.forEach(function (o) {
                   result.objects.push({
                       collection: o.collection,
                       key: o.key,
@@ -2541,17 +2818,18 @@
               });
               return Promise.resolve(result);
           });
-      }
-      rpc(session, id, input) {
+      };
+      Client.prototype.rpc = function (session, id, input) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.rpcFunc(id, JSON.stringify(input)).then((response) => {
+          return this.apiClient.rpcFunc(id, JSON.stringify(input)).then(function (response) {
               return Promise.resolve({
                   id: response.id,
                   payload: (!response.payload) ? undefined : JSON.parse(response.payload)
               });
           });
-      }
-      rpcGet(id, session, httpKey, input) {
+      };
+      Client.prototype.rpcGet = function (id, session, httpKey, input) {
+          var _this = this;
           if (!httpKey || httpKey == "") {
               this.configuration.bearerToken = (session && session.token);
           }
@@ -2560,84 +2838,90 @@
               this.configuration.bearerToken = undefined;
           }
           return this.apiClient.rpcFunc2(id, input && JSON.stringify(input) || "", httpKey)
-              .then((response) => {
-              this.configuration.username = this.serverkey;
+              .then(function (response) {
+              _this.configuration.username = _this.serverkey;
               return Promise.resolve({
                   id: response.id,
                   payload: (!response.payload) ? undefined : JSON.parse(response.payload)
               });
-          }).catch((err) => {
-              this.configuration.username = this.serverkey;
+          }).catch(function (err) {
+              _this.configuration.username = _this.serverkey;
               throw err;
           });
-      }
-      unlinkCustom(session, request) {
+      };
+      Client.prototype.unlinkApple = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.unlinkCustom(request).then((response) => {
+          return this.apiClient.unlinkApple(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      unlinkDevice(session, request) {
+      };
+      Client.prototype.unlinkCustom = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.unlinkDevice(request).then((response) => {
+          return this.apiClient.unlinkCustom(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      unlinkEmail(session, request) {
+      };
+      Client.prototype.unlinkDevice = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.unlinkEmail(request).then((response) => {
+          return this.apiClient.unlinkDevice(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      unlinkFacebook(session, request) {
+      };
+      Client.prototype.unlinkEmail = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.unlinkFacebook(request).then((response) => {
+          return this.apiClient.unlinkEmail(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      unlinkFacebookInstantGame(session, request) {
+      };
+      Client.prototype.unlinkFacebook = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.unlinkFacebookInstantGame(request).then((response) => {
+          return this.apiClient.unlinkFacebook(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      unlinkGoogle(session, request) {
+      };
+      Client.prototype.unlinkFacebookInstantGame = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.unlinkGoogle(request).then((response) => {
+          return this.apiClient.unlinkFacebookInstantGame(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      unlinkGameCenter(session, request) {
+      };
+      Client.prototype.unlinkGoogle = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.unlinkGameCenter(request).then((response) => {
+          return this.apiClient.unlinkGoogle(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      unlinkSteam(session, request) {
+      };
+      Client.prototype.unlinkGameCenter = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.unlinkSteam(request).then((response) => {
+          return this.apiClient.unlinkGameCenter(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      updateAccount(session, request) {
+      };
+      Client.prototype.unlinkSteam = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.updateAccount(request).then((response) => {
+          return this.apiClient.unlinkSteam(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      updateGroup(session, groupId, request) {
+      };
+      Client.prototype.updateAccount = function (session, request) {
           this.configuration.bearerToken = (session && session.token);
-          return this.apiClient.updateGroup(groupId, request).then((response) => {
+          return this.apiClient.updateAccount(request).then(function (response) {
               return response !== undefined;
           });
-      }
-      writeLeaderboardRecord(session, leaderboardId, request) {
+      };
+      Client.prototype.updateGroup = function (session, groupId, request) {
+          this.configuration.bearerToken = (session && session.token);
+          return this.apiClient.updateGroup(groupId, request).then(function (response) {
+              return response !== undefined;
+          });
+      };
+      Client.prototype.writeLeaderboardRecord = function (session, leaderboardId, request) {
           this.configuration.bearerToken = (session && session.token);
           return this.apiClient.writeLeaderboardRecord(leaderboardId, {
               metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
               score: request.score,
               subscore: request.subscore
-          }).then((response) => {
+          }).then(function (response) {
               return Promise.resolve({
                   expiry_time: response.expiry_time,
                   leaderboard_id: response.leaderboard_id,
@@ -2652,11 +2936,11 @@
                   rank: response.rank ? Number(response.rank) : 0,
               });
           });
-      }
-      writeStorageObjects(session, objects) {
+      };
+      Client.prototype.writeStorageObjects = function (session, objects) {
           this.configuration.bearerToken = (session && session.token);
           var request = { objects: [] };
-          objects.forEach(o => {
+          objects.forEach(function (o) {
               request.objects.push({
                   collection: o.collection,
                   key: o.key,
@@ -2667,14 +2951,14 @@
               });
           });
           return this.apiClient.writeStorageObjects(request);
-      }
-      writeTournamentRecord(session, tournamentId, request) {
+      };
+      Client.prototype.writeTournamentRecord = function (session, tournamentId, request) {
           this.configuration.bearerToken = (session && session.token);
           return this.apiClient.writeTournamentRecord(tournamentId, {
               metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
               score: request.score,
               subscore: request.subscore
-          }).then((response) => {
+          }).then(function (response) {
               return Promise.resolve({
                   expiry_time: response.expiry_time,
                   leaderboard_id: response.leaderboard_id,
@@ -2689,32 +2973,9 @@
                   rank: response.rank ? Number(response.rank) : 0,
               });
           });
-      }
-  }
-
-  class Session {
-      constructor(token, created_at, expires_at, username, user_id, vars) {
-          this.token = token;
-          this.created_at = created_at;
-          this.expires_at = expires_at;
-          this.username = username;
-          this.user_id = user_id;
-          this.vars = vars;
-      }
-      isexpired(currenttime) {
-          return (this.expires_at - currenttime) < 0;
-      }
-      static restore(jwt) {
-          const createdAt = Math.floor(new Date().getTime() / 1000);
-          const parts = jwt.split('.');
-          if (parts.length != 3) {
-              throw 'jwt is not valid.';
-          }
-          const decoded = JSON.parse(atob(parts[1]));
-          const expiresAt = Math.floor(parseInt(decoded['exp']));
-          return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid'], decoded['vrs']);
-      }
-  }
+      };
+      return Client;
+  }());
 
   exports.Client = Client;
   exports.DefaultSocket = DefaultSocket;
