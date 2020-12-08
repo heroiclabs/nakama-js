@@ -4,6 +4,11 @@
     "scripts": {
         "build": "node build.js"
     },
+    "description": "JavaScript client for Nakama server written in TypeScript.",
+    "main": "packages/nakama-js/dist/nakama-js.cjs.js",
+    "types": "packages/nakama-js/dist/index.d.ts",
+    "module": "packages/nakama-js/dist/nakama-js.esm.js",
+    "browser": "packages/nakama-js/dist/nakama-js.iife.js",
     "dependencies": {
         "Base64": "1.0.1",
         "whatwg-fetch": "^2.0.3"
