@@ -1,4 +1,4 @@
-import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountFacebookInstantGame, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest } from "./api.gen";
+import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountFacebookInstantGame, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest, ApiAccountApple } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
 import { WebSocketAdapter } from "./web_socket_adapter";
@@ -229,6 +229,7 @@ export declare class Client {
     listGroupUsers(session: Session, groupId: string, state?: number, limit?: number, cursor?: string): Promise<GroupUserList>;
     listUserGroups(session: Session, userId: string, state?: number, limit?: number, cursor?: string): Promise<UserGroupList>;
     listGroups(session: Session, name?: string, cursor?: string, limit?: number): Promise<GroupList>;
+    linkApple(session: Session, request: ApiAccountApple): Promise<boolean>;
     linkCustom(session: Session, request: ApiAccountCustom): Promise<boolean>;
     linkDevice(session: Session, request: ApiAccountDevice): Promise<boolean>;
     linkEmail(session: Session, request: ApiAccountEmail): Promise<boolean>;
@@ -250,6 +251,7 @@ export declare class Client {
     readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects>;
     rpc(session: Session, id: string, input: object): Promise<RpcResponse>;
     rpcGet(id: string, session?: Session, httpKey?: string, input?: object): Promise<RpcResponse>;
+    unlinkApple(session: Session, request: ApiAccountApple): Promise<boolean>;
     unlinkCustom(session: Session, request: ApiAccountCustom): Promise<boolean>;
     unlinkDevice(session: Session, request: ApiAccountDevice): Promise<boolean>;
     unlinkEmail(session: Session, request: ApiAccountEmail): Promise<boolean>;

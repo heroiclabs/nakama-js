@@ -494,19 +494,18 @@ var nakamajs = (() => {
   });
 
   // index.ts
-  var require_nakama_js = __commonJS((exports) => {
-    __export(exports, {
-      Client: () => Client,
-      DefaultSocket: () => DefaultSocket,
-      Session: () => Session,
-      WebSocketAdapterText: () => WebSocketAdapterText
-    });
-    const Base64 = __toModule(require_base64());
-    const whatwg_fetch = __toModule(require_fetch());
+  var nakama_js_exports = {};
+  __export(nakama_js_exports, {
+    Client: () => Client,
+    DefaultSocket: () => DefaultSocket,
+    Session: () => Session,
+    WebSocketAdapterText: () => WebSocketAdapterText
   });
+  var Base64 = __toModule(require_base64());
+  var whatwg_fetch = __toModule(require_fetch());
 
   // api.gen.ts
-  class NakamaApi {
+  var NakamaApi = class {
     constructor(configuration) {
       this.configuration = configuration;
     }
@@ -1336,10 +1335,10 @@ var nakamajs = (() => {
       let _body = null;
       return this.doFetch(urlPath, "GET", queryParams, _body, options);
     }
-  }
+  };
 
   // session.ts
-  class Session {
+  var Session = class {
     constructor(token, created_at, expires_at, username, user_id, vars) {
       this.token = token;
       this.created_at = created_at;
@@ -1361,10 +1360,10 @@ var nakamajs = (() => {
       const expiresAt = Math.floor(parseInt(decoded["exp"]));
       return new Session(jwt, createdAt, expiresAt, decoded["usn"], decoded["uid"], decoded["vrs"]);
     }
-  }
+  };
 
   // web_socket_adapter.ts
-  class WebSocketAdapterText {
+  var WebSocketAdapterText = class {
     constructor() {
       this._isConnected = false;
     }
@@ -1418,7 +1417,7 @@ var nakamajs = (() => {
       }
       this._socket.send(JSON.stringify(msg));
     }
-  }
+  };
 
   // utils.ts
   function b64EncodeUnicode(str) {
@@ -1433,7 +1432,7 @@ var nakamajs = (() => {
   }
 
   // socket.ts
-  class DefaultSocket {
+  var DefaultSocket = class {
     constructor(host, port, useSSL = false, verbose = false, adapter = new WebSocketAdapterText()) {
       this.host = host;
       this.port = port;
@@ -1727,14 +1726,14 @@ var nakamajs = (() => {
         return response.channel_message_ack;
       });
     }
-  }
+  };
 
   // client.ts
-  const DEFAULT_HOST = "127.0.0.1";
-  const DEFAULT_PORT = "7350";
-  const DEFAULT_SERVER_KEY = "defaultkey";
-  const DEFAULT_TIMEOUT_MS = 7e3;
-  class Client {
+  var DEFAULT_HOST = "127.0.0.1";
+  var DEFAULT_PORT = "7350";
+  var DEFAULT_SERVER_KEY = "defaultkey";
+  var DEFAULT_TIMEOUT_MS = 7e3;
+  var Client = class {
     constructor(serverkey = DEFAULT_SERVER_KEY, host = DEFAULT_HOST, port = DEFAULT_PORT, useSSL = false, timeout = DEFAULT_TIMEOUT_MS) {
       this.serverkey = serverkey;
       this.host = host;
@@ -2105,6 +2104,12 @@ var nakamajs = (() => {
           });
         });
         return Promise.resolve(result);
+      });
+    }
+    linkApple(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
+      return this.apiClient.linkApple(request).then((response) => {
+        return response !== void 0;
       });
     }
     linkCustom(session2, request) {
@@ -2516,6 +2521,12 @@ var nakamajs = (() => {
         throw err;
       });
     }
+    unlinkApple(session2, request) {
+      this.configuration.bearerToken = session2 && session2.token;
+      return this.apiClient.unlinkApple(request).then((response) => {
+        return response !== void 0;
+      });
+    }
     unlinkCustom(session2, request) {
       this.configuration.bearerToken = session2 && session2.token;
       return this.apiClient.unlinkCustom(request).then((response) => {
@@ -2635,6 +2646,6 @@ var nakamajs = (() => {
         });
       });
     }
-  }
-  return require_nakama_js();
+  };
+  return nakama_js_exports;
 })();

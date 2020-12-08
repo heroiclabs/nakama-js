@@ -2124,12 +2124,12 @@ var require_long = __commonJS((exports2, module2) => {
 });
 
 // index.ts
-const protobuf = __toModule(require_minimal2());
-const long = __toModule(require_long());
+var protobuf = __toModule(require_minimal2());
+var long = __toModule(require_long());
 
 // google/protobuf/timestamp.ts
-const minimal = __toModule(require_minimal2());
-const baseTimestamp = {
+var minimal = __toModule(require_minimal2());
+var baseTimestamp = {
   seconds: 0,
   nanos: 0
 };
@@ -2139,7 +2139,7 @@ function longToNumber(long2) {
   }
   return long2.toNumber();
 }
-const Timestamp = {
+var Timestamp = {
   encode(message, writer = minimal.Writer.create()) {
     writer.uint32(8).int64(message.seconds);
     writer.uint32(16).int32(message.nanos);
@@ -2194,20 +2194,20 @@ const Timestamp = {
 };
 
 // github.com/heroiclabs/nakama-common/api/api.ts
-const minimal3 = __toModule(require_minimal2());
+var minimal3 = __toModule(require_minimal2());
 
 // google/protobuf/wrappers.ts
-const minimal2 = __toModule(require_minimal2());
-const baseInt32Value = {
+var minimal2 = __toModule(require_minimal2());
+var baseInt32Value = {
   value: 0
 };
-const baseBoolValue = {
+var baseBoolValue = {
   value: false
 };
-const baseStringValue = {
+var baseStringValue = {
   value: ""
 };
-const Int32Value = {
+var Int32Value = {
   encode(message, writer = minimal2.Writer.create()) {
     writer.uint32(8).int32(message.value);
     return writer;
@@ -2249,7 +2249,7 @@ const Int32Value = {
     return obj;
   }
 };
-const BoolValue = {
+var BoolValue = {
   encode(message, writer = minimal2.Writer.create()) {
     writer.uint32(8).bool(message.value);
     return writer;
@@ -2291,7 +2291,7 @@ const BoolValue = {
     return obj;
   }
 };
-const StringValue = {
+var StringValue = {
   encode(message, writer = minimal2.Writer.create()) {
     writer.uint32(10).string(message.value);
     return writer;
@@ -2333,12 +2333,12 @@ const StringValue = {
     return obj;
   }
 };
-const windowBase64 = globalThis;
-const atob = windowBase64.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
-const btoa = windowBase64.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
+var windowBase64 = globalThis;
+var atob = windowBase64.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
+var btoa = windowBase64.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
 
 // github.com/heroiclabs/nakama-common/api/api.ts
-const baseChannelMessage = {
+var baseChannelMessage = {
   channel_id: "",
   message_id: "",
   sender_id: "",
@@ -2349,7 +2349,7 @@ const baseChannelMessage = {
   user_id_one: "",
   user_id_two: ""
 };
-const baseNotification = {
+var baseNotification = {
   id: "",
   subject: "",
   content: "",
@@ -2357,7 +2357,7 @@ const baseNotification = {
   sender_id: "",
   persistent: false
 };
-const baseRpc = {
+var baseRpc = {
   id: "",
   payload: "",
   http_key: ""
@@ -2381,7 +2381,7 @@ function fromTimestamp(t) {
   millis += t.nanos / 1e6;
   return new Date(millis);
 }
-const ChannelMessage = {
+var ChannelMessage = {
   encode(message, writer = minimal3.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
@@ -2563,7 +2563,7 @@ const ChannelMessage = {
     return obj;
   }
 };
-const Notification = {
+var Notification = {
   encode(message, writer = minimal3.Writer.create()) {
     writer.uint32(10).string(message.id);
     writer.uint32(18).string(message.subject);
@@ -2673,7 +2673,7 @@ const Notification = {
     return obj;
   }
 };
-const Rpc = {
+var Rpc = {
   encode(message, writer = minimal3.Writer.create()) {
     writer.uint32(10).string(message.id);
     writer.uint32(18).string(message.payload);
@@ -2739,25 +2739,25 @@ const Rpc = {
 };
 
 // github.com/heroiclabs/nakama-common/rtapi/realtime.ts
-const minimal4 = __toModule(require_minimal2());
-const baseEnvelope = {
+var minimal4 = __toModule(require_minimal2());
+var baseEnvelope = {
   cid: ""
 };
-const baseChannel = {
+var baseChannel = {
   id: "",
   room_name: "",
   group_id: "",
   user_id_one: "",
   user_id_two: ""
 };
-const baseChannelJoin = {
+var baseChannelJoin = {
   target: "",
   type: 0
 };
-const baseChannelLeave = {
+var baseChannelLeave = {
   channel_id: ""
 };
-const baseChannelMessageAck = {
+var baseChannelMessageAck = {
   channel_id: "",
   message_id: "",
   username: "",
@@ -2766,117 +2766,117 @@ const baseChannelMessageAck = {
   user_id_one: "",
   user_id_two: ""
 };
-const baseChannelMessageSend = {
+var baseChannelMessageSend = {
   channel_id: "",
   content: ""
 };
-const baseChannelMessageUpdate = {
+var baseChannelMessageUpdate = {
   channel_id: "",
   message_id: "",
   content: ""
 };
-const baseChannelMessageRemove = {
+var baseChannelMessageRemove = {
   channel_id: "",
   message_id: ""
 };
-const baseChannelPresenceEvent = {
+var baseChannelPresenceEvent = {
   channel_id: "",
   room_name: "",
   group_id: "",
   user_id_one: "",
   user_id_two: ""
 };
-const baseError = {
+var baseError = {
   code: 0,
   message: ""
 };
-const baseError_ContextEntry = {
+var baseError_ContextEntry = {
   key: "",
   value: ""
 };
-const baseMatch = {
+var baseMatch = {
   match_id: "",
   authoritative: false,
   size: 0
 };
-const baseMatchCreate = {};
-const baseMatchData = {
+var baseMatchCreate = {};
+var baseMatchData = {
   match_id: "",
   op_code: 0,
   reliable: false
 };
-const baseMatchDataSend = {
+var baseMatchDataSend = {
   match_id: "",
   op_code: 0,
   reliable: false
 };
-const baseMatchJoin = {};
-const baseMatchJoin_MetadataEntry = {
+var baseMatchJoin = {};
+var baseMatchJoin_MetadataEntry = {
   key: "",
   value: ""
 };
-const baseMatchLeave = {
+var baseMatchLeave = {
   match_id: ""
 };
-const baseMatchPresenceEvent = {
+var baseMatchPresenceEvent = {
   match_id: ""
 };
-const baseMatchmakerAdd = {
+var baseMatchmakerAdd = {
   min_count: 0,
   max_count: 0,
   query: ""
 };
-const baseMatchmakerAdd_StringPropertiesEntry = {
+var baseMatchmakerAdd_StringPropertiesEntry = {
   key: "",
   value: ""
 };
-const baseMatchmakerAdd_NumericPropertiesEntry = {
+var baseMatchmakerAdd_NumericPropertiesEntry = {
   key: "",
   value: 0
 };
-const baseMatchmakerMatched = {
+var baseMatchmakerMatched = {
   ticket: ""
 };
-const baseMatchmakerMatched_MatchmakerUser = {};
-const baseMatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
+var baseMatchmakerMatched_MatchmakerUser = {};
+var baseMatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
   key: "",
   value: ""
 };
-const baseMatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
+var baseMatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
   key: "",
   value: 0
 };
-const baseMatchmakerRemove = {
+var baseMatchmakerRemove = {
   ticket: ""
 };
-const baseMatchmakerTicket = {
+var baseMatchmakerTicket = {
   ticket: ""
 };
-const baseNotifications = {};
-const basePing = {};
-const basePong = {};
-const baseStatus = {};
-const baseStatusFollow = {
+var baseNotifications = {};
+var basePing = {};
+var basePong = {};
+var baseStatus = {};
+var baseStatusFollow = {
   user_ids: "",
   usernames: ""
 };
-const baseStatusPresenceEvent = {};
-const baseStatusUnfollow = {
+var baseStatusPresenceEvent = {};
+var baseStatusUnfollow = {
   user_ids: ""
 };
-const baseStatusUpdate = {};
-const baseStream = {
+var baseStatusUpdate = {};
+var baseStream = {
   mode: 0,
   subject: "",
   subcontext: "",
   label: ""
 };
-const baseStreamData = {
+var baseStreamData = {
   data: "",
   reliable: false
 };
-const baseStreamPresenceEvent = {};
-const baseUserPresence = {
+var baseStreamPresenceEvent = {};
+var baseUserPresence = {
   user_id: "",
   session_id: "",
   username: "",
@@ -2907,7 +2907,7 @@ function longToNumber2(long2) {
   }
   return long2.toNumber();
 }
-const Envelope = {
+var Envelope = {
   encode(message, writer = minimal4.Writer.create()) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja;
     writer.uint32(10).string(message.cid);
@@ -3368,7 +3368,7 @@ const Envelope = {
     return obj;
   }
 };
-const Channel = {
+var Channel = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.id);
     for (const v of message.presences) {
@@ -3491,7 +3491,7 @@ const Channel = {
     return obj;
   }
 };
-const ChannelJoin = {
+var ChannelJoin = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.target);
     writer.uint32(16).int32(message.type);
@@ -3570,7 +3570,7 @@ const ChannelJoin = {
     return obj;
   }
 };
-const ChannelLeave = {
+var ChannelLeave = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     return writer;
@@ -3612,7 +3612,7 @@ const ChannelLeave = {
     return obj;
   }
 };
-const ChannelMessageAck = {
+var ChannelMessageAck = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
@@ -3772,7 +3772,7 @@ const ChannelMessageAck = {
     return obj;
   }
 };
-const ChannelMessageSend = {
+var ChannelMessageSend = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.content);
@@ -3825,7 +3825,7 @@ const ChannelMessageSend = {
     return obj;
   }
 };
-const ChannelMessageUpdate = {
+var ChannelMessageUpdate = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
@@ -3889,7 +3889,7 @@ const ChannelMessageUpdate = {
     return obj;
   }
 };
-const ChannelMessageRemove = {
+var ChannelMessageRemove = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
@@ -3942,7 +3942,7 @@ const ChannelMessageRemove = {
     return obj;
   }
 };
-const ChannelPresenceEvent = {
+var ChannelPresenceEvent = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     for (const v of message.joins) {
@@ -4076,7 +4076,7 @@ const ChannelPresenceEvent = {
     return obj;
   }
 };
-const Error2 = {
+var Error2 = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(8).int32(message.code);
     writer.uint32(18).string(message.message);
@@ -4154,7 +4154,7 @@ const Error2 = {
     return obj;
   }
 };
-const Error_ContextEntry = {
+var Error_ContextEntry = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
@@ -4207,7 +4207,7 @@ const Error_ContextEntry = {
     return obj;
   }
 };
-const Match = {
+var Match = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     writer.uint32(16).bool(message.authoritative);
@@ -4321,7 +4321,7 @@ const Match = {
     return obj;
   }
 };
-const MatchCreate = {
+var MatchCreate = {
   encode(_, writer = minimal4.Writer.create()) {
     return writer;
   },
@@ -4352,7 +4352,7 @@ const MatchCreate = {
     return obj;
   }
 };
-const MatchData = {
+var MatchData = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     if (message.presence !== void 0 && message.presence !== void 0) {
@@ -4440,7 +4440,7 @@ const MatchData = {
     return obj;
   }
 };
-const MatchDataSend = {
+var MatchDataSend = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     writer.uint32(16).int64(message.op_code);
@@ -4539,7 +4539,7 @@ const MatchDataSend = {
     return obj;
   }
 };
-const MatchJoin = {
+var MatchJoin = {
   encode(message, writer = minimal4.Writer.create()) {
     var _a, _b, _c, _d;
     if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = message.id) == null ? void 0 : _b.match_id) !== "") {
@@ -4624,7 +4624,7 @@ const MatchJoin = {
     return obj;
   }
 };
-const MatchJoin_MetadataEntry = {
+var MatchJoin_MetadataEntry = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
@@ -4677,7 +4677,7 @@ const MatchJoin_MetadataEntry = {
     return obj;
   }
 };
-const MatchLeave = {
+var MatchLeave = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     return writer;
@@ -4719,7 +4719,7 @@ const MatchLeave = {
     return obj;
   }
 };
-const MatchPresenceEvent = {
+var MatchPresenceEvent = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     for (const v of message.joins) {
@@ -4809,7 +4809,7 @@ const MatchPresenceEvent = {
     return obj;
   }
 };
-const MatchmakerAdd = {
+var MatchmakerAdd = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(8).int32(message.min_count);
     writer.uint32(16).int32(message.max_count);
@@ -4923,7 +4923,7 @@ const MatchmakerAdd = {
     return obj;
   }
 };
-const MatchmakerAdd_StringPropertiesEntry = {
+var MatchmakerAdd_StringPropertiesEntry = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
@@ -4976,7 +4976,7 @@ const MatchmakerAdd_StringPropertiesEntry = {
     return obj;
   }
 };
-const MatchmakerAdd_NumericPropertiesEntry = {
+var MatchmakerAdd_NumericPropertiesEntry = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(17).double(message.value);
@@ -5029,7 +5029,7 @@ const MatchmakerAdd_NumericPropertiesEntry = {
     return obj;
   }
 };
-const MatchmakerMatched = {
+var MatchmakerMatched = {
   encode(message, writer = minimal4.Writer.create()) {
     var _a, _b, _c, _d;
     writer.uint32(10).string(message.ticket);
@@ -5137,7 +5137,7 @@ const MatchmakerMatched = {
     return obj;
   }
 };
-const MatchmakerMatched_MatchmakerUser = {
+var MatchmakerMatched_MatchmakerUser = {
   encode(message, writer = minimal4.Writer.create()) {
     if (message.presence !== void 0 && message.presence !== void 0) {
       UserPresence.encode(message.presence, writer.uint32(10).fork()).ldelim();
@@ -5231,7 +5231,7 @@ const MatchmakerMatched_MatchmakerUser = {
     return obj;
   }
 };
-const MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
+var MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
@@ -5284,7 +5284,7 @@ const MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
     return obj;
   }
 };
-const MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
+var MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(17).double(message.value);
@@ -5337,7 +5337,7 @@ const MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
     return obj;
   }
 };
-const MatchmakerRemove = {
+var MatchmakerRemove = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.ticket);
     return writer;
@@ -5379,7 +5379,7 @@ const MatchmakerRemove = {
     return obj;
   }
 };
-const MatchmakerTicket = {
+var MatchmakerTicket = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.ticket);
     return writer;
@@ -5421,7 +5421,7 @@ const MatchmakerTicket = {
     return obj;
   }
 };
-const Notifications = {
+var Notifications = {
   encode(message, writer = minimal4.Writer.create()) {
     for (const v of message.notifications) {
       Notification.encode(v, writer.uint32(10).fork()).ldelim();
@@ -5476,7 +5476,7 @@ const Notifications = {
     return obj;
   }
 };
-const Ping = {
+var Ping = {
   encode(_, writer = minimal4.Writer.create()) {
     return writer;
   },
@@ -5507,7 +5507,7 @@ const Ping = {
     return obj;
   }
 };
-const Pong = {
+var Pong = {
   encode(_, writer = minimal4.Writer.create()) {
     return writer;
   },
@@ -5538,7 +5538,7 @@ const Pong = {
     return obj;
   }
 };
-const Status = {
+var Status = {
   encode(message, writer = minimal4.Writer.create()) {
     for (const v of message.presences) {
       UserPresence.encode(v, writer.uint32(10).fork()).ldelim();
@@ -5593,7 +5593,7 @@ const Status = {
     return obj;
   }
 };
-const StatusFollow = {
+var StatusFollow = {
   encode(message, writer = minimal4.Writer.create()) {
     for (const v of message.user_ids) {
       writer.uint32(10).string(v);
@@ -5672,7 +5672,7 @@ const StatusFollow = {
     return obj;
   }
 };
-const StatusPresenceEvent = {
+var StatusPresenceEvent = {
   encode(message, writer = minimal4.Writer.create()) {
     for (const v of message.joins) {
       UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
@@ -5751,7 +5751,7 @@ const StatusPresenceEvent = {
     return obj;
   }
 };
-const StatusUnfollow = {
+var StatusUnfollow = {
   encode(message, writer = minimal4.Writer.create()) {
     for (const v of message.user_ids) {
       writer.uint32(10).string(v);
@@ -5806,7 +5806,7 @@ const StatusUnfollow = {
     return obj;
   }
 };
-const StatusUpdate = {
+var StatusUpdate = {
   encode(message, writer = minimal4.Writer.create()) {
     if (message.status !== void 0 && message.status !== void 0) {
       StringValue.encode({value: message.status}, writer.uint32(10).fork()).ldelim();
@@ -5850,7 +5850,7 @@ const StatusUpdate = {
     return obj;
   }
 };
-const Stream = {
+var Stream = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(8).int32(message.mode);
     writer.uint32(18).string(message.subject);
@@ -5925,7 +5925,7 @@ const Stream = {
     return obj;
   }
 };
-const StreamData = {
+var StreamData = {
   encode(message, writer = minimal4.Writer.create()) {
     if (message.stream !== void 0 && message.stream !== void 0) {
       Stream.encode(message.stream, writer.uint32(10).fork()).ldelim();
@@ -6004,7 +6004,7 @@ const StreamData = {
     return obj;
   }
 };
-const StreamPresenceEvent = {
+var StreamPresenceEvent = {
   encode(message, writer = minimal4.Writer.create()) {
     if (message.stream !== void 0 && message.stream !== void 0) {
       Stream.encode(message.stream, writer.uint32(10).fork()).ldelim();
@@ -6096,7 +6096,7 @@ const StreamPresenceEvent = {
     return obj;
   }
 };
-const UserPresence = {
+var UserPresence = {
   encode(message, writer = minimal4.Writer.create()) {
     writer.uint32(10).string(message.user_id);
     writer.uint32(18).string(message.session_id);
@@ -6184,9 +6184,9 @@ const UserPresence = {
     return obj;
   }
 };
-const windowBase642 = globalThis;
-const atob2 = windowBase642.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
-const btoa2 = windowBase642.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
+var windowBase642 = globalThis;
+var atob2 = windowBase642.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
+var btoa2 = windowBase642.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
 function bytesFromBase64(b64) {
   const bin = atob2(b64);
   const arr = new Uint8Array(bin.length);
@@ -6204,7 +6204,7 @@ function base64FromBytes(arr) {
 }
 
 // web_socket_adapter_pb.ts
-class WebSocketAdapterPb {
+var WebSocketAdapterPb = class {
   constructor() {
     this._isConnected = false;
   }
@@ -6273,7 +6273,7 @@ class WebSocketAdapterPb {
     const encodedMsg = envelopeWriter.finish();
     this._socket.send(encodedMsg);
   }
-}
+};
 
 // index.ts
 protobuf.util.Long = long.default;

@@ -511,7 +511,7 @@ var nakamajsprotobuf = (() => {
   var require_longbits = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = LongBits;
-    var util = require_minimal();
+    var util2 = require_minimal();
     function LongBits(lo, hi) {
       this.lo = lo >>> 0;
       this.hi = hi >>> 0;
@@ -548,9 +548,9 @@ var nakamajsprotobuf = (() => {
     LongBits.from = function from(value) {
       if (typeof value === "number")
         return LongBits.fromNumber(value);
-      if (util.isString(value)) {
-        if (util.Long)
-          value = util.Long.fromString(value);
+      if (util2.isString(value)) {
+        if (util2.Long)
+          value = util2.Long.fromString(value);
         else
           return LongBits.fromNumber(parseInt(value, 10));
       }
@@ -566,7 +566,7 @@ var nakamajsprotobuf = (() => {
       return this.lo + this.hi * 4294967296;
     };
     LongBits.prototype.toLong = function toLong(unsigned) {
-      return util.Long ? new util.Long(this.lo | 0, this.hi | 0, Boolean(unsigned)) : {low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned)};
+      return util2.Long ? new util2.Long(this.lo | 0, this.hi | 0, Boolean(unsigned)) : {low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned)};
     };
     var charCodeAt = String.prototype.charCodeAt;
     LongBits.fromHash = function fromHash(hash) {
@@ -598,59 +598,59 @@ var nakamajsprotobuf = (() => {
   // ../../node_modules/protobufjs/src/util/minimal.js
   var require_minimal = __commonJS((exports2) => {
     "use strict";
-    var util = exports2;
-    util.asPromise = require_aspromise();
-    util.base64 = require_base64();
-    util.EventEmitter = require_eventemitter();
-    util.float = require_float();
-    util.inquire = require_inquire();
-    util.utf8 = require_utf8();
-    util.pool = require_pool();
-    util.LongBits = require_longbits();
-    util.isNode = Boolean(typeof global !== "undefined" && global && global.process && global.process.versions && global.process.versions.node);
-    util.global = util.isNode && global || typeof window !== "undefined" && window || typeof self !== "undefined" && self || exports2;
-    util.emptyArray = Object.freeze ? Object.freeze([]) : [];
-    util.emptyObject = Object.freeze ? Object.freeze({}) : {};
-    util.isInteger = Number.isInteger || function isInteger(value) {
+    var util2 = exports2;
+    util2.asPromise = require_aspromise();
+    util2.base64 = require_base64();
+    util2.EventEmitter = require_eventemitter();
+    util2.float = require_float();
+    util2.inquire = require_inquire();
+    util2.utf8 = require_utf8();
+    util2.pool = require_pool();
+    util2.LongBits = require_longbits();
+    util2.isNode = Boolean(typeof global !== "undefined" && global && global.process && global.process.versions && global.process.versions.node);
+    util2.global = util2.isNode && global || typeof window !== "undefined" && window || typeof self !== "undefined" && self || exports2;
+    util2.emptyArray = Object.freeze ? Object.freeze([]) : [];
+    util2.emptyObject = Object.freeze ? Object.freeze({}) : {};
+    util2.isInteger = Number.isInteger || function isInteger(value) {
       return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
     };
-    util.isString = function isString(value) {
+    util2.isString = function isString(value) {
       return typeof value === "string" || value instanceof String;
     };
-    util.isObject = function isObject(value) {
+    util2.isObject = function isObject(value) {
       return value && typeof value === "object";
     };
-    util.isset = util.isSet = function isSet(obj, prop) {
+    util2.isset = util2.isSet = function isSet(obj, prop) {
       var value = obj[prop];
       if (value != null && obj.hasOwnProperty(prop))
         return typeof value !== "object" || (Array.isArray(value) ? value.length : Object.keys(value).length) > 0;
       return false;
     };
-    util.Buffer = function() {
+    util2.Buffer = function() {
       try {
-        var Buffer2 = util.inquire("buffer").Buffer;
+        var Buffer2 = util2.inquire("buffer").Buffer;
         return Buffer2.prototype.utf8Write ? Buffer2 : null;
       } catch (e) {
         return null;
       }
     }();
-    util._Buffer_from = null;
-    util._Buffer_allocUnsafe = null;
-    util.newBuffer = function newBuffer(sizeOrArray) {
-      return typeof sizeOrArray === "number" ? util.Buffer ? util._Buffer_allocUnsafe(sizeOrArray) : new util.Array(sizeOrArray) : util.Buffer ? util._Buffer_from(sizeOrArray) : typeof Uint8Array === "undefined" ? sizeOrArray : new Uint8Array(sizeOrArray);
+    util2._Buffer_from = null;
+    util2._Buffer_allocUnsafe = null;
+    util2.newBuffer = function newBuffer(sizeOrArray) {
+      return typeof sizeOrArray === "number" ? util2.Buffer ? util2._Buffer_allocUnsafe(sizeOrArray) : new util2.Array(sizeOrArray) : util2.Buffer ? util2._Buffer_from(sizeOrArray) : typeof Uint8Array === "undefined" ? sizeOrArray : new Uint8Array(sizeOrArray);
     };
-    util.Array = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
-    util.Long = util.global.dcodeIO && util.global.dcodeIO.Long || util.global.Long || util.inquire("long");
-    util.key2Re = /^true|false|0|1$/;
-    util.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
-    util.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
-    util.longToHash = function longToHash(value) {
-      return value ? util.LongBits.from(value).toHash() : util.LongBits.zeroHash;
+    util2.Array = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
+    util2.Long = util2.global.dcodeIO && util2.global.dcodeIO.Long || util2.global.Long || util2.inquire("long");
+    util2.key2Re = /^true|false|0|1$/;
+    util2.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
+    util2.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
+    util2.longToHash = function longToHash(value) {
+      return value ? util2.LongBits.from(value).toHash() : util2.LongBits.zeroHash;
     };
-    util.longFromHash = function longFromHash(hash, unsigned) {
-      var bits = util.LongBits.fromHash(hash);
-      if (util.Long)
-        return util.Long.fromBits(bits.lo, bits.hi, unsigned);
+    util2.longFromHash = function longFromHash(hash, unsigned) {
+      var bits = util2.LongBits.fromHash(hash);
+      if (util2.Long)
+        return util2.Long.fromBits(bits.lo, bits.hi, unsigned);
       return bits.toNumber(Boolean(unsigned));
     };
     function merge(dst, src, ifNotSet) {
@@ -659,8 +659,8 @@ var nakamajsprotobuf = (() => {
           dst[keys[i]] = src[keys[i]];
       return dst;
     }
-    util.merge = merge;
-    util.lcFirst = function lcFirst(str) {
+    util2.merge = merge;
+    util2.lcFirst = function lcFirst(str) {
       return str.charAt(0).toLowerCase() + str.substring(1);
     };
     function newError(name) {
@@ -686,9 +686,9 @@ var nakamajsprotobuf = (() => {
       };
       return CustomError;
     }
-    util.newError = newError;
-    util.ProtocolError = newError("ProtocolError");
-    util.oneOfGetter = function getOneOf(fieldNames) {
+    util2.newError = newError;
+    util2.ProtocolError = newError("ProtocolError");
+    util2.oneOfGetter = function getOneOf(fieldNames) {
       var fieldMap = {};
       for (var i = 0; i < fieldNames.length; ++i)
         fieldMap[fieldNames[i]] = 1;
@@ -698,29 +698,29 @@ var nakamajsprotobuf = (() => {
             return keys[i2];
       };
     };
-    util.oneOfSetter = function setOneOf(fieldNames) {
+    util2.oneOfSetter = function setOneOf(fieldNames) {
       return function(name) {
         for (var i = 0; i < fieldNames.length; ++i)
           if (fieldNames[i] !== name)
             delete this[fieldNames[i]];
       };
     };
-    util.toJSONOptions = {
+    util2.toJSONOptions = {
       longs: String,
       enums: String,
       bytes: String,
       json: true
     };
-    util._configure = function() {
-      var Buffer2 = util.Buffer;
+    util2._configure = function() {
+      var Buffer2 = util2.Buffer;
       if (!Buffer2) {
-        util._Buffer_from = util._Buffer_allocUnsafe = null;
+        util2._Buffer_from = util2._Buffer_allocUnsafe = null;
         return;
       }
-      util._Buffer_from = Buffer2.from !== Uint8Array.from && Buffer2.from || function Buffer_from(value, encoding) {
+      util2._Buffer_from = Buffer2.from !== Uint8Array.from && Buffer2.from || function Buffer_from(value, encoding) {
         return new Buffer2(value, encoding);
       };
-      util._Buffer_allocUnsafe = Buffer2.allocUnsafe || function Buffer_allocUnsafe(size) {
+      util2._Buffer_allocUnsafe = Buffer2.allocUnsafe || function Buffer_allocUnsafe(size) {
         return new Buffer2(size);
       };
     };
@@ -730,11 +730,11 @@ var nakamajsprotobuf = (() => {
   var require_writer = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = Writer5;
-    var util = require_minimal();
+    var util2 = require_minimal();
     var BufferWriter;
-    var LongBits = util.LongBits;
-    var base64 = util.base64;
-    var utf8 = util.utf8;
+    var LongBits = util2.LongBits;
+    var base64 = util2.base64;
+    var utf8 = util2.utf8;
     function Op(fn, len, val) {
       this.fn = fn;
       this.len = len;
@@ -756,7 +756,7 @@ var nakamajsprotobuf = (() => {
       this.states = null;
     }
     var create = function create2() {
-      return util.Buffer ? function create_buffer_setup() {
+      return util2.Buffer ? function create_buffer_setup() {
         return (Writer5.create = function create_buffer() {
           return new BufferWriter();
         })();
@@ -766,10 +766,10 @@ var nakamajsprotobuf = (() => {
     };
     Writer5.create = create();
     Writer5.alloc = function alloc(size) {
-      return new util.Array(size);
+      return new util2.Array(size);
     };
-    if (util.Array !== Array)
-      Writer5.alloc = util.pool(Writer5.alloc, util.Array.prototype.subarray);
+    if (util2.Array !== Array)
+      Writer5.alloc = util2.pool(Writer5.alloc, util2.Array.prototype.subarray);
     Writer5.prototype._push = function push(fn, len, val) {
       this.tail = this.tail.next = new Op(fn, len, val);
       this.len += len;
@@ -842,12 +842,12 @@ var nakamajsprotobuf = (() => {
     };
     Writer5.prototype.sfixed64 = Writer5.prototype.fixed64;
     Writer5.prototype.float = function write_float(value) {
-      return this._push(util.float.writeFloatLE, 4, value);
+      return this._push(util2.float.writeFloatLE, 4, value);
     };
     Writer5.prototype.double = function write_double(value) {
-      return this._push(util.float.writeDoubleLE, 8, value);
+      return this._push(util2.float.writeDoubleLE, 8, value);
     };
-    var writeBytes = util.Array.prototype.set ? function writeBytes_set(val, buf, pos) {
+    var writeBytes = util2.Array.prototype.set ? function writeBytes_set(val, buf, pos) {
       buf.set(val, pos);
     } : function writeBytes_for(val, buf, pos) {
       for (var i = 0; i < val.length; ++i)
@@ -857,7 +857,7 @@ var nakamajsprotobuf = (() => {
       var len = value.length >>> 0;
       if (!len)
         return this._push(writeByte, 1, 0);
-      if (util.isString(value)) {
+      if (util2.isString(value)) {
         var buf = Writer5.alloc(len = base64.length(value));
         base64.decode(value, buf, 0);
         value = buf;
@@ -918,13 +918,13 @@ var nakamajsprotobuf = (() => {
     module2.exports = BufferWriter;
     var Writer5 = require_writer();
     (BufferWriter.prototype = Object.create(Writer5.prototype)).constructor = BufferWriter;
-    var util = require_minimal();
+    var util2 = require_minimal();
     function BufferWriter() {
       Writer5.call(this);
     }
     BufferWriter._configure = function() {
-      BufferWriter.alloc = util._Buffer_allocUnsafe;
-      BufferWriter.writeBytesBuffer = util.Buffer && util.Buffer.prototype instanceof Uint8Array && util.Buffer.prototype.set.name === "set" ? function writeBytesBuffer_set(val, buf, pos) {
+      BufferWriter.alloc = util2._Buffer_allocUnsafe;
+      BufferWriter.writeBytesBuffer = util2.Buffer && util2.Buffer.prototype instanceof Uint8Array && util2.Buffer.prototype.set.name === "set" ? function writeBytesBuffer_set(val, buf, pos) {
         buf.set(val, pos);
       } : function writeBytesBuffer_copy(val, buf, pos) {
         if (val.copy)
@@ -935,8 +935,8 @@ var nakamajsprotobuf = (() => {
       };
     };
     BufferWriter.prototype.bytes = function write_bytes_buffer(value) {
-      if (util.isString(value))
-        value = util._Buffer_from(value, "base64");
+      if (util2.isString(value))
+        value = util2._Buffer_from(value, "base64");
       var len = value.length >>> 0;
       this.uint32(len);
       if (len)
@@ -945,14 +945,14 @@ var nakamajsprotobuf = (() => {
     };
     function writeStringBuffer(val, buf, pos) {
       if (val.length < 40)
-        util.utf8.write(val, buf, pos);
+        util2.utf8.write(val, buf, pos);
       else if (buf.utf8Write)
         buf.utf8Write(val, pos);
       else
         buf.write(val, pos);
     }
     BufferWriter.prototype.string = function write_string_buffer(value) {
-      var len = util.Buffer.byteLength(value);
+      var len = util2.Buffer.byteLength(value);
       this.uint32(len);
       if (len)
         this._push(writeStringBuffer, len, value);
@@ -965,10 +965,10 @@ var nakamajsprotobuf = (() => {
   var require_reader = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = Reader5;
-    var util = require_minimal();
+    var util2 = require_minimal();
     var BufferReader;
-    var LongBits = util.LongBits;
-    var utf8 = util.utf8;
+    var LongBits = util2.LongBits;
+    var utf8 = util2.utf8;
     function indexOutOfRange(reader, writeLength) {
       return RangeError("index out of range: " + reader.pos + " + " + (writeLength || 1) + " > " + reader.len);
     }
@@ -987,14 +987,14 @@ var nakamajsprotobuf = (() => {
       throw Error("illegal buffer");
     };
     var create = function create2() {
-      return util.Buffer ? function create_buffer_setup(buffer) {
+      return util2.Buffer ? function create_buffer_setup(buffer) {
         return (Reader5.create = function create_buffer(buffer2) {
-          return util.Buffer.isBuffer(buffer2) ? new BufferReader(buffer2) : create_array(buffer2);
+          return util2.Buffer.isBuffer(buffer2) ? new BufferReader(buffer2) : create_array(buffer2);
         })(buffer);
       } : create_array;
     };
     Reader5.create = create();
-    Reader5.prototype._slice = util.Array.prototype.subarray || util.Array.prototype.slice;
+    Reader5.prototype._slice = util2.Array.prototype.subarray || util2.Array.prototype.slice;
     Reader5.prototype.uint32 = function read_uint32_setup() {
       var value = 4294967295;
       return function read_uint32() {
@@ -1093,14 +1093,14 @@ var nakamajsprotobuf = (() => {
     Reader5.prototype.float = function read_float() {
       if (this.pos + 4 > this.len)
         throw indexOutOfRange(this, 4);
-      var value = util.float.readFloatLE(this.buf, this.pos);
+      var value = util2.float.readFloatLE(this.buf, this.pos);
       this.pos += 4;
       return value;
     };
     Reader5.prototype.double = function read_double() {
       if (this.pos + 8 > this.len)
         throw indexOutOfRange(this, 4);
-      var value = util.float.readDoubleLE(this.buf, this.pos);
+      var value = util2.float.readDoubleLE(this.buf, this.pos);
       this.pos += 8;
       return value;
     };
@@ -1158,8 +1158,8 @@ var nakamajsprotobuf = (() => {
       BufferReader = BufferReader_;
       Reader5.create = create();
       BufferReader._configure();
-      var fn = util.Long ? "toLong" : "toNumber";
-      util.merge(Reader5.prototype, {
+      var fn = util2.Long ? "toLong" : "toNumber";
+      util2.merge(Reader5.prototype, {
         int64: function read_int64() {
           return readLongVarint.call(this)[fn](false);
         },
@@ -1185,13 +1185,13 @@ var nakamajsprotobuf = (() => {
     module2.exports = BufferReader;
     var Reader5 = require_reader();
     (BufferReader.prototype = Object.create(Reader5.prototype)).constructor = BufferReader;
-    var util = require_minimal();
+    var util2 = require_minimal();
     function BufferReader(buffer) {
       Reader5.call(this, buffer);
     }
     BufferReader._configure = function() {
-      if (util.Buffer)
-        BufferReader.prototype._slice = util.Buffer.prototype.slice;
+      if (util2.Buffer)
+        BufferReader.prototype._slice = util2.Buffer.prototype.slice;
     };
     BufferReader.prototype.string = function read_string_buffer() {
       var len = this.uint32();
@@ -1204,12 +1204,12 @@ var nakamajsprotobuf = (() => {
   var require_service = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = Service;
-    var util = require_minimal();
-    (Service.prototype = Object.create(util.EventEmitter.prototype)).constructor = Service;
+    var util2 = require_minimal();
+    (Service.prototype = Object.create(util2.EventEmitter.prototype)).constructor = Service;
     function Service(rpcImpl, requestDelimited, responseDelimited) {
       if (typeof rpcImpl !== "function")
         throw TypeError("rpcImpl must be a function");
-      util.EventEmitter.call(this);
+      util2.EventEmitter.call(this);
       this.rpcImpl = rpcImpl;
       this.requestDelimited = Boolean(requestDelimited);
       this.responseDelimited = Boolean(responseDelimited);
@@ -1219,7 +1219,7 @@ var nakamajsprotobuf = (() => {
         throw TypeError("request must be specified");
       var self2 = this;
       if (!callback)
-        return util.asPromise(rpcCall, self2, method, requestCtor, responseCtor, request);
+        return util2.asPromise(rpcCall, self2, method, requestCtor, responseCtor, request);
       if (!self2.rpcImpl) {
         setTimeout(function() {
           callback(Error("already ended"));
@@ -1282,22 +1282,22 @@ var nakamajsprotobuf = (() => {
   // ../../node_modules/protobufjs/src/index-minimal.js
   var require_index_minimal = __commonJS((exports2) => {
     "use strict";
-    var protobuf = exports2;
-    protobuf.build = "minimal";
-    protobuf.Writer = require_writer();
-    protobuf.BufferWriter = require_writer_buffer();
-    protobuf.Reader = require_reader();
-    protobuf.BufferReader = require_reader_buffer();
-    protobuf.util = require_minimal();
-    protobuf.rpc = require_rpc();
-    protobuf.roots = require_roots();
-    protobuf.configure = configure;
-    function configure() {
-      protobuf.util._configure();
-      protobuf.Writer._configure(protobuf.BufferWriter);
-      protobuf.Reader._configure(protobuf.BufferReader);
+    var protobuf2 = exports2;
+    protobuf2.build = "minimal";
+    protobuf2.Writer = require_writer();
+    protobuf2.BufferWriter = require_writer_buffer();
+    protobuf2.Reader = require_reader();
+    protobuf2.BufferReader = require_reader_buffer();
+    protobuf2.util = require_minimal();
+    protobuf2.rpc = require_rpc();
+    protobuf2.roots = require_roots();
+    protobuf2.configure = configure2;
+    function configure2() {
+      protobuf2.util._configure();
+      protobuf2.Writer._configure(protobuf2.BufferWriter);
+      protobuf2.Reader._configure(protobuf2.BufferReader);
     }
-    configure();
+    configure2();
   });
 
   // ../../node_modules/protobufjs/minimal.js
@@ -1308,7 +1308,7 @@ var nakamajsprotobuf = (() => {
 
   // ../../node_modules/long/src/long.js
   var require_long = __commonJS((exports2, module2) => {
-    module2.exports = Long;
+    module2.exports = Long2;
     var wasm = null;
     try {
       wasm = new WebAssembly.Instance(new WebAssembly.Module(new Uint8Array([
@@ -1601,17 +1601,17 @@ var nakamajsprotobuf = (() => {
       ])), {}).exports;
     } catch (e) {
     }
-    function Long(low, high, unsigned) {
+    function Long2(low, high, unsigned) {
       this.low = low | 0;
       this.high = high | 0;
       this.unsigned = !!unsigned;
     }
-    Long.prototype.__isLong__;
-    Object.defineProperty(Long.prototype, "__isLong__", {value: true});
+    Long2.prototype.__isLong__;
+    Object.defineProperty(Long2.prototype, "__isLong__", {value: true});
     function isLong(obj) {
       return (obj && obj["__isLong__"]) === true;
     }
-    Long.isLong = isLong;
+    Long2.isLong = isLong;
     var INT_CACHE = {};
     var UINT_CACHE = {};
     function fromInt(value, unsigned) {
@@ -1640,7 +1640,7 @@ var nakamajsprotobuf = (() => {
         return obj;
       }
     }
-    Long.fromInt = fromInt;
+    Long2.fromInt = fromInt;
     function fromNumber(value, unsigned) {
       if (isNaN(value))
         return unsigned ? UZERO : ZERO;
@@ -1659,11 +1659,11 @@ var nakamajsprotobuf = (() => {
         return fromNumber(-value, unsigned).neg();
       return fromBits(value % TWO_PWR_32_DBL | 0, value / TWO_PWR_32_DBL | 0, unsigned);
     }
-    Long.fromNumber = fromNumber;
+    Long2.fromNumber = fromNumber;
     function fromBits(lowBits, highBits, unsigned) {
-      return new Long(lowBits, highBits, unsigned);
+      return new Long2(lowBits, highBits, unsigned);
     }
-    Long.fromBits = fromBits;
+    Long2.fromBits = fromBits;
     var pow_dbl = Math.pow;
     function fromString(str, unsigned, radix) {
       if (str.length === 0)
@@ -1699,7 +1699,7 @@ var nakamajsprotobuf = (() => {
       result.unsigned = unsigned;
       return result;
     }
-    Long.fromString = fromString;
+    Long2.fromString = fromString;
     function fromValue(val, unsigned) {
       if (typeof val === "number")
         return fromNumber(val, unsigned);
@@ -1707,7 +1707,7 @@ var nakamajsprotobuf = (() => {
         return fromString(val, unsigned);
       return fromBits(val.low, val.high, typeof unsigned === "boolean" ? unsigned : val.unsigned);
     }
-    Long.fromValue = fromValue;
+    Long2.fromValue = fromValue;
     var TWO_PWR_16_DBL = 1 << 16;
     var TWO_PWR_24_DBL = 1 << 24;
     var TWO_PWR_32_DBL = TWO_PWR_16_DBL * TWO_PWR_16_DBL;
@@ -1715,22 +1715,22 @@ var nakamajsprotobuf = (() => {
     var TWO_PWR_63_DBL = TWO_PWR_64_DBL / 2;
     var TWO_PWR_24 = fromInt(TWO_PWR_24_DBL);
     var ZERO = fromInt(0);
-    Long.ZERO = ZERO;
+    Long2.ZERO = ZERO;
     var UZERO = fromInt(0, true);
-    Long.UZERO = UZERO;
+    Long2.UZERO = UZERO;
     var ONE = fromInt(1);
-    Long.ONE = ONE;
+    Long2.ONE = ONE;
     var UONE = fromInt(1, true);
-    Long.UONE = UONE;
+    Long2.UONE = UONE;
     var NEG_ONE = fromInt(-1);
-    Long.NEG_ONE = NEG_ONE;
+    Long2.NEG_ONE = NEG_ONE;
     var MAX_VALUE = fromBits(4294967295 | 0, 2147483647 | 0, false);
-    Long.MAX_VALUE = MAX_VALUE;
+    Long2.MAX_VALUE = MAX_VALUE;
     var MAX_UNSIGNED_VALUE = fromBits(4294967295 | 0, 4294967295 | 0, true);
-    Long.MAX_UNSIGNED_VALUE = MAX_UNSIGNED_VALUE;
+    Long2.MAX_UNSIGNED_VALUE = MAX_UNSIGNED_VALUE;
     var MIN_VALUE = fromBits(0, 2147483648 | 0, false);
-    Long.MIN_VALUE = MIN_VALUE;
-    var LongPrototype = Long.prototype;
+    Long2.MIN_VALUE = MIN_VALUE;
+    var LongPrototype = Long2.prototype;
     LongPrototype.toInt = function toInt() {
       return this.unsigned ? this.low >>> 0 : this.low;
     };
@@ -2118,41 +2118,38 @@ var nakamajsprotobuf = (() => {
         lo & 255
       ];
     };
-    Long.fromBytes = function fromBytes(bytes, unsigned, le) {
-      return le ? Long.fromBytesLE(bytes, unsigned) : Long.fromBytesBE(bytes, unsigned);
+    Long2.fromBytes = function fromBytes(bytes, unsigned, le) {
+      return le ? Long2.fromBytesLE(bytes, unsigned) : Long2.fromBytesBE(bytes, unsigned);
     };
-    Long.fromBytesLE = function fromBytesLE(bytes, unsigned) {
-      return new Long(bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24, bytes[4] | bytes[5] << 8 | bytes[6] << 16 | bytes[7] << 24, unsigned);
+    Long2.fromBytesLE = function fromBytesLE(bytes, unsigned) {
+      return new Long2(bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24, bytes[4] | bytes[5] << 8 | bytes[6] << 16 | bytes[7] << 24, unsigned);
     };
-    Long.fromBytesBE = function fromBytesBE(bytes, unsigned) {
-      return new Long(bytes[4] << 24 | bytes[5] << 16 | bytes[6] << 8 | bytes[7], bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], unsigned);
+    Long2.fromBytesBE = function fromBytesBE(bytes, unsigned) {
+      return new Long2(bytes[4] << 24 | bytes[5] << 16 | bytes[6] << 8 | bytes[7], bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], unsigned);
     };
   });
 
   // index.ts
-  var require_nakama_js_protobuf = __commonJS((exports2) => {
-    __export(exports2, {
-      WebSocketAdapterPb: () => WebSocketAdapterPb
-    });
-    const protobuf = __toModule(require_minimal2());
-    const long = __toModule(require_long());
-    protobuf.util.Long = long.default;
-    protobuf.configure();
+  var nakama_js_protobuf_exports = {};
+  __export(nakama_js_protobuf_exports, {
+    WebSocketAdapterPb: () => WebSocketAdapterPb
   });
+  var protobuf = __toModule(require_minimal2());
+  var long = __toModule(require_long());
 
   // google/protobuf/timestamp.ts
-  const minimal = __toModule(require_minimal2());
-  const baseTimestamp = {
+  var minimal = __toModule(require_minimal2());
+  var baseTimestamp = {
     seconds: 0,
     nanos: 0
   };
-  function longToNumber(long) {
-    if (long.gt(Number.MAX_SAFE_INTEGER)) {
+  function longToNumber(long2) {
+    if (long2.gt(Number.MAX_SAFE_INTEGER)) {
       throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
     }
-    return long.toNumber();
+    return long2.toNumber();
   }
-  const Timestamp = {
+  var Timestamp = {
     encode(message, writer = minimal.Writer.create()) {
       writer.uint32(8).int64(message.seconds);
       writer.uint32(16).int32(message.nanos);
@@ -2207,20 +2204,20 @@ var nakamajsprotobuf = (() => {
   };
 
   // github.com/heroiclabs/nakama-common/api/api.ts
-  const minimal3 = __toModule(require_minimal2());
+  var minimal3 = __toModule(require_minimal2());
 
   // google/protobuf/wrappers.ts
-  const minimal2 = __toModule(require_minimal2());
-  const baseInt32Value = {
+  var minimal2 = __toModule(require_minimal2());
+  var baseInt32Value = {
     value: 0
   };
-  const baseBoolValue = {
+  var baseBoolValue = {
     value: false
   };
-  const baseStringValue = {
+  var baseStringValue = {
     value: ""
   };
-  const Int32Value = {
+  var Int32Value = {
     encode(message, writer = minimal2.Writer.create()) {
       writer.uint32(8).int32(message.value);
       return writer;
@@ -2262,7 +2259,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const BoolValue = {
+  var BoolValue = {
     encode(message, writer = minimal2.Writer.create()) {
       writer.uint32(8).bool(message.value);
       return writer;
@@ -2304,7 +2301,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const StringValue = {
+  var StringValue = {
     encode(message, writer = minimal2.Writer.create()) {
       writer.uint32(10).string(message.value);
       return writer;
@@ -2346,12 +2343,12 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const windowBase64 = globalThis;
-  const atob = windowBase64.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
-  const btoa = windowBase64.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
+  var windowBase64 = globalThis;
+  var atob = windowBase64.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
+  var btoa = windowBase64.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
 
   // github.com/heroiclabs/nakama-common/api/api.ts
-  const baseChannelMessage = {
+  var baseChannelMessage = {
     channel_id: "",
     message_id: "",
     sender_id: "",
@@ -2362,7 +2359,7 @@ var nakamajsprotobuf = (() => {
     user_id_one: "",
     user_id_two: ""
   };
-  const baseNotification = {
+  var baseNotification = {
     id: "",
     subject: "",
     content: "",
@@ -2370,7 +2367,7 @@ var nakamajsprotobuf = (() => {
     sender_id: "",
     persistent: false
   };
-  const baseRpc = {
+  var baseRpc = {
     id: "",
     payload: "",
     http_key: ""
@@ -2394,7 +2391,7 @@ var nakamajsprotobuf = (() => {
     millis += t.nanos / 1e6;
     return new Date(millis);
   }
-  const ChannelMessage = {
+  var ChannelMessage = {
     encode(message, writer = minimal3.Writer.create()) {
       writer.uint32(10).string(message.channel_id);
       writer.uint32(18).string(message.message_id);
@@ -2576,7 +2573,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const Notification = {
+  var Notification = {
     encode(message, writer = minimal3.Writer.create()) {
       writer.uint32(10).string(message.id);
       writer.uint32(18).string(message.subject);
@@ -2686,7 +2683,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const Rpc = {
+  var Rpc = {
     encode(message, writer = minimal3.Writer.create()) {
       writer.uint32(10).string(message.id);
       writer.uint32(18).string(message.payload);
@@ -2752,25 +2749,25 @@ var nakamajsprotobuf = (() => {
   };
 
   // github.com/heroiclabs/nakama-common/rtapi/realtime.ts
-  const minimal4 = __toModule(require_minimal2());
-  const baseEnvelope = {
+  var minimal4 = __toModule(require_minimal2());
+  var baseEnvelope = {
     cid: ""
   };
-  const baseChannel = {
+  var baseChannel = {
     id: "",
     room_name: "",
     group_id: "",
     user_id_one: "",
     user_id_two: ""
   };
-  const baseChannelJoin = {
+  var baseChannelJoin = {
     target: "",
     type: 0
   };
-  const baseChannelLeave = {
+  var baseChannelLeave = {
     channel_id: ""
   };
-  const baseChannelMessageAck = {
+  var baseChannelMessageAck = {
     channel_id: "",
     message_id: "",
     username: "",
@@ -2779,117 +2776,117 @@ var nakamajsprotobuf = (() => {
     user_id_one: "",
     user_id_two: ""
   };
-  const baseChannelMessageSend = {
+  var baseChannelMessageSend = {
     channel_id: "",
     content: ""
   };
-  const baseChannelMessageUpdate = {
+  var baseChannelMessageUpdate = {
     channel_id: "",
     message_id: "",
     content: ""
   };
-  const baseChannelMessageRemove = {
+  var baseChannelMessageRemove = {
     channel_id: "",
     message_id: ""
   };
-  const baseChannelPresenceEvent = {
+  var baseChannelPresenceEvent = {
     channel_id: "",
     room_name: "",
     group_id: "",
     user_id_one: "",
     user_id_two: ""
   };
-  const baseError = {
+  var baseError = {
     code: 0,
     message: ""
   };
-  const baseError_ContextEntry = {
+  var baseError_ContextEntry = {
     key: "",
     value: ""
   };
-  const baseMatch = {
+  var baseMatch = {
     match_id: "",
     authoritative: false,
     size: 0
   };
-  const baseMatchCreate = {};
-  const baseMatchData = {
+  var baseMatchCreate = {};
+  var baseMatchData = {
     match_id: "",
     op_code: 0,
     reliable: false
   };
-  const baseMatchDataSend = {
+  var baseMatchDataSend = {
     match_id: "",
     op_code: 0,
     reliable: false
   };
-  const baseMatchJoin = {};
-  const baseMatchJoin_MetadataEntry = {
+  var baseMatchJoin = {};
+  var baseMatchJoin_MetadataEntry = {
     key: "",
     value: ""
   };
-  const baseMatchLeave = {
+  var baseMatchLeave = {
     match_id: ""
   };
-  const baseMatchPresenceEvent = {
+  var baseMatchPresenceEvent = {
     match_id: ""
   };
-  const baseMatchmakerAdd = {
+  var baseMatchmakerAdd = {
     min_count: 0,
     max_count: 0,
     query: ""
   };
-  const baseMatchmakerAdd_StringPropertiesEntry = {
+  var baseMatchmakerAdd_StringPropertiesEntry = {
     key: "",
     value: ""
   };
-  const baseMatchmakerAdd_NumericPropertiesEntry = {
+  var baseMatchmakerAdd_NumericPropertiesEntry = {
     key: "",
     value: 0
   };
-  const baseMatchmakerMatched = {
+  var baseMatchmakerMatched = {
     ticket: ""
   };
-  const baseMatchmakerMatched_MatchmakerUser = {};
-  const baseMatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
+  var baseMatchmakerMatched_MatchmakerUser = {};
+  var baseMatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
     key: "",
     value: ""
   };
-  const baseMatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
+  var baseMatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
     key: "",
     value: 0
   };
-  const baseMatchmakerRemove = {
+  var baseMatchmakerRemove = {
     ticket: ""
   };
-  const baseMatchmakerTicket = {
+  var baseMatchmakerTicket = {
     ticket: ""
   };
-  const baseNotifications = {};
-  const basePing = {};
-  const basePong = {};
-  const baseStatus = {};
-  const baseStatusFollow = {
+  var baseNotifications = {};
+  var basePing = {};
+  var basePong = {};
+  var baseStatus = {};
+  var baseStatusFollow = {
     user_ids: "",
     usernames: ""
   };
-  const baseStatusPresenceEvent = {};
-  const baseStatusUnfollow = {
+  var baseStatusPresenceEvent = {};
+  var baseStatusUnfollow = {
     user_ids: ""
   };
-  const baseStatusUpdate = {};
-  const baseStream = {
+  var baseStatusUpdate = {};
+  var baseStream = {
     mode: 0,
     subject: "",
     subcontext: "",
     label: ""
   };
-  const baseStreamData = {
+  var baseStreamData = {
     data: "",
     reliable: false
   };
-  const baseStreamPresenceEvent = {};
-  const baseUserPresence = {
+  var baseStreamPresenceEvent = {};
+  var baseUserPresence = {
     user_id: "",
     session_id: "",
     username: "",
@@ -2914,13 +2911,13 @@ var nakamajsprotobuf = (() => {
     millis += t.nanos / 1e6;
     return new Date(millis);
   }
-  function longToNumber2(long) {
-    if (long.gt(Number.MAX_SAFE_INTEGER)) {
+  function longToNumber2(long2) {
+    if (long2.gt(Number.MAX_SAFE_INTEGER)) {
       throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
     }
-    return long.toNumber();
+    return long2.toNumber();
   }
-  const Envelope = {
+  var Envelope = {
     encode(message, writer = minimal4.Writer.create()) {
       var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja;
       writer.uint32(10).string(message.cid);
@@ -3381,7 +3378,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const Channel = {
+  var Channel = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.id);
       for (const v of message.presences) {
@@ -3504,7 +3501,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const ChannelJoin = {
+  var ChannelJoin = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.target);
       writer.uint32(16).int32(message.type);
@@ -3583,7 +3580,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const ChannelLeave = {
+  var ChannelLeave = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.channel_id);
       return writer;
@@ -3625,7 +3622,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const ChannelMessageAck = {
+  var ChannelMessageAck = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.channel_id);
       writer.uint32(18).string(message.message_id);
@@ -3785,7 +3782,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const ChannelMessageSend = {
+  var ChannelMessageSend = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.channel_id);
       writer.uint32(18).string(message.content);
@@ -3838,7 +3835,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const ChannelMessageUpdate = {
+  var ChannelMessageUpdate = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.channel_id);
       writer.uint32(18).string(message.message_id);
@@ -3902,7 +3899,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const ChannelMessageRemove = {
+  var ChannelMessageRemove = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.channel_id);
       writer.uint32(18).string(message.message_id);
@@ -3955,7 +3952,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const ChannelPresenceEvent = {
+  var ChannelPresenceEvent = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.channel_id);
       for (const v of message.joins) {
@@ -4089,7 +4086,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const Error2 = {
+  var Error2 = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(8).int32(message.code);
       writer.uint32(18).string(message.message);
@@ -4167,7 +4164,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const Error_ContextEntry = {
+  var Error_ContextEntry = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.key);
       writer.uint32(18).string(message.value);
@@ -4220,7 +4217,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const Match = {
+  var Match = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.match_id);
       writer.uint32(16).bool(message.authoritative);
@@ -4334,7 +4331,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchCreate = {
+  var MatchCreate = {
     encode(_, writer = minimal4.Writer.create()) {
       return writer;
     },
@@ -4365,7 +4362,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchData = {
+  var MatchData = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.match_id);
       if (message.presence !== void 0 && message.presence !== void 0) {
@@ -4453,7 +4450,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchDataSend = {
+  var MatchDataSend = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.match_id);
       writer.uint32(16).int64(message.op_code);
@@ -4552,7 +4549,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchJoin = {
+  var MatchJoin = {
     encode(message, writer = minimal4.Writer.create()) {
       var _a, _b, _c, _d;
       if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = message.id) == null ? void 0 : _b.match_id) !== "") {
@@ -4637,7 +4634,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchJoin_MetadataEntry = {
+  var MatchJoin_MetadataEntry = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.key);
       writer.uint32(18).string(message.value);
@@ -4690,7 +4687,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchLeave = {
+  var MatchLeave = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.match_id);
       return writer;
@@ -4732,7 +4729,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchPresenceEvent = {
+  var MatchPresenceEvent = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.match_id);
       for (const v of message.joins) {
@@ -4822,7 +4819,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchmakerAdd = {
+  var MatchmakerAdd = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(8).int32(message.min_count);
       writer.uint32(16).int32(message.max_count);
@@ -4936,7 +4933,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchmakerAdd_StringPropertiesEntry = {
+  var MatchmakerAdd_StringPropertiesEntry = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.key);
       writer.uint32(18).string(message.value);
@@ -4989,7 +4986,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchmakerAdd_NumericPropertiesEntry = {
+  var MatchmakerAdd_NumericPropertiesEntry = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.key);
       writer.uint32(17).double(message.value);
@@ -5042,7 +5039,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchmakerMatched = {
+  var MatchmakerMatched = {
     encode(message, writer = minimal4.Writer.create()) {
       var _a, _b, _c, _d;
       writer.uint32(10).string(message.ticket);
@@ -5150,7 +5147,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchmakerMatched_MatchmakerUser = {
+  var MatchmakerMatched_MatchmakerUser = {
     encode(message, writer = minimal4.Writer.create()) {
       if (message.presence !== void 0 && message.presence !== void 0) {
         UserPresence.encode(message.presence, writer.uint32(10).fork()).ldelim();
@@ -5244,7 +5241,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
+  var MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.key);
       writer.uint32(18).string(message.value);
@@ -5297,7 +5294,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
+  var MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.key);
       writer.uint32(17).double(message.value);
@@ -5350,7 +5347,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchmakerRemove = {
+  var MatchmakerRemove = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.ticket);
       return writer;
@@ -5392,7 +5389,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const MatchmakerTicket = {
+  var MatchmakerTicket = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.ticket);
       return writer;
@@ -5434,7 +5431,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const Notifications = {
+  var Notifications = {
     encode(message, writer = minimal4.Writer.create()) {
       for (const v of message.notifications) {
         Notification.encode(v, writer.uint32(10).fork()).ldelim();
@@ -5489,7 +5486,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const Ping = {
+  var Ping = {
     encode(_, writer = minimal4.Writer.create()) {
       return writer;
     },
@@ -5520,7 +5517,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const Pong = {
+  var Pong = {
     encode(_, writer = minimal4.Writer.create()) {
       return writer;
     },
@@ -5551,7 +5548,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const Status = {
+  var Status = {
     encode(message, writer = minimal4.Writer.create()) {
       for (const v of message.presences) {
         UserPresence.encode(v, writer.uint32(10).fork()).ldelim();
@@ -5606,7 +5603,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const StatusFollow = {
+  var StatusFollow = {
     encode(message, writer = minimal4.Writer.create()) {
       for (const v of message.user_ids) {
         writer.uint32(10).string(v);
@@ -5685,7 +5682,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const StatusPresenceEvent = {
+  var StatusPresenceEvent = {
     encode(message, writer = minimal4.Writer.create()) {
       for (const v of message.joins) {
         UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
@@ -5764,7 +5761,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const StatusUnfollow = {
+  var StatusUnfollow = {
     encode(message, writer = minimal4.Writer.create()) {
       for (const v of message.user_ids) {
         writer.uint32(10).string(v);
@@ -5819,7 +5816,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const StatusUpdate = {
+  var StatusUpdate = {
     encode(message, writer = minimal4.Writer.create()) {
       if (message.status !== void 0 && message.status !== void 0) {
         StringValue.encode({value: message.status}, writer.uint32(10).fork()).ldelim();
@@ -5863,7 +5860,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const Stream = {
+  var Stream = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(8).int32(message.mode);
       writer.uint32(18).string(message.subject);
@@ -5938,7 +5935,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const StreamData = {
+  var StreamData = {
     encode(message, writer = minimal4.Writer.create()) {
       if (message.stream !== void 0 && message.stream !== void 0) {
         Stream.encode(message.stream, writer.uint32(10).fork()).ldelim();
@@ -6017,7 +6014,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const StreamPresenceEvent = {
+  var StreamPresenceEvent = {
     encode(message, writer = minimal4.Writer.create()) {
       if (message.stream !== void 0 && message.stream !== void 0) {
         Stream.encode(message.stream, writer.uint32(10).fork()).ldelim();
@@ -6109,7 +6106,7 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const UserPresence = {
+  var UserPresence = {
     encode(message, writer = minimal4.Writer.create()) {
       writer.uint32(10).string(message.user_id);
       writer.uint32(18).string(message.session_id);
@@ -6197,9 +6194,9 @@ var nakamajsprotobuf = (() => {
       return obj;
     }
   };
-  const windowBase642 = globalThis;
-  const atob2 = windowBase642.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
-  const btoa2 = windowBase642.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
+  var windowBase642 = globalThis;
+  var atob2 = windowBase642.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
+  var btoa2 = windowBase642.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
   function bytesFromBase64(b64) {
     const bin = atob2(b64);
     const arr = new Uint8Array(bin.length);
@@ -6217,7 +6214,7 @@ var nakamajsprotobuf = (() => {
   }
 
   // web_socket_adapter_pb.ts
-  class WebSocketAdapterPb {
+  var WebSocketAdapterPb = class {
     constructor() {
       this._isConnected = false;
     }
@@ -6286,6 +6283,10 @@ var nakamajsprotobuf = (() => {
       const encodedMsg = envelopeWriter.finish();
       this._socket.send(encodedMsg);
     }
-  }
-  return require_nakama_js_protobuf();
+  };
+
+  // index.ts
+  protobuf.util.Long = long.default;
+  protobuf.configure();
+  return nakama_js_protobuf_exports;
 })();
