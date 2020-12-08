@@ -1,6 +1,5 @@
 {
   "name": "@heroiclabs/nakama-js-base",
-  "version": "2.0.3",
   "description": "JavaScript client for Nakama server written in TypeScript.",
   "keywords": [
     "app server",

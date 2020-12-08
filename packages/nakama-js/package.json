@@ -1,5 +1,6 @@
 {
     "name": "@heroiclabs/nakama-js",
+    "version": "2.1.0",
     "scripts": {
         "build": "node build.js"
     },
