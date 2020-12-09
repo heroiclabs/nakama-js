@@ -186,7 +186,7 @@ $GOPATH/src/github.com/heroiclabs/nakama-common/rtapi/realtime.proto
 To release onto NPM if you have access to the "@heroiclabs" organization you can use Yarn.
 
 ```shell
-yarn workspace <workspace> run build && yarn workspace <workspace> publish --access=public
+yarn workspace <workspace> run build && yarn workspace <workspace> npm publish --access=public
 ```
 
 You can use `yarn workspaces foreach <cmd>` to do this for each NPM package distributed by this repository.
