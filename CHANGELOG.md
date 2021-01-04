@@ -3,7 +3,11 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
-## [Unreleased]
+## [2.1.2]
+### Fixed
+- Paths to distribution files in package.json
+
+## [2.1.1]
 ### Added
 - Support for Session Vars.
 - Added interface for Session object.
