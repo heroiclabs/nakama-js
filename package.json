@@ -49,6 +49,7 @@
   "private": true,
   "workspaces": [
     "packages/nakama-js",
-    "packages/nakama-js-protobuf"
+    "packages/nakama-js-protobuf",
+    "packages/nakama-js-example"
   ]
 }

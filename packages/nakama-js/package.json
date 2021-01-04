@@ -16,14 +16,14 @@
         "nakama",
         "realtime",
         "realtime chat"
-      ],
+    ],
     "repository": "https://github.com/heroiclabs/nakama-js",
     "homepage": "https://heroiclabs.com",
     "bugs": "https://github.com/heroiclabs/nakama-js/issues",
     "author": "Chris Molozian <chris@heroiclabs.com>",
     "contributors": [
-    "Andrei Mihu <andrei@heroiclabs.com>",
-    "Mo Firouz <mo@heroiclabs.com>"
+        "Andrei Mihu <andrei@heroiclabs.com>",
+        "Mo Firouz <mo@heroiclabs.com>"
     ],
     "license": "Apache-2.0",
     "dependencies": {

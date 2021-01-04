@@ -35,7 +35,7 @@ You'll need to setup the server and database before you can connect with the cli
     // <script src="path/to/nakama-js.iife.js"></script>
 
     var useSSL = false; // Enable if server is run with an SSL certificate.
-    var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350, useSSL);
+    var client = new nakamajs.Client("defaultkey", "127.0.0.1", "7350", useSSL);
     ```
 
     If you are including the optional protocol buffer adapter, pass the adapter to the Client object:
@@ -45,7 +45,7 @@ You'll need to setup the server and database before you can connect with the cli
     // <script src="path/to/nakama-js-protobuf.iife.js"></script>
 
     var useSSL = false; // Enable if server is run with an SSL certificate.
-    var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350, useSSL, new nakamajsprotobuf.WebSocketAdapterPb());
+    var client = new nakamajs.Client("defaultkey", "127.0.0.1", "7350", useSSL, new nakamajsprotobuf.WebSocketAdapterPb());
     ```
 
 ## Usage
