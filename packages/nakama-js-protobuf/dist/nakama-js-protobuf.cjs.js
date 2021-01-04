@@ -2133,28 +2133,28 @@ __export(exports, {
   WebSocketAdapterPb: () => WebSocketAdapterPb
 });
 var protobuf = __toModule(require_minimal2());
-var long = __toModule(require_long());
+var import_long = __toModule(require_long());
 
 // google/protobuf/timestamp.ts
-var minimal = __toModule(require_minimal2());
+var import_minimal = __toModule(require_minimal2());
 var baseTimestamp = {
   seconds: 0,
   nanos: 0
 };
-function longToNumber(long2) {
-  if (long2.gt(Number.MAX_SAFE_INTEGER)) {
+function longToNumber(long) {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
     throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
-  return long2.toNumber();
+  return long.toNumber();
 }
 var Timestamp = {
-  encode(message, writer = minimal.Writer.create()) {
+  encode(message, writer = import_minimal.Writer.create()) {
     writer.uint32(8).int64(message.seconds);
     writer.uint32(16).int32(message.nanos);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseTimestamp);
     while (reader.pos < end) {
@@ -2202,10 +2202,10 @@ var Timestamp = {
 };
 
 // github.com/heroiclabs/nakama-common/api/api.ts
-var minimal3 = __toModule(require_minimal2());
+var import_minimal3 = __toModule(require_minimal2());
 
 // google/protobuf/wrappers.ts
-var minimal2 = __toModule(require_minimal2());
+var import_minimal2 = __toModule(require_minimal2());
 var baseInt32Value = {
   value: 0
 };
@@ -2216,12 +2216,12 @@ var baseStringValue = {
   value: ""
 };
 var Int32Value = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = import_minimal2.Writer.create()) {
     writer.uint32(8).int32(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal2.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseInt32Value);
     while (reader.pos < end) {
@@ -2258,12 +2258,12 @@ var Int32Value = {
   }
 };
 var BoolValue = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = import_minimal2.Writer.create()) {
     writer.uint32(8).bool(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal2.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseBoolValue);
     while (reader.pos < end) {
@@ -2300,12 +2300,12 @@ var BoolValue = {
   }
 };
 var StringValue = {
-  encode(message, writer = minimal2.Writer.create()) {
+  encode(message, writer = import_minimal2.Writer.create()) {
     writer.uint32(10).string(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal2.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal2.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStringValue);
     while (reader.pos < end) {
@@ -2390,7 +2390,7 @@ function fromTimestamp(t) {
   return new Date(millis);
 }
 var ChannelMessage = {
-  encode(message, writer = minimal3.Writer.create()) {
+  encode(message, writer = import_minimal3.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
     if (message.code !== void 0 && message.code !== void 0) {
@@ -2415,7 +2415,7 @@ var ChannelMessage = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal3.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal3.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelMessage);
     while (reader.pos < end) {
@@ -2572,7 +2572,7 @@ var ChannelMessage = {
   }
 };
 var Notification = {
-  encode(message, writer = minimal3.Writer.create()) {
+  encode(message, writer = import_minimal3.Writer.create()) {
     writer.uint32(10).string(message.id);
     writer.uint32(18).string(message.subject);
     writer.uint32(26).string(message.content);
@@ -2585,7 +2585,7 @@ var Notification = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal3.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal3.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseNotification);
     while (reader.pos < end) {
@@ -2682,14 +2682,14 @@ var Notification = {
   }
 };
 var Rpc = {
-  encode(message, writer = minimal3.Writer.create()) {
+  encode(message, writer = import_minimal3.Writer.create()) {
     writer.uint32(10).string(message.id);
     writer.uint32(18).string(message.payload);
     writer.uint32(26).string(message.http_key);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal3.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal3.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseRpc);
     while (reader.pos < end) {
@@ -2747,7 +2747,7 @@ var Rpc = {
 };
 
 // github.com/heroiclabs/nakama-common/rtapi/realtime.ts
-var minimal4 = __toModule(require_minimal2());
+var import_minimal4 = __toModule(require_minimal2());
 var baseEnvelope = {
   cid: ""
 };
@@ -2909,14 +2909,14 @@ function fromTimestamp2(t) {
   millis += t.nanos / 1e6;
   return new Date(millis);
 }
-function longToNumber2(long2) {
-  if (long2.gt(Number.MAX_SAFE_INTEGER)) {
+function longToNumber2(long) {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
     throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
-  return long2.toNumber();
+  return long.toNumber();
 }
 var Envelope = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja;
     writer.uint32(10).string(message.cid);
     if (((_a = message.message) == null ? void 0 : _a.$case) === "channel" && ((_b = message.message) == null ? void 0 : _b.channel) !== void 0) {
@@ -3018,7 +3018,7 @@ var Envelope = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseEnvelope);
     while (reader.pos < end) {
@@ -3377,7 +3377,7 @@ var Envelope = {
   }
 };
 var Channel = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.id);
     for (const v of message.presences) {
       UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
@@ -3392,7 +3392,7 @@ var Channel = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannel);
     message.presences = [];
@@ -3500,7 +3500,7 @@ var Channel = {
   }
 };
 var ChannelJoin = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.target);
     writer.uint32(16).int32(message.type);
     if (message.persistence !== void 0 && message.persistence !== void 0) {
@@ -3512,7 +3512,7 @@ var ChannelJoin = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelJoin);
     while (reader.pos < end) {
@@ -3579,12 +3579,12 @@ var ChannelJoin = {
   }
 };
 var ChannelLeave = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelLeave);
     while (reader.pos < end) {
@@ -3621,7 +3621,7 @@ var ChannelLeave = {
   }
 };
 var ChannelMessageAck = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
     if (message.code !== void 0 && message.code !== void 0) {
@@ -3644,7 +3644,7 @@ var ChannelMessageAck = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelMessageAck);
     while (reader.pos < end) {
@@ -3781,13 +3781,13 @@ var ChannelMessageAck = {
   }
 };
 var ChannelMessageSend = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.content);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelMessageSend);
     while (reader.pos < end) {
@@ -3834,14 +3834,14 @@ var ChannelMessageSend = {
   }
 };
 var ChannelMessageUpdate = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
     writer.uint32(26).string(message.content);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelMessageUpdate);
     while (reader.pos < end) {
@@ -3898,13 +3898,13 @@ var ChannelMessageUpdate = {
   }
 };
 var ChannelMessageRemove = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     writer.uint32(18).string(message.message_id);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelMessageRemove);
     while (reader.pos < end) {
@@ -3951,7 +3951,7 @@ var ChannelMessageRemove = {
   }
 };
 var ChannelPresenceEvent = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
     for (const v of message.joins) {
       UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
@@ -3966,7 +3966,7 @@ var ChannelPresenceEvent = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseChannelPresenceEvent);
     message.joins = [];
@@ -4085,7 +4085,7 @@ var ChannelPresenceEvent = {
   }
 };
 var Error2 = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(8).int32(message.code);
     writer.uint32(18).string(message.message);
     Object.entries(message.context).forEach(([key, value]) => {
@@ -4094,7 +4094,7 @@ var Error2 = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseError);
     message.context = {};
@@ -4163,13 +4163,13 @@ var Error2 = {
   }
 };
 var Error_ContextEntry = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseError_ContextEntry);
     while (reader.pos < end) {
@@ -4216,7 +4216,7 @@ var Error_ContextEntry = {
   }
 };
 var Match = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     writer.uint32(16).bool(message.authoritative);
     if (message.label !== void 0 && message.label !== void 0) {
@@ -4232,7 +4232,7 @@ var Match = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatch);
     message.presences = [];
@@ -4330,11 +4330,11 @@ var Match = {
   }
 };
 var MatchCreate = {
-  encode(_, writer = minimal4.Writer.create()) {
+  encode(_, writer = import_minimal4.Writer.create()) {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchCreate);
     while (reader.pos < end) {
@@ -4361,7 +4361,7 @@ var MatchCreate = {
   }
 };
 var MatchData = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     if (message.presence !== void 0 && message.presence !== void 0) {
       UserPresence.encode(message.presence, writer.uint32(18).fork()).ldelim();
@@ -4372,7 +4372,7 @@ var MatchData = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchData);
     while (reader.pos < end) {
@@ -4449,7 +4449,7 @@ var MatchData = {
   }
 };
 var MatchDataSend = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     writer.uint32(16).int64(message.op_code);
     writer.uint32(26).bytes(message.data);
@@ -4460,7 +4460,7 @@ var MatchDataSend = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchDataSend);
     message.presences = [];
@@ -4548,7 +4548,7 @@ var MatchDataSend = {
   }
 };
 var MatchJoin = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     var _a, _b, _c, _d;
     if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = message.id) == null ? void 0 : _b.match_id) !== "") {
       writer.uint32(10).string(message.id.match_id);
@@ -4562,7 +4562,7 @@ var MatchJoin = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchJoin);
     message.metadata = {};
@@ -4633,13 +4633,13 @@ var MatchJoin = {
   }
 };
 var MatchJoin_MetadataEntry = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchJoin_MetadataEntry);
     while (reader.pos < end) {
@@ -4686,12 +4686,12 @@ var MatchJoin_MetadataEntry = {
   }
 };
 var MatchLeave = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchLeave);
     while (reader.pos < end) {
@@ -4728,7 +4728,7 @@ var MatchLeave = {
   }
 };
 var MatchPresenceEvent = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.match_id);
     for (const v of message.joins) {
       UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
@@ -4739,7 +4739,7 @@ var MatchPresenceEvent = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchPresenceEvent);
     message.joins = [];
@@ -4818,7 +4818,7 @@ var MatchPresenceEvent = {
   }
 };
 var MatchmakerAdd = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(8).int32(message.min_count);
     writer.uint32(16).int32(message.max_count);
     writer.uint32(26).string(message.query);
@@ -4831,7 +4831,7 @@ var MatchmakerAdd = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerAdd);
     message.string_properties = {};
@@ -4932,13 +4932,13 @@ var MatchmakerAdd = {
   }
 };
 var MatchmakerAdd_StringPropertiesEntry = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerAdd_StringPropertiesEntry);
     while (reader.pos < end) {
@@ -4985,13 +4985,13 @@ var MatchmakerAdd_StringPropertiesEntry = {
   }
 };
 var MatchmakerAdd_NumericPropertiesEntry = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(17).double(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerAdd_NumericPropertiesEntry);
     while (reader.pos < end) {
@@ -5038,7 +5038,7 @@ var MatchmakerAdd_NumericPropertiesEntry = {
   }
 };
 var MatchmakerMatched = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     var _a, _b, _c, _d;
     writer.uint32(10).string(message.ticket);
     if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = message.id) == null ? void 0 : _b.match_id) !== "") {
@@ -5056,7 +5056,7 @@ var MatchmakerMatched = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerMatched);
     message.users = [];
@@ -5146,7 +5146,7 @@ var MatchmakerMatched = {
   }
 };
 var MatchmakerMatched_MatchmakerUser = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     if (message.presence !== void 0 && message.presence !== void 0) {
       UserPresence.encode(message.presence, writer.uint32(10).fork()).ldelim();
     }
@@ -5159,7 +5159,7 @@ var MatchmakerMatched_MatchmakerUser = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerMatched_MatchmakerUser);
     message.string_properties = {};
@@ -5240,13 +5240,13 @@ var MatchmakerMatched_MatchmakerUser = {
   }
 };
 var MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(18).string(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerMatched_MatchmakerUser_StringPropertiesEntry);
     while (reader.pos < end) {
@@ -5293,13 +5293,13 @@ var MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
   }
 };
 var MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.key);
     writer.uint32(17).double(message.value);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerMatched_MatchmakerUser_NumericPropertiesEntry);
     while (reader.pos < end) {
@@ -5346,12 +5346,12 @@ var MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
   }
 };
 var MatchmakerRemove = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.ticket);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerRemove);
     while (reader.pos < end) {
@@ -5388,12 +5388,12 @@ var MatchmakerRemove = {
   }
 };
 var MatchmakerTicket = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.ticket);
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseMatchmakerTicket);
     while (reader.pos < end) {
@@ -5430,14 +5430,14 @@ var MatchmakerTicket = {
   }
 };
 var Notifications = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     for (const v of message.notifications) {
       Notification.encode(v, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseNotifications);
     message.notifications = [];
@@ -5485,11 +5485,11 @@ var Notifications = {
   }
 };
 var Ping = {
-  encode(_, writer = minimal4.Writer.create()) {
+  encode(_, writer = import_minimal4.Writer.create()) {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, basePing);
     while (reader.pos < end) {
@@ -5516,11 +5516,11 @@ var Ping = {
   }
 };
 var Pong = {
-  encode(_, writer = minimal4.Writer.create()) {
+  encode(_, writer = import_minimal4.Writer.create()) {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, basePong);
     while (reader.pos < end) {
@@ -5547,14 +5547,14 @@ var Pong = {
   }
 };
 var Status = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     for (const v of message.presences) {
       UserPresence.encode(v, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStatus);
     message.presences = [];
@@ -5602,7 +5602,7 @@ var Status = {
   }
 };
 var StatusFollow = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     for (const v of message.user_ids) {
       writer.uint32(10).string(v);
     }
@@ -5612,7 +5612,7 @@ var StatusFollow = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStatusFollow);
     message.user_ids = [];
@@ -5681,7 +5681,7 @@ var StatusFollow = {
   }
 };
 var StatusPresenceEvent = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     for (const v of message.joins) {
       UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
     }
@@ -5691,7 +5691,7 @@ var StatusPresenceEvent = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStatusPresenceEvent);
     message.joins = [];
@@ -5760,14 +5760,14 @@ var StatusPresenceEvent = {
   }
 };
 var StatusUnfollow = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     for (const v of message.user_ids) {
       writer.uint32(10).string(v);
     }
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStatusUnfollow);
     message.user_ids = [];
@@ -5815,14 +5815,14 @@ var StatusUnfollow = {
   }
 };
 var StatusUpdate = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     if (message.status !== void 0 && message.status !== void 0) {
       StringValue.encode({value: message.status}, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStatusUpdate);
     while (reader.pos < end) {
@@ -5859,7 +5859,7 @@ var StatusUpdate = {
   }
 };
 var Stream = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(8).int32(message.mode);
     writer.uint32(18).string(message.subject);
     writer.uint32(26).string(message.subcontext);
@@ -5867,7 +5867,7 @@ var Stream = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStream);
     while (reader.pos < end) {
@@ -5934,7 +5934,7 @@ var Stream = {
   }
 };
 var StreamData = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     if (message.stream !== void 0 && message.stream !== void 0) {
       Stream.encode(message.stream, writer.uint32(10).fork()).ldelim();
     }
@@ -5946,7 +5946,7 @@ var StreamData = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStreamData);
     while (reader.pos < end) {
@@ -6013,7 +6013,7 @@ var StreamData = {
   }
 };
 var StreamPresenceEvent = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     if (message.stream !== void 0 && message.stream !== void 0) {
       Stream.encode(message.stream, writer.uint32(10).fork()).ldelim();
     }
@@ -6026,7 +6026,7 @@ var StreamPresenceEvent = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseStreamPresenceEvent);
     message.joins = [];
@@ -6105,7 +6105,7 @@ var StreamPresenceEvent = {
   }
 };
 var UserPresence = {
-  encode(message, writer = minimal4.Writer.create()) {
+  encode(message, writer = import_minimal4.Writer.create()) {
     writer.uint32(10).string(message.user_id);
     writer.uint32(18).string(message.session_id);
     writer.uint32(26).string(message.username);
@@ -6116,7 +6116,7 @@ var UserPresence = {
     return writer;
   },
   decode(input, length) {
-    const reader = input instanceof Uint8Array ? new minimal4.Reader(input) : input;
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
     let end = length === void 0 ? reader.len : reader.pos + length;
     const message = __assign({}, baseUserPresence);
     while (reader.pos < end) {
@@ -6284,5 +6284,5 @@ var WebSocketAdapterPb = class {
 };
 
 // index.ts
-protobuf.util.Long = long.default;
+protobuf.util.Long = import_long.default;
 protobuf.configure();
