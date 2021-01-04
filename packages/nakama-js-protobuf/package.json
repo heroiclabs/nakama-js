@@ -1,6 +1,6 @@
 {
     "name": "@heroiclabs/nakama-js-protobuf",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Websocket adapter adding protocol buffer support to the Nakama Javascript client.",
     "main": "dist/nakama-js-protobuf.cjs.js",
     "module": "dist/nakama-js-protobuf.esm.js",
