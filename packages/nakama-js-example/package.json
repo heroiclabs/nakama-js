@@ -1,0 +1,16 @@
+{
+    "name": "@heroiclabs/nakama-js-example",
+    "version": "1.0.0",
+    "description": "An example project that utilizes nakama-js",
+    "devDependencies": {
+        "ts-proto": "^1.27.1"
+    },
+    "private": true,
+    "license": "Apache-2.0",
+    "dependencies": {
+        "@heroiclabs/nakama-js": "workspace:packages/nakama-js"
+    },
+    "scripts": {
+        "build": "npx esbuild --bundle index.ts --target=es6 --format=iife --outfile=dist/nakama-js-example.iife.js"
+    }
+}

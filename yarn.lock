@@ -600,6 +600,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@heroiclabs/nakama-js-example@workspace:packages/nakama-js-example":
+  version: 0.0.0-use.local
+  resolution: "@heroiclabs/nakama-js-example@workspace:packages/nakama-js-example"
+  dependencies:
+    "@heroiclabs/nakama-js": "workspace:packages/nakama-js"
+    ts-proto: ^1.27.1
+  languageName: unknown
+  linkType: soft
+
 "@heroiclabs/nakama-js-protobuf@workspace:packages/nakama-js-protobuf":
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js-protobuf@workspace:packages/nakama-js-protobuf"
