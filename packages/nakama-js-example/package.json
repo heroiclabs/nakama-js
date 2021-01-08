@@ -8,7 +8,7 @@
     "private": true,
     "license": "Apache-2.0",
     "dependencies": {
-        "@heroiclabs/nakama-js": "workspace:packages/nakama-js"
+        "@heroiclabs/nakama-js": "2.1.2"
     },
     "scripts": {
         "build": "npx esbuild --bundle index.ts --target=es6 --format=iife --outfile=dist/nakama-js-example.iife.js"

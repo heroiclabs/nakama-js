@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import * as nakamajs from "@heroiclabs/nakama-js";
+import {Client} from "@heroiclabs/nakama-js";
 
 var useSSL = false; // Enable if server is run with an SSL certificate.
-var client = new nakamajs.Client("defaultkey", "127.0.0.1", "7350", useSSL);
+var client = new Client("defaultkey", "127.0.0.1", "7350", useSSL);
 
 client.authenticateCustom("test_id").then(
     session => { console.log("authenticated.");

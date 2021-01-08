@@ -604,7 +604,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js-example@workspace:packages/nakama-js-example"
   dependencies:
-    "@heroiclabs/nakama-js": "workspace:packages/nakama-js"
+    "@heroiclabs/nakama-js": 2.1.2
     ts-proto: ^1.27.1
   languageName: unknown
   linkType: soft
@@ -617,7 +617,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@heroiclabs/nakama-js@workspace:packages/nakama-js":
+"@heroiclabs/nakama-js@2.1.2, @heroiclabs/nakama-js@workspace:packages/nakama-js":
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js@workspace:packages/nakama-js"
   dependencies:

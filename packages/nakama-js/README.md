@@ -32,20 +32,21 @@ You'll need to setup the server and database before you can connect with the cli
 3. Use the connection credentials to build a client object.
 
     ```js
-    // <script src="path/to/nakama-js.iife.js"></script>
+    import {Client} from "@heroiclabs/nakama-js";
 
     var useSSL = false; // Enable if server is run with an SSL certificate.
-    var client = new nakamajs.Client("defaultkey", "127.0.0.1", "7350", useSSL);
+    var client = new Client("defaultkey", "127.0.0.1", "7350", useSSL);
     ```
 
     If you are including the optional protocol buffer adapter, pass the adapter to the Client object:
 
     ```js
-    // <script src="path/to/nakama-js.iife.js"></script>
-    // <script src="path/to/nakama-js-protobuf.iife.js"></script>
+    import {Client} from "@heroiclabs/nakama-js";
+    import {WebSocketAdapterPb} from "@heroiclabs/nakama-js-protobuf";
+
 
     var useSSL = false; // Enable if server is run with an SSL certificate.
-    var client = new nakamajs.Client("defaultkey", "127.0.0.1", "7350", useSSL, new nakamajsprotobuf.WebSocketAdapterPb());
+    var client = new Client("defaultkey", "127.0.0.1", "7350", useSSL, new WebSocketAdapterPb());
     ```
 
 ## Usage

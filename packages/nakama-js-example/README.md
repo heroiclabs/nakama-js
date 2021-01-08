@@ -1,1 +1,1 @@
-To run this example,
+To run this example, run `yarn build` and open `index.html`.

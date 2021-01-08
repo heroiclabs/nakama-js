@@ -1,4 +1,5 @@
 (() => {
+  // ../nakama-js/dist/nakama-js.esm.js
   var __create = Object.create;
   var __defProp = Object.defineProperty;
   var __getProtoOf = Object.getPrototypeOf;
@@ -50,8 +51,6 @@
       step((generator = generator.apply(__this, __arguments)).next());
     });
   };
-
-  // ../../node_modules/Base64/base64.js
   var require_base64 = __commonJS((exports) => {
     (function() {
       var object = typeof exports != "undefined" ? exports : typeof self != "undefined" ? self : $.global;
@@ -84,8 +83,6 @@
       });
     })();
   });
-
-  // ../../node_modules/whatwg-fetch/fetch.js
   var require_fetch = __commonJS((exports) => {
     (function(self2) {
       "use strict";
@@ -487,12 +484,8 @@
       self2.fetch.polyfill = true;
     })(typeof self !== "undefined" ? self : exports);
   });
-
-  // ../nakama-js/index.ts
   var import_Base64 = __toModule(require_base64());
   var import_whatwg_fetch = __toModule(require_fetch());
-
-  // ../nakama-js/api.gen.ts
   var NakamaApi = class {
     constructor(configuration) {
       this.configuration = configuration;
@@ -1324,8 +1317,6 @@
       return this.doFetch(urlPath, "GET", queryParams, _body, options);
     }
   };
-
-  // ../nakama-js/session.ts
   var Session = class {
     constructor(token, created_at, expires_at, username, user_id, vars) {
       this.token = token;
@@ -1349,8 +1340,6 @@
       return new Session(jwt, createdAt, expiresAt, decoded["usn"], decoded["uid"], decoded["vrs"]);
     }
   };
-
-  // ../nakama-js/web_socket_adapter.ts
   var WebSocketAdapterText = class {
     constructor() {
       this._isConnected = false;
@@ -1406,8 +1395,6 @@
       this._socket.send(JSON.stringify(msg));
     }
   };
-
-  // ../nakama-js/utils.ts
   function b64EncodeUnicode(str) {
     return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
       return String.fromCharCode(Number("0x" + p1));
@@ -1418,8 +1405,6 @@
       return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(""));
   }
-
-  // ../nakama-js/socket.ts
   var DefaultSocket = class {
     constructor(host, port, useSSL2 = false, verbose = false, adapter = new WebSocketAdapterText()) {
       this.host = host;
@@ -1715,8 +1700,6 @@
       });
     }
   };
-
-  // ../nakama-js/client.ts
   var DEFAULT_HOST = "127.0.0.1";
   var DEFAULT_PORT = "7350";
   var DEFAULT_SERVER_KEY = "defaultkey";
