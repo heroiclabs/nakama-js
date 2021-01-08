@@ -118,6 +118,7 @@ export interface User {
     display_name?: string;
     edge_count?: number;
     facebook_id?: string;
+    facebook_instant_game_id?: string;
     gamecenter_id?: string;
     google_id?: string;
     id?: string;

@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import base64url from "base64url";
-import crypto from "crypto";
 import {Page} from "puppeteer";
 import * as nakamajs from "../packages/nakama-js/index";
-import {createPage, generateid} from "./utils";
+import {createPage, createFacebookInstantGameAuthToken, generateid} from "./utils";
 
 describe('Authenticate Tests', () => {
 
@@ -114,26 +112,11 @@ describe('Authenticate Tests', () => {
     expect(result).not.toBeNull();
   });
 
-  // optional test: ensure server has been configured with the
-  // facebook instant secret used in the test and then remove `.skip()` to run.
-  it.skip('should authenticate with facebook instant games', async () => {
-    const testSecret = "fb-instant-test-secret";
+  it('should authenticate with facebook instant games', async () => {
+    let token : string = createFacebookInstantGameAuthToken("a_player_id");
+    const page : Page = await createPage();
 
-    const mockFbInstantPayload = JSON.stringify({
-      algorithm: "HMAC-SHA256",
-      issued_at: 1594867628,
-      player_id: "a-fb-id",
-      request_payload: ""
-    });
-
-    const encodedPayload = base64url(mockFbInstantPayload);
-
-    const signature = crypto.createHmac('sha256', testSecret).update(encodedPayload).digest();
-    const encodedSignature = base64url(signature);
-
-    const token = encodedSignature + "." + encodedPayload;
-
-    const session = await page.evaluate((token, ) => {
+    const session = await page.evaluate((token) => {
       const client = new nakamajs.Client();
       return client.authenticateFacebookInstantGame(token);
     }, token);

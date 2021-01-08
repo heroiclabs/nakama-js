@@ -16,6 +16,8 @@
 
 import { Page } from "puppeteer";
 const fs = require("fs");
+const crypto = require("crypto");
+const base64url = require("base64url");
 
 // util to generate a random id.
 export function generateid(): string {
@@ -67,3 +69,22 @@ export const enum AdapterType {
 }
 
 export const adapters = [AdapterType.Text, AdapterType.Protobuf];
+
+export function createFacebookInstantGameAuthToken(id : string) : string {
+    const testSecret = "fb-instant-test-secret";
+
+    const mockFbInstantPayload = JSON.stringify({
+      algorithm: "HMAC-SHA256",
+      issued_at: 1594867628,
+      player_id: id,
+      request_payload: ""
+    });
+
+    const encodedPayload = base64url(mockFbInstantPayload);
+
+    const signature = crypto.createHmac('sha256', testSecret).update(encodedPayload).digest();
+    const encodedSignature = base64url(signature);
+
+    const token = encodedSignature + "." + encodedPayload;
+    return token;
+  }

@@ -16,7 +16,9 @@
 
 import {Page} from "puppeteer"
 import * as nakamajs from "../packages/nakama-js/client";
-import {createPage, generateid} from "./utils";
+import {createFacebookInstantGameAuthToken, createPage, generateid} from "./utils";
+
+console.log("utils is...");
 
 describe('Friend Tests', () => {
 
@@ -124,6 +126,28 @@ describe('Friend Tests', () => {
 
     expect(result).not.toBeNull();
     expect(result.friends!.length).toBe(0);
+  });
+
+  it('should add friend authenticated via facebook instant, then list', async () => {
+    const page : Page = await createPage();
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+
+    const result = await page.evaluate(async (customid1, token2) => {
+      const client1 = new nakamajs.Client();
+      const session1 = await client1.authenticateCustom(customid1);
+      const client2 = new nakamajs.Client();
+      const session2 = await client2.authenticateFacebookInstantGame(token2);
+
+      await client1.addFriends(session1, [session2.user_id]);
+      return await client1.listFriends(session1);
+
+    }, customid1, createFacebookInstantGameAuthToken(customid2));
+
+
+    expect(result.friends![0]).not.toBeNull();
+    expect(result.friends![0].user.facebook_instant_game_id == customid1);
   });
 
 });

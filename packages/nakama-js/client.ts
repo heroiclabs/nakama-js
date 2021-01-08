@@ -295,6 +295,8 @@ export interface User {
   edge_count?: number;
   // The Facebook id in the user's account.
   facebook_id?: string;
+  // The Facebook Instant Game ID in the user's account.
+  facebook_instant_game_id?: string;
   // The Apple Game Center in of the user's account.
   gamecenter_id?: string;
   // The Google id in the user's account.
