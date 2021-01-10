@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 The Nakama Authors
+ * Copyright 2021 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 import {Page} from "puppeteer"
 import * as nakamajs from "../packages/nakama-js/client";
 import {createFacebookInstantGameAuthToken, createPage, generateid} from "./utils";
-
-console.log("utils is...");
 
 describe('Friend Tests', () => {
 
@@ -138,16 +136,13 @@ describe('Friend Tests', () => {
       const client1 = new nakamajs.Client();
       const session1 = await client1.authenticateCustom(customid1);
       const client2 = new nakamajs.Client();
-      const session2 = await client2.authenticateFacebookInstantGame(token2);
-
+      const session2 = await client2.authenticateFacebookInstantGame(token2, true);
       await client1.addFriends(session1, [session2.user_id]);
       return await client1.listFriends(session1);
-
     }, customid1, createFacebookInstantGameAuthToken(customid2));
 
-
     expect(result.friends![0]).not.toBeNull();
-    expect(result.friends![0].user.facebook_instant_game_id == customid1);
+    expect(result.friends![0].user.facebook_instant_game_id).toEqual(customid2);
   });
 
 });
