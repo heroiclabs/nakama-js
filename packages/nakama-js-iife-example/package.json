@@ -1,5 +1,5 @@
 {
-    "name": "@heroiclabs/nakama-js-example",
+    "name": "@heroiclabs/nakama-js-iife-example",
     "version": "1.0.0",
     "description": "An example project that utilizes nakama-js",
     "devDependencies": {
