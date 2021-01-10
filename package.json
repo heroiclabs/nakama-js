@@ -50,6 +50,7 @@
   "workspaces": [
     "packages/nakama-js",
     "packages/nakama-js-protobuf",
-    "packages/nakama-js-iife-example"
+    "packages/nakama-js-iife-example",
+    "packages/nakama-js-webpack-example"
   ]
 }
