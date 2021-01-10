@@ -2,9 +2,6 @@
     "name": "@heroiclabs/nakama-js-iife-example",
     "version": "1.0.0",
     "description": "An example project that utilizes nakama-js",
-    "devDependencies": {
-        "ts-proto": "^1.27.1"
-    },
     "private": true,
     "license": "Apache-2.0",
     "dependencies": {
