@@ -17,7 +17,7 @@
 const base64url = require("base64url");
 const crypto = require("crypto");
 import {Page} from "puppeteer"
-import * as nakamajs from "../packages/nakama-js";
+import * as nakamajs from "@heroiclabs/nakama-js";
 import {createPage, generateid} from "./utils";
 
 describe('Link / Unlink Tests', () => {

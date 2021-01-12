@@ -17,30 +17,17 @@
     "Mo Firouz <mo@heroiclabs.com>"
   ],
   "license": "Apache-2.0",
-  "scripts": {
-    "test": "jest"
-  },
   "devDependencies": {
     "@rollup/plugin-typescript": "^6.1.0",
-    "@types/expect-puppeteer": "^4.4.3",
-    "@types/jest": "^26.0.5",
-    "@types/jest-environment-puppeteer": "^4.3.2",
-    "@types/node": "12.12.6",
-    "@types/puppeteer": "^3.0.1",
     "base64url": "^3.0.1",
     "bufferutil": "4.0.1",
     "canvas": "2.6.1",
     "chalk": "^2.4.2",
     "esbuild": "^0.6.5",
-    "jest": "26.6.0",
-    "jest-puppeteer": "^4.3.0",
-    "jsdom": "16.3.0",
     "merge": "^1.2.1",
     "mkdirp": "^0.5.1",
-    "puppeteer": "^1.12.2",
     "rimraf": "^2.6.3",
     "rollup": "latest",
-    "ts-jest": "26.0.0",
     "typedoc": "^0.14.2",
     "typescript": "3.9.7",
     "utf-8-validate": "5.0.2",
@@ -52,6 +39,7 @@
     "packages/nakama-js-protobuf",
     "packages/nakama-js-iife-example",
     "packages/nakama-js-webpack-example",
-    "packages/nakama-js-create-react-app-example"
+    "packages/nakama-js-create-react-app-example",
+    "packages/nakama-js-test"
   ]
 }

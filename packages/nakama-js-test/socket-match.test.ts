@@ -15,11 +15,11 @@
  */
 
 
-import * as nakamajs from "../packages/nakama-js";
-import {Match, MatchData, MatchPresenceEvent, Presence} from "../packages/nakama-js/socket"
-import * as nakamajsprotobuf from "../packages/nakama-js-protobuf";
+import * as nakamajs from "@heroiclabs/nakama-js";
+import {Match, MatchData, MatchPresenceEvent, Presence} from "@heroiclabs/nakama-js/socket"
+import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {adapters, createPage, generateid, AdapterType} from "./utils"
-import { WebSocketAdapter } from "../packages/nakama-js";
+import { WebSocketAdapter } from "@heroiclabs/nakama-js";
 
 describe('Match Tests', () => {
 
@@ -221,7 +221,7 @@ describe('Match Tests', () => {
 
       let presenceToReceive : Presence = null;
 
-      var socket3PresencePromise = new Promise((resolve, reject) => {
+      var socket3PresencePromise = new Promise<void>((resolve, reject) => {
         socket2.onmatchpresence = (presenceEvt) => {
           const socket3Presence = presenceEvt.joins.find(presenceJoin => presenceJoin.user_id == session3.user_id);
           if (socket3Presence)

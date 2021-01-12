@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import * as nakamajs from "../packages/nakama-js/index";
-import {MatchmakerMatched} from "../packages/nakama-js/socket";
-import * as nakamajsprotobuf from "../packages/nakama-js-protobuf";
+import * as nakamajs from "@heroiclabs/nakama-js";
+import {MatchmakerMatched} from "@heroiclabs/nakama-js/socket";
+import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType} from "./utils"
 
 describe('Matchmaker Tests', () => {

@@ -38,8 +38,8 @@ export async function createPage(): Promise<Page> {
     page.on('error', handlePageError);
     page.on('pageerror', handlePageError);
 
-    const nakamaJsLib = fs.readFileSync(__dirname + '/../packages/nakama-js/dist/nakama-js.iife.js', 'utf8');
-    const nakamaJsProtobufLib = fs.readFileSync(__dirname + '/../packages/nakama-js-protobuf/dist/nakama-js-protobuf.iife.js', 'utf8');
+    const nakamaJsLib = fs.readFileSync(__dirname + '/../nakama-js/dist/nakama-js.iife.js', 'utf8');
+    const nakamaJsProtobufLib = fs.readFileSync(__dirname + '/../nakama-js-protobuf/dist/nakama-js-protobuf.iife.js', 'utf8');
 
     await page.evaluateOnNewDocument(nakamaJsLib);
     await page.evaluateOnNewDocument(nakamaJsProtobufLib);

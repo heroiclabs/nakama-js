@@ -15,7 +15,7 @@
  */
 
 import {Page} from "puppeteer"
-import * as nakamajs from "../packages/nakama-js";
+import * as nakamajs from "@heroiclabs/nakama-js";
 import {createPage, generateid} from "./utils"
 
 describe('Leaderboard Tests', () => {

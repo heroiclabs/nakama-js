@@ -15,7 +15,7 @@
  */
 
 import {Page} from "puppeteer"
-import * as nakamajs from "../packages/nakama-js/client";
+import * as nakamajs from "@heroiclabs/nakama-js/client";
 import {createFacebookInstantGameAuthToken, createPage, generateid} from "./utils";
 
 describe('Friend Tests', () => {

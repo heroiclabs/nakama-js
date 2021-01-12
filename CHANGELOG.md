@@ -3,6 +3,19 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [2.1.3]
+### Added
+- Added Webpack and Create React App integration examples to packages/ folder.
+
+### Changed
+- Canonical import examples no longer reference a single exported object.
+- Moved tests to their own workspace and upgraded Jest dependencies.
+
+### Fixed
+- Fixed browser imports by removing the browser IIFE distribution entry in package.json.
+The IIFE distribution is still available in the repository but is no longer chosen as an option
+by bundlers following conventional package.json load entries.
+
 ## [2.1.2]
 ### Fixed
 - Paths to distribution files in package.json
