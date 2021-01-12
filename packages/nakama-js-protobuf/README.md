@@ -17,11 +17,11 @@ Nakama JavaScript Protobuf adapter
 2. Pass the Protobuf adapter alongside your connection credentials to build the client object.
 
     ```js
-    // <script src="path/to/nakama-js.iife.js"></script>
-    // <script src="path/to/nakama-js-protobuf.iife.js"></script>
+    import {Client} from "@heroiclabs/nakama-js";
+    import {WebSocketAdapterPb} from "@heroiclabs/nakama-js-protobuf"
 
     var useSSL = false; // Enable if server is run with an SSL certificate.
-    var client = new nakamajs.Client("defaultkey", "127.0.0.1", 7350, useSSL, new nakamajsprotobuf.WebSocketAdapterPb());
+    var client = new Client("defaultkey", "127.0.0.1", 7350, useSSL, new WebSocketAdapterPb());
     ```
 
 3. Create and use the WebSocket:

@@ -190,8 +190,6 @@ To release onto NPM if you have access to the "@heroiclabs" organization you can
 yarn workspace <workspace> run build && yarn workspace <workspace> npm publish --access=public
 ```
 
-You can use `yarn workspaces foreach <cmd>` to do this for each NPM package distributed by this repository.
-
 ### License
 
 This project is licensed under the [Apache-2 License](https://github.com/heroiclabs/nakama-js/blob/master/LICENSE).
