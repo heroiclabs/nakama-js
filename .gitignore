@@ -101,7 +101,7 @@ typings/
 # Yarn
 .yarn-integrity
 
-.yarn/*
+**/.yarn
 !.yarn/releases
 !.yarn/plugins
 !.yarn/sdks
