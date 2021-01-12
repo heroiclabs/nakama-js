@@ -5,7 +5,8 @@
         "build": "node build.js"
     },
     "description": "JavaScript client for Nakama server written in TypeScript.",
-    "main": "dist/nakama-js.esm.js",
+    "main": "dist/nakama-js.cjs.js",
+    "module": "dist/nakama-js.esm.js",
     "types": "dist/index.d.ts",
     "keywords": [
         "app server",
