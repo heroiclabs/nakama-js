@@ -163,7 +163,7 @@ Tests are run against each workspace bundle; if you have made source code change
 
 ```shell
 docker-compose -f ./docker-compose.yml up
-yarn test
+yarn workspace @heroiclabs/nakama-js-test run test
 ```
 
 ### Protocol Buffer Web Socket Adapter
