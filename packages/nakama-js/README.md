@@ -106,6 +106,16 @@ const session = await socket.connect(session);
 // Socket is open.
 ```
 
+If you are using the optional protocol buffer adapter, pass the adapter to the Socket object during construction:
+
+```js
+import {WebSocketAdapterPb} from "@heroiclabs/nakama-js-protobuf"
+
+const secure = false; // Enable if server is run with an SSL certificate
+const trace = false;
+const socket = client.createSocket(secure, trace, new WebSocketAdapterPb());
+```
+
 There's many messages for chat, realtime, status events, notifications, etc. which can be sent or received from the socket.
 
 ```js
