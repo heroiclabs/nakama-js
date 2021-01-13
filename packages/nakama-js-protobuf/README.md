@@ -14,22 +14,22 @@ Nakama JavaScript Protobuf adapter
     yarn add "@heroiclabs/nakama-js-protobuf"
     ```
 
-2. Pass the Protobuf adapter alongside your connection credentials to build the client object.
+2. Pass the Protobuf adapter to build the socket object.
 
     ```js
     import {Client} from "@heroiclabs/nakama-js";
     import {WebSocketAdapterPb} from "@heroiclabs/nakama-js-protobuf"
 
     var useSSL = false; // Enable if server is run with an SSL certificate.
-    var client = new Client("defaultkey", "127.0.0.1", 7350, useSSL, new WebSocketAdapterPb());
+    var client = new Client("defaultkey", "127.0.0.1", 7350, useSSL);
+
+    const trace = false;
+    var socket = client.createSocket(useSSL, trace, new WebSocketAdapterPb());
     ```
 
-3. Create and use the WebSocket:
+3. Use the WebSocket:
 
 ```js
-const secure = false; // enable if server is run with an SSL certificate
-const trace = false;
-const socket = client.createSocket(secure, trace);
 socket.ondisconnect = (evt) => {
     console.info("Disconnected", evt);
 };
