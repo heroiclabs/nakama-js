@@ -38,17 +38,6 @@ You'll need to setup the server and database before you can connect with the cli
     var client = new Client("defaultkey", "127.0.0.1", "7350", useSSL);
     ```
 
-    If you are including the optional protocol buffer adapter, pass the adapter to the Client object:
-
-    ```js
-    import {Client} from "@heroiclabs/nakama-js";
-    import {WebSocketAdapterPb} from "@heroiclabs/nakama-js-protobuf";
-
-
-    var useSSL = false; // Enable if server is run with an SSL certificate.
-    var client = new Client("defaultkey", "127.0.0.1", "7350", useSSL, new WebSocketAdapterPb());
-    ```
-
 ## Usage
 
 The client object has many methods to execute various features in the server or open realtime socket connections with the server.
@@ -115,6 +104,16 @@ socket.ondisconnect = (evt) => {
 
 const session = await socket.connect(session);
 // Socket is open.
+```
+
+If you are using the optional protocol buffer adapter, pass the adapter to the Socket object during construction:
+
+```js
+import {WebSocketAdapterPb} from "@heroiclabs/nakama-js-protobuf"
+
+const secure = false; // Enable if server is run with an SSL certificate
+const trace = false;
+const socket = client.createSocket(secure, trace, new WebSocketAdapterPb());
 ```
 
 There's many messages for chat, realtime, status events, notifications, etc. which can be sent or received from the socket.
