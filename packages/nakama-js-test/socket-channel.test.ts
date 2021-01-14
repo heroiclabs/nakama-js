@@ -70,6 +70,30 @@ describe('Channel Tests', () => {
     expect(response).not.toBeNull();
   });
 
+  it.each(adapters)('should create a group, join group chat, then leave it', async (adapter) => {
+    const page = await createPage();
+
+    const customid = generateid();
+    const group_name = generateid();
+
+    const response = await page.evaluate(async (customid, group_name, adapter) => {
+
+      const client = new nakamajs.Client();
+      const socket = client.createSocket(false, false,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const session = await client.authenticateCustom(customid)
+      await socket.connect(session, false);
+
+      const group = await client.createGroup(session, { name: group_name, open: true });
+      //chat type: 1 = room, 2 = Direct Message 3 = Group
+      const channel = await socket.joinChat(group.id, 3, true, false);
+      return await socket.leaveChat(channel.id);
+    }, customid, group_name);
+
+    expect(response).not.toBeNull();
+  });
+
   it.each(adapters)('should join a room, then send message, receive message', async (adapter) => {
 
     const page = await createPage();
