@@ -158,8 +158,6 @@ yarn workspace @heroiclabs/nakama-js-protobuf install && yarn workspace @heroicl
 
 To run tests you will need to run the server and database. Most tests are written as integration tests which execute against the server. A quick approach we use with our test workflow is to use the Docker compose file described in the [documentation](https://heroiclabs.com/docs/install-docker-quickstart).
 
-Tests are run against each workspace bundle; if you have made source code changes, you should `yarn workspace <workspace> build` prior to running tests.
-
 ```shell
 docker-compose -f ./docker-compose.yml up
 yarn workspace @heroiclabs/nakama-js-test run test
