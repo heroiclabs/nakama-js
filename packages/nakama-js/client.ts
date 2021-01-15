@@ -975,6 +975,7 @@ export class Client {
   listFriends(session: Session, state?: number, limit?: number, cursor?: string): Promise<Friends> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.listFriends(limit, state, cursor).then((response: ApiFriendList) => {
+
       var result: Friends = {
         friends: [],
         cursor: response.cursor
@@ -1002,7 +1003,8 @@ export class Client {
             timezone: f.user!.timezone,
             update_time: f.user!.update_time,
             username: f.user!.username,
-            metadata: f.user!.metadata ? JSON.parse(f.user!.metadata!) : undefined
+            metadata: f.user!.metadata ? JSON.parse(f.user!.metadata!) : undefined,
+            facebook_instant_game_id: f.user!.facebook_instant_game_id!
           },
           state: f.state
         })

@@ -2188,7 +2188,8 @@ var nakamajs = (() => {
               timezone: f.user.timezone,
               update_time: f.user.update_time,
               username: f.user.username,
-              metadata: f.user.metadata ? JSON.parse(f.user.metadata) : void 0
+              metadata: f.user.metadata ? JSON.parse(f.user.metadata) : void 0,
+              facebook_instant_game_id: f.user.facebook_instant_game_id
             },
             state: f.state
           });

@@ -2513,7 +2513,8 @@
                           timezone: f.user.timezone,
                           update_time: f.user.update_time,
                           username: f.user.username,
-                          metadata: f.user.metadata ? JSON.parse(f.user.metadata) : undefined
+                          metadata: f.user.metadata ? JSON.parse(f.user.metadata) : undefined,
+                          facebook_instant_game_id: f.user.facebook_instant_game_id
                       },
                       state: f.state
                   });
