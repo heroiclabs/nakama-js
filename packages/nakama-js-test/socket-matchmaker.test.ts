@@ -98,7 +98,7 @@ describe('Matchmaker Tests', () => {
     expect(responseTicket.self.presence.session_id).not.toBeNull();
     expect(responseTicket.self.presence.user_id).not.toBeNull();
     expect(responseTicket.self.presence.username).not.toBeNull();
-  });
+  }, 70000);
 
   it.each(adapters)('should add to matchmaker and match on range', async (adapter) => {
     const page = await createPage();
@@ -141,7 +141,7 @@ describe('Matchmaker Tests', () => {
     expect(response.self.presence.session_id).not.toBeNull();
     expect(response.self.presence.user_id).not.toBeNull();
     expect(response.self.presence.username).not.toBeNull();
-  });
+  }, 70000);
 
   it.each(adapters)('should add to matchmaker and match on range and value', async (adapter) => {
     const page = await createPage();
@@ -184,7 +184,7 @@ describe('Matchmaker Tests', () => {
     expect(response.self.presence.session_id).not.toBeNull();
     expect(response.self.presence.user_id).not.toBeNull();
     expect(response.self.presence.username).not.toBeNull();
-  });
+  }, 70000);
 
   it.each(adapters)('should add to matchmaker then remove and not match', async (adapter) => {
     const page = await createPage();
@@ -223,7 +223,7 @@ describe('Matchmaker Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response).toBe("did not match.");
-  });
+  }, 70000);
 
   it.each(adapters)('should add to matchmaker but not match', async (adapter) => {
     const page = await createPage();
@@ -259,7 +259,7 @@ describe('Matchmaker Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response).toBe("did not match.");
-  });
+  }, 70000);
 
   it.each(adapters)('should add to matchmaker but not match on range', async (adapter) => {
     const page = await createPage();
@@ -299,7 +299,7 @@ describe('Matchmaker Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response).toBe("did not match.");
-  });
+  }, 70000);
 
   it.each(adapters)('should add to matchmaker but not match on range and value', async (adapter) => {
     const page = await createPage();
@@ -336,7 +336,7 @@ describe('Matchmaker Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response).toBe("did not match.");
-  });
+  }, 70000);
 
   it.each(adapters)('should add multiple to matchmaker and not match', async (adapter) => {
     const page = await createPage();
@@ -384,7 +384,7 @@ describe('Matchmaker Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response).toBe("did not match.");
-  });
+  }, 70000);
 
   it.each(adapters)('should add to matchmaker and match authoritative', async (adapter) => {
     const page = await createPage();
@@ -429,6 +429,6 @@ describe('Matchmaker Tests', () => {
     expect(response.self.presence.session_id).not.toBeNull();
     expect(response.self.presence.user_id).not.toBeNull();
     expect(response.self.presence.username).not.toBeNull();
-  });
+  }, 70000);
 
 });
