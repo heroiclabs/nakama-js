@@ -84,7 +84,7 @@ describe('Matchmaker Tests', () => {
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("properties.a3:baz", 2, 2, {"a3": "bar"});
       var promise2 = new Promise<null>((resolve, reject) => {
-        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
+        setTimeout(reject, 60000, "did not receive matchmaker matched - timed out.")
       });
 
       return Promise.race([promise1, promise2]);
@@ -126,7 +126,7 @@ describe('Matchmaker Tests', () => {
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("+properties.b1:>=10 +properties.b1:<=20", 2, 2, {}, {"b1": 15});
       var promise2 = new Promise<null>((resolve, reject) => {
-        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
+        setTimeout(reject, 60000, "did not receive matchmaker matched - timed out.")
       });
 
       return Promise.race([promise1, promise2]);
@@ -170,7 +170,7 @@ describe('Matchmaker Tests', () => {
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("+properties.c1:>=10 +properties.c1:<=20 +properties.c2:foo", 2, 2, {"c2": "foo"}, {"c1": 15});
       var promise2 = new Promise<null>((resolve, reject) => {
-        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
+        setTimeout(reject, 60000, "did not receive matchmaker matched - timed out.")
       });
       return Promise.race([promise1, promise2]);
     }, customid1, customid2, adapter);
@@ -216,7 +216,7 @@ describe('Matchmaker Tests', () => {
       await socket2.connect(session2, false);
 
       var promise2 = new Promise((resolve, reject) => {
-        setTimeout(resolve, 2500, "did not match.")
+        setTimeout(resolve, 60000, "did not match.")
       });
       return Promise.race([promise1, promise2]);
     }, customid1, customid2, adapter);
@@ -252,7 +252,7 @@ describe('Matchmaker Tests', () => {
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("properties.a5:bar", 2, 2, {"a5": "baz"});
       var promise2 = new Promise((resolve, reject) => {
-        setTimeout(resolve, 2500, "did not match.")
+        setTimeout(resolve, 60000, "did not match.")
       });
       return Promise.race([promise1, promise2]);
     }, customid1, customid2, adapter);
@@ -291,7 +291,7 @@ describe('Matchmaker Tests', () => {
       await socket2.connect(session2, false);
       await socket2.addMatchmaker("+properties.b2:>=10 +properties.b2:<=20 +properties.id:" + testId, 2, 2, {"id": testId}, {"b2": 15});
       var promise2 = new Promise<string>((resolve, reject) => {
-        setTimeout(resolve, 2500, "did not match.")
+        setTimeout(resolve, 60000, "did not match.")
       });
 
       return Promise.race([promise1, promise2]);
@@ -329,7 +329,7 @@ describe('Matchmaker Tests', () => {
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("+properties.c3:>=10 +properties.c3:<=20 +properties.c4:foo +properties.id:" + testId, 2, 2, {"c4": "foo", "id": testId}, {"c3": 15});
       var promise2 = new Promise((resolve, reject) => {
-        setTimeout(resolve, 2500, "did not match.")
+        setTimeout(resolve, 60000, "did not match.")
       });
       return Promise.race([promise1, promise2]);
     }, customid1, customid2, testId, adapter);
@@ -377,7 +377,7 @@ describe('Matchmaker Tests', () => {
       await socket3.connect(session3, false);
       const ticket3 = await socket3.addMatchmaker("properties.a6:bar +properties.id:" + testId, 2, 2, {"a6": "bar", "id": testId});
       var promise2 = new Promise((resolve, reject) => {
-        setTimeout(resolve, 2500, "did not match.")
+        setTimeout(resolve, 60000, "did not match.")
       });
       return Promise.race([promise1, promise2]);
     }, customid1, customid2, customid3, adapter, testId);
@@ -415,7 +415,7 @@ describe('Matchmaker Tests', () => {
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("properties.d1:foo", 2, 2, {"d1": "foo", "mode": "authoritative"});
       var promise2 = new Promise<null>((resolve, reject) => {
-        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
+        setTimeout(reject, 60000, "did not receive matchmaker matched - timed out.")
       });
       return Promise.race([promise1, promise2]);
     }, customid1, customid2, adapter);
