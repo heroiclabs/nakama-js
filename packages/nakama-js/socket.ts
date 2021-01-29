@@ -228,6 +228,115 @@ export interface MatchDataSend {
   match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
 }
 
+// Incoming information about a party.
+export interface Party {
+  party_id : string;
+  open : boolean;
+  max_size : number;
+  self : Presence;
+  leader : Presence;
+  presences : Presence[];
+}
+
+export interface PartyCreate {
+  open : boolean;
+  max_size : number;
+}
+
+export interface PartyJoin {
+  party_id : string;
+}
+
+// Leave a party.
+export interface PartyLeave {
+  party_id : string;
+}
+
+// Promote a new party leader.
+export interface PartyPromote {
+  party_id : string;
+  presence : Presence;
+}
+
+// Announcement of a new party leader.
+export interface PartyLeader {
+  party_id : string;
+  presence : Presence;
+}
+
+// Accept a request to join.
+export interface PartyAccept {
+  party_id : string;
+  presence : Presence;
+}
+
+// Kick a party member, or decline a request to join.
+export interface PartyRemove {
+  party_id : string;
+  presence : Presence;
+}
+
+// End a party, kicking all party members and closing it.
+export interface PartyClose {
+  party_id : string;
+}
+
+// Request a list of pending join requests for a party.
+export interface PartyJoinRequestList {
+  party_id : string;
+  presences : Presence[];
+}
+
+// Incoming notification for one or more new presences attempting to join the party.
+export interface PartyJoinRequest {
+  party_id : string;
+  presence : Presence;
+}
+
+// Begin matchmaking as a party.
+export interface PartyMatchmakerAdd {
+  party_id : string;
+  min_count : number;
+  max_count : number;
+  query : string;
+  string_properties : Record<string, string>;
+  numeric_properties : Record<string, string>;
+}
+
+// Cancel a party matchmaking process using a ticket.
+export interface PartyMatchmakerRemove {
+  party_id : string;
+  ticket : string;
+}
+
+// A response from starting a new party matchmaking process.
+export interface PartyMatchmakerTicket {
+  party_id: string;
+  ticket: string;
+}
+
+// Incoming party data delivered from the server.
+export interface PartyData {
+  party_id: string;
+  presence : Presence;
+  op_code : number;
+  data : any;
+}
+
+// A client to server request to send data to a party.
+export interface PartyDataSend {
+  party_id : string;
+  op_code : number;
+  data : any;
+}
+
+// Presence update for a particular party.
+export interface PartyPresenceEvent {
+  party_id : string;
+  joins : Presence[];
+  leaves : Presence[];
+}
+
 /** Execute an Lua function on the server. */
 export interface Rpc {
   rpc: ApiRpc;
