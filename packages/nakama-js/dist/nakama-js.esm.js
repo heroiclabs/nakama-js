@@ -303,7 +303,7 @@ var require_fetch = __commonJS((exports) => {
       };
       if (support.formData) {
         this.formData = function() {
-          return this.text().then(decode3);
+          return this.text().then(decode2);
         };
       }
       this.json = function() {
@@ -352,7 +352,7 @@ var require_fetch = __commonJS((exports) => {
     Request.prototype.clone = function() {
       return new Request(this, {body: this._bodyInit});
     };
-    function decode3(body) {
+    function decode2(body) {
       var form = new FormData();
       body.trim().split("&").forEach(function(bytes) {
         if (bytes) {
@@ -1824,22 +1824,22 @@ var Client = class {
       return Session.restore(apiSession.token || "");
     });
   }
-  authenticateDevice(id, vars) {
+  authenticateDevice(id, create, username, vars) {
     const request = {
       id,
       vars
     };
-    return this.apiClient.authenticateDevice(request).then((apiSession) => {
+    return this.apiClient.authenticateDevice(request, create, username).then((apiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
-  authenticateEmail(email, password, vars) {
+  authenticateEmail(email, password, create, username, vars) {
     const request = {
       email,
       password,
       vars
     };
-    return this.apiClient.authenticateEmail(request).then((apiSession) => {
+    return this.apiClient.authenticateEmail(request, create, username).then((apiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -1870,21 +1870,21 @@ var Client = class {
       return Session.restore(apiSession.token || "");
     });
   }
-  authenticateGameCenter(token, vars) {
+  authenticateGameCenter(token, create, username, vars) {
     const request = {
       token,
       vars
     };
-    return this.apiClient.authenticateGameCenter(request).then((apiSession) => {
+    return this.apiClient.authenticateGameCenter(request, create, username).then((apiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
-  authenticateSteam(token, vars) {
+  authenticateSteam(token, create, username, vars) {
     const request = {
       token,
       vars
     };
-    return this.apiClient.authenticateSteam(request).then((apiSession) => {
+    return this.apiClient.authenticateSteam(request, create, username).then((apiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }

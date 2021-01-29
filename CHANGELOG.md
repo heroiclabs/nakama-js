@@ -13,6 +13,7 @@ for iOS and Android.
 ### Fixed
 - Fixed base64 imports for React Native
 - Rollup not finding tslib due to Yarn workspace inconsistency.
+- Authenticate methods now properly accept "create" and "username" parameters for email, Gamecenter, device, and Steam methods.
 
 ### Changed
 - Base64 library to base64-js (for Typescript support.)
