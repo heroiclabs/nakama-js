@@ -90,6 +90,7 @@ export interface ApiChannelMessage {
     username?: string;
 }
 export interface ApiChannelMessageList {
+    cacheable_cursor?: string;
     messages?: Array<ApiChannelMessage>;
     next_cursor?: string;
     prev_cursor?: string;
@@ -169,9 +170,11 @@ export interface ApiLeaderboardRecordList {
 }
 export interface ApiMatch {
     authoritative?: boolean;
+    handler_name?: string;
     label?: string;
     match_id?: string;
     size?: number;
+    tick_rate?: number;
 }
 export interface ApiMatchList {
     matches?: Array<ApiMatch>;
@@ -204,7 +207,12 @@ export interface ApiRpc {
 }
 export interface ApiSession {
     created?: boolean;
+    refresh_token?: string;
     token?: string;
+}
+export interface ApiSessionRefreshRequest {
+    token?: string;
+    vars?: Map<string, string>;
 }
 export interface ApiStorageObject {
     collection?: string;
@@ -350,6 +358,7 @@ export declare class NakamaApi {
     linkGameCenter(body: ApiAccountGameCenter, options?: any): Promise<any>;
     linkGoogle(body: ApiAccountGoogle, options?: any): Promise<any>;
     linkSteam(body: ApiAccountSteam, options?: any): Promise<any>;
+    sessionRefresh(body: ApiSessionRefreshRequest, options?: any): Promise<ApiSession>;
     unlinkApple(body: ApiAccountApple, options?: any): Promise<any>;
     unlinkCustom(body: ApiAccountCustom, options?: any): Promise<any>;
     unlinkDevice(body: ApiAccountDevice, options?: any): Promise<any>;

@@ -202,13 +202,13 @@ export declare class Client {
     addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     authenticateApple(token: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
     authenticateCustom(id: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
-    authenticateDevice(id: string, vars?: Map<string, string>): Promise<Session>;
-    authenticateEmail(email: string, password: string, vars?: Map<string, string>): Promise<Session>;
+    authenticateDevice(id: string, create?: boolean, username?: string, vars?: Map<string, string>): Promise<Session>;
+    authenticateEmail(email: string, password: string, create?: boolean, username?: string, vars?: Map<string, string>): Promise<Session>;
     authenticateFacebookInstantGame(signedPlayerInfo: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
     authenticateFacebook(token: string, create?: boolean, username?: string, sync?: boolean, vars?: Map<string, string>, options?: any): Promise<Session>;
     authenticateGoogle(token: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
-    authenticateGameCenter(token: string, vars?: Map<string, string>): Promise<Session>;
-    authenticateSteam(token: string, vars?: Map<string, string>): Promise<Session>;
+    authenticateGameCenter(token: string, create?: boolean, username?: string, vars?: Map<string, string>): Promise<Session>;
+    authenticateSteam(token: string, create?: boolean, username?: string, vars?: Map<string, string>): Promise<Session>;
     banGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group>;

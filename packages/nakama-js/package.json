@@ -31,6 +31,8 @@
     },
     "devDependencies": {
         "@babel/runtime": "^7.12.5",
+        "@rollup/plugin-typescript": "^6.1.0",
+        "rollup": "latest",
         "tslib": "^2.0.3"
     }
 }

@@ -1715,7 +1715,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js-base@workspace:."
   dependencies:
-    "@rollup/plugin-typescript": ^6.1.0
     base64url: ^3.0.1
     bufferutil: 4.0.1
     canvas: 2.6.1
@@ -1724,7 +1723,6 @@ __metadata:
     merge: ^1.2.1
     mkdirp: ^0.5.1
     rimraf: ^2.6.3
-    rollup: latest
     typedoc: ^0.14.2
     typescript: 3.9.7
     utf-8-validate: 5.0.2
@@ -1799,7 +1797,9 @@ __metadata:
   resolution: "@heroiclabs/nakama-js@workspace:packages/nakama-js"
   dependencies:
     "@babel/runtime": ^7.12.5
+    "@rollup/plugin-typescript": ^6.1.0
     js-base64: ^3.6.0
+    rollup: latest
     tslib: ^2.0.3
     whatwg-fetch: ^2.0.3
   languageName: unknown

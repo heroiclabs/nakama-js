@@ -1,74 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.nakamajs = {}));
-}(this, (function (exports) { 'use strict';
-
-  (function () {
-
-    var object =
-      typeof exports != 'undefined' ? exports :
-      typeof self != 'undefined' ? self : // #8: web workers
-      $.global; // #31: ExtendScript
-
-    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-    function InvalidCharacterError(message) {
-      this.message = message;
-    }
-    InvalidCharacterError.prototype = new Error;
-    InvalidCharacterError.prototype.name = 'InvalidCharacterError';
-
-    // encoder
-    // [https://gist.github.com/999166] by [https://github.com/nignag]
-    object.btoa || (
-    object.btoa = function (input) {
-      var str = String(input);
-      for (
-        // initialize result and counter
-        var block, charCode, idx = 0, map = chars, output = '';
-        // if the next str index does not exist:
-        //   change the mapping table to "="
-        //   check if d has no fractional digits
-        str.charAt(idx | 0) || (map = '=', idx % 1);
-        // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
-        output += map.charAt(63 & block >> 8 - idx % 1 * 8)
-      ) {
-        charCode = str.charCodeAt(idx += 3/4);
-        if (charCode > 0xFF) {
-          throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-        }
-        block = block << 8 | charCode;
-      }
-      return output;
-    });
-
-    // decoder
-    // [https://gist.github.com/1020396] by [https://github.com/atk]
-    object.atob || (
-    object.atob = function (input) {
-      var str = String(input).replace(/[=]+$/, ''); // #31: ExtendScript bad parse of /=
-      if (str.length % 4 == 1) {
-        throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-      }
-      for (
-        // initialize result and counters
-        var bc = 0, bs, buffer, idx = 0, output = '';
-        // get next character
-        buffer = str.charAt(idx++);
-        // character found in table? initialize bit storage and add its ascii value;
-        ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
-          // and if not first of each 4 characters,
-          // convert the first 8 bits to one ascii character
-          bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
-      ) {
-        // try to find character in table (0-63, not found => -1)
-        buffer = chars.indexOf(buffer);
-      }
-      return output;
-    });
-
-  }());
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('js-base64')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'js-base64'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.nakamajs = {}, global.jsBase64));
+}(this, (function (exports, jsBase64) { 'use strict';
 
   (function(self) {
 
@@ -630,7 +564,7 @@
               fetchOptions.headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
           }
           else if (this.configuration.username) {
-              fetchOptions.headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+              fetchOptions.headers["Authorization"] = "Basic " + jsBase64.encode(this.configuration.username + ":" + this.configuration.password);
           }
           if (!Object.keys(fetchOptions.headers).includes("Accept")) {
               fetchOptions.headers["Accept"] = "application/json";
@@ -909,6 +843,17 @@
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/link/steam";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.sessionRefresh = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/account/session/refresh";
           var queryParams = {};
           var _body = null;
           _body = JSON.stringify(body || {});
@@ -1643,12 +1588,12 @@
   }());
 
   function b64EncodeUnicode(str) {
-      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
+      return jsBase64.encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
           return String.fromCharCode(Number('0x' + p1));
       }));
   }
   function b64DecodeUnicode(str) {
-      return decodeURIComponent(atob(str).split('').map(function (c) {
+      return decodeURIComponent(jsBase64.decode(str).split('').map(function (c) {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
   }
@@ -2099,22 +2044,22 @@
               return Session.restore(apiSession.token || "");
           });
       };
-      Client.prototype.authenticateDevice = function (id, vars) {
+      Client.prototype.authenticateDevice = function (id, create, username, vars) {
           var request = {
               "id": id,
               "vars": vars
           };
-          return this.apiClient.authenticateDevice(request).then(function (apiSession) {
+          return this.apiClient.authenticateDevice(request, create, username).then(function (apiSession) {
               return Session.restore(apiSession.token || "");
           });
       };
-      Client.prototype.authenticateEmail = function (email, password, vars) {
+      Client.prototype.authenticateEmail = function (email, password, create, username, vars) {
           var request = {
               "email": email,
               "password": password,
               "vars": vars
           };
-          return this.apiClient.authenticateEmail(request).then(function (apiSession) {
+          return this.apiClient.authenticateEmail(request, create, username).then(function (apiSession) {
               return Session.restore(apiSession.token || "");
           });
       };
@@ -2148,21 +2093,21 @@
               return Session.restore(apiSession.token || "");
           });
       };
-      Client.prototype.authenticateGameCenter = function (token, vars) {
+      Client.prototype.authenticateGameCenter = function (token, create, username, vars) {
           var request = {
               "token": token,
               "vars": vars
           };
-          return this.apiClient.authenticateGameCenter(request).then(function (apiSession) {
+          return this.apiClient.authenticateGameCenter(request, create, username).then(function (apiSession) {
               return Session.restore(apiSession.token || "");
           });
       };
-      Client.prototype.authenticateSteam = function (token, vars) {
+      Client.prototype.authenticateSteam = function (token, create, username, vars) {
           var request = {
               "token": token,
               "vars": vars
           };
-          return this.apiClient.authenticateSteam(request).then(function (apiSession) {
+          return this.apiClient.authenticateSteam(request, create, username).then(function (apiSession) {
               return Session.restore(apiSession.token || "");
           });
       };
