@@ -34,12 +34,15 @@
     "ws": "7.3.1"
   },
   "private": true,
-  "workspaces": [
-    "packages/nakama-js",
-    "packages/nakama-js-protobuf",
-    "packages/nakama-js-iife-example",
-    "packages/nakama-js-webpack-example",
-    "packages/nakama-js-create-react-app-example",
-    "packages/nakama-js-test"
-  ]
+  "workspaces": {
+    "packages": [
+      "packages/nakama-js",
+      "packages/nakama-js-create-react-app-example",
+      "packages/nakama-js-iife-example",
+      "packages/nakama-js-protobuf",
+      "packages/nakama-js-react-native-example",
+      "packages/nakama-js-test",
+      "packages/nakama-js-webpack-example"
+    ]
+  }
 }

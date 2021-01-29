@@ -26,10 +26,11 @@
     ],
     "license": "Apache-2.0",
     "dependencies": {
-        "Base64": "1.0.1",
+        "js-base64": "^3.6.0",
         "whatwg-fetch": "^2.0.3"
     },
     "devDependencies": {
+        "@babel/runtime": "^7.12.5",
         "tslib": "^2.0.3"
     }
 }

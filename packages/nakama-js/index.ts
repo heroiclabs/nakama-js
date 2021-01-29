@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import "Base64";
 import "whatwg-fetch";
 
 export * from "./client";
