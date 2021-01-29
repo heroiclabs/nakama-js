@@ -3,6 +3,20 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [2.1.4]
+
+### Added
+- Added React Native integration example to packages/ folder. The example builds
+for iOS and Android.
+- More tests for group chat, social profile ids.
+
+### Fixed
+- Fixed base64 imports for React Native
+- Rollup not finding tslib due to Yarn workspace inconsistency.
+
+### Changed
+- Base64 library to base64-js (for Typescript support.)
+
 ## [2.1.3]
 ### Added
 - Added Webpack and Create React App integration examples to packages/ folder.
