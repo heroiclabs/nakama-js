@@ -501,26 +501,26 @@ export class Client {
   }
 
   /** Authenticate a user with a device id against the server. */
-  authenticateDevice(id : string, vars? : Map<string, string>): Promise<Session> {
+  authenticateDevice(id : string, create?: boolean, username?: string, vars? : Map<string, string>): Promise<Session> {
     const request = {
       "id": id,
       "vars": vars
     };
 
-    return this.apiClient.authenticateDevice(request).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateDevice(request, create, username).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
 
   /** Authenticate a user with an email+password against the server. */
-  authenticateEmail(email: string, password: string, vars?: Map<string,string>): Promise<Session> {
+  authenticateEmail(email: string, password: string, create?: boolean, username?: string, vars?: Map<string,string>): Promise<Session> {
     const request = {
       "email": email,
       "password": password,
       "vars": vars
     };
 
-    return this.apiClient.authenticateEmail(request).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateEmail(request, create, username).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -563,25 +563,25 @@ export class Client {
   }
 
   /** Authenticate a user with GameCenter against the server. */
-  authenticateGameCenter(token: string, vars?: Map<string, string>): Promise<Session> {
+  authenticateGameCenter(token: string, create?: boolean, username? :string, vars?: Map<string, string>): Promise<Session> {
     const request = {
       "token": token,
       "vars": vars
     };
 
-    return this.apiClient.authenticateGameCenter(request).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateGameCenter(request, create, username).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
 
   /** Authenticate a user with Steam against the server. */
-  authenticateSteam(token : string, vars? : Map<string, string>) : Promise<Session> {
+  authenticateSteam(token : string, create?: boolean, username?: string, vars? : Map<string, string>) : Promise<Session> {
     const request = {
       "token": token,
       "vars": vars
     };
 
-    return this.apiClient.authenticateSteam(request).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateSteam(request, create, username).then((apiSession : ApiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
