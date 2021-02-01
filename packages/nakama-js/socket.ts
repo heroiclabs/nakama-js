@@ -374,13 +374,9 @@ export interface Socket {
   connect(session: Session, createStatus: boolean): Promise<Session>;
   // Disconnect from the server.
   disconnect(fireDisconnectEvent: boolean): void;
-  // Send message to the server. This method remains in the API for backwards compatibility.
-  // We recommend that you use the other socket-based methods below for improved
-  // type checking and code readability.
-  send(message: ChannelJoin | ChannelLeave | ChannelMessageSend |
-    ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch |
-    LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc |
-    StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
+
+  // Accept a request to join.
+  acceptPartyMember(party_id : string, presence : Presence) : Promise<void>;
 
   /// Join the matchmaker pool and search for opponents on the server.
   addMatchmaker(query : string, minCount : number, maxCount : number,
