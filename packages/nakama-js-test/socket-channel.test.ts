@@ -18,6 +18,7 @@
 import * as nakamajs from "@heroiclabs/nakama-js";
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType} from "./utils";
+import {describe, expect, it} from '@jest/globals'
 
 describe('Channel Tests', () => {
 

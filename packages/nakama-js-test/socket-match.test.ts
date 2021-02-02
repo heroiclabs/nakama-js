@@ -20,6 +20,7 @@ import {Match, MatchData, MatchPresenceEvent, Presence} from "@heroiclabs/nakama
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {adapters, createPage, generateid, AdapterType} from "./utils"
 import { WebSocketAdapter } from "@heroiclabs/nakama-js";
+import {describe, expect, it} from '@jest/globals'
 
 describe('Match Tests', () => {
 
