@@ -51,38 +51,6 @@
       step((generator = generator.apply(__this, __arguments)).next());
     });
   };
-  var require_base64 = __commonJS((exports) => {
-    (function() {
-      var object = typeof exports != "undefined" ? exports : typeof self != "undefined" ? self : $.global;
-      var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-      function InvalidCharacterError(message) {
-        this.message = message;
-      }
-      InvalidCharacterError.prototype = new Error();
-      InvalidCharacterError.prototype.name = "InvalidCharacterError";
-      object.btoa || (object.btoa = function(input) {
-        var str = String(input);
-        for (var block, charCode, idx = 0, map = chars, output = ""; str.charAt(idx | 0) || (map = "=", idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
-          charCode = str.charCodeAt(idx += 3 / 4);
-          if (charCode > 255) {
-            throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-          }
-          block = block << 8 | charCode;
-        }
-        return output;
-      });
-      object.atob || (object.atob = function(input) {
-        var str = String(input).replace(/[=]+$/, "");
-        if (str.length % 4 == 1) {
-          throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-        }
-        for (var bc = 0, bs, buffer, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer, bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) {
-          buffer = chars.indexOf(buffer);
-        }
-        return output;
-      });
-    })();
-  });
   var require_fetch = __commonJS((exports) => {
     (function(self2) {
       "use strict";
@@ -335,7 +303,7 @@
         };
         if (support.formData) {
           this.formData = function() {
-            return this.text().then(decode);
+            return this.text().then(decode2);
           };
         }
         this.json = function() {
@@ -384,7 +352,7 @@
       Request.prototype.clone = function() {
         return new Request(this, {body: this._bodyInit});
       };
-      function decode(body) {
+      function decode2(body) {
         var form = new FormData();
         body.trim().split("&").forEach(function(bytes) {
           if (bytes) {
@@ -484,8 +452,87 @@
       self2.fetch.polyfill = true;
     })(typeof self !== "undefined" ? self : exports);
   });
-  var import_Base64 = __toModule(require_base64());
   var import_whatwg_fetch = __toModule(require_fetch());
+  var _hasatob = typeof atob === "function";
+  var _hasbtoa = typeof btoa === "function";
+  var _hasBuffer = typeof Buffer === "function";
+  var _TD = typeof TextDecoder === "function" ? new TextDecoder() : void 0;
+  var _TE = typeof TextEncoder === "function" ? new TextEncoder() : void 0;
+  var b64ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+  var b64chs = [...b64ch];
+  var b64tab = ((a) => {
+    let tab = {};
+    a.forEach((c, i) => tab[c] = i);
+    return tab;
+  })(b64chs);
+  var b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
+  var _fromCC = String.fromCharCode.bind(String);
+  var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it, fn = (x) => x) => new Uint8Array(Array.prototype.slice.call(it, 0).map(fn));
+  var _mkUriSafe = (src) => src.replace(/[+\/]/g, (m0) => m0 == "+" ? "-" : "_").replace(/=+$/m, "");
+  var _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, "");
+  var btoaPolyfill = (bin) => {
+    let u32, c0, c1, c2, asc = "";
+    const pad = bin.length % 3;
+    for (let i = 0; i < bin.length; ) {
+      if ((c0 = bin.charCodeAt(i++)) > 255 || (c1 = bin.charCodeAt(i++)) > 255 || (c2 = bin.charCodeAt(i++)) > 255)
+        throw new TypeError("invalid character found");
+      u32 = c0 << 16 | c1 << 8 | c2;
+      asc += b64chs[u32 >> 18 & 63] + b64chs[u32 >> 12 & 63] + b64chs[u32 >> 6 & 63] + b64chs[u32 & 63];
+    }
+    return pad ? asc.slice(0, pad - 3) + "===".substring(pad) : asc;
+  };
+  var _btoa = _hasbtoa ? (bin) => btoa(bin) : _hasBuffer ? (bin) => Buffer.from(bin, "binary").toString("base64") : btoaPolyfill;
+  var _fromUint8Array = _hasBuffer ? (u8a) => Buffer.from(u8a).toString("base64") : (u8a) => {
+    const maxargs = 4096;
+    let strs = [];
+    for (let i = 0, l = u8a.length; i < l; i += maxargs) {
+      strs.push(_fromCC.apply(null, u8a.subarray(i, i + maxargs)));
+    }
+    return _btoa(strs.join(""));
+  };
+  var cb_utob = (c) => {
+    if (c.length < 2) {
+      var cc = c.charCodeAt(0);
+      return cc < 128 ? c : cc < 2048 ? _fromCC(192 | cc >>> 6) + _fromCC(128 | cc & 63) : _fromCC(224 | cc >>> 12 & 15) + _fromCC(128 | cc >>> 6 & 63) + _fromCC(128 | cc & 63);
+    } else {
+      var cc = 65536 + (c.charCodeAt(0) - 55296) * 1024 + (c.charCodeAt(1) - 56320);
+      return _fromCC(240 | cc >>> 18 & 7) + _fromCC(128 | cc >>> 12 & 63) + _fromCC(128 | cc >>> 6 & 63) + _fromCC(128 | cc & 63);
+    }
+  };
+  var re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g;
+  var utob = (u) => u.replace(re_utob, cb_utob);
+  var _encode = _hasBuffer ? (s) => Buffer.from(s, "utf8").toString("base64") : _TE ? (s) => _fromUint8Array(_TE.encode(s)) : (s) => _btoa(utob(s));
+  var encode = (src, urlsafe = false) => urlsafe ? _mkUriSafe(_encode(src)) : _encode(src);
+  var re_btou = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
+  var cb_btou = (cccc) => {
+    switch (cccc.length) {
+      case 4:
+        var cp = (7 & cccc.charCodeAt(0)) << 18 | (63 & cccc.charCodeAt(1)) << 12 | (63 & cccc.charCodeAt(2)) << 6 | 63 & cccc.charCodeAt(3), offset = cp - 65536;
+        return _fromCC((offset >>> 10) + 55296) + _fromCC((offset & 1023) + 56320);
+      case 3:
+        return _fromCC((15 & cccc.charCodeAt(0)) << 12 | (63 & cccc.charCodeAt(1)) << 6 | 63 & cccc.charCodeAt(2));
+      default:
+        return _fromCC((31 & cccc.charCodeAt(0)) << 6 | 63 & cccc.charCodeAt(1));
+    }
+  };
+  var btou = (b) => b.replace(re_btou, cb_btou);
+  var atobPolyfill = (asc) => {
+    asc = asc.replace(/\s+/g, "");
+    if (!b64re.test(asc))
+      throw new TypeError("malformed base64.");
+    asc += "==".slice(2 - (asc.length & 3));
+    let u24, bin = "", r1, r2;
+    for (let i = 0; i < asc.length; ) {
+      u24 = b64tab[asc.charAt(i++)] << 18 | b64tab[asc.charAt(i++)] << 12 | (r1 = b64tab[asc.charAt(i++)]) << 6 | (r2 = b64tab[asc.charAt(i++)]);
+      bin += r1 === 64 ? _fromCC(u24 >> 16 & 255) : r2 === 64 ? _fromCC(u24 >> 16 & 255, u24 >> 8 & 255) : _fromCC(u24 >> 16 & 255, u24 >> 8 & 255, u24 & 255);
+    }
+    return bin;
+  };
+  var _atob = _hasatob ? (asc) => atob(_tidyB64(asc)) : _hasBuffer ? (asc) => Buffer.from(asc, "base64").toString("binary") : atobPolyfill;
+  var _toUint8Array = _hasBuffer ? (a) => _U8Afrom(Buffer.from(a, "base64")) : (a) => _U8Afrom(_atob(a), (c) => c.charCodeAt(0));
+  var _decode = _hasBuffer ? (a) => Buffer.from(a, "base64").toString("utf8") : _TD ? (a) => _TD.decode(_toUint8Array(a)) : (a) => btou(_atob(a));
+  var _unURI = (a) => _tidyB64(a.replace(/[-_]/g, (m0) => m0 == "-" ? "+" : "/"));
+  var decode = (src) => _decode(_unURI(src));
   var NakamaApi = class {
     constructor(configuration) {
       this.configuration = configuration;
@@ -511,7 +558,7 @@
       if (this.configuration.bearerToken) {
         fetchOptions.headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
       } else if (this.configuration.username) {
-        fetchOptions.headers["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        fetchOptions.headers["Authorization"] = "Basic " + encode(this.configuration.username + ":" + this.configuration.password);
       }
       if (!Object.keys(fetchOptions.headers).includes("Accept")) {
         fetchOptions.headers["Accept"] = "application/json";
@@ -765,6 +812,16 @@
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/link/steam";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    sessionRefresh(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/account/session/refresh";
       const queryParams = {};
       let _body = null;
       _body = JSON.stringify(body || {});
@@ -1396,12 +1453,12 @@
     }
   };
   function b64EncodeUnicode(str) {
-    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
+    return encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
       return String.fromCharCode(Number("0x" + p1));
     }));
   }
   function b64DecodeUnicode(str) {
-    return decodeURIComponent(atob(str).split("").map(function(c) {
+    return decodeURIComponent(decode(str).split("").map(function(c) {
       return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(""));
   }
@@ -1751,22 +1808,22 @@
         return Session.restore(apiSession.token || "");
       });
     }
-    authenticateDevice(id, vars) {
+    authenticateDevice(id, create, username, vars) {
       const request = {
         id,
         vars
       };
-      return this.apiClient.authenticateDevice(request).then((apiSession) => {
+      return this.apiClient.authenticateDevice(request, create, username).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
-    authenticateEmail(email, password, vars) {
+    authenticateEmail(email, password, create, username, vars) {
       const request = {
         email,
         password,
         vars
       };
-      return this.apiClient.authenticateEmail(request).then((apiSession) => {
+      return this.apiClient.authenticateEmail(request, create, username).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
@@ -1797,21 +1854,21 @@
         return Session.restore(apiSession.token || "");
       });
     }
-    authenticateGameCenter(token, vars) {
+    authenticateGameCenter(token, create, username, vars) {
       const request = {
         token,
         vars
       };
-      return this.apiClient.authenticateGameCenter(request).then((apiSession) => {
+      return this.apiClient.authenticateGameCenter(request, create, username).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
-    authenticateSteam(token, vars) {
+    authenticateSteam(token, create, username, vars) {
       const request = {
         token,
         vars
       };
-      return this.apiClient.authenticateSteam(request).then((apiSession) => {
+      return this.apiClient.authenticateSteam(request, create, username).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
@@ -2159,7 +2216,8 @@
               timezone: f.user.timezone,
               update_time: f.user.update_time,
               username: f.user.username,
-              metadata: f.user.metadata ? JSON.parse(f.user.metadata) : void 0
+              metadata: f.user.metadata ? JSON.parse(f.user.metadata) : void 0,
+              facebook_instant_game_id: f.user.facebook_instant_game_id
             },
             state: f.state
           });

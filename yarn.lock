@@ -1749,7 +1749,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js-iife-example@workspace:packages/nakama-js-iife-example"
   dependencies:
-    "@heroiclabs/nakama-js": 2.1.3
+    "@heroiclabs/nakama-js": 2.1.4
   languageName: unknown
   linkType: soft
 
@@ -1792,7 +1792,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@heroiclabs/nakama-js@2.1.3, @heroiclabs/nakama-js@workspace:packages/nakama-js":
+"@heroiclabs/nakama-js@2.1.4, @heroiclabs/nakama-js@workspace:packages/nakama-js":
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js@workspace:packages/nakama-js"
   dependencies:
@@ -1804,6 +1804,16 @@ __metadata:
     whatwg-fetch: ^2.0.3
   languageName: unknown
   linkType: soft
+
+"@heroiclabs/nakama-js@npm:2.1.3":
+  version: 2.1.3
+  resolution: "@heroiclabs/nakama-js@npm:2.1.3"
+  dependencies:
+    Base64: 1.0.1
+    whatwg-fetch: ^2.0.3
+  checksum: fd0c556a2e62901f20d66a07443853773452866bf73d1185613b420f6d10acde6f883d765a27b8411b0a19e87d2dcc56e99e8b9b0aea28a4bc76d74da24801b4
+  languageName: node
+  linkType: hard
 
 "@istanbuljs/load-nyc-config@npm:^1.0.0":
   version: 1.1.0
@@ -3953,6 +3963,13 @@ __metadata:
   version: 2.6.0
   resolution: "@zeit/schemas@npm:2.6.0"
   checksum: 0e015fadf7006c8e4d134148321212e6179f8ed94ca41488a10178b3fbe78eb3a13d540f8b19d7438be48315b369ffd0fc6c0e222417b30b412a4409a911cc99
+  languageName: node
+  linkType: hard
+
+"Base64@npm:1.0.1":
+  version: 1.0.1
+  resolution: "Base64@npm:1.0.1"
+  checksum: e7f0f461e293650cbe5d8edd611fa250f749ae8babc89739333e728f810afbc4b714a3358455bbbf3c78321bbff8eaf6d6f650e722a6a4808466e7f37027d9ee
   languageName: node
   linkType: hard
 
