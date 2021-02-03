@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import { ChannelJoin, ChannelLeave, ChannelMessageSend, ChannelMessageUpdate, ChannelMessageRemove,
+    CreateMatch, JoinMatch, LeaveMatch, MatchDataSend, MatchmakerAdd, MatchmakerRemove, PartyAccept,
+    Rpc, StatusFollow, StatusUnfollow, StatusUpdate } from "./socket";
+
 /**
  * An interface used by Nakama's web socket to determine the payload protocol.
  */
@@ -42,7 +46,9 @@ export interface WebSocketAdapter {
     readonly isConnected: boolean;
     close() : void;
     connect(scheme: string, host: string, port : string, createStatus: boolean, token : string) : void;
-    send(msg : any) : void;
+    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate |
+        ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd |
+        MatchmakerRemove | PartyAccept | Rpc | StatusFollow | StatusUnfollow | StatusUpdate) : void;
 }
 
 /**
@@ -106,6 +112,7 @@ export class WebSocketAdapterText implements WebSocketAdapter {
     set onMessage(value: SocketMessageHandler | null) {
         if (value) {
             this._socket!.onmessage = (evt: MessageEvent) => {
+                console.log("got message evt : " + evt.data);
                 const message: any = JSON.parse(evt.data);
                 value!(message);
             };

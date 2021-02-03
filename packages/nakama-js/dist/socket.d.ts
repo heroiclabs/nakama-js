@@ -154,6 +154,106 @@ export interface MatchData {
 export interface MatchDataSend {
     match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
 }
+export interface Party {
+    party_id: string;
+    open: boolean;
+    max_size: number;
+    self: Presence;
+    leader: Presence;
+    presences: Presence[];
+}
+export interface PartyCreate {
+    party_create: {
+        open: boolean;
+        max_size: number;
+    };
+}
+export interface PartyJoin {
+    party_join: {
+        party_id: string;
+    };
+}
+export interface PartyLeave {
+    party_leave: {
+        party_id: string;
+    };
+}
+export interface PartyPromote {
+    party_promote: {
+        party_id: string;
+        presence: Presence;
+    };
+}
+export interface PartyLeader {
+    party_id: string;
+    presence: Presence;
+}
+export interface PartyAccept {
+    party_accept: {
+        party_id: string;
+        presence: Presence;
+    };
+}
+export interface PartyClose {
+    party_close: {
+        party_id: string;
+    };
+}
+export interface PartyData {
+    party_data: {
+        party_id: string;
+        presence: Presence;
+        op_code: number;
+        data: any;
+    };
+}
+export interface PartyDataSend {
+    party_data_send: {
+        party_id: string;
+        op_code: number;
+        data: any;
+    };
+}
+export interface PartyJoinRequest {
+    party_id: string;
+    presence: Presence;
+}
+export interface PartyJoinRequestList {
+    party_join_request_list: {
+        party_id: string;
+    };
+}
+export interface PartyMatchmakerAdd {
+    party_matchmaker_add: {
+        party_id: string;
+        min_count: number;
+        max_count: number;
+        query: string;
+        string_properties?: Record<string, string>;
+        numeric_properties?: Record<string, number>;
+    };
+}
+export interface PartyMatchmakerRemove {
+    party_matchmaker_remove: {
+        party_id: string;
+        ticket: string;
+    };
+}
+export interface PartyMatchmakerMatched {
+    party_id: string;
+    ticket: string;
+}
+export interface PartyPresenceEvent {
+    party_id: string;
+    joins: Presence[];
+    leaves: Presence[];
+}
+export interface PartyRemove {
+    party_remove: {
+        party_id: string;
+        presence: Presence;
+    };
+}
 export interface Rpc {
     rpc: ApiRpc;
 }
@@ -182,18 +282,28 @@ export interface StatusUpdate {
 export interface Socket {
     connect(session: Session, createStatus: boolean): Promise<Session>;
     disconnect(fireDisconnectEvent: boolean): void;
-    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
+    acceptPartyMember(party_id: string, presence: Presence): Promise<void>;
     addMatchmaker(query: string, minCount: number, maxCount: number, stringProperties?: Record<string, string>, numericProperties?: Record<string, number>): Promise<MatchmakerMatched>;
+    addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numericProperties?: Record<string, number>): Promise<PartyMatchmakerMatched>;
+    closeParty(party_id: string): Promise<void>;
     createMatch(): Promise<Match>;
+    createParty(open: boolean, max_size: number): Promise<Party>;
     followUsers(user_ids: string[]): Promise<Status>;
     joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel>;
+    joinParty(party_id: string): Promise<Party>;
     joinMatch(match_id?: string, token?: string, metadata?: {}): Promise<Match>;
     leaveChat(channel_id: string): Promise<void>;
     leaveMatch(matchId: string): Promise<void>;
+    leaveParty(party_id: string): Promise<void>;
+    listPartyJoinRequests(party_id: string): Promise<PartyJoinRequest>;
+    promotePartyMember(party_id: string, party_member: Presence): Promise<PartyLeader>;
     removeChatMessage(channel_id: string, message_id: string): Promise<ChannelMessageAck>;
     removeMatchmaker(ticket: string): Promise<void>;
+    removeMatchmakerParty(party_id: string, ticket: string): Promise<void>;
+    removePartyMember(party_id: string, presence: Presence): Promise<void>;
     rpc(id?: string, payload?: string, http_key?: string): Promise<ApiRpc>;
     sendMatchState(matchId: string, opCode: number, data: any, presence?: Presence[]): Promise<void>;
+    sendPartyData(party_id: string, opcode: number, data: any): Promise<void>;
     unfollowUsers(user_ids: string[]): Promise<void>;
     updateChatMessage(channel_id: string, message_id: string, content: any): Promise<ChannelMessageAck>;
     updateStatus(status?: string): Promise<void>;
@@ -204,6 +314,11 @@ export interface Socket {
     onmatchdata: (matchData: MatchData) => void;
     onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
     onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
+    onpartyclose: (partyClose: PartyClose) => void;
+    onpartydata: (partyData: PartyData) => void;
+    onpartyjoinrequest: (partyJoinRequest: PartyJoinRequest) => void;
+    onpartyleader: (partyLeader: PartyLeader) => void;
+    onpartypresence: (partyPresence: PartyPresenceEvent) => void;
     onstatuspresence: (statusPresence: StatusPresenceEvent) => void;
     onstreampresence: (streamPresence: StreamPresenceEvent) => void;
     onstreamdata: (streamData: StreamData) => void;
@@ -234,21 +349,37 @@ export declare class DefaultSocket implements Socket {
     onmatchdata(matchData: MatchData): void;
     onmatchpresence(matchPresence: MatchPresenceEvent): void;
     onmatchmakermatched(matchmakerMatched: MatchmakerMatched): void;
+    onpartyclose(): void;
+    onpartyjoinrequest(partyJoinRequest: PartyJoinRequest): void;
+    onpartydata(partyData: PartyData): void;
+    onpartyleader(partyLeader: PartyLeader): void;
+    onpartypresence(partyPresence: PartyPresenceEvent): void;
     onstatuspresence(statusPresence: StatusPresenceEvent): void;
     onstreampresence(streamPresence: StreamPresenceEvent): void;
     onstreamdata(streamData: StreamData): void;
-    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
-    addMatchmaker(query: string, minCount: number, maxCount: number, stringProperties?: Record<string, string>, numericProperties?: Record<string, number>): Promise<MatchmakerMatched>;
+    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin | PartyJoinRequestList | PartyLeave | PartyMatchmakerAdd | PartyMatchmakerRemove | PartyPromote | PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
+    acceptPartyMember(party_id: string, presence: Presence): Promise<void>;
+    addMatchmaker(query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<MatchmakerMatched>;
+    addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<PartyMatchmakerMatched>;
+    closeParty(party_id: string): Promise<void>;
     createMatch(): Promise<Match>;
+    createParty(open: boolean, max_size: number): Promise<Party>;
     followUsers(userIds: string[]): Promise<Status>;
     joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel>;
     joinMatch(match_id?: string, token?: string, metadata?: {}): Promise<Match>;
+    joinParty(party_id: string): Promise<Party>;
     leaveChat(channel_id: string): Promise<void>;
     leaveMatch(matchId: string): Promise<void>;
+    leaveParty(party_id: string): Promise<void>;
+    listPartyJoinRequests(party_id: string): Promise<PartyJoinRequest>;
+    promotePartyMember(party_id: string, party_member: Presence): Promise<PartyLeader>;
     removeChatMessage(channel_id: string, message_id: string): Promise<ChannelMessageAck>;
     removeMatchmaker(ticket: string): Promise<void>;
+    removeMatchmakerParty(party_id: string, ticket: string): Promise<void>;
+    removePartyMember(party_id: string, member: Presence): Promise<void>;
     rpc(id?: string, payload?: string, http_key?: string): Promise<ApiRpc>;
     sendMatchState(matchId: string, opCode: number, data: any, presences?: Presence[]): Promise<void>;
+    sendPartyData(party_id: string, op_code: number, data: any): Promise<void>;
     unfollowUsers(user_ids: string[]): Promise<void>;
     updateChatMessage(channel_id: string, message_id: string, content: any): Promise<ChannelMessageAck>;
     updateStatus(status?: string): Promise<void>;

@@ -1,3 +1,4 @@
+import { ChannelJoin, ChannelLeave, ChannelMessageSend, ChannelMessageUpdate, ChannelMessageRemove, CreateMatch, JoinMatch, LeaveMatch, MatchDataSend, MatchmakerAdd, MatchmakerRemove, PartyAccept, Rpc, StatusFollow, StatusUnfollow, StatusUpdate } from "./socket";
 export interface WebSocketAdapter {
     onClose: SocketCloseHandler | null;
     onError: SocketErrorHandler | null;
@@ -6,7 +7,7 @@ export interface WebSocketAdapter {
     readonly isConnected: boolean;
     close(): void;
     connect(scheme: string, host: string, port: string, createStatus: boolean, token: string): void;
-    send(msg: any): void;
+    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | PartyAccept | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): void;
 }
 export interface SocketCloseHandler {
     (this: WebSocket, evt: CloseEvent): void;

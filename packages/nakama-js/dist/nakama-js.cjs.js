@@ -1440,6 +1440,7 @@ var WebSocketAdapterText = class {
   set onMessage(value) {
     if (value) {
       this._socket.onmessage = (evt) => {
+        console.log("got message evt : " + evt.data);
         const message = JSON.parse(evt.data);
         value(message);
       };
@@ -1543,6 +1544,16 @@ var DefaultSocket = class {
           this.onchannelmessage(message.channel_message);
         } else if (message.channel_presence_event) {
           this.onchannelpresence(message.channel_presence_event);
+        } else if (message.party_data) {
+          this.onpartydata(message.on_party_data);
+        } else if (message.on_party_close) {
+          this.onpartyclose();
+        } else if (message.party_join_request) {
+          this.onpartyjoinrequest(message.party_join_request);
+        } else if (message.party_leader) {
+          this.onpartyleader(message.party_leader);
+        } else if (message.party_presence_event) {
+          this.onpartypresence(message.party_presence_event);
         } else {
           if (this.verbose && window && window.console) {
             console.log("Unrecognized message received: %o", message);
@@ -1625,6 +1636,31 @@ var DefaultSocket = class {
       console.log(matchmakerMatched);
     }
   }
+  onpartyclose() {
+    if (this.verbose && window && window.console) {
+      console.log("Party closed.");
+    }
+  }
+  onpartyjoinrequest(partyJoinRequest) {
+    if (this.verbose && window && window.console) {
+      console.log(partyJoinRequest);
+    }
+  }
+  onpartydata(partyData) {
+    if (this.verbose && window && window.console) {
+      console.log(partyData);
+    }
+  }
+  onpartyleader(partyLeader) {
+    if (this.verbose && window && window.console) {
+      console.log(partyLeader);
+    }
+  }
+  onpartypresence(partyPresence) {
+    if (this.verbose && window && window.console) {
+      console.log(partyPresence);
+    }
+  }
   onstatuspresence(statusPresence) {
     if (this.verbose && window && window.console) {
       console.log(statusPresence);
@@ -1667,25 +1703,53 @@ var DefaultSocket = class {
       }
     });
   }
-  addMatchmaker(query, minCount, maxCount, stringProperties, numericProperties) {
+  acceptPartyMember(party_id, presence) {
+    return this.send({party_accept: {party_id, presence}});
+  }
+  addMatchmaker(query, min_count, max_count, string_properties, numeric_properties) {
     return __async(this, null, function* () {
-      const matchMakerAdd = {
+      const response = yield this.send({
         matchmaker_add: {
-          min_count: minCount,
-          max_count: maxCount,
+          min_count,
+          max_count,
           query,
-          string_properties: stringProperties,
-          numeric_properties: numericProperties
+          string_properties,
+          numeric_properties
         }
-      };
-      const response = yield this.send(matchMakerAdd);
+      });
       return response.matchmaker_ticket;
+    });
+  }
+  addMatchmakerParty(party_id, query, min_count, max_count, string_properties, numeric_properties) {
+    return __async(this, null, function* () {
+      const response = yield this.send({
+        party_matchmaker_add: {
+          party_id,
+          min_count,
+          max_count,
+          query,
+          string_properties,
+          numeric_properties
+        }
+      });
+      return response.party_matchmaker_ticket;
+    });
+  }
+  closeParty(party_id) {
+    return __async(this, null, function* () {
+      return yield this.send({party_close: {party_id}});
     });
   }
   createMatch() {
     return __async(this, null, function* () {
       const response = yield this.send({match_create: {}});
       return response.match;
+    });
+  }
+  createParty(open, max_size) {
+    return __async(this, null, function* () {
+      const response = yield this.send({party_create: {open, max_size}});
+      return response.party_create;
     });
   }
   followUsers(userIds) {
@@ -1719,11 +1783,32 @@ var DefaultSocket = class {
       return response.match;
     });
   }
+  joinParty(party_id) {
+    return __async(this, null, function* () {
+      const response = yield this.send({party_join: {party_id}});
+      return response.party_join;
+    });
+  }
   leaveChat(channel_id) {
     return this.send({channel_leave: {channel_id}});
   }
   leaveMatch(matchId) {
     return this.send({match_leave: {match_id: matchId}});
+  }
+  leaveParty(party_id) {
+    return this.send({party_leave: {party_id}});
+  }
+  listPartyJoinRequests(party_id) {
+    return __async(this, null, function* () {
+      const response = yield this.send({party_join_request_list: {party_id}});
+      return response.party_join_request;
+    });
+  }
+  promotePartyMember(party_id, party_member) {
+    return __async(this, null, function* () {
+      const response = yield this.send({party_promote: {party_id, presence: party_member}});
+      return response.party_leader;
+    });
   }
   removeChatMessage(channel_id, message_id) {
     return __async(this, null, function* () {
@@ -1738,6 +1823,22 @@ var DefaultSocket = class {
   }
   removeMatchmaker(ticket) {
     return this.send({matchmaker_remove: {ticket}});
+  }
+  removeMatchmakerParty(party_id, ticket) {
+    return this.send({
+      party_matchmaker_remove: {
+        party_id,
+        ticket
+      }
+    });
+  }
+  removePartyMember(party_id, member) {
+    return __async(this, null, function* () {
+      return this.send({party_remove: {
+        party_id,
+        presence: member
+      }});
+    });
   }
   rpc(id, payload, http_key) {
     return __async(this, null, function* () {
@@ -1762,6 +1863,9 @@ var DefaultSocket = class {
         }
       });
     });
+  }
+  sendPartyData(party_id, op_code, data) {
+    return this.send({party_data_send: {party_id, op_code, data}});
   }
   unfollowUsers(user_ids) {
     return this.send({status_unfollow: {user_ids}});

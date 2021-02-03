@@ -4,7 +4,7 @@
 //
 import { Timestamp } from '../../../../google/protobuf/timestamp';
 import * as Long from 'long';
-import { Writer, Reader } from 'protobufjs/minimal';
+import { Writer, Reader, util, configure } from 'protobufjs/minimal';
 import { BoolValue, Int32Value, StringValue, UInt32Value, Int64Value } from '../../../../google/protobuf/wrappers';
 
 
@@ -40,6 +40,44 @@ export interface Account {
    *  The UNIX time when the user's account was disabled/banned.
    */
   disable_time?: Date;
+}
+
+/**
+ *  Obtain a new authentication token using a refresh token.
+ */
+export interface AccountRefresh {
+  /**
+   *  Refresh token.
+   */
+  token: string;
+  /**
+   *  Extra information that will be bundled in the session token.
+   */
+  vars: { [key: string]: string };
+}
+
+export interface AccountRefresh_VarsEntry {
+  key: string;
+  value: string;
+}
+
+/**
+ *  Send a Apple Sign In token to the server. Used with authenticate/link/unlink.
+ */
+export interface AccountApple {
+  /**
+   *  The ID token received from Apple to validate.
+   */
+  token: string;
+  /**
+   *  Extra information that will be bundled in the session token.
+   */
+  vars: { [key: string]: string };
+}
+
+export interface AccountApple_VarsEntry {
+  key: string;
+  value: string;
 }
 
 /**
@@ -244,6 +282,43 @@ export interface AddGroupUsersRequest {
    *  The users to add.
    */
   user_ids: string[];
+}
+
+/**
+ *  Authenticate against the server with a refresh token.
+ */
+export interface SessionRefreshRequest {
+  /**
+   *  Refresh token.
+   */
+  token: string;
+  /**
+   *  Extra information that will be bundled in the session token.
+   */
+  vars: { [key: string]: string };
+}
+
+export interface SessionRefreshRequest_VarsEntry {
+  key: string;
+  value: string;
+}
+
+/**
+ *  Authenticate against the server with Apple Sign In.
+ */
+export interface AuthenticateAppleRequest {
+  /**
+   *  The Apple account details.
+   */
+  account?: AccountApple;
+  /**
+   *  Register the account if the user does not already exist.
+   */
+  create?: boolean;
+  /**
+   *  Set the username on the account at register. Must be unique.
+   */
+  username: string;
 }
 
 /**
@@ -489,13 +564,17 @@ export interface ChannelMessageList {
    */
   messages: ChannelMessage[];
   /**
-   *  The cursor to send when retireving the next page, if any.
+   *  The cursor to send when retrieving the next page, if any.
    */
   next_cursor: string;
   /**
    *  The cursor to send when retrieving the previous page, if any.
    */
   prev_cursor: string;
+  /**
+   *  Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
+   */
+  cacheable_cursor: string;
 }
 
 /**
@@ -1235,6 +1314,14 @@ export interface Match {
    *  Current number of users in the match.
    */
   size: number;
+  /**
+   *  Tick Rate
+   */
+  tick_rate: number;
+  /**
+   *  Handler name
+   */
+  handler_name: string;
 }
 
 /**
@@ -1310,6 +1397,20 @@ export interface PromoteGroupUsersRequest {
 }
 
 /**
+ *  Demote a set of users in a group to the next role down.
+ */
+export interface DemoteGroupUsersRequest {
+  /**
+   *  The group ID to demote in.
+   */
+  group_id: string;
+  /**
+   *  The users to demote.
+   */
+  user_ids: string[];
+}
+
+/**
  *  Storage objects to get.
  */
 export interface ReadStorageObjectId {
@@ -1367,6 +1468,10 @@ export interface Session {
    *  Authentication credentials.
    */
   token: string;
+  /**
+   *  Refresh token that can be used for session token renewal.
+   */
+  refresh_token: string;
 }
 
 /**
@@ -1706,9 +1811,13 @@ export interface User {
    */
   update_time?: Date;
   /**
-   *  The Facebook Instant Game id in the user's account.
+   *  The Facebook Instant Game ID in the user's account.
    */
   facebook_instant_game_id: string;
+  /**
+   *  The Apple Sign In ID in the user's account.
+   */
+  apple_id: string;
 }
 
 /**
@@ -1859,6 +1968,24 @@ const baseAccount: object = {
   custom_id: "",
 };
 
+const baseAccountRefresh: object = {
+  token: "",
+};
+
+const baseAccountRefresh_VarsEntry: object = {
+  key: "",
+  value: "",
+};
+
+const baseAccountApple: object = {
+  token: "",
+};
+
+const baseAccountApple_VarsEntry: object = {
+  key: "",
+  value: "",
+};
+
 const baseAccountCustom: object = {
   id: "",
 };
@@ -1947,6 +2074,19 @@ const baseAddGroupUsersRequest: object = {
   user_ids: "",
 };
 
+const baseSessionRefreshRequest: object = {
+  token: "",
+};
+
+const baseSessionRefreshRequest_VarsEntry: object = {
+  key: "",
+  value: "",
+};
+
+const baseAuthenticateAppleRequest: object = {
+  username: "",
+};
+
 const baseAuthenticateCustomRequest: object = {
   username: "",
 };
@@ -2004,6 +2144,7 @@ const baseChannelMessage: object = {
 const baseChannelMessageList: object = {
   next_cursor: "",
   prev_cursor: "",
+  cacheable_cursor: "",
 };
 
 const baseCreateGroupRequest: object = {
@@ -2193,6 +2334,8 @@ const baseMatch: object = {
   match_id: "",
   authoritative: false,
   size: 0,
+  tick_rate: 0,
+  handler_name: "",
 };
 
 const baseMatchList: object = {
@@ -2216,6 +2359,11 @@ const basePromoteGroupUsersRequest: object = {
   user_ids: "",
 };
 
+const baseDemoteGroupUsersRequest: object = {
+  group_id: "",
+  user_ids: "",
+};
+
 const baseReadStorageObjectId: object = {
   collection: "",
   key: "",
@@ -2234,6 +2382,7 @@ const baseRpc: object = {
 const baseSession: object = {
   created: false,
   token: "",
+  refresh_token: "",
 };
 
 const baseStorageObject: object = {
@@ -2312,6 +2461,7 @@ const baseUser: object = {
   online: false,
   edge_count: 0,
   facebook_instant_game_id: "",
+  apple_id: "",
 };
 
 const baseUserGroupList: object = {
@@ -2383,167 +2533,169 @@ function longToNumber(long: Long) {
   return long.toNumber();
 }
 
+export const protobufPackage = 'nakama.api'
+
 /**  The friendship status.
  */
-export const Friend_State = {
+export enum Friend_State {
   /** FRIEND -  The user is a friend of the current user.
    */
-  FRIEND: 0 as const,
+  FRIEND = 0,
   /** INVITE_SENT -  The current user has sent an invite to the user.
    */
-  INVITE_SENT: 1 as const,
+  INVITE_SENT = 1,
   /** INVITE_RECEIVED -  The current user has received an invite from this user.
    */
-  INVITE_RECEIVED: 2 as const,
+  INVITE_RECEIVED = 2,
   /** BLOCKED -  The current user has blocked this user.
    */
-  BLOCKED: 3 as const,
-  UNRECOGNIZED: -1 as const,
-  fromJSON(object: any): Friend_State {
-    switch (object) {
-      case 0:
-      case "FRIEND":
-        return Friend_State.FRIEND;
-      case 1:
-      case "INVITE_SENT":
-        return Friend_State.INVITE_SENT;
-      case 2:
-      case "INVITE_RECEIVED":
-        return Friend_State.INVITE_RECEIVED;
-      case 3:
-      case "BLOCKED":
-        return Friend_State.BLOCKED;
-      case -1:
-      case "UNRECOGNIZED":
-      default:
-        return Friend_State.UNRECOGNIZED;
-    }
-  },
-  toJSON(object: Friend_State): string {
-    switch (object) {
-      case Friend_State.FRIEND:
-        return "FRIEND";
-      case Friend_State.INVITE_SENT:
-        return "INVITE_SENT";
-      case Friend_State.INVITE_RECEIVED:
-        return "INVITE_RECEIVED";
-      case Friend_State.BLOCKED:
-        return "BLOCKED";
-      default:
-        return "UNKNOWN";
-    }
-  },
+  BLOCKED = 3,
+  UNRECOGNIZED = -1,
 }
 
-export type Friend_State = 0 | 1 | 2 | 3 | -1;
+export function friend_StateFromJSON(object: any): Friend_State {
+  switch (object) {
+    case 0:
+    case "FRIEND":
+      return Friend_State.FRIEND;
+    case 1:
+    case "INVITE_SENT":
+      return Friend_State.INVITE_SENT;
+    case 2:
+    case "INVITE_RECEIVED":
+      return Friend_State.INVITE_RECEIVED;
+    case 3:
+    case "BLOCKED":
+      return Friend_State.BLOCKED;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return Friend_State.UNRECOGNIZED;
+  }
+}
+
+export function friend_StateToJSON(object: Friend_State): string {
+  switch (object) {
+    case Friend_State.FRIEND:
+      return "FRIEND";
+    case Friend_State.INVITE_SENT:
+      return "INVITE_SENT";
+    case Friend_State.INVITE_RECEIVED:
+      return "INVITE_RECEIVED";
+    case Friend_State.BLOCKED:
+      return "BLOCKED";
+    default:
+      return "UNKNOWN";
+  }
+}
 
 /**  The group role status.
  */
-export const GroupUserList_GroupUser_State = {
+export enum GroupUserList_GroupUser_State {
   /** SUPERADMIN -  The user is a superadmin with full control of the group.
    */
-  SUPERADMIN: 0 as const,
+  SUPERADMIN = 0,
   /** ADMIN -  The user is an admin with additional privileges.
    */
-  ADMIN: 1 as const,
+  ADMIN = 1,
   /** MEMBER -  The user is a regular member.
    */
-  MEMBER: 2 as const,
+  MEMBER = 2,
   /** JOIN_REQUEST -  The user has requested to join the group
    */
-  JOIN_REQUEST: 3 as const,
-  UNRECOGNIZED: -1 as const,
-  fromJSON(object: any): GroupUserList_GroupUser_State {
-    switch (object) {
-      case 0:
-      case "SUPERADMIN":
-        return GroupUserList_GroupUser_State.SUPERADMIN;
-      case 1:
-      case "ADMIN":
-        return GroupUserList_GroupUser_State.ADMIN;
-      case 2:
-      case "MEMBER":
-        return GroupUserList_GroupUser_State.MEMBER;
-      case 3:
-      case "JOIN_REQUEST":
-        return GroupUserList_GroupUser_State.JOIN_REQUEST;
-      case -1:
-      case "UNRECOGNIZED":
-      default:
-        return GroupUserList_GroupUser_State.UNRECOGNIZED;
-    }
-  },
-  toJSON(object: GroupUserList_GroupUser_State): string {
-    switch (object) {
-      case GroupUserList_GroupUser_State.SUPERADMIN:
-        return "SUPERADMIN";
-      case GroupUserList_GroupUser_State.ADMIN:
-        return "ADMIN";
-      case GroupUserList_GroupUser_State.MEMBER:
-        return "MEMBER";
-      case GroupUserList_GroupUser_State.JOIN_REQUEST:
-        return "JOIN_REQUEST";
-      default:
-        return "UNKNOWN";
-    }
-  },
+  JOIN_REQUEST = 3,
+  UNRECOGNIZED = -1,
 }
 
-export type GroupUserList_GroupUser_State = 0 | 1 | 2 | 3 | -1;
+export function groupUserList_GroupUser_StateFromJSON(object: any): GroupUserList_GroupUser_State {
+  switch (object) {
+    case 0:
+    case "SUPERADMIN":
+      return GroupUserList_GroupUser_State.SUPERADMIN;
+    case 1:
+    case "ADMIN":
+      return GroupUserList_GroupUser_State.ADMIN;
+    case 2:
+    case "MEMBER":
+      return GroupUserList_GroupUser_State.MEMBER;
+    case 3:
+    case "JOIN_REQUEST":
+      return GroupUserList_GroupUser_State.JOIN_REQUEST;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return GroupUserList_GroupUser_State.UNRECOGNIZED;
+  }
+}
+
+export function groupUserList_GroupUser_StateToJSON(object: GroupUserList_GroupUser_State): string {
+  switch (object) {
+    case GroupUserList_GroupUser_State.SUPERADMIN:
+      return "SUPERADMIN";
+    case GroupUserList_GroupUser_State.ADMIN:
+      return "ADMIN";
+    case GroupUserList_GroupUser_State.MEMBER:
+      return "MEMBER";
+    case GroupUserList_GroupUser_State.JOIN_REQUEST:
+      return "JOIN_REQUEST";
+    default:
+      return "UNKNOWN";
+  }
+}
 
 /**  The group role status.
  */
-export const UserGroupList_UserGroup_State = {
+export enum UserGroupList_UserGroup_State {
   /** SUPERADMIN -  The user is a superadmin with full control of the group.
    */
-  SUPERADMIN: 0 as const,
+  SUPERADMIN = 0,
   /** ADMIN -  The user is an admin with additional privileges.
    */
-  ADMIN: 1 as const,
+  ADMIN = 1,
   /** MEMBER -  The user is a regular member.
    */
-  MEMBER: 2 as const,
+  MEMBER = 2,
   /** JOIN_REQUEST -  The user has requested to join the group
    */
-  JOIN_REQUEST: 3 as const,
-  UNRECOGNIZED: -1 as const,
-  fromJSON(object: any): UserGroupList_UserGroup_State {
-    switch (object) {
-      case 0:
-      case "SUPERADMIN":
-        return UserGroupList_UserGroup_State.SUPERADMIN;
-      case 1:
-      case "ADMIN":
-        return UserGroupList_UserGroup_State.ADMIN;
-      case 2:
-      case "MEMBER":
-        return UserGroupList_UserGroup_State.MEMBER;
-      case 3:
-      case "JOIN_REQUEST":
-        return UserGroupList_UserGroup_State.JOIN_REQUEST;
-      case -1:
-      case "UNRECOGNIZED":
-      default:
-        return UserGroupList_UserGroup_State.UNRECOGNIZED;
-    }
-  },
-  toJSON(object: UserGroupList_UserGroup_State): string {
-    switch (object) {
-      case UserGroupList_UserGroup_State.SUPERADMIN:
-        return "SUPERADMIN";
-      case UserGroupList_UserGroup_State.ADMIN:
-        return "ADMIN";
-      case UserGroupList_UserGroup_State.MEMBER:
-        return "MEMBER";
-      case UserGroupList_UserGroup_State.JOIN_REQUEST:
-        return "JOIN_REQUEST";
-      default:
-        return "UNKNOWN";
-    }
-  },
+  JOIN_REQUEST = 3,
+  UNRECOGNIZED = -1,
 }
 
-export type UserGroupList_UserGroup_State = 0 | 1 | 2 | 3 | -1;
+export function userGroupList_UserGroup_StateFromJSON(object: any): UserGroupList_UserGroup_State {
+  switch (object) {
+    case 0:
+    case "SUPERADMIN":
+      return UserGroupList_UserGroup_State.SUPERADMIN;
+    case 1:
+    case "ADMIN":
+      return UserGroupList_UserGroup_State.ADMIN;
+    case 2:
+    case "MEMBER":
+      return UserGroupList_UserGroup_State.MEMBER;
+    case 3:
+    case "JOIN_REQUEST":
+      return UserGroupList_UserGroup_State.JOIN_REQUEST;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return UserGroupList_UserGroup_State.UNRECOGNIZED;
+  }
+}
+
+export function userGroupList_UserGroup_StateToJSON(object: UserGroupList_UserGroup_State): string {
+  switch (object) {
+    case UserGroupList_UserGroup_State.SUPERADMIN:
+      return "SUPERADMIN";
+    case UserGroupList_UserGroup_State.ADMIN:
+      return "ADMIN";
+    case UserGroupList_UserGroup_State.MEMBER:
+      return "MEMBER";
+    case UserGroupList_UserGroup_State.JOIN_REQUEST:
+      return "JOIN_REQUEST";
+    default:
+      return "UNKNOWN";
+  }
+}
 
 export const Account = {
   encode(message: Account, writer: Writer = Writer.create()): Writer {
@@ -2658,17 +2810,271 @@ export const Account = {
   },
   toJSON(message: Account): unknown {
     const obj: any = {};
-    obj.user = message.user ? User.toJSON(message.user) : undefined;
-    obj.wallet = message.wallet || "";
-    obj.email = message.email || "";
+    message.user !== undefined && (obj.user = message.user ? User.toJSON(message.user) : undefined);
+    message.wallet !== undefined && (obj.wallet = message.wallet);
+    message.email !== undefined && (obj.email = message.email);
     if (message.devices) {
       obj.devices = message.devices.map(e => e ? AccountDevice.toJSON(e) : undefined);
     } else {
       obj.devices = [];
     }
-    obj.custom_id = message.custom_id || "";
-    obj.verify_time = message.verify_time !== undefined ? message.verify_time.toISOString() : null;
-    obj.disable_time = message.disable_time !== undefined ? message.disable_time.toISOString() : null;
+    message.custom_id !== undefined && (obj.custom_id = message.custom_id);
+    message.verify_time !== undefined && (obj.verify_time = message.verify_time !== undefined ? message.verify_time.toISOString() : null);
+    message.disable_time !== undefined && (obj.disable_time = message.disable_time !== undefined ? message.disable_time.toISOString() : null);
+    return obj;
+  },
+};
+
+export const AccountRefresh = {
+  encode(message: AccountRefresh, writer: Writer = Writer.create()): Writer {
+    writer.uint32(10).string(message.token);
+    Object.entries(message.vars).forEach(([key, value]) => {
+      AccountRefresh_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
+    })
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): AccountRefresh {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAccountRefresh } as AccountRefresh;
+    message.vars = {};
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.token = reader.string();
+          break;
+        case 2:
+          const entry2 = AccountRefresh_VarsEntry.decode(reader, reader.uint32());
+          if (entry2.value !== undefined) {
+            message.vars[entry2.key] = entry2.value;
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): AccountRefresh {
+    const message = { ...baseAccountRefresh } as AccountRefresh;
+    message.vars = {};
+    if (object.token !== undefined && object.token !== null) {
+      message.token = String(object.token);
+    }
+    if (object.vars !== undefined && object.vars !== null) {
+      Object.entries(object.vars).forEach(([key, value]) => {
+        message.vars[key] = String(value);
+      })
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<AccountRefresh>): AccountRefresh {
+    const message = { ...baseAccountRefresh } as AccountRefresh;
+    message.vars = {};
+    if (object.token !== undefined && object.token !== null) {
+      message.token = object.token;
+    }
+    if (object.vars !== undefined && object.vars !== null) {
+      Object.entries(object.vars).forEach(([key, value]) => {
+        if (value !== undefined) {
+          message.vars[key] = String(value);
+        }
+      })
+    }
+    return message;
+  },
+  toJSON(message: AccountRefresh): unknown {
+    const obj: any = {};
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      })
+    }
+    return obj;
+  },
+};
+
+export const AccountRefresh_VarsEntry = {
+  encode(message: AccountRefresh_VarsEntry, writer: Writer = Writer.create()): Writer {
+    writer.uint32(10).string(message.key);
+    writer.uint32(18).string(message.value);
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): AccountRefresh_VarsEntry {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAccountRefresh_VarsEntry } as AccountRefresh_VarsEntry;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): AccountRefresh_VarsEntry {
+    const message = { ...baseAccountRefresh_VarsEntry } as AccountRefresh_VarsEntry;
+    if (object.key !== undefined && object.key !== null) {
+      message.key = String(object.key);
+    }
+    if (object.value !== undefined && object.value !== null) {
+      message.value = String(object.value);
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<AccountRefresh_VarsEntry>): AccountRefresh_VarsEntry {
+    const message = { ...baseAccountRefresh_VarsEntry } as AccountRefresh_VarsEntry;
+    if (object.key !== undefined && object.key !== null) {
+      message.key = object.key;
+    }
+    if (object.value !== undefined && object.value !== null) {
+      message.value = object.value;
+    }
+    return message;
+  },
+  toJSON(message: AccountRefresh_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+};
+
+export const AccountApple = {
+  encode(message: AccountApple, writer: Writer = Writer.create()): Writer {
+    writer.uint32(10).string(message.token);
+    Object.entries(message.vars).forEach(([key, value]) => {
+      AccountApple_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
+    })
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): AccountApple {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAccountApple } as AccountApple;
+    message.vars = {};
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.token = reader.string();
+          break;
+        case 2:
+          const entry2 = AccountApple_VarsEntry.decode(reader, reader.uint32());
+          if (entry2.value !== undefined) {
+            message.vars[entry2.key] = entry2.value;
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): AccountApple {
+    const message = { ...baseAccountApple } as AccountApple;
+    message.vars = {};
+    if (object.token !== undefined && object.token !== null) {
+      message.token = String(object.token);
+    }
+    if (object.vars !== undefined && object.vars !== null) {
+      Object.entries(object.vars).forEach(([key, value]) => {
+        message.vars[key] = String(value);
+      })
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<AccountApple>): AccountApple {
+    const message = { ...baseAccountApple } as AccountApple;
+    message.vars = {};
+    if (object.token !== undefined && object.token !== null) {
+      message.token = object.token;
+    }
+    if (object.vars !== undefined && object.vars !== null) {
+      Object.entries(object.vars).forEach(([key, value]) => {
+        if (value !== undefined) {
+          message.vars[key] = String(value);
+        }
+      })
+    }
+    return message;
+  },
+  toJSON(message: AccountApple): unknown {
+    const obj: any = {};
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      })
+    }
+    return obj;
+  },
+};
+
+export const AccountApple_VarsEntry = {
+  encode(message: AccountApple_VarsEntry, writer: Writer = Writer.create()): Writer {
+    writer.uint32(10).string(message.key);
+    writer.uint32(18).string(message.value);
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): AccountApple_VarsEntry {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAccountApple_VarsEntry } as AccountApple_VarsEntry;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): AccountApple_VarsEntry {
+    const message = { ...baseAccountApple_VarsEntry } as AccountApple_VarsEntry;
+    if (object.key !== undefined && object.key !== null) {
+      message.key = String(object.key);
+    }
+    if (object.value !== undefined && object.value !== null) {
+      message.value = String(object.value);
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<AccountApple_VarsEntry>): AccountApple_VarsEntry {
+    const message = { ...baseAccountApple_VarsEntry } as AccountApple_VarsEntry;
+    if (object.key !== undefined && object.key !== null) {
+      message.key = object.key;
+    }
+    if (object.value !== undefined && object.value !== null) {
+      message.value = object.value;
+    }
+    return message;
+  },
+  toJSON(message: AccountApple_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
     return obj;
   },
 };
@@ -2735,8 +3141,13 @@ export const AccountCustom = {
   },
   toJSON(message: AccountCustom): unknown {
     const obj: any = {};
-    obj.id = message.id || "";
-    obj.vars = message.vars || undefined;
+    message.id !== undefined && (obj.id = message.id);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      })
+    }
     return obj;
   },
 };
@@ -2789,8 +3200,8 @@ export const AccountCustom_VarsEntry = {
   },
   toJSON(message: AccountCustom_VarsEntry): unknown {
     const obj: any = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
     return obj;
   },
 };
@@ -2857,8 +3268,13 @@ export const AccountDevice = {
   },
   toJSON(message: AccountDevice): unknown {
     const obj: any = {};
-    obj.id = message.id || "";
-    obj.vars = message.vars || undefined;
+    message.id !== undefined && (obj.id = message.id);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      })
+    }
     return obj;
   },
 };
@@ -2911,8 +3327,8 @@ export const AccountDevice_VarsEntry = {
   },
   toJSON(message: AccountDevice_VarsEntry): unknown {
     const obj: any = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
     return obj;
   },
 };
@@ -2989,9 +3405,14 @@ export const AccountEmail = {
   },
   toJSON(message: AccountEmail): unknown {
     const obj: any = {};
-    obj.email = message.email || "";
-    obj.password = message.password || "";
-    obj.vars = message.vars || undefined;
+    message.email !== undefined && (obj.email = message.email);
+    message.password !== undefined && (obj.password = message.password);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      })
+    }
     return obj;
   },
 };
@@ -3044,8 +3465,8 @@ export const AccountEmail_VarsEntry = {
   },
   toJSON(message: AccountEmail_VarsEntry): unknown {
     const obj: any = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
     return obj;
   },
 };
@@ -3112,8 +3533,13 @@ export const AccountFacebook = {
   },
   toJSON(message: AccountFacebook): unknown {
     const obj: any = {};
-    obj.token = message.token || "";
-    obj.vars = message.vars || undefined;
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      })
+    }
     return obj;
   },
 };
@@ -3166,8 +3592,8 @@ export const AccountFacebook_VarsEntry = {
   },
   toJSON(message: AccountFacebook_VarsEntry): unknown {
     const obj: any = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
     return obj;
   },
 };
@@ -3234,8 +3660,13 @@ export const AccountFacebookInstantGame = {
   },
   toJSON(message: AccountFacebookInstantGame): unknown {
     const obj: any = {};
-    obj.signed_player_info = message.signed_player_info || "";
-    obj.vars = message.vars || undefined;
+    message.signed_player_info !== undefined && (obj.signed_player_info = message.signed_player_info);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      })
+    }
     return obj;
   },
 };
@@ -3288,8 +3719,8 @@ export const AccountFacebookInstantGame_VarsEntry = {
   },
   toJSON(message: AccountFacebookInstantGame_VarsEntry): unknown {
     const obj: any = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
     return obj;
   },
 };
@@ -3406,13 +3837,18 @@ export const AccountGameCenter = {
   },
   toJSON(message: AccountGameCenter): unknown {
     const obj: any = {};
-    obj.player_id = message.player_id || "";
-    obj.bundle_id = message.bundle_id || "";
-    obj.timestamp_seconds = message.timestamp_seconds || 0;
-    obj.salt = message.salt || "";
-    obj.signature = message.signature || "";
-    obj.public_key_url = message.public_key_url || "";
-    obj.vars = message.vars || undefined;
+    message.player_id !== undefined && (obj.player_id = message.player_id);
+    message.bundle_id !== undefined && (obj.bundle_id = message.bundle_id);
+    message.timestamp_seconds !== undefined && (obj.timestamp_seconds = message.timestamp_seconds);
+    message.salt !== undefined && (obj.salt = message.salt);
+    message.signature !== undefined && (obj.signature = message.signature);
+    message.public_key_url !== undefined && (obj.public_key_url = message.public_key_url);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      })
+    }
     return obj;
   },
 };
@@ -3465,8 +3901,8 @@ export const AccountGameCenter_VarsEntry = {
   },
   toJSON(message: AccountGameCenter_VarsEntry): unknown {
     const obj: any = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
     return obj;
   },
 };
@@ -3533,8 +3969,13 @@ export const AccountGoogle = {
   },
   toJSON(message: AccountGoogle): unknown {
     const obj: any = {};
-    obj.token = message.token || "";
-    obj.vars = message.vars || undefined;
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      })
+    }
     return obj;
   },
 };
@@ -3587,8 +4028,8 @@ export const AccountGoogle_VarsEntry = {
   },
   toJSON(message: AccountGoogle_VarsEntry): unknown {
     const obj: any = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
     return obj;
   },
 };
@@ -3655,8 +4096,13 @@ export const AccountSteam = {
   },
   toJSON(message: AccountSteam): unknown {
     const obj: any = {};
-    obj.token = message.token || "";
-    obj.vars = message.vars || undefined;
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      })
+    }
     return obj;
   },
 };
@@ -3709,8 +4155,8 @@ export const AccountSteam_VarsEntry = {
   },
   toJSON(message: AccountSteam_VarsEntry): unknown {
     const obj: any = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
     return obj;
   },
 };
@@ -3782,12 +4228,12 @@ export const AddFriendsRequest = {
   toJSON(message: AddFriendsRequest): unknown {
     const obj: any = {};
     if (message.ids) {
-      obj.ids = message.ids.map(e => e || "");
+      obj.ids = message.ids.map(e => e);
     } else {
       obj.ids = [];
     }
     if (message.usernames) {
-      obj.usernames = message.usernames.map(e => e || "");
+      obj.usernames = message.usernames.map(e => e);
     } else {
       obj.usernames = [];
     }
@@ -3852,12 +4298,208 @@ export const AddGroupUsersRequest = {
   },
   toJSON(message: AddGroupUsersRequest): unknown {
     const obj: any = {};
-    obj.group_id = message.group_id || "";
+    message.group_id !== undefined && (obj.group_id = message.group_id);
     if (message.user_ids) {
-      obj.user_ids = message.user_ids.map(e => e || "");
+      obj.user_ids = message.user_ids.map(e => e);
     } else {
       obj.user_ids = [];
     }
+    return obj;
+  },
+};
+
+export const SessionRefreshRequest = {
+  encode(message: SessionRefreshRequest, writer: Writer = Writer.create()): Writer {
+    writer.uint32(10).string(message.token);
+    Object.entries(message.vars).forEach(([key, value]) => {
+      SessionRefreshRequest_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
+    })
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): SessionRefreshRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseSessionRefreshRequest } as SessionRefreshRequest;
+    message.vars = {};
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.token = reader.string();
+          break;
+        case 2:
+          const entry2 = SessionRefreshRequest_VarsEntry.decode(reader, reader.uint32());
+          if (entry2.value !== undefined) {
+            message.vars[entry2.key] = entry2.value;
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): SessionRefreshRequest {
+    const message = { ...baseSessionRefreshRequest } as SessionRefreshRequest;
+    message.vars = {};
+    if (object.token !== undefined && object.token !== null) {
+      message.token = String(object.token);
+    }
+    if (object.vars !== undefined && object.vars !== null) {
+      Object.entries(object.vars).forEach(([key, value]) => {
+        message.vars[key] = String(value);
+      })
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<SessionRefreshRequest>): SessionRefreshRequest {
+    const message = { ...baseSessionRefreshRequest } as SessionRefreshRequest;
+    message.vars = {};
+    if (object.token !== undefined && object.token !== null) {
+      message.token = object.token;
+    }
+    if (object.vars !== undefined && object.vars !== null) {
+      Object.entries(object.vars).forEach(([key, value]) => {
+        if (value !== undefined) {
+          message.vars[key] = String(value);
+        }
+      })
+    }
+    return message;
+  },
+  toJSON(message: SessionRefreshRequest): unknown {
+    const obj: any = {};
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      })
+    }
+    return obj;
+  },
+};
+
+export const SessionRefreshRequest_VarsEntry = {
+  encode(message: SessionRefreshRequest_VarsEntry, writer: Writer = Writer.create()): Writer {
+    writer.uint32(10).string(message.key);
+    writer.uint32(18).string(message.value);
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): SessionRefreshRequest_VarsEntry {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseSessionRefreshRequest_VarsEntry } as SessionRefreshRequest_VarsEntry;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): SessionRefreshRequest_VarsEntry {
+    const message = { ...baseSessionRefreshRequest_VarsEntry } as SessionRefreshRequest_VarsEntry;
+    if (object.key !== undefined && object.key !== null) {
+      message.key = String(object.key);
+    }
+    if (object.value !== undefined && object.value !== null) {
+      message.value = String(object.value);
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<SessionRefreshRequest_VarsEntry>): SessionRefreshRequest_VarsEntry {
+    const message = { ...baseSessionRefreshRequest_VarsEntry } as SessionRefreshRequest_VarsEntry;
+    if (object.key !== undefined && object.key !== null) {
+      message.key = object.key;
+    }
+    if (object.value !== undefined && object.value !== null) {
+      message.value = object.value;
+    }
+    return message;
+  },
+  toJSON(message: SessionRefreshRequest_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+};
+
+export const AuthenticateAppleRequest = {
+  encode(message: AuthenticateAppleRequest, writer: Writer = Writer.create()): Writer {
+    if (message.account !== undefined && message.account !== undefined) {
+      AccountApple.encode(message.account, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.create !== undefined && message.create !== undefined) {
+      BoolValue.encode({ value: message.create! }, writer.uint32(18).fork()).ldelim();
+    }
+    writer.uint32(26).string(message.username);
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): AuthenticateAppleRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAuthenticateAppleRequest } as AuthenticateAppleRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.account = AccountApple.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.create = BoolValue.decode(reader, reader.uint32()).value;
+          break;
+        case 3:
+          message.username = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): AuthenticateAppleRequest {
+    const message = { ...baseAuthenticateAppleRequest } as AuthenticateAppleRequest;
+    if (object.account !== undefined && object.account !== null) {
+      message.account = AccountApple.fromJSON(object.account);
+    }
+    if (object.create !== undefined && object.create !== null) {
+      message.create = Boolean(object.create);
+    }
+    if (object.username !== undefined && object.username !== null) {
+      message.username = String(object.username);
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<AuthenticateAppleRequest>): AuthenticateAppleRequest {
+    const message = { ...baseAuthenticateAppleRequest } as AuthenticateAppleRequest;
+    if (object.account !== undefined && object.account !== null) {
+      message.account = AccountApple.fromPartial(object.account);
+    }
+    if (object.create !== undefined && object.create !== null) {
+      message.create = object.create;
+    }
+    if (object.username !== undefined && object.username !== null) {
+      message.username = object.username;
+    }
+    return message;
+  },
+  toJSON(message: AuthenticateAppleRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined && (obj.account = message.account ? AccountApple.toJSON(message.account) : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
     return obj;
   },
 };
@@ -3924,9 +4566,9 @@ export const AuthenticateCustomRequest = {
   },
   toJSON(message: AuthenticateCustomRequest): unknown {
     const obj: any = {};
-    obj.account = message.account ? AccountCustom.toJSON(message.account) : undefined;
-    obj.create = message.create || undefined;
-    obj.username = message.username || "";
+    message.account !== undefined && (obj.account = message.account ? AccountCustom.toJSON(message.account) : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
     return obj;
   },
 };
@@ -3993,9 +4635,9 @@ export const AuthenticateDeviceRequest = {
   },
   toJSON(message: AuthenticateDeviceRequest): unknown {
     const obj: any = {};
-    obj.account = message.account ? AccountDevice.toJSON(message.account) : undefined;
-    obj.create = message.create || undefined;
-    obj.username = message.username || "";
+    message.account !== undefined && (obj.account = message.account ? AccountDevice.toJSON(message.account) : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
     return obj;
   },
 };
@@ -4062,9 +4704,9 @@ export const AuthenticateEmailRequest = {
   },
   toJSON(message: AuthenticateEmailRequest): unknown {
     const obj: any = {};
-    obj.account = message.account ? AccountEmail.toJSON(message.account) : undefined;
-    obj.create = message.create || undefined;
-    obj.username = message.username || "";
+    message.account !== undefined && (obj.account = message.account ? AccountEmail.toJSON(message.account) : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
     return obj;
   },
 };
@@ -4143,10 +4785,10 @@ export const AuthenticateFacebookRequest = {
   },
   toJSON(message: AuthenticateFacebookRequest): unknown {
     const obj: any = {};
-    obj.account = message.account ? AccountFacebook.toJSON(message.account) : undefined;
-    obj.create = message.create || undefined;
-    obj.username = message.username || "";
-    obj.sync = message.sync || undefined;
+    message.account !== undefined && (obj.account = message.account ? AccountFacebook.toJSON(message.account) : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
+    message.sync !== undefined && (obj.sync = message.sync);
     return obj;
   },
 };
@@ -4213,9 +4855,9 @@ export const AuthenticateFacebookInstantGameRequest = {
   },
   toJSON(message: AuthenticateFacebookInstantGameRequest): unknown {
     const obj: any = {};
-    obj.account = message.account ? AccountFacebookInstantGame.toJSON(message.account) : undefined;
-    obj.create = message.create || undefined;
-    obj.username = message.username || "";
+    message.account !== undefined && (obj.account = message.account ? AccountFacebookInstantGame.toJSON(message.account) : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
     return obj;
   },
 };
@@ -4282,9 +4924,9 @@ export const AuthenticateGameCenterRequest = {
   },
   toJSON(message: AuthenticateGameCenterRequest): unknown {
     const obj: any = {};
-    obj.account = message.account ? AccountGameCenter.toJSON(message.account) : undefined;
-    obj.create = message.create || undefined;
-    obj.username = message.username || "";
+    message.account !== undefined && (obj.account = message.account ? AccountGameCenter.toJSON(message.account) : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
     return obj;
   },
 };
@@ -4351,9 +4993,9 @@ export const AuthenticateGoogleRequest = {
   },
   toJSON(message: AuthenticateGoogleRequest): unknown {
     const obj: any = {};
-    obj.account = message.account ? AccountGoogle.toJSON(message.account) : undefined;
-    obj.create = message.create || undefined;
-    obj.username = message.username || "";
+    message.account !== undefined && (obj.account = message.account ? AccountGoogle.toJSON(message.account) : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
     return obj;
   },
 };
@@ -4420,9 +5062,9 @@ export const AuthenticateSteamRequest = {
   },
   toJSON(message: AuthenticateSteamRequest): unknown {
     const obj: any = {};
-    obj.account = message.account ? AccountSteam.toJSON(message.account) : undefined;
-    obj.create = message.create || undefined;
-    obj.username = message.username || "";
+    message.account !== undefined && (obj.account = message.account ? AccountSteam.toJSON(message.account) : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
     return obj;
   },
 };
@@ -4484,9 +5126,9 @@ export const BanGroupUsersRequest = {
   },
   toJSON(message: BanGroupUsersRequest): unknown {
     const obj: any = {};
-    obj.group_id = message.group_id || "";
+    message.group_id !== undefined && (obj.group_id = message.group_id);
     if (message.user_ids) {
-      obj.user_ids = message.user_ids.map(e => e || "");
+      obj.user_ids = message.user_ids.map(e => e);
     } else {
       obj.user_ids = [];
     }
@@ -4561,12 +5203,12 @@ export const BlockFriendsRequest = {
   toJSON(message: BlockFriendsRequest): unknown {
     const obj: any = {};
     if (message.ids) {
-      obj.ids = message.ids.map(e => e || "");
+      obj.ids = message.ids.map(e => e);
     } else {
       obj.ids = [];
     }
     if (message.usernames) {
-      obj.usernames = message.usernames.map(e => e || "");
+      obj.usernames = message.usernames.map(e => e);
     } else {
       obj.usernames = [];
     }
@@ -4740,19 +5382,19 @@ export const ChannelMessage = {
   },
   toJSON(message: ChannelMessage): unknown {
     const obj: any = {};
-    obj.channel_id = message.channel_id || "";
-    obj.message_id = message.message_id || "";
-    obj.code = message.code || undefined;
-    obj.sender_id = message.sender_id || "";
-    obj.username = message.username || "";
-    obj.content = message.content || "";
-    obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null;
-    obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null;
-    obj.persistent = message.persistent || undefined;
-    obj.room_name = message.room_name || "";
-    obj.group_id = message.group_id || "";
-    obj.user_id_one = message.user_id_one || "";
-    obj.user_id_two = message.user_id_two || "";
+    message.channel_id !== undefined && (obj.channel_id = message.channel_id);
+    message.message_id !== undefined && (obj.message_id = message.message_id);
+    message.code !== undefined && (obj.code = message.code);
+    message.sender_id !== undefined && (obj.sender_id = message.sender_id);
+    message.username !== undefined && (obj.username = message.username);
+    message.content !== undefined && (obj.content = message.content);
+    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
+    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
+    message.persistent !== undefined && (obj.persistent = message.persistent);
+    message.room_name !== undefined && (obj.room_name = message.room_name);
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    message.user_id_one !== undefined && (obj.user_id_one = message.user_id_one);
+    message.user_id_two !== undefined && (obj.user_id_two = message.user_id_two);
     return obj;
   },
 };
@@ -4764,6 +5406,7 @@ export const ChannelMessageList = {
     }
     writer.uint32(18).string(message.next_cursor);
     writer.uint32(26).string(message.prev_cursor);
+    writer.uint32(34).string(message.cacheable_cursor);
     return writer;
   },
   decode(input: Uint8Array | Reader, length?: number): ChannelMessageList {
@@ -4782,6 +5425,9 @@ export const ChannelMessageList = {
           break;
         case 3:
           message.prev_cursor = reader.string();
+          break;
+        case 4:
+          message.cacheable_cursor = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -4804,6 +5450,9 @@ export const ChannelMessageList = {
     if (object.prev_cursor !== undefined && object.prev_cursor !== null) {
       message.prev_cursor = String(object.prev_cursor);
     }
+    if (object.cacheable_cursor !== undefined && object.cacheable_cursor !== null) {
+      message.cacheable_cursor = String(object.cacheable_cursor);
+    }
     return message;
   },
   fromPartial(object: DeepPartial<ChannelMessageList>): ChannelMessageList {
@@ -4820,6 +5469,9 @@ export const ChannelMessageList = {
     if (object.prev_cursor !== undefined && object.prev_cursor !== null) {
       message.prev_cursor = object.prev_cursor;
     }
+    if (object.cacheable_cursor !== undefined && object.cacheable_cursor !== null) {
+      message.cacheable_cursor = object.cacheable_cursor;
+    }
     return message;
   },
   toJSON(message: ChannelMessageList): unknown {
@@ -4829,8 +5481,9 @@ export const ChannelMessageList = {
     } else {
       obj.messages = [];
     }
-    obj.next_cursor = message.next_cursor || "";
-    obj.prev_cursor = message.prev_cursor || "";
+    message.next_cursor !== undefined && (obj.next_cursor = message.next_cursor);
+    message.prev_cursor !== undefined && (obj.prev_cursor = message.prev_cursor);
+    message.cacheable_cursor !== undefined && (obj.cacheable_cursor = message.cacheable_cursor);
     return obj;
   },
 };
@@ -4923,12 +5576,12 @@ export const CreateGroupRequest = {
   },
   toJSON(message: CreateGroupRequest): unknown {
     const obj: any = {};
-    obj.name = message.name || "";
-    obj.description = message.description || "";
-    obj.lang_tag = message.lang_tag || "";
-    obj.avatar_url = message.avatar_url || "";
-    obj.open = message.open || false;
-    obj.max_count = message.max_count || 0;
+    message.name !== undefined && (obj.name = message.name);
+    message.description !== undefined && (obj.description = message.description);
+    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
+    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
+    message.open !== undefined && (obj.open = message.open);
+    message.max_count !== undefined && (obj.max_count = message.max_count);
     return obj;
   },
 };
@@ -5000,12 +5653,12 @@ export const DeleteFriendsRequest = {
   toJSON(message: DeleteFriendsRequest): unknown {
     const obj: any = {};
     if (message.ids) {
-      obj.ids = message.ids.map(e => e || "");
+      obj.ids = message.ids.map(e => e);
     } else {
       obj.ids = [];
     }
     if (message.usernames) {
-      obj.usernames = message.usernames.map(e => e || "");
+      obj.usernames = message.usernames.map(e => e);
     } else {
       obj.usernames = [];
     }
@@ -5051,7 +5704,7 @@ export const DeleteGroupRequest = {
   },
   toJSON(message: DeleteGroupRequest): unknown {
     const obj: any = {};
-    obj.group_id = message.group_id || "";
+    message.group_id !== undefined && (obj.group_id = message.group_id);
     return obj;
   },
 };
@@ -5094,7 +5747,7 @@ export const DeleteLeaderboardRecordRequest = {
   },
   toJSON(message: DeleteLeaderboardRecordRequest): unknown {
     const obj: any = {};
-    obj.leaderboard_id = message.leaderboard_id || "";
+    message.leaderboard_id !== undefined && (obj.leaderboard_id = message.leaderboard_id);
     return obj;
   },
 };
@@ -5147,7 +5800,7 @@ export const DeleteNotificationsRequest = {
   toJSON(message: DeleteNotificationsRequest): unknown {
     const obj: any = {};
     if (message.ids) {
-      obj.ids = message.ids.map(e => e || "");
+      obj.ids = message.ids.map(e => e);
     } else {
       obj.ids = [];
     }
@@ -5213,9 +5866,9 @@ export const DeleteStorageObjectId = {
   },
   toJSON(message: DeleteStorageObjectId): unknown {
     const obj: any = {};
-    obj.collection = message.collection || "";
-    obj.key = message.key || "";
-    obj.version = message.version || "";
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.key !== undefined && (obj.key = message.key);
+    message.version !== undefined && (obj.version = message.version);
     return obj;
   },
 };
@@ -5360,10 +6013,15 @@ export const Event = {
   },
   toJSON(message: Event): unknown {
     const obj: any = {};
-    obj.name = message.name || "";
-    obj.properties = message.properties || undefined;
-    obj.timestamp = message.timestamp !== undefined ? message.timestamp.toISOString() : null;
-    obj.external = message.external || false;
+    message.name !== undefined && (obj.name = message.name);
+    obj.properties = {};
+    if (message.properties) {
+      Object.entries(message.properties).forEach(([k, v]) => {
+        obj.properties[k] = v;
+      })
+    }
+    message.timestamp !== undefined && (obj.timestamp = message.timestamp !== undefined ? message.timestamp.toISOString() : null);
+    message.external !== undefined && (obj.external = message.external);
     return obj;
   },
 };
@@ -5416,8 +6074,8 @@ export const Event_PropertiesEntry = {
   },
   toJSON(message: Event_PropertiesEntry): unknown {
     const obj: any = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
     return obj;
   },
 };
@@ -5486,9 +6144,9 @@ export const Friend = {
   },
   toJSON(message: Friend): unknown {
     const obj: any = {};
-    obj.user = message.user ? User.toJSON(message.user) : undefined;
-    obj.state = message.state || undefined;
-    obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null;
+    message.user !== undefined && (obj.user = message.user ? User.toJSON(message.user) : undefined);
+    message.state !== undefined && (obj.state = message.state);
+    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
     return obj;
   },
 };
@@ -5555,7 +6213,7 @@ export const FriendList = {
     } else {
       obj.friends = [];
     }
-    obj.cursor = message.cursor || "";
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -5646,17 +6304,17 @@ export const GetUsersRequest = {
   toJSON(message: GetUsersRequest): unknown {
     const obj: any = {};
     if (message.ids) {
-      obj.ids = message.ids.map(e => e || "");
+      obj.ids = message.ids.map(e => e);
     } else {
       obj.ids = [];
     }
     if (message.usernames) {
-      obj.usernames = message.usernames.map(e => e || "");
+      obj.usernames = message.usernames.map(e => e);
     } else {
       obj.usernames = [];
     }
     if (message.facebook_ids) {
-      obj.facebook_ids = message.facebook_ids.map(e => e || "");
+      obj.facebook_ids = message.facebook_ids.map(e => e);
     } else {
       obj.facebook_ids = [];
     }
@@ -5818,18 +6476,18 @@ export const Group = {
   },
   toJSON(message: Group): unknown {
     const obj: any = {};
-    obj.id = message.id || "";
-    obj.creator_id = message.creator_id || "";
-    obj.name = message.name || "";
-    obj.description = message.description || "";
-    obj.lang_tag = message.lang_tag || "";
-    obj.metadata = message.metadata || "";
-    obj.avatar_url = message.avatar_url || "";
-    obj.open = message.open || undefined;
-    obj.edge_count = message.edge_count || 0;
-    obj.max_count = message.max_count || 0;
-    obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null;
-    obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null;
+    message.id !== undefined && (obj.id = message.id);
+    message.creator_id !== undefined && (obj.creator_id = message.creator_id);
+    message.name !== undefined && (obj.name = message.name);
+    message.description !== undefined && (obj.description = message.description);
+    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
+    message.open !== undefined && (obj.open = message.open);
+    message.edge_count !== undefined && (obj.edge_count = message.edge_count);
+    message.max_count !== undefined && (obj.max_count = message.max_count);
+    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
+    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
     return obj;
   },
 };
@@ -5896,7 +6554,7 @@ export const GroupList = {
     } else {
       obj.groups = [];
     }
-    obj.cursor = message.cursor || "";
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -5963,7 +6621,7 @@ export const GroupUserList = {
     } else {
       obj.group_users = [];
     }
-    obj.cursor = message.cursor || "";
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -6020,8 +6678,8 @@ export const GroupUserList_GroupUser = {
   },
   toJSON(message: GroupUserList_GroupUser): unknown {
     const obj: any = {};
-    obj.user = message.user ? User.toJSON(message.user) : undefined;
-    obj.state = message.state || undefined;
+    message.user !== undefined && (obj.user = message.user ? User.toJSON(message.user) : undefined);
+    message.state !== undefined && (obj.state = message.state);
     return obj;
   },
 };
@@ -6078,8 +6736,8 @@ export const ImportFacebookFriendsRequest = {
   },
   toJSON(message: ImportFacebookFriendsRequest): unknown {
     const obj: any = {};
-    obj.account = message.account ? AccountFacebook.toJSON(message.account) : undefined;
-    obj.reset = message.reset || undefined;
+    message.account !== undefined && (obj.account = message.account ? AccountFacebook.toJSON(message.account) : undefined);
+    message.reset !== undefined && (obj.reset = message.reset);
     return obj;
   },
 };
@@ -6122,7 +6780,7 @@ export const JoinGroupRequest = {
   },
   toJSON(message: JoinGroupRequest): unknown {
     const obj: any = {};
-    obj.group_id = message.group_id || "";
+    message.group_id !== undefined && (obj.group_id = message.group_id);
     return obj;
   },
 };
@@ -6165,7 +6823,7 @@ export const JoinTournamentRequest = {
   },
   toJSON(message: JoinTournamentRequest): unknown {
     const obj: any = {};
-    obj.tournament_id = message.tournament_id || "";
+    message.tournament_id !== undefined && (obj.tournament_id = message.tournament_id);
     return obj;
   },
 };
@@ -6227,9 +6885,9 @@ export const KickGroupUsersRequest = {
   },
   toJSON(message: KickGroupUsersRequest): unknown {
     const obj: any = {};
-    obj.group_id = message.group_id || "";
+    message.group_id !== undefined && (obj.group_id = message.group_id);
     if (message.user_ids) {
-      obj.user_ids = message.user_ids.map(e => e || "");
+      obj.user_ids = message.user_ids.map(e => e);
     } else {
       obj.user_ids = [];
     }
@@ -6393,18 +7051,18 @@ export const LeaderboardRecord = {
   },
   toJSON(message: LeaderboardRecord): unknown {
     const obj: any = {};
-    obj.leaderboard_id = message.leaderboard_id || "";
-    obj.owner_id = message.owner_id || "";
-    obj.username = message.username || undefined;
-    obj.score = message.score || 0;
-    obj.subscore = message.subscore || 0;
-    obj.num_score = message.num_score || 0;
-    obj.metadata = message.metadata || "";
-    obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null;
-    obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null;
-    obj.expiry_time = message.expiry_time !== undefined ? message.expiry_time.toISOString() : null;
-    obj.rank = message.rank || 0;
-    obj.max_num_score = message.max_num_score || 0;
+    message.leaderboard_id !== undefined && (obj.leaderboard_id = message.leaderboard_id);
+    message.owner_id !== undefined && (obj.owner_id = message.owner_id);
+    message.username !== undefined && (obj.username = message.username);
+    message.score !== undefined && (obj.score = message.score);
+    message.subscore !== undefined && (obj.subscore = message.subscore);
+    message.num_score !== undefined && (obj.num_score = message.num_score);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
+    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
+    message.expiry_time !== undefined && (obj.expiry_time = message.expiry_time !== undefined ? message.expiry_time.toISOString() : null);
+    message.rank !== undefined && (obj.rank = message.rank);
+    message.max_num_score !== undefined && (obj.max_num_score = message.max_num_score);
     return obj;
   },
 };
@@ -6505,8 +7163,8 @@ export const LeaderboardRecordList = {
     } else {
       obj.owner_records = [];
     }
-    obj.next_cursor = message.next_cursor || "";
-    obj.prev_cursor = message.prev_cursor || "";
+    message.next_cursor !== undefined && (obj.next_cursor = message.next_cursor);
+    message.prev_cursor !== undefined && (obj.prev_cursor = message.prev_cursor);
     return obj;
   },
 };
@@ -6549,7 +7207,7 @@ export const LeaveGroupRequest = {
   },
   toJSON(message: LeaveGroupRequest): unknown {
     const obj: any = {};
-    obj.group_id = message.group_id || "";
+    message.group_id !== undefined && (obj.group_id = message.group_id);
     return obj;
   },
 };
@@ -6606,8 +7264,8 @@ export const LinkFacebookRequest = {
   },
   toJSON(message: LinkFacebookRequest): unknown {
     const obj: any = {};
-    obj.account = message.account ? AccountFacebook.toJSON(message.account) : undefined;
-    obj.sync = message.sync || undefined;
+    message.account !== undefined && (obj.account = message.account ? AccountFacebook.toJSON(message.account) : undefined);
+    message.sync !== undefined && (obj.sync = message.sync);
     return obj;
   },
 };
@@ -6684,10 +7342,10 @@ export const ListChannelMessagesRequest = {
   },
   toJSON(message: ListChannelMessagesRequest): unknown {
     const obj: any = {};
-    obj.channel_id = message.channel_id || "";
-    obj.limit = message.limit || undefined;
-    obj.forward = message.forward || undefined;
-    obj.cursor = message.cursor || "";
+    message.channel_id !== undefined && (obj.channel_id = message.channel_id);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.forward !== undefined && (obj.forward = message.forward);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -6754,9 +7412,9 @@ export const ListFriendsRequest = {
   },
   toJSON(message: ListFriendsRequest): unknown {
     const obj: any = {};
-    obj.limit = message.limit || undefined;
-    obj.state = message.state || undefined;
-    obj.cursor = message.cursor || "";
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.state !== undefined && (obj.state = message.state);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -6821,9 +7479,9 @@ export const ListGroupsRequest = {
   },
   toJSON(message: ListGroupsRequest): unknown {
     const obj: any = {};
-    obj.name = message.name || "";
-    obj.cursor = message.cursor || "";
-    obj.limit = message.limit || undefined;
+    message.name !== undefined && (obj.name = message.name);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    message.limit !== undefined && (obj.limit = message.limit);
     return obj;
   },
 };
@@ -6900,10 +7558,10 @@ export const ListGroupUsersRequest = {
   },
   toJSON(message: ListGroupUsersRequest): unknown {
     const obj: any = {};
-    obj.group_id = message.group_id || "";
-    obj.limit = message.limit || undefined;
-    obj.state = message.state || undefined;
-    obj.cursor = message.cursor || "";
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.state !== undefined && (obj.state = message.state);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -6958,7 +7616,7 @@ export const ListLeaderboardRecordsAroundOwnerRequest = {
       message.owner_id = String(object.owner_id);
     }
     if (object.expiry !== undefined && object.expiry !== null) {
-      message.expiry = Number(object.expiry);
+      message.expiry = Number.fromValue(object.expiry);
     }
     return message;
   },
@@ -6980,10 +7638,10 @@ export const ListLeaderboardRecordsAroundOwnerRequest = {
   },
   toJSON(message: ListLeaderboardRecordsAroundOwnerRequest): unknown {
     const obj: any = {};
-    obj.leaderboard_id = message.leaderboard_id || "";
-    obj.limit = message.limit || undefined;
-    obj.owner_id = message.owner_id || "";
-    obj.expiry = message.expiry || undefined;
+    message.leaderboard_id !== undefined && (obj.leaderboard_id = message.leaderboard_id);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.owner_id !== undefined && (obj.owner_id = message.owner_id);
+    message.expiry !== undefined && (obj.expiry = message.expiry);
     return obj;
   },
 };
@@ -7051,7 +7709,7 @@ export const ListLeaderboardRecordsRequest = {
       message.cursor = String(object.cursor);
     }
     if (object.expiry !== undefined && object.expiry !== null) {
-      message.expiry = Number(object.expiry);
+      message.expiry = Number.fromValue(object.expiry);
     }
     return message;
   },
@@ -7079,15 +7737,15 @@ export const ListLeaderboardRecordsRequest = {
   },
   toJSON(message: ListLeaderboardRecordsRequest): unknown {
     const obj: any = {};
-    obj.leaderboard_id = message.leaderboard_id || "";
+    message.leaderboard_id !== undefined && (obj.leaderboard_id = message.leaderboard_id);
     if (message.owner_ids) {
-      obj.owner_ids = message.owner_ids.map(e => e || "");
+      obj.owner_ids = message.owner_ids.map(e => e);
     } else {
       obj.owner_ids = [];
     }
-    obj.limit = message.limit || undefined;
-    obj.cursor = message.cursor || "";
-    obj.expiry = message.expiry || undefined;
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    message.expiry !== undefined && (obj.expiry = message.expiry);
     return obj;
   },
 };
@@ -7192,12 +7850,12 @@ export const ListMatchesRequest = {
   },
   toJSON(message: ListMatchesRequest): unknown {
     const obj: any = {};
-    obj.limit = message.limit || undefined;
-    obj.authoritative = message.authoritative || undefined;
-    obj.label = message.label || undefined;
-    obj.min_size = message.min_size || undefined;
-    obj.max_size = message.max_size || undefined;
-    obj.query = message.query || undefined;
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.authoritative !== undefined && (obj.authoritative = message.authoritative);
+    message.label !== undefined && (obj.label = message.label);
+    message.min_size !== undefined && (obj.min_size = message.min_size);
+    message.max_size !== undefined && (obj.max_size = message.max_size);
+    message.query !== undefined && (obj.query = message.query);
     return obj;
   },
 };
@@ -7252,8 +7910,8 @@ export const ListNotificationsRequest = {
   },
   toJSON(message: ListNotificationsRequest): unknown {
     const obj: any = {};
-    obj.limit = message.limit || undefined;
-    obj.cacheable_cursor = message.cacheable_cursor || "";
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.cacheable_cursor !== undefined && (obj.cacheable_cursor = message.cacheable_cursor);
     return obj;
   },
 };
@@ -7328,10 +7986,10 @@ export const ListStorageObjectsRequest = {
   },
   toJSON(message: ListStorageObjectsRequest): unknown {
     const obj: any = {};
-    obj.user_id = message.user_id || "";
-    obj.collection = message.collection || "";
-    obj.limit = message.limit || undefined;
-    obj.cursor = message.cursor || "";
+    message.user_id !== undefined && (obj.user_id = message.user_id);
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -7386,7 +8044,7 @@ export const ListTournamentRecordsAroundOwnerRequest = {
       message.owner_id = String(object.owner_id);
     }
     if (object.expiry !== undefined && object.expiry !== null) {
-      message.expiry = Number(object.expiry);
+      message.expiry = Number.fromValue(object.expiry);
     }
     return message;
   },
@@ -7408,10 +8066,10 @@ export const ListTournamentRecordsAroundOwnerRequest = {
   },
   toJSON(message: ListTournamentRecordsAroundOwnerRequest): unknown {
     const obj: any = {};
-    obj.tournament_id = message.tournament_id || "";
-    obj.limit = message.limit || undefined;
-    obj.owner_id = message.owner_id || "";
-    obj.expiry = message.expiry || undefined;
+    message.tournament_id !== undefined && (obj.tournament_id = message.tournament_id);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.owner_id !== undefined && (obj.owner_id = message.owner_id);
+    message.expiry !== undefined && (obj.expiry = message.expiry);
     return obj;
   },
 };
@@ -7479,7 +8137,7 @@ export const ListTournamentRecordsRequest = {
       message.cursor = String(object.cursor);
     }
     if (object.expiry !== undefined && object.expiry !== null) {
-      message.expiry = Number(object.expiry);
+      message.expiry = Number.fromValue(object.expiry);
     }
     return message;
   },
@@ -7507,15 +8165,15 @@ export const ListTournamentRecordsRequest = {
   },
   toJSON(message: ListTournamentRecordsRequest): unknown {
     const obj: any = {};
-    obj.tournament_id = message.tournament_id || "";
+    message.tournament_id !== undefined && (obj.tournament_id = message.tournament_id);
     if (message.owner_ids) {
-      obj.owner_ids = message.owner_ids.map(e => e || "");
+      obj.owner_ids = message.owner_ids.map(e => e);
     } else {
       obj.owner_ids = [];
     }
-    obj.limit = message.limit || undefined;
-    obj.cursor = message.cursor || "";
-    obj.expiry = message.expiry || undefined;
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    message.expiry !== undefined && (obj.expiry = message.expiry);
     return obj;
   },
 };
@@ -7618,12 +8276,12 @@ export const ListTournamentsRequest = {
   },
   toJSON(message: ListTournamentsRequest): unknown {
     const obj: any = {};
-    obj.category_start = message.category_start || undefined;
-    obj.category_end = message.category_end || undefined;
-    obj.start_time = message.start_time || undefined;
-    obj.end_time = message.end_time || undefined;
-    obj.limit = message.limit || undefined;
-    obj.cursor = message.cursor || "";
+    message.category_start !== undefined && (obj.category_start = message.category_start);
+    message.category_end !== undefined && (obj.category_end = message.category_end);
+    message.start_time !== undefined && (obj.start_time = message.start_time);
+    message.end_time !== undefined && (obj.end_time = message.end_time);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -7700,10 +8358,10 @@ export const ListUserGroupsRequest = {
   },
   toJSON(message: ListUserGroupsRequest): unknown {
     const obj: any = {};
-    obj.user_id = message.user_id || "";
-    obj.limit = message.limit || undefined;
-    obj.state = message.state || undefined;
-    obj.cursor = message.cursor || "";
+    message.user_id !== undefined && (obj.user_id = message.user_id);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.state !== undefined && (obj.state = message.state);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -7716,6 +8374,8 @@ export const Match = {
       StringValue.encode({ value: message.label! }, writer.uint32(26).fork()).ldelim();
     }
     writer.uint32(32).int32(message.size);
+    writer.uint32(40).int32(message.tick_rate);
+    writer.uint32(50).string(message.handler_name);
     return writer;
   },
   decode(input: Uint8Array | Reader, length?: number): Match {
@@ -7736,6 +8396,12 @@ export const Match = {
           break;
         case 4:
           message.size = reader.int32();
+          break;
+        case 5:
+          message.tick_rate = reader.int32();
+          break;
+        case 6:
+          message.handler_name = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -7758,6 +8424,12 @@ export const Match = {
     if (object.size !== undefined && object.size !== null) {
       message.size = Number(object.size);
     }
+    if (object.tick_rate !== undefined && object.tick_rate !== null) {
+      message.tick_rate = Number(object.tick_rate);
+    }
+    if (object.handler_name !== undefined && object.handler_name !== null) {
+      message.handler_name = String(object.handler_name);
+    }
     return message;
   },
   fromPartial(object: DeepPartial<Match>): Match {
@@ -7774,14 +8446,22 @@ export const Match = {
     if (object.size !== undefined && object.size !== null) {
       message.size = object.size;
     }
+    if (object.tick_rate !== undefined && object.tick_rate !== null) {
+      message.tick_rate = object.tick_rate;
+    }
+    if (object.handler_name !== undefined && object.handler_name !== null) {
+      message.handler_name = object.handler_name;
+    }
     return message;
   },
   toJSON(message: Match): unknown {
     const obj: any = {};
-    obj.match_id = message.match_id || "";
-    obj.authoritative = message.authoritative || false;
-    obj.label = message.label || undefined;
-    obj.size = message.size || 0;
+    message.match_id !== undefined && (obj.match_id = message.match_id);
+    message.authoritative !== undefined && (obj.authoritative = message.authoritative);
+    message.label !== undefined && (obj.label = message.label);
+    message.size !== undefined && (obj.size = message.size);
+    message.tick_rate !== undefined && (obj.tick_rate = message.tick_rate);
+    message.handler_name !== undefined && (obj.handler_name = message.handler_name);
     return obj;
   },
 };
@@ -7942,13 +8622,13 @@ export const Notification = {
   },
   toJSON(message: Notification): unknown {
     const obj: any = {};
-    obj.id = message.id || "";
-    obj.subject = message.subject || "";
-    obj.content = message.content || "";
-    obj.code = message.code || 0;
-    obj.sender_id = message.sender_id || "";
-    obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null;
-    obj.persistent = message.persistent || false;
+    message.id !== undefined && (obj.id = message.id);
+    message.subject !== undefined && (obj.subject = message.subject);
+    message.content !== undefined && (obj.content = message.content);
+    message.code !== undefined && (obj.code = message.code);
+    message.sender_id !== undefined && (obj.sender_id = message.sender_id);
+    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
+    message.persistent !== undefined && (obj.persistent = message.persistent);
     return obj;
   },
 };
@@ -8015,7 +8695,7 @@ export const NotificationList = {
     } else {
       obj.notifications = [];
     }
-    obj.cacheable_cursor = message.cacheable_cursor || "";
+    message.cacheable_cursor !== undefined && (obj.cacheable_cursor = message.cacheable_cursor);
     return obj;
   },
 };
@@ -8077,9 +8757,76 @@ export const PromoteGroupUsersRequest = {
   },
   toJSON(message: PromoteGroupUsersRequest): unknown {
     const obj: any = {};
-    obj.group_id = message.group_id || "";
+    message.group_id !== undefined && (obj.group_id = message.group_id);
     if (message.user_ids) {
-      obj.user_ids = message.user_ids.map(e => e || "");
+      obj.user_ids = message.user_ids.map(e => e);
+    } else {
+      obj.user_ids = [];
+    }
+    return obj;
+  },
+};
+
+export const DemoteGroupUsersRequest = {
+  encode(message: DemoteGroupUsersRequest, writer: Writer = Writer.create()): Writer {
+    writer.uint32(10).string(message.group_id);
+    for (const v of message.user_ids) {
+      writer.uint32(18).string(v!);
+    }
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): DemoteGroupUsersRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseDemoteGroupUsersRequest } as DemoteGroupUsersRequest;
+    message.user_ids = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.group_id = reader.string();
+          break;
+        case 2:
+          message.user_ids.push(reader.string());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): DemoteGroupUsersRequest {
+    const message = { ...baseDemoteGroupUsersRequest } as DemoteGroupUsersRequest;
+    message.user_ids = [];
+    if (object.group_id !== undefined && object.group_id !== null) {
+      message.group_id = String(object.group_id);
+    }
+    if (object.user_ids !== undefined && object.user_ids !== null) {
+      for (const e of object.user_ids) {
+        message.user_ids.push(String(e));
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<DemoteGroupUsersRequest>): DemoteGroupUsersRequest {
+    const message = { ...baseDemoteGroupUsersRequest } as DemoteGroupUsersRequest;
+    message.user_ids = [];
+    if (object.group_id !== undefined && object.group_id !== null) {
+      message.group_id = object.group_id;
+    }
+    if (object.user_ids !== undefined && object.user_ids !== null) {
+      for (const e of object.user_ids) {
+        message.user_ids.push(e);
+      }
+    }
+    return message;
+  },
+  toJSON(message: DemoteGroupUsersRequest): unknown {
+    const obj: any = {};
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    if (message.user_ids) {
+      obj.user_ids = message.user_ids.map(e => e);
     } else {
       obj.user_ids = [];
     }
@@ -8145,9 +8892,9 @@ export const ReadStorageObjectId = {
   },
   toJSON(message: ReadStorageObjectId): unknown {
     const obj: any = {};
-    obj.collection = message.collection || "";
-    obj.key = message.key || "";
-    obj.user_id = message.user_id || "";
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.key !== undefined && (obj.key = message.key);
+    message.user_id !== undefined && (obj.user_id = message.user_id);
     return obj;
   },
 };
@@ -8266,9 +9013,9 @@ export const Rpc = {
   },
   toJSON(message: Rpc): unknown {
     const obj: any = {};
-    obj.id = message.id || "";
-    obj.payload = message.payload || "";
-    obj.http_key = message.http_key || "";
+    message.id !== undefined && (obj.id = message.id);
+    message.payload !== undefined && (obj.payload = message.payload);
+    message.http_key !== undefined && (obj.http_key = message.http_key);
     return obj;
   },
 };
@@ -8277,6 +9024,7 @@ export const Session = {
   encode(message: Session, writer: Writer = Writer.create()): Writer {
     writer.uint32(8).bool(message.created);
     writer.uint32(18).string(message.token);
+    writer.uint32(26).string(message.refresh_token);
     return writer;
   },
   decode(input: Uint8Array | Reader, length?: number): Session {
@@ -8291,6 +9039,9 @@ export const Session = {
           break;
         case 2:
           message.token = reader.string();
+          break;
+        case 3:
+          message.refresh_token = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -8307,6 +9058,9 @@ export const Session = {
     if (object.token !== undefined && object.token !== null) {
       message.token = String(object.token);
     }
+    if (object.refresh_token !== undefined && object.refresh_token !== null) {
+      message.refresh_token = String(object.refresh_token);
+    }
     return message;
   },
   fromPartial(object: DeepPartial<Session>): Session {
@@ -8317,12 +9071,16 @@ export const Session = {
     if (object.token !== undefined && object.token !== null) {
       message.token = object.token;
     }
+    if (object.refresh_token !== undefined && object.refresh_token !== null) {
+      message.refresh_token = object.refresh_token;
+    }
     return message;
   },
   toJSON(message: Session): unknown {
     const obj: any = {};
-    obj.created = message.created || false;
-    obj.token = message.token || "";
+    message.created !== undefined && (obj.created = message.created);
+    message.token !== undefined && (obj.token = message.token);
+    message.refresh_token !== undefined && (obj.refresh_token = message.refresh_token);
     return obj;
   },
 };
@@ -8449,15 +9207,15 @@ export const StorageObject = {
   },
   toJSON(message: StorageObject): unknown {
     const obj: any = {};
-    obj.collection = message.collection || "";
-    obj.key = message.key || "";
-    obj.user_id = message.user_id || "";
-    obj.value = message.value || "";
-    obj.version = message.version || "";
-    obj.permission_read = message.permission_read || 0;
-    obj.permission_write = message.permission_write || 0;
-    obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null;
-    obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null;
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.key !== undefined && (obj.key = message.key);
+    message.user_id !== undefined && (obj.user_id = message.user_id);
+    message.value !== undefined && (obj.value = message.value);
+    message.version !== undefined && (obj.version = message.version);
+    message.permission_read !== undefined && (obj.permission_read = message.permission_read);
+    message.permission_write !== undefined && (obj.permission_write = message.permission_write);
+    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
+    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
     return obj;
   },
 };
@@ -8530,10 +9288,10 @@ export const StorageObjectAck = {
   },
   toJSON(message: StorageObjectAck): unknown {
     const obj: any = {};
-    obj.collection = message.collection || "";
-    obj.key = message.key || "";
-    obj.version = message.version || "";
-    obj.user_id = message.user_id || "";
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.key !== undefined && (obj.key = message.key);
+    message.version !== undefined && (obj.version = message.version);
+    message.user_id !== undefined && (obj.user_id = message.user_id);
     return obj;
   },
 };
@@ -8712,7 +9470,7 @@ export const StorageObjectList = {
     } else {
       obj.objects = [];
     }
-    obj.cursor = message.cursor || "";
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -8921,23 +9679,23 @@ export const Tournament = {
   },
   toJSON(message: Tournament): unknown {
     const obj: any = {};
-    obj.id = message.id || "";
-    obj.title = message.title || "";
-    obj.description = message.description || "";
-    obj.category = message.category || 0;
-    obj.sort_order = message.sort_order || 0;
-    obj.size = message.size || 0;
-    obj.max_size = message.max_size || 0;
-    obj.max_num_score = message.max_num_score || 0;
-    obj.can_enter = message.can_enter || false;
-    obj.end_active = message.end_active || 0;
-    obj.next_reset = message.next_reset || 0;
-    obj.metadata = message.metadata || "";
-    obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null;
-    obj.start_time = message.start_time !== undefined ? message.start_time.toISOString() : null;
-    obj.end_time = message.end_time !== undefined ? message.end_time.toISOString() : null;
-    obj.duration = message.duration || 0;
-    obj.start_active = message.start_active || 0;
+    message.id !== undefined && (obj.id = message.id);
+    message.title !== undefined && (obj.title = message.title);
+    message.description !== undefined && (obj.description = message.description);
+    message.category !== undefined && (obj.category = message.category);
+    message.sort_order !== undefined && (obj.sort_order = message.sort_order);
+    message.size !== undefined && (obj.size = message.size);
+    message.max_size !== undefined && (obj.max_size = message.max_size);
+    message.max_num_score !== undefined && (obj.max_num_score = message.max_num_score);
+    message.can_enter !== undefined && (obj.can_enter = message.can_enter);
+    message.end_active !== undefined && (obj.end_active = message.end_active);
+    message.next_reset !== undefined && (obj.next_reset = message.next_reset);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
+    message.start_time !== undefined && (obj.start_time = message.start_time !== undefined ? message.start_time.toISOString() : null);
+    message.end_time !== undefined && (obj.end_time = message.end_time !== undefined ? message.end_time.toISOString() : null);
+    message.duration !== undefined && (obj.duration = message.duration);
+    message.start_active !== undefined && (obj.start_active = message.start_active);
     return obj;
   },
 };
@@ -9004,7 +9762,7 @@ export const TournamentList = {
     } else {
       obj.tournaments = [];
     }
-    obj.cursor = message.cursor || "";
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -9105,8 +9863,8 @@ export const TournamentRecordList = {
     } else {
       obj.owner_records = [];
     }
-    obj.next_cursor = message.next_cursor || "";
-    obj.prev_cursor = message.prev_cursor || "";
+    message.next_cursor !== undefined && (obj.next_cursor = message.next_cursor);
+    message.prev_cursor !== undefined && (obj.prev_cursor = message.prev_cursor);
     return obj;
   },
 };
@@ -9211,12 +9969,12 @@ export const UpdateAccountRequest = {
   },
   toJSON(message: UpdateAccountRequest): unknown {
     const obj: any = {};
-    obj.username = message.username || undefined;
-    obj.display_name = message.display_name || undefined;
-    obj.avatar_url = message.avatar_url || undefined;
-    obj.lang_tag = message.lang_tag || undefined;
-    obj.location = message.location || undefined;
-    obj.timezone = message.timezone || undefined;
+    message.username !== undefined && (obj.username = message.username);
+    message.display_name !== undefined && (obj.display_name = message.display_name);
+    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
+    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
+    message.location !== undefined && (obj.location = message.location);
+    message.timezone !== undefined && (obj.timezone = message.timezone);
     return obj;
   },
 };
@@ -9319,12 +10077,12 @@ export const UpdateGroupRequest = {
   },
   toJSON(message: UpdateGroupRequest): unknown {
     const obj: any = {};
-    obj.group_id = message.group_id || "";
-    obj.name = message.name || undefined;
-    obj.description = message.description || undefined;
-    obj.lang_tag = message.lang_tag || undefined;
-    obj.avatar_url = message.avatar_url || undefined;
-    obj.open = message.open || undefined;
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    message.name !== undefined && (obj.name = message.name);
+    message.description !== undefined && (obj.description = message.description);
+    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
+    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
+    message.open !== undefined && (obj.open = message.open);
     return obj;
   },
 };
@@ -9352,6 +10110,7 @@ export const User = {
       Timestamp.encode(toTimestamp(message.update_time), writer.uint32(130).fork()).ldelim();
     }
     writer.uint32(138).string(message.facebook_instant_game_id);
+    writer.uint32(146).string(message.apple_id);
     return writer;
   },
   decode(input: Uint8Array | Reader, length?: number): User {
@@ -9411,6 +10170,9 @@ export const User = {
           break;
         case 17:
           message.facebook_instant_game_id = reader.string();
+          break;
+        case 18:
+          message.apple_id = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -9472,6 +10234,9 @@ export const User = {
     if (object.facebook_instant_game_id !== undefined && object.facebook_instant_game_id !== null) {
       message.facebook_instant_game_id = String(object.facebook_instant_game_id);
     }
+    if (object.apple_id !== undefined && object.apple_id !== null) {
+      message.apple_id = String(object.apple_id);
+    }
     return message;
   },
   fromPartial(object: DeepPartial<User>): User {
@@ -9527,27 +10292,31 @@ export const User = {
     if (object.facebook_instant_game_id !== undefined && object.facebook_instant_game_id !== null) {
       message.facebook_instant_game_id = object.facebook_instant_game_id;
     }
+    if (object.apple_id !== undefined && object.apple_id !== null) {
+      message.apple_id = object.apple_id;
+    }
     return message;
   },
   toJSON(message: User): unknown {
     const obj: any = {};
-    obj.id = message.id || "";
-    obj.username = message.username || "";
-    obj.display_name = message.display_name || "";
-    obj.avatar_url = message.avatar_url || "";
-    obj.lang_tag = message.lang_tag || "";
-    obj.location = message.location || "";
-    obj.timezone = message.timezone || "";
-    obj.metadata = message.metadata || "";
-    obj.facebook_id = message.facebook_id || "";
-    obj.google_id = message.google_id || "";
-    obj.gamecenter_id = message.gamecenter_id || "";
-    obj.steam_id = message.steam_id || "";
-    obj.online = message.online || false;
-    obj.edge_count = message.edge_count || 0;
-    obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null;
-    obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null;
-    obj.facebook_instant_game_id = message.facebook_instant_game_id || "";
+    message.id !== undefined && (obj.id = message.id);
+    message.username !== undefined && (obj.username = message.username);
+    message.display_name !== undefined && (obj.display_name = message.display_name);
+    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
+    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
+    message.location !== undefined && (obj.location = message.location);
+    message.timezone !== undefined && (obj.timezone = message.timezone);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.facebook_id !== undefined && (obj.facebook_id = message.facebook_id);
+    message.google_id !== undefined && (obj.google_id = message.google_id);
+    message.gamecenter_id !== undefined && (obj.gamecenter_id = message.gamecenter_id);
+    message.steam_id !== undefined && (obj.steam_id = message.steam_id);
+    message.online !== undefined && (obj.online = message.online);
+    message.edge_count !== undefined && (obj.edge_count = message.edge_count);
+    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
+    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
+    message.facebook_instant_game_id !== undefined && (obj.facebook_instant_game_id = message.facebook_instant_game_id);
+    message.apple_id !== undefined && (obj.apple_id = message.apple_id);
     return obj;
   },
 };
@@ -9614,7 +10383,7 @@ export const UserGroupList = {
     } else {
       obj.user_groups = [];
     }
-    obj.cursor = message.cursor || "";
+    message.cursor !== undefined && (obj.cursor = message.cursor);
     return obj;
   },
 };
@@ -9671,8 +10440,8 @@ export const UserGroupList_UserGroup = {
   },
   toJSON(message: UserGroupList_UserGroup): unknown {
     const obj: any = {};
-    obj.group = message.group ? Group.toJSON(message.group) : undefined;
-    obj.state = message.state || undefined;
+    message.group !== undefined && (obj.group = message.group ? Group.toJSON(message.group) : undefined);
+    message.state !== undefined && (obj.state = message.state);
     return obj;
   },
 };
@@ -9783,8 +10552,8 @@ export const WriteLeaderboardRecordRequest = {
   },
   toJSON(message: WriteLeaderboardRecordRequest): unknown {
     const obj: any = {};
-    obj.leaderboard_id = message.leaderboard_id || "";
-    obj.record = message.record ? WriteLeaderboardRecordRequest_LeaderboardRecordWrite.toJSON(message.record) : undefined;
+    message.leaderboard_id !== undefined && (obj.leaderboard_id = message.leaderboard_id);
+    message.record !== undefined && (obj.record = message.record ? WriteLeaderboardRecordRequest_LeaderboardRecordWrite.toJSON(message.record) : undefined);
     return obj;
   },
 };
@@ -9847,9 +10616,9 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
   },
   toJSON(message: WriteLeaderboardRecordRequest_LeaderboardRecordWrite): unknown {
     const obj: any = {};
-    obj.score = message.score || 0;
-    obj.subscore = message.subscore || 0;
-    obj.metadata = message.metadata || "";
+    message.score !== undefined && (obj.score = message.score);
+    message.subscore !== undefined && (obj.subscore = message.subscore);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
     return obj;
   },
 };
@@ -9946,12 +10715,12 @@ export const WriteStorageObject = {
   },
   toJSON(message: WriteStorageObject): unknown {
     const obj: any = {};
-    obj.collection = message.collection || "";
-    obj.key = message.key || "";
-    obj.value = message.value || "";
-    obj.version = message.version || "";
-    obj.permission_read = message.permission_read || undefined;
-    obj.permission_write = message.permission_write || undefined;
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    message.version !== undefined && (obj.version = message.version);
+    message.permission_read !== undefined && (obj.permission_read = message.permission_read);
+    message.permission_write !== undefined && (obj.permission_write = message.permission_write);
     return obj;
   },
 };
@@ -10062,8 +10831,8 @@ export const WriteTournamentRecordRequest = {
   },
   toJSON(message: WriteTournamentRecordRequest): unknown {
     const obj: any = {};
-    obj.tournament_id = message.tournament_id || "";
-    obj.record = message.record ? WriteTournamentRecordRequest_TournamentRecordWrite.toJSON(message.record) : undefined;
+    message.tournament_id !== undefined && (obj.tournament_id = message.tournament_id);
+    message.record !== undefined && (obj.record = message.record ? WriteTournamentRecordRequest_TournamentRecordWrite.toJSON(message.record) : undefined);
     return obj;
   },
 };
@@ -10126,15 +10895,20 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
   },
   toJSON(message: WriteTournamentRecordRequest_TournamentRecordWrite): unknown {
     const obj: any = {};
-    obj.score = message.score || 0;
-    obj.subscore = message.subscore || 0;
-    obj.metadata = message.metadata || "";
+    message.score !== undefined && (obj.score = message.score);
+    message.subscore !== undefined && (obj.subscore = message.subscore);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
     return obj;
   },
 };
 
+if (util.Long !== Long as any) {
+  util.Long = Long as any;
+  configure();
+}
+
 type Builtin = Date | Function | Uint8Array | string | number | undefined;
-type DeepPartial<T> = T extends Builtin
+export type DeepPartial<T> = T extends Builtin
   ? T
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>

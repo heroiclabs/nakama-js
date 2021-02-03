@@ -19,7 +19,6 @@ import * as nakamajs from "@heroiclabs/nakama-js";
 import {Match, MatchData, MatchPresenceEvent, Presence} from "@heroiclabs/nakama-js/socket"
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {adapters, createPage, generateid, AdapterType} from "./utils"
-import { WebSocketAdapter } from "@heroiclabs/nakama-js";
 import {describe, expect, it} from '@jest/globals'
 
 describe('Match Tests', () => {
@@ -356,5 +355,4 @@ describe('Match Tests', () => {
     expect(response.matches[0].match_id).not.toBeNull();
     expect(response.matches[0].authoritative).toBe(true);
   });
-
 });

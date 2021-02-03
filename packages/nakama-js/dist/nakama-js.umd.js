@@ -1730,6 +1730,7 @@
           set: function (value) {
               if (value) {
                   this._socket.onmessage = function (evt) {
+                      console.log("got message evt : " + evt.data);
                       var message = JSON.parse(evt.data);
                       value(message);
                   };
@@ -1858,6 +1859,21 @@
                   else if (message.channel_presence_event) {
                       _this.onchannelpresence(message.channel_presence_event);
                   }
+                  else if (message.party_data) {
+                      _this.onpartydata(message.on_party_data);
+                  }
+                  else if (message.on_party_close) {
+                      _this.onpartyclose();
+                  }
+                  else if (message.party_join_request) {
+                      _this.onpartyjoinrequest(message.party_join_request);
+                  }
+                  else if (message.party_leader) {
+                      _this.onpartyleader(message.party_leader);
+                  }
+                  else if (message.party_presence_event) {
+                      _this.onpartypresence(message.party_presence_event);
+                  }
                   else {
                       if (_this.verbose && window && window.console) {
                           console.log("Unrecognized message received: %o", message);
@@ -1943,6 +1959,31 @@
               console.log(matchmakerMatched);
           }
       };
+      DefaultSocket.prototype.onpartyclose = function () {
+          if (this.verbose && window && window.console) {
+              console.log("Party closed.");
+          }
+      };
+      DefaultSocket.prototype.onpartyjoinrequest = function (partyJoinRequest) {
+          if (this.verbose && window && window.console) {
+              console.log(partyJoinRequest);
+          }
+      };
+      DefaultSocket.prototype.onpartydata = function (partyData) {
+          if (this.verbose && window && window.console) {
+              console.log(partyData);
+          }
+      };
+      DefaultSocket.prototype.onpartyleader = function (partyLeader) {
+          if (this.verbose && window && window.console) {
+              console.log(partyLeader);
+          }
+      };
+      DefaultSocket.prototype.onpartypresence = function (partyPresence) {
+          if (this.verbose && window && window.console) {
+              console.log(partyPresence);
+          }
+      };
       DefaultSocket.prototype.onstatuspresence = function (statusPresence) {
           if (this.verbose && window && window.console) {
               console.log(statusPresence);
@@ -1989,25 +2030,58 @@
               }
           });
       };
-      DefaultSocket.prototype.addMatchmaker = function (query, minCount, maxCount, stringProperties, numericProperties) {
+      DefaultSocket.prototype.acceptPartyMember = function (party_id, presence) {
+          return this.send({ party_accept: { party_id: party_id, presence: presence } });
+      };
+      DefaultSocket.prototype.addMatchmaker = function (query, min_count, max_count, string_properties, numeric_properties) {
           return __awaiter(this, void 0, void 0, function () {
-              var matchMakerAdd, response;
+              var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0:
-                          matchMakerAdd = {
+                      case 0: return [4, this.send({
                               "matchmaker_add": {
-                                  min_count: minCount,
-                                  max_count: maxCount,
+                                  min_count: min_count,
+                                  max_count: max_count,
                                   query: query,
-                                  string_properties: stringProperties,
-                                  numeric_properties: numericProperties
+                                  string_properties: string_properties,
+                                  numeric_properties: numeric_properties
                               }
-                          };
-                          return [4, this.send(matchMakerAdd)];
+                          })];
                       case 1:
                           response = _a.sent();
                           return [2, response.matchmaker_ticket];
+                  }
+              });
+          });
+      };
+      DefaultSocket.prototype.addMatchmakerParty = function (party_id, query, min_count, max_count, string_properties, numeric_properties) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({
+                              party_matchmaker_add: {
+                                  party_id: party_id,
+                                  min_count: min_count,
+                                  max_count: max_count,
+                                  query: query,
+                                  string_properties: string_properties,
+                                  numeric_properties: numeric_properties
+                              }
+                          })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.party_matchmaker_ticket];
+                  }
+              });
+          });
+      };
+      DefaultSocket.prototype.closeParty = function (party_id) {
+          return __awaiter(this, void 0, void 0, function () {
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ party_close: { party_id: party_id } })];
+                      case 1: return [2, _a.sent()];
                   }
               });
           });
@@ -2021,6 +2095,19 @@
                       case 1:
                           response = _a.sent();
                           return [2, response.match];
+                  }
+              });
+          });
+      };
+      DefaultSocket.prototype.createParty = function (open, max_size) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ party_create: { open: open, max_size: max_size } })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.party_create];
                   }
               });
           });
@@ -2079,11 +2166,53 @@
               });
           });
       };
+      DefaultSocket.prototype.joinParty = function (party_id) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ party_join: { party_id: party_id } })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.party_join];
+                  }
+              });
+          });
+      };
       DefaultSocket.prototype.leaveChat = function (channel_id) {
           return this.send({ channel_leave: { channel_id: channel_id } });
       };
       DefaultSocket.prototype.leaveMatch = function (matchId) {
           return this.send({ match_leave: { match_id: matchId } });
+      };
+      DefaultSocket.prototype.leaveParty = function (party_id) {
+          return this.send({ party_leave: { party_id: party_id } });
+      };
+      DefaultSocket.prototype.listPartyJoinRequests = function (party_id) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ party_join_request_list: { party_id: party_id } })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.party_join_request];
+                  }
+              });
+          });
+      };
+      DefaultSocket.prototype.promotePartyMember = function (party_id, party_member) {
+          return __awaiter(this, void 0, void 0, function () {
+              var response;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0: return [4, this.send({ party_promote: { party_id: party_id, presence: party_member } })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.party_leader];
+                  }
+              });
+          });
       };
       DefaultSocket.prototype.removeChatMessage = function (channel_id, message_id) {
           return __awaiter(this, void 0, void 0, function () {
@@ -2105,6 +2234,24 @@
       };
       DefaultSocket.prototype.removeMatchmaker = function (ticket) {
           return this.send({ matchmaker_remove: { ticket: ticket } });
+      };
+      DefaultSocket.prototype.removeMatchmakerParty = function (party_id, ticket) {
+          return this.send({
+              party_matchmaker_remove: {
+                  party_id: party_id,
+                  ticket: ticket
+              }
+          });
+      };
+      DefaultSocket.prototype.removePartyMember = function (party_id, member) {
+          return __awaiter(this, void 0, void 0, function () {
+              return __generator(this, function (_a) {
+                  return [2, this.send({ party_remove: {
+                              party_id: party_id,
+                              presence: member
+                          } })];
+              });
+          });
       };
       DefaultSocket.prototype.rpc = function (id, payload, http_key) {
           return __awaiter(this, void 0, void 0, function () {
@@ -2138,6 +2285,9 @@
                       })];
               });
           });
+      };
+      DefaultSocket.prototype.sendPartyData = function (party_id, op_code, data) {
+          return this.send({ party_data_send: { party_id: party_id, op_code: op_code, data: data } });
       };
       DefaultSocket.prototype.unfollowUsers = function (user_ids) {
           return this.send({ status_unfollow: { user_ids: user_ids } });

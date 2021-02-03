@@ -34,7 +34,7 @@ var nakamajsprotobuf = (() => {
     return __exportStar(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", {value: module2, enumerable: true}), module2);
   };
 
-  // ../../node_modules/@protobufjs/aspromise/index.js
+  // node_modules/@protobufjs/aspromise/index.js
   var require_aspromise = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = asPromise;
@@ -68,7 +68,7 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // ../../node_modules/@protobufjs/base64/index.js
+  // node_modules/@protobufjs/base64/index.js
   var require_base64 = __commonJS((exports2) => {
     "use strict";
     var base64 = exports2;
@@ -165,7 +165,7 @@ var nakamajsprotobuf = (() => {
     };
   });
 
-  // ../../node_modules/@protobufjs/eventemitter/index.js
+  // node_modules/@protobufjs/eventemitter/index.js
   var require_eventemitter = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = EventEmitter;
@@ -209,7 +209,7 @@ var nakamajsprotobuf = (() => {
     };
   });
 
-  // ../../node_modules/@protobufjs/float/index.js
+  // node_modules/@protobufjs/float/index.js
   var require_float = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = factory(factory);
@@ -393,7 +393,7 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // ../../node_modules/@protobufjs/inquire/index.js
+  // node_modules/@protobufjs/inquire/index.js
   var require_inquire = __commonJS((exports, module) => {
     "use strict";
     module.exports = inquire;
@@ -408,7 +408,7 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // ../../node_modules/@protobufjs/utf8/index.js
+  // node_modules/@protobufjs/utf8/index.js
   var require_utf8 = __commonJS((exports2) => {
     "use strict";
     var utf8 = exports2;
@@ -483,7 +483,7 @@ var nakamajsprotobuf = (() => {
     };
   });
 
-  // ../../node_modules/@protobufjs/pool/index.js
+  // node_modules/@protobufjs/pool/index.js
   var require_pool = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = pool;
@@ -507,7 +507,7 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // ../../node_modules/protobufjs/src/util/longbits.js
+  // node_modules/protobufjs/src/util/longbits.js
   var require_longbits = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = LongBits;
@@ -595,7 +595,7 @@ var nakamajsprotobuf = (() => {
     };
   });
 
-  // ../../node_modules/protobufjs/src/util/minimal.js
+  // node_modules/protobufjs/src/util/minimal.js
   var require_minimal = __commonJS((exports2) => {
     "use strict";
     var util2 = exports2;
@@ -726,7 +726,7 @@ var nakamajsprotobuf = (() => {
     };
   });
 
-  // ../../node_modules/protobufjs/src/writer.js
+  // node_modules/protobufjs/src/writer.js
   var require_writer = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = Writer5;
@@ -912,7 +912,7 @@ var nakamajsprotobuf = (() => {
     };
   });
 
-  // ../../node_modules/protobufjs/src/writer_buffer.js
+  // node_modules/protobufjs/src/writer_buffer.js
   var require_writer_buffer = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = BufferWriter;
@@ -961,7 +961,7 @@ var nakamajsprotobuf = (() => {
     BufferWriter._configure();
   });
 
-  // ../../node_modules/protobufjs/src/reader.js
+  // node_modules/protobufjs/src/reader.js
   var require_reader = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = Reader5;
@@ -1179,7 +1179,7 @@ var nakamajsprotobuf = (() => {
     };
   });
 
-  // ../../node_modules/protobufjs/src/reader_buffer.js
+  // node_modules/protobufjs/src/reader_buffer.js
   var require_reader_buffer = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = BufferReader;
@@ -1200,7 +1200,7 @@ var nakamajsprotobuf = (() => {
     BufferReader._configure();
   });
 
-  // ../../node_modules/protobufjs/src/rpc/service.js
+  // node_modules/protobufjs/src/rpc/service.js
   var require_service = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = Service;
@@ -1266,20 +1266,20 @@ var nakamajsprotobuf = (() => {
     };
   });
 
-  // ../../node_modules/protobufjs/src/rpc.js
+  // node_modules/protobufjs/src/rpc.js
   var require_rpc = __commonJS((exports2) => {
     "use strict";
     var rpc = exports2;
     rpc.Service = require_service();
   });
 
-  // ../../node_modules/protobufjs/src/roots.js
+  // node_modules/protobufjs/src/roots.js
   var require_roots = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = {};
   });
 
-  // ../../node_modules/protobufjs/src/index-minimal.js
+  // node_modules/protobufjs/src/index-minimal.js
   var require_index_minimal = __commonJS((exports2) => {
     "use strict";
     var protobuf2 = exports2;
@@ -1300,13 +1300,13 @@ var nakamajsprotobuf = (() => {
     configure2();
   });
 
-  // ../../node_modules/protobufjs/minimal.js
+  // node_modules/protobufjs/minimal.js
   var require_minimal2 = __commonJS((exports2, module2) => {
     "use strict";
     module2.exports = require_index_minimal();
   });
 
-  // ../../node_modules/long/src/long.js
+  // node_modules/long/src/long.js
   var require_long = __commonJS((exports2, module2) => {
     module2.exports = Long2;
     var wasm = null;
