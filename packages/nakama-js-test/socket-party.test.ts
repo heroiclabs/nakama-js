@@ -18,9 +18,7 @@ import * as nakamajs from "@heroiclabs/nakama-js";
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType} from "./utils";
 import {describe, expect, it} from '@jest/globals'
-import { PartyPresenceEvent } from "@heroiclabs/nakama-js/socket";
-import { Party, PartyAccept, PartyJoinRequest } from "@heroiclabs/nakama-js";
-import { join } from "path";
+import {MatchmakerMatched, PartyPresenceEvent, PartyData, PartyJoinRequest, PartyLeader, WebSocketAdapterText, PartyMatchmakerMatched} from "@heroiclabs/nakama-js";
 
 describe('Party Tests', () => {
 
@@ -45,23 +43,20 @@ describe('Party Tests', () => {
         }
       });
 
-      socket.createParty(true, 3);
+      socket.createParty(false, 3);
       return presencePromise;
     }, customid, adapter);
 
     expect(response).not.toBeNull;
     expect(response.party_id).toBeDefined;
-    expect(response.joins.length == 1);
-    expect(response.joins[0].user_id == customid);
+    expect(response.joins.length).toEqual(1);
   });
 
-  it.each(adapters)('should create party and accept member', async (adapter) => {
+  it.each(adapters)('should create closed party and accept member', async (adapter) => {
     const page = await createPage();
 
     const customid1 = generateid();
     const customid2 = generateid();
-    console.log("generating ids")
-
 
     const response : PartyPresenceEvent = await page.evaluate(async (customid1, customid2, adapter) => {
 
@@ -75,12 +70,10 @@ describe('Party Tests', () => {
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session1 = await client1.authenticateCustom(customid1);
-      const session2 = await client1.authenticateCustom(customid2);
+      const session2 = await client2.authenticateCustom(customid2);
 
       await socket1.connect(session1, false);
       await socket2.connect(session2, false);
-
-      console.log("connected")
 
       var presencePromise = new Promise<PartyPresenceEvent>((resolve, reject) => {
         socket1.onpartypresence = (presence) => {
@@ -88,8 +81,7 @@ describe('Party Tests', () => {
         }
       });
 
-      socket1.createParty(true, 3);
-
+      socket1.createParty(false, 3);
 
       const presenceEvent = await presencePromise;
 
@@ -101,11 +93,7 @@ describe('Party Tests', () => {
 
       socket2.joinParty(presenceEvent.party_id);
 
-      console.log("awaiting join request")
-
       const joinRequest : PartyJoinRequest = await joinRequestPromise;
-
-      console.log("done awaiting join request")
 
       const joinedPromise = new Promise<PartyPresenceEvent>((resolve, reject) => {
         socket1.onpartypresence = (request) => {
@@ -113,13 +101,316 @@ describe('Party Tests', () => {
         }
       });
 
-      socket1.acceptPartyMember(joinRequest.party_id, joinRequest.presence);
+      socket1.acceptPartyMember(joinRequest.party_id, joinRequest.presences[0]);
 
       return joinedPromise;
 
     }, customid1, customid2, adapter);
 
-    expect(response).not.toBeUndefined();
-    expect(response.joins[0].user_id == customid1);
+    expect(response).toBeDefined();
   });
+
+  it.each(adapters)('should only create open party and only have member join', async (adapter) => {
+    const page = await createPage();
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+
+    const response : PartyPresenceEvent = await page.evaluate(async (customid1, customid2, adapter) => {
+
+      const client1 = new nakamajs.Client();
+      const client2 = new nakamajs.Client();
+
+      const socket1 = client1.createSocket(false, false,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const socket2 = client2.createSocket(false, false,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const session1 = await client1.authenticateCustom(customid1);
+      const session2 = await client2.authenticateCustom(customid2);
+
+      await socket1.connect(session1, false);
+      await socket2.connect(session2, false);
+
+      var presencePromise = new Promise<PartyPresenceEvent>((resolve, reject) => {
+        socket1.onpartypresence = (presence) => {
+          resolve(presence);
+        }
+      });
+
+      socket1.createParty(true, 3);
+
+      const presenceEvent = await presencePromise;
+
+      const socket2PresencePromise = new Promise<PartyPresenceEvent>((resolve, reject) => {
+        socket1.onpartypresence = (request) => {
+          resolve(request);
+        }
+      });
+
+      socket2.joinParty(presenceEvent.party_id);
+
+      return socket2PresencePromise;
+
+
+    }, customid1, customid2, adapter);
+
+    expect(response).toBeDefined();
+  });
+
+
+  it.each(adapters)('should create open party and have member join and send data', async (adapter) => {
+  const page = await createPage();
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+
+    const response : PartyData = await page.evaluate(async (customid1, customid2, adapter) => {
+
+      const client1 = new nakamajs.Client();
+      const client2 = new nakamajs.Client();
+
+      const socket1 = client1.createSocket(false, false,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const socket2 = client2.createSocket(false, false,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const session1 = await client1.authenticateCustom(customid1);
+      const session2 = await client2.authenticateCustom(customid2);
+
+      await socket1.connect(session1, false);
+      await socket2.connect(session2, false);
+
+      var presencePromise = new Promise<PartyPresenceEvent>((resolve, reject) => {
+        socket1.onpartypresence = (presence) => {
+          resolve(presence);
+        }
+      });
+
+      socket1.createParty(true, 3);
+
+      const presenceEvent = await presencePromise;
+
+      const socket2PresencePromise = new Promise<PartyPresenceEvent>((resolve, reject) => {
+        socket1.onpartypresence = (request) => {
+          resolve(request);
+        }
+      });
+
+      socket2.joinParty(presenceEvent.party_id);
+
+      await socket2PresencePromise;
+
+      const socket2DataPromise = new Promise<PartyData>((resolve, reject) => {
+        socket2.onpartydata = (data) => {
+          resolve(data);
+        }
+      });
+
+      socket1.sendPartyData(presenceEvent.party_id, 1, {"hello": "world"});
+
+      return socket2DataPromise;
+
+    }, customid1, customid2, adapter);
+
+    expect(response).toBeDefined();
+    expect(response.party_id).toBeDefined();
+    expect(response.op_code == 1);
+    expect(response.data).toBeDefined();
+    expect(response.data.hello).toEqual("world");
+  });
+
+  it.each(adapters)('should create closed party and have member join and then removed', async (adapter) => {
+    const page = await createPage();
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+
+    const response : PartyPresenceEvent = await page.evaluate(async (customid1, customid2, adapter) => {
+
+      const client1 = new nakamajs.Client();
+      const client2 = new nakamajs.Client();
+
+      const socket1 = client1.createSocket(false, true,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const socket2 = client2.createSocket(false, true,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const session1 = await client1.authenticateCustom(customid1);
+      const session2 = await client2.authenticateCustom(customid2);
+
+      await socket1.connect(session1, false);
+      await socket2.connect(session2, false);
+
+      const id1PresenceJoinPromise = new Promise<PartyPresenceEvent>((resolve, reject) => {
+        socket1.onpartypresence = (presence) => {
+          resolve(presence);
+        }
+      });
+
+      socket1.createParty(false, 3);
+
+      const id1PresenceEvent = await id1PresenceJoinPromise;
+
+      const id2JoinRequestPromise = new Promise<PartyJoinRequest>((resolve, reject) => {
+        socket1.onpartyjoinrequest = (request) => {
+          resolve(request);
+        }
+      });
+
+      socket2.joinParty(id1PresenceEvent.party_id);
+
+      const id2JoinRequest : PartyJoinRequest = await id2JoinRequestPromise;
+
+      await socket1.acceptPartyMember(id2JoinRequest.party_id, id2JoinRequest.presences[0]);
+      socket1.removePartyMember(id2JoinRequest.party_id, id2JoinRequest.presences[0]);
+
+      const id2PresenceRemovedPromise = new Promise<PartyPresenceEvent>((resolve, reject) => {
+
+      socket1.onpartypresence = (presence) => {
+          if (presence.leaves.length > 0) {
+            resolve(presence);
+          }
+        }
+      });
+
+      return id2PresenceRemovedPromise;
+    }, customid1, customid2, adapter);
+
+    expect(response).toBeDefined();
+    expect(response.leaves).toHaveLength(1);
+  });
+
+  it.each(adapters)('should create closed party and have member join and then promoted', async (adapter) => {
+    const page = await createPage();
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+
+    const response : PartyLeader = await page.evaluate(async (customid1, customid2, adapter) => {
+
+      const client1 = new nakamajs.Client();
+      const client2 = new nakamajs.Client();
+
+      const socket1 = client1.createSocket(false, true,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const socket2 = client2.createSocket(false, true,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const session1 = await client1.authenticateCustom(customid1);
+      const session2 = await client2.authenticateCustom(customid2);
+
+      await socket1.connect(session1, false);
+      await socket2.connect(session2, false);
+
+      const id1PresenceJoinPromise = new Promise<PartyPresenceEvent>((resolve, reject) => {
+        socket1.onpartypresence = (presence) => {
+          resolve(presence);
+        }
+      });
+
+      socket1.createParty(false, 3);
+
+      const id1PresenceEvent = await id1PresenceJoinPromise;
+
+      const id2JoinRequestPromise = new Promise<PartyJoinRequest>((resolve, reject) => {
+        socket1.onpartyjoinrequest = (request) => {
+          resolve(request);
+        }
+      });
+
+      socket2.joinParty(id1PresenceEvent.party_id);
+
+      const id2JoinRequest : PartyJoinRequest = await id2JoinRequestPromise;
+
+      await socket1.acceptPartyMember(id2JoinRequest.party_id, id2JoinRequest.presences[0]);
+      socket1.promotePartyMember(id2JoinRequest.party_id, id2JoinRequest.presences[0]);
+
+      const id2PresencePromotedPromise = new Promise<PartyLeader>((resolve, reject) => {
+        socket1.onpartyleader = (leader) => {
+            resolve(leader);
+        }
+      });
+
+      return id2PresencePromotedPromise;
+    }, customid1, customid2, adapter);
+
+    expect(response).toBeDefined();
+    expect(response.presence).toBeDefined();
+  });
+
+  it.each(adapters)('should create closed party and have member join and then join match', async (adapter) => {
+    const page = await createPage();
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+    const customid3 = generateid();
+
+    const response : MatchmakerMatched = await page.evaluate(async (customid1, customid2, customid3, adapter) => {
+
+      const client1 = new nakamajs.Client();
+      const client2 = new nakamajs.Client();
+      const client3 = new nakamajs.Client();
+
+      const socket1 = client1.createSocket(false, true,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const socket2 = client2.createSocket(false, true,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const socket3 = client3.createSocket(false, true,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+
+      const session1 = await client1.authenticateCustom(customid1);
+      const session2 = await client2.authenticateCustom(customid2);
+      const session3 = await client3.authenticateCustom(customid3);
+
+      await socket1.connect(session1, false);
+      await socket2.connect(session2, false);
+      await socket3.connect(session3, false);
+
+      const id1PresenceJoinPromise = new Promise<PartyPresenceEvent>((resolve, reject) => {
+        socket1.onpartypresence = (presence) => {
+          resolve(presence);
+        }
+      });
+
+      socket1.createParty(false, 3);
+
+      const id1PresenceEvent = await id1PresenceJoinPromise;
+
+      const id2JoinRequestPromise = new Promise<PartyJoinRequest>((resolve, reject) => {
+        socket1.onpartyjoinrequest = (request) => {
+          resolve(request);
+        }
+      });
+
+      socket2.joinParty(id1PresenceEvent.party_id);
+
+      const id2JoinRequest : PartyJoinRequest = await id2JoinRequestPromise;
+
+      await socket1.acceptPartyMember(id2JoinRequest.party_id, id2JoinRequest.presences[0]);
+      await socket3.addMatchmaker("*", 3, 3);
+      socket1.addMatchmakerParty(id1PresenceEvent.party_id, "*", 3, 3);
+
+      const id1MatchedPromise = new Promise<MatchmakerMatched>((resolve, reject) => {
+      socket1.onmatchmakermatched = (request) => {
+          resolve(request);
+        }
+      });
+
+      return id1MatchedPromise;
+    }, customid1, customid2, customid3, adapter);
+
+    console.log(JSON.stringify(response));
+    expect(response).toBeDefined();
+    expect(response.token).toBeDefined();
+    expect(response.users.length).toEqual(3);
+    expect(response.self.party_id).toBeDefined();
+  }, 100000);
 });

@@ -7,7 +7,6 @@ import * as Long from 'long';
 import { Writer, Reader, util, configure } from 'protobufjs/minimal';
 import { BoolValue, Int32Value, StringValue, UInt32Value, Int64Value } from '../../../../google/protobuf/wrappers';
 
-
 /**
  *  A user with additional account details. Always the current user.
  */

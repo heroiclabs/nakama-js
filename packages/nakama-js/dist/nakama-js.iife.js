@@ -1442,7 +1442,6 @@ var nakamajs = (() => {
     set onMessage(value) {
       if (value) {
         this._socket.onmessage = (evt) => {
-          console.log("got message evt : " + evt.data);
           const message = JSON.parse(evt.data);
           value(message);
         };
@@ -1472,6 +1471,8 @@ var nakamajs = (() => {
     send(msg) {
       if (msg.match_data_send) {
         msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+      } else if (msg.party_data_send) {
+        msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
       }
       this._socket.send(JSON.stringify(msg));
     }
@@ -1519,7 +1520,7 @@ var nakamajs = (() => {
       };
       this.adapter.onMessage = (message) => {
         if (this.verbose && window && window.console) {
-          console.log("Response: %o", message);
+          console.log("Response: %o", JSON.stringify(message));
         }
         if (message.cid == void 0) {
           if (message.notifications) {
@@ -1547,15 +1548,21 @@ var nakamajs = (() => {
           } else if (message.channel_presence_event) {
             this.onchannelpresence(message.channel_presence_event);
           } else if (message.party_data) {
-            this.onpartydata(message.on_party_data);
+            message.party_data.data = message.party_data.data != null ? JSON.parse(b64DecodeUnicode(message.party_data.data)) : null;
+            message.party_data.op_code = parseInt(message.party_data.op_code);
+            this.onpartydata(message.party_data);
           } else if (message.on_party_close) {
             this.onpartyclose();
           } else if (message.party_join_request) {
             this.onpartyjoinrequest(message.party_join_request);
           } else if (message.party_leader) {
             this.onpartyleader(message.party_leader);
+          } else if (message.party_matchmaker_ticket) {
+            this.onpartymatchmakermatched(message.party_matchmaker_ticket);
           } else if (message.party_presence_event) {
             this.onpartypresence(message.party_presence_event);
+          } else if (message.party) {
+            this.onparty(message.party);
           } else {
             if (this.verbose && window && window.console) {
               console.log("Unrecognized message received: %o", message);
@@ -1638,6 +1645,11 @@ var nakamajs = (() => {
         console.log(matchmakerMatched);
       }
     }
+    onparty(party) {
+      if (this.verbose && window && window.console) {
+        console.log(party);
+      }
+    }
     onpartyclose() {
       if (this.verbose && window && window.console) {
         console.log("Party closed.");
@@ -1656,6 +1668,11 @@ var nakamajs = (() => {
     onpartyleader(partyLeader) {
       if (this.verbose && window && window.console) {
         console.log(partyLeader);
+      }
+    }
+    onpartymatchmakermatched(partyMatched) {
+      if (this.verbose && window && window.console) {
+        console.log(partyMatched);
       }
     }
     onpartypresence(partyPresence) {
@@ -1680,12 +1697,17 @@ var nakamajs = (() => {
     }
     send(message) {
       const untypedMessage = message;
+      console.log("sending socket message " + JSON.stringify(untypedMessage));
       return new Promise((resolve, reject) => {
         if (!this.adapter.isConnected) {
           reject("Socket connection has not been established yet.");
         } else {
           if (untypedMessage.match_data_send) {
             untypedMessage.match_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.match_data_send.data));
+            this.adapter.send(untypedMessage);
+            resolve();
+          } else if (untypedMessage.party_data_send) {
+            untypedMessage.party_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.party_data_send.data));
             this.adapter.send(untypedMessage);
             resolve();
           } else {
@@ -1787,8 +1809,7 @@ var nakamajs = (() => {
     }
     joinParty(party_id) {
       return __async(this, null, function* () {
-        const response = yield this.send({party_join: {party_id}});
-        return response.party_join;
+        return yield this.send({party_join: {party_id}});
       });
     }
     leaveChat(channel_id) {

@@ -1730,7 +1730,6 @@
           set: function (value) {
               if (value) {
                   this._socket.onmessage = function (evt) {
-                      console.log("got message evt : " + evt.data);
                       var message = JSON.parse(evt.data);
                       value(message);
                   };
@@ -1772,6 +1771,9 @@
       WebSocketAdapterText.prototype.send = function (msg) {
           if (msg.match_data_send) {
               msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+          }
+          else if (msg.party_data_send) {
+              msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
           }
           this._socket.send(JSON.stringify(msg));
       };
@@ -1823,7 +1825,7 @@
           };
           this.adapter.onMessage = function (message) {
               if (_this.verbose && window && window.console) {
-                  console.log("Response: %o", message);
+                  console.log("Response: %o", JSON.stringify(message));
               }
               if (message.cid == undefined) {
                   if (message.notifications) {
@@ -1860,7 +1862,9 @@
                       _this.onchannelpresence(message.channel_presence_event);
                   }
                   else if (message.party_data) {
-                      _this.onpartydata(message.on_party_data);
+                      message.party_data.data = message.party_data.data != null ? JSON.parse(b64DecodeUnicode(message.party_data.data)) : null;
+                      message.party_data.op_code = parseInt(message.party_data.op_code);
+                      _this.onpartydata(message.party_data);
                   }
                   else if (message.on_party_close) {
                       _this.onpartyclose();
@@ -1871,8 +1875,14 @@
                   else if (message.party_leader) {
                       _this.onpartyleader(message.party_leader);
                   }
+                  else if (message.party_matchmaker_ticket) {
+                      _this.onpartymatchmakermatched(message.party_matchmaker_ticket);
+                  }
                   else if (message.party_presence_event) {
                       _this.onpartypresence(message.party_presence_event);
+                  }
+                  else if (message.party) {
+                      _this.onparty(message.party);
                   }
                   else {
                       if (_this.verbose && window && window.console) {
@@ -1959,6 +1969,11 @@
               console.log(matchmakerMatched);
           }
       };
+      DefaultSocket.prototype.onparty = function (party) {
+          if (this.verbose && window && window.console) {
+              console.log(party);
+          }
+      };
       DefaultSocket.prototype.onpartyclose = function () {
           if (this.verbose && window && window.console) {
               console.log("Party closed.");
@@ -1977,6 +1992,11 @@
       DefaultSocket.prototype.onpartyleader = function (partyLeader) {
           if (this.verbose && window && window.console) {
               console.log(partyLeader);
+          }
+      };
+      DefaultSocket.prototype.onpartymatchmakermatched = function (partyMatched) {
+          if (this.verbose && window && window.console) {
+              console.log(partyMatched);
           }
       };
       DefaultSocket.prototype.onpartypresence = function (partyPresence) {
@@ -2002,6 +2022,7 @@
       DefaultSocket.prototype.send = function (message) {
           var _this = this;
           var untypedMessage = message;
+          console.log("sending socket message " + JSON.stringify(untypedMessage));
           return new Promise(function (resolve, reject) {
               if (!_this.adapter.isConnected) {
                   reject("Socket connection has not been established yet.");
@@ -2009,6 +2030,11 @@
               else {
                   if (untypedMessage.match_data_send) {
                       untypedMessage.match_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.match_data_send.data));
+                      _this.adapter.send(untypedMessage);
+                      resolve();
+                  }
+                  else if (untypedMessage.party_data_send) {
+                      untypedMessage.party_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.party_data_send.data));
                       _this.adapter.send(untypedMessage);
                       resolve();
                   }
@@ -2168,13 +2194,10 @@
       };
       DefaultSocket.prototype.joinParty = function (party_id) {
           return __awaiter(this, void 0, void 0, function () {
-              var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0: return [4, this.send({ party_join: { party_id: party_id } })];
-                      case 1:
-                          response = _a.sent();
-                          return [2, response.party_join];
+                      case 1: return [2, _a.sent()];
                   }
               });
           });

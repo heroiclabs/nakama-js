@@ -112,6 +112,7 @@ export interface MatchmakerRemove {
 }
 export interface MatchmakerUser {
     presence: Presence;
+    party_id: string;
     string_properties?: Record<string, string>;
     numeric_properties?: Record<string, number>;
 }
@@ -200,12 +201,10 @@ export interface PartyClose {
     };
 }
 export interface PartyData {
-    party_data: {
-        party_id: string;
-        presence: Presence;
-        op_code: number;
-        data: any;
-    };
+    party_id: string;
+    presence: Presence;
+    op_code: number;
+    data: any;
 }
 export interface PartyDataSend {
     party_data_send: {
@@ -216,7 +215,7 @@ export interface PartyDataSend {
 }
 export interface PartyJoinRequest {
     party_id: string;
-    presence: Presence;
+    presences: Presence[];
 }
 export interface PartyJoinRequestList {
     party_join_request_list: {
@@ -290,7 +289,7 @@ export interface Socket {
     createParty(open: boolean, max_size: number): Promise<Party>;
     followUsers(user_ids: string[]): Promise<Status>;
     joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel>;
-    joinParty(party_id: string): Promise<Party>;
+    joinParty(party_id: string): Promise<void>;
     joinMatch(match_id?: string, token?: string, metadata?: {}): Promise<Match>;
     leaveChat(channel_id: string): Promise<void>;
     leaveMatch(matchId: string): Promise<void>;
@@ -314,11 +313,13 @@ export interface Socket {
     onmatchdata: (matchData: MatchData) => void;
     onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
     onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
+    onparty: (party: Party) => void;
     onpartyclose: (partyClose: PartyClose) => void;
     onpartydata: (partyData: PartyData) => void;
     onpartyjoinrequest: (partyJoinRequest: PartyJoinRequest) => void;
     onpartyleader: (partyLeader: PartyLeader) => void;
     onpartypresence: (partyPresence: PartyPresenceEvent) => void;
+    onpartymatchmakermatched: (matchmakerMatched: PartyMatchmakerMatched) => void;
     onstatuspresence: (statusPresence: StatusPresenceEvent) => void;
     onstreampresence: (streamPresence: StreamPresenceEvent) => void;
     onstreamdata: (streamData: StreamData) => void;
@@ -349,10 +350,12 @@ export declare class DefaultSocket implements Socket {
     onmatchdata(matchData: MatchData): void;
     onmatchpresence(matchPresence: MatchPresenceEvent): void;
     onmatchmakermatched(matchmakerMatched: MatchmakerMatched): void;
+    onparty(party: Party): void;
     onpartyclose(): void;
     onpartyjoinrequest(partyJoinRequest: PartyJoinRequest): void;
     onpartydata(partyData: PartyData): void;
     onpartyleader(partyLeader: PartyLeader): void;
+    onpartymatchmakermatched(partyMatched: PartyMatchmakerMatched): void;
     onpartypresence(partyPresence: PartyPresenceEvent): void;
     onstatuspresence(statusPresence: StatusPresenceEvent): void;
     onstreampresence(streamPresence: StreamPresenceEvent): void;
@@ -367,7 +370,7 @@ export declare class DefaultSocket implements Socket {
     followUsers(userIds: string[]): Promise<Status>;
     joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel>;
     joinMatch(match_id?: string, token?: string, metadata?: {}): Promise<Match>;
-    joinParty(party_id: string): Promise<Party>;
+    joinParty(party_id: string): Promise<void>;
     leaveChat(channel_id: string): Promise<void>;
     leaveMatch(matchId: string): Promise<void>;
     leaveParty(party_id: string): Promise<void>;

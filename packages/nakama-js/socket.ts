@@ -171,6 +171,7 @@ export interface MatchmakerRemove {
 /** A reference to a user and their matchmaking properties. */
 export interface MatchmakerUser {
   presence: Presence;
+  party_id : string;
   string_properties?: Record<string, string>;
   numeric_properties?: Record<string, number>;
 }
@@ -289,12 +290,10 @@ export interface PartyClose {
 
 // Incoming party data delivered from the server.
 export interface PartyData {
-  party_data: {
-    party_id: string;
-    presence: Presence;
-    op_code: number;
-    data: any;
-  }
+  party_id: string;
+  presence: Presence;
+  op_code: number;
+  data: any;
 }
 
 // A client to server request to send data to a party.
@@ -309,7 +308,7 @@ export interface PartyDataSend {
 // Incoming notification for one or more new presences attempting to join the party.
 export interface PartyJoinRequest {
   party_id : string;
-  presence : Presence;
+  presences : Presence[];
 }
 
 // Request a list of pending join requests for a party.
@@ -428,7 +427,7 @@ export interface Socket {
   joinChat(target: string, type: number, persistence: boolean, hidden: boolean) : Promise<Channel>;
 
   // Join a party.
-  joinParty(party_id: string) : Promise<Party>;
+  joinParty(party_id: string) : Promise<void>;
 
   // Join a multiplayer match.
   joinMatch(match_id?: string, token?: string, metadata?: {}) : Promise<Match>;
@@ -468,7 +467,7 @@ export interface Socket {
   sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence[]) : Promise<void>;
 
   // Send data to a party.
-  sendPartyData(party_id : string, opcode :number, data : any) : Promise<void>;
+  sendPartyData(party_id : string, opcode : number, data : any) : Promise<void>;
 
   // Unfollow one or more users from their status updates.
   unfollowUsers(user_ids : string[]) : Promise<void>;
@@ -500,6 +499,9 @@ export interface Socket {
   // Receive matchmaking results.
   onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
 
+  // Receive party events.
+  onparty: (party : Party) => void;
+
   // Receive party close events.
   onpartyclose: (partyClose : PartyClose) => void;
 
@@ -514,6 +516,9 @@ export interface Socket {
 
   // Receive a presence update for a party.
   onpartypresence: (partyPresence : PartyPresenceEvent) => void;
+
+  // Receive matchmaking results.
+  onpartymatchmakermatched: (matchmakerMatched: PartyMatchmakerMatched) => void;
 
   // Receive status presence updates.
   onstatuspresence: (statusPresence: StatusPresenceEvent) => void;
@@ -579,7 +584,7 @@ export class DefaultSocket implements Socket {
 
     this.adapter.onMessage = (message: any) => {
       if (this.verbose && window && window.console) {
-        console.log("Response: %o", message);
+        console.log("Response: %o", JSON.stringify(message));
       }
 
       // Inbound message from server.
@@ -609,15 +614,21 @@ export class DefaultSocket implements Socket {
         } else if (message.channel_presence_event) {
           this.onchannelpresence(<ChannelPresenceEvent>message.channel_presence_event);
         } else if (message.party_data) {
-          this.onpartydata(<PartyData>message.on_party_data);
+          message.party_data.data = message.party_data.data != null ? JSON.parse(b64DecodeUnicode(message.party_data.data)) : null;
+          message.party_data.op_code = parseInt(message.party_data.op_code);
+          this.onpartydata(<PartyData>message.party_data);
         } else if (message.on_party_close) {
           this.onpartyclose();
         } else if (message.party_join_request) {
           this.onpartyjoinrequest(message.party_join_request);
         } else if (message.party_leader) {
           this.onpartyleader(<PartyLeader> message.party_leader);
+        } else if (message.party_matchmaker_ticket)  {
+          this.onpartymatchmakermatched(message.party_matchmaker_ticket);
         } else if (message.party_presence_event) {
           this.onpartypresence(<PartyPresenceEvent> message.party_presence_event);
+        } else if (message.party) {
+          this.onparty(<Party> message.party);
         } else {
           if (this.verbose && window && window.console) {
             console.log("Unrecognized message received: %o", message);
@@ -712,6 +723,12 @@ export class DefaultSocket implements Socket {
     }
   }
 
+  onparty(party : Party) {
+    if (this.verbose && window && window.console) {
+      console.log(party);
+    }
+  }
+
   onpartyclose() {
     if (this.verbose && window && window.console) {
       console.log("Party closed.");
@@ -735,6 +752,13 @@ export class DefaultSocket implements Socket {
       console.log(partyLeader);
     }
   }
+
+  onpartymatchmakermatched(partyMatched: PartyMatchmakerMatched) {
+    if (this.verbose && window && window.console) {
+      console.log(partyMatched);
+    }
+  }
+
 
   onpartypresence(partyPresence: PartyPresenceEvent) {
     if (this.verbose && window && window.console) {
@@ -760,7 +784,6 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  // TODO clean this function up
   send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate |
     ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd |
     MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin |
@@ -777,6 +800,11 @@ export class DefaultSocket implements Socket {
           untypedMessage.match_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.match_data_send.data));
           this.adapter.send(untypedMessage);
           resolve();
+        }
+        else if (untypedMessage.party_data_send) {
+            untypedMessage.party_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.party_data_send.data));
+            this.adapter.send(untypedMessage);
+            resolve();
         }
         else {
 
@@ -822,7 +850,7 @@ export class DefaultSocket implements Socket {
       return response.matchmaker_ticket;
   }
 
-  async addMatchmakerParty(party_id: string, query : string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<PartyMatchmakerMatched> {
+  async addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<PartyMatchmakerMatched> {
 
     const response = await this.send({
       party_matchmaker_add: {
@@ -832,7 +860,7 @@ export class DefaultSocket implements Socket {
         query: query,
         string_properties: string_properties,
         numeric_properties: numeric_properties
-      }});
+    }});
 
     return response.party_matchmaker_ticket;
   }
@@ -888,9 +916,8 @@ export class DefaultSocket implements Socket {
     return response.match;
   }
 
-  async joinParty(party_id: string): Promise<Party> {
-    const response = await this.send({party_join: {party_id: party_id}});
-    return response.party_join;
+  async joinParty(party_id: string): Promise<void> {
+    return await this.send({party_join: {party_id: party_id}});
   }
 
   leaveChat(channel_id: string): Promise<void> {

@@ -112,7 +112,6 @@ export class WebSocketAdapterText implements WebSocketAdapter {
     set onMessage(value: SocketMessageHandler | null) {
         if (value) {
             this._socket!.onmessage = (evt: MessageEvent) => {
-                console.log("got message evt : " + evt.data);
                 const message: any = JSON.parse(evt.data);
                 value!(message);
             };
@@ -147,10 +146,11 @@ export class WebSocketAdapterText implements WebSocketAdapter {
     }
 
     send(msg: any): void {
-        if (msg.match_data_send)
-        {
+        if (msg.match_data_send) {
             // according to protobuf docs, int64 is encoded to JSON as string.
             msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+        } else if (msg.party_data_send) {
+            msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
         }
 
         this._socket!.send(JSON.stringify(msg));

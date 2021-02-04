@@ -510,7 +510,7 @@ var require_pool = __commonJS((exports2, module2) => {
 var require_longbits = __commonJS((exports2, module2) => {
   "use strict";
   module2.exports = LongBits;
-  var util2 = require_minimal();
+  var util6 = require_minimal();
   function LongBits(lo, hi) {
     this.lo = lo >>> 0;
     this.hi = hi >>> 0;
@@ -547,9 +547,9 @@ var require_longbits = __commonJS((exports2, module2) => {
   LongBits.from = function from(value) {
     if (typeof value === "number")
       return LongBits.fromNumber(value);
-    if (util2.isString(value)) {
-      if (util2.Long)
-        value = util2.Long.fromString(value);
+    if (util6.isString(value)) {
+      if (util6.Long)
+        value = util6.Long.fromString(value);
       else
         return LongBits.fromNumber(parseInt(value, 10));
     }
@@ -565,7 +565,7 @@ var require_longbits = __commonJS((exports2, module2) => {
     return this.lo + this.hi * 4294967296;
   };
   LongBits.prototype.toLong = function toLong(unsigned) {
-    return util2.Long ? new util2.Long(this.lo | 0, this.hi | 0, Boolean(unsigned)) : {low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned)};
+    return util6.Long ? new util6.Long(this.lo | 0, this.hi | 0, Boolean(unsigned)) : {low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned)};
   };
   var charCodeAt = String.prototype.charCodeAt;
   LongBits.fromHash = function fromHash(hash) {
@@ -597,59 +597,59 @@ var require_longbits = __commonJS((exports2, module2) => {
 // node_modules/protobufjs/src/util/minimal.js
 var require_minimal = __commonJS((exports2) => {
   "use strict";
-  var util2 = exports2;
-  util2.asPromise = require_aspromise();
-  util2.base64 = require_base64();
-  util2.EventEmitter = require_eventemitter();
-  util2.float = require_float();
-  util2.inquire = require_inquire();
-  util2.utf8 = require_utf8();
-  util2.pool = require_pool();
-  util2.LongBits = require_longbits();
-  util2.isNode = Boolean(typeof global !== "undefined" && global && global.process && global.process.versions && global.process.versions.node);
-  util2.global = util2.isNode && global || typeof window !== "undefined" && window || typeof self !== "undefined" && self || exports2;
-  util2.emptyArray = Object.freeze ? Object.freeze([]) : [];
-  util2.emptyObject = Object.freeze ? Object.freeze({}) : {};
-  util2.isInteger = Number.isInteger || function isInteger(value) {
+  var util6 = exports2;
+  util6.asPromise = require_aspromise();
+  util6.base64 = require_base64();
+  util6.EventEmitter = require_eventemitter();
+  util6.float = require_float();
+  util6.inquire = require_inquire();
+  util6.utf8 = require_utf8();
+  util6.pool = require_pool();
+  util6.LongBits = require_longbits();
+  util6.isNode = Boolean(typeof global !== "undefined" && global && global.process && global.process.versions && global.process.versions.node);
+  util6.global = util6.isNode && global || typeof window !== "undefined" && window || typeof self !== "undefined" && self || exports2;
+  util6.emptyArray = Object.freeze ? Object.freeze([]) : [];
+  util6.emptyObject = Object.freeze ? Object.freeze({}) : {};
+  util6.isInteger = Number.isInteger || function isInteger(value) {
     return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
   };
-  util2.isString = function isString(value) {
+  util6.isString = function isString(value) {
     return typeof value === "string" || value instanceof String;
   };
-  util2.isObject = function isObject(value) {
+  util6.isObject = function isObject(value) {
     return value && typeof value === "object";
   };
-  util2.isset = util2.isSet = function isSet(obj, prop) {
+  util6.isset = util6.isSet = function isSet(obj, prop) {
     var value = obj[prop];
     if (value != null && obj.hasOwnProperty(prop))
       return typeof value !== "object" || (Array.isArray(value) ? value.length : Object.keys(value).length) > 0;
     return false;
   };
-  util2.Buffer = function() {
+  util6.Buffer = function() {
     try {
-      var Buffer2 = util2.inquire("buffer").Buffer;
+      var Buffer2 = util6.inquire("buffer").Buffer;
       return Buffer2.prototype.utf8Write ? Buffer2 : null;
     } catch (e) {
       return null;
     }
   }();
-  util2._Buffer_from = null;
-  util2._Buffer_allocUnsafe = null;
-  util2.newBuffer = function newBuffer(sizeOrArray) {
-    return typeof sizeOrArray === "number" ? util2.Buffer ? util2._Buffer_allocUnsafe(sizeOrArray) : new util2.Array(sizeOrArray) : util2.Buffer ? util2._Buffer_from(sizeOrArray) : typeof Uint8Array === "undefined" ? sizeOrArray : new Uint8Array(sizeOrArray);
+  util6._Buffer_from = null;
+  util6._Buffer_allocUnsafe = null;
+  util6.newBuffer = function newBuffer(sizeOrArray) {
+    return typeof sizeOrArray === "number" ? util6.Buffer ? util6._Buffer_allocUnsafe(sizeOrArray) : new util6.Array(sizeOrArray) : util6.Buffer ? util6._Buffer_from(sizeOrArray) : typeof Uint8Array === "undefined" ? sizeOrArray : new Uint8Array(sizeOrArray);
   };
-  util2.Array = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
-  util2.Long = util2.global.dcodeIO && util2.global.dcodeIO.Long || util2.global.Long || util2.inquire("long");
-  util2.key2Re = /^true|false|0|1$/;
-  util2.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
-  util2.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
-  util2.longToHash = function longToHash(value) {
-    return value ? util2.LongBits.from(value).toHash() : util2.LongBits.zeroHash;
+  util6.Array = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
+  util6.Long = util6.global.dcodeIO && util6.global.dcodeIO.Long || util6.global.Long || util6.inquire("long");
+  util6.key2Re = /^true|false|0|1$/;
+  util6.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
+  util6.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
+  util6.longToHash = function longToHash(value) {
+    return value ? util6.LongBits.from(value).toHash() : util6.LongBits.zeroHash;
   };
-  util2.longFromHash = function longFromHash(hash, unsigned) {
-    var bits = util2.LongBits.fromHash(hash);
-    if (util2.Long)
-      return util2.Long.fromBits(bits.lo, bits.hi, unsigned);
+  util6.longFromHash = function longFromHash(hash, unsigned) {
+    var bits = util6.LongBits.fromHash(hash);
+    if (util6.Long)
+      return util6.Long.fromBits(bits.lo, bits.hi, unsigned);
     return bits.toNumber(Boolean(unsigned));
   };
   function merge(dst, src, ifNotSet) {
@@ -658,8 +658,8 @@ var require_minimal = __commonJS((exports2) => {
         dst[keys[i]] = src[keys[i]];
     return dst;
   }
-  util2.merge = merge;
-  util2.lcFirst = function lcFirst(str) {
+  util6.merge = merge;
+  util6.lcFirst = function lcFirst(str) {
     return str.charAt(0).toLowerCase() + str.substring(1);
   };
   function newError(name) {
@@ -685,9 +685,9 @@ var require_minimal = __commonJS((exports2) => {
     };
     return CustomError;
   }
-  util2.newError = newError;
-  util2.ProtocolError = newError("ProtocolError");
-  util2.oneOfGetter = function getOneOf(fieldNames) {
+  util6.newError = newError;
+  util6.ProtocolError = newError("ProtocolError");
+  util6.oneOfGetter = function getOneOf(fieldNames) {
     var fieldMap = {};
     for (var i = 0; i < fieldNames.length; ++i)
       fieldMap[fieldNames[i]] = 1;
@@ -697,29 +697,29 @@ var require_minimal = __commonJS((exports2) => {
           return keys[i2];
     };
   };
-  util2.oneOfSetter = function setOneOf(fieldNames) {
+  util6.oneOfSetter = function setOneOf(fieldNames) {
     return function(name) {
       for (var i = 0; i < fieldNames.length; ++i)
         if (fieldNames[i] !== name)
           delete this[fieldNames[i]];
     };
   };
-  util2.toJSONOptions = {
+  util6.toJSONOptions = {
     longs: String,
     enums: String,
     bytes: String,
     json: true
   };
-  util2._configure = function() {
-    var Buffer2 = util2.Buffer;
+  util6._configure = function() {
+    var Buffer2 = util6.Buffer;
     if (!Buffer2) {
-      util2._Buffer_from = util2._Buffer_allocUnsafe = null;
+      util6._Buffer_from = util6._Buffer_allocUnsafe = null;
       return;
     }
-    util2._Buffer_from = Buffer2.from !== Uint8Array.from && Buffer2.from || function Buffer_from(value, encoding) {
+    util6._Buffer_from = Buffer2.from !== Uint8Array.from && Buffer2.from || function Buffer_from(value, encoding) {
       return new Buffer2(value, encoding);
     };
-    util2._Buffer_allocUnsafe = Buffer2.allocUnsafe || function Buffer_allocUnsafe(size) {
+    util6._Buffer_allocUnsafe = Buffer2.allocUnsafe || function Buffer_allocUnsafe(size) {
       return new Buffer2(size);
     };
   };
@@ -729,11 +729,11 @@ var require_minimal = __commonJS((exports2) => {
 var require_writer = __commonJS((exports2, module2) => {
   "use strict";
   module2.exports = Writer5;
-  var util2 = require_minimal();
+  var util6 = require_minimal();
   var BufferWriter;
-  var LongBits = util2.LongBits;
-  var base64 = util2.base64;
-  var utf8 = util2.utf8;
+  var LongBits = util6.LongBits;
+  var base64 = util6.base64;
+  var utf8 = util6.utf8;
   function Op(fn, len, val) {
     this.fn = fn;
     this.len = len;
@@ -755,7 +755,7 @@ var require_writer = __commonJS((exports2, module2) => {
     this.states = null;
   }
   var create = function create2() {
-    return util2.Buffer ? function create_buffer_setup() {
+    return util6.Buffer ? function create_buffer_setup() {
       return (Writer5.create = function create_buffer() {
         return new BufferWriter();
       })();
@@ -765,10 +765,10 @@ var require_writer = __commonJS((exports2, module2) => {
   };
   Writer5.create = create();
   Writer5.alloc = function alloc(size) {
-    return new util2.Array(size);
+    return new util6.Array(size);
   };
-  if (util2.Array !== Array)
-    Writer5.alloc = util2.pool(Writer5.alloc, util2.Array.prototype.subarray);
+  if (util6.Array !== Array)
+    Writer5.alloc = util6.pool(Writer5.alloc, util6.Array.prototype.subarray);
   Writer5.prototype._push = function push(fn, len, val) {
     this.tail = this.tail.next = new Op(fn, len, val);
     this.len += len;
@@ -841,12 +841,12 @@ var require_writer = __commonJS((exports2, module2) => {
   };
   Writer5.prototype.sfixed64 = Writer5.prototype.fixed64;
   Writer5.prototype.float = function write_float(value) {
-    return this._push(util2.float.writeFloatLE, 4, value);
+    return this._push(util6.float.writeFloatLE, 4, value);
   };
   Writer5.prototype.double = function write_double(value) {
-    return this._push(util2.float.writeDoubleLE, 8, value);
+    return this._push(util6.float.writeDoubleLE, 8, value);
   };
-  var writeBytes = util2.Array.prototype.set ? function writeBytes_set(val, buf, pos) {
+  var writeBytes = util6.Array.prototype.set ? function writeBytes_set(val, buf, pos) {
     buf.set(val, pos);
   } : function writeBytes_for(val, buf, pos) {
     for (var i = 0; i < val.length; ++i)
@@ -856,7 +856,7 @@ var require_writer = __commonJS((exports2, module2) => {
     var len = value.length >>> 0;
     if (!len)
       return this._push(writeByte, 1, 0);
-    if (util2.isString(value)) {
+    if (util6.isString(value)) {
       var buf = Writer5.alloc(len = base64.length(value));
       base64.decode(value, buf, 0);
       value = buf;
@@ -917,13 +917,13 @@ var require_writer_buffer = __commonJS((exports2, module2) => {
   module2.exports = BufferWriter;
   var Writer5 = require_writer();
   (BufferWriter.prototype = Object.create(Writer5.prototype)).constructor = BufferWriter;
-  var util2 = require_minimal();
+  var util6 = require_minimal();
   function BufferWriter() {
     Writer5.call(this);
   }
   BufferWriter._configure = function() {
-    BufferWriter.alloc = util2._Buffer_allocUnsafe;
-    BufferWriter.writeBytesBuffer = util2.Buffer && util2.Buffer.prototype instanceof Uint8Array && util2.Buffer.prototype.set.name === "set" ? function writeBytesBuffer_set(val, buf, pos) {
+    BufferWriter.alloc = util6._Buffer_allocUnsafe;
+    BufferWriter.writeBytesBuffer = util6.Buffer && util6.Buffer.prototype instanceof Uint8Array && util6.Buffer.prototype.set.name === "set" ? function writeBytesBuffer_set(val, buf, pos) {
       buf.set(val, pos);
     } : function writeBytesBuffer_copy(val, buf, pos) {
       if (val.copy)
@@ -934,8 +934,8 @@ var require_writer_buffer = __commonJS((exports2, module2) => {
     };
   };
   BufferWriter.prototype.bytes = function write_bytes_buffer(value) {
-    if (util2.isString(value))
-      value = util2._Buffer_from(value, "base64");
+    if (util6.isString(value))
+      value = util6._Buffer_from(value, "base64");
     var len = value.length >>> 0;
     this.uint32(len);
     if (len)
@@ -944,14 +944,14 @@ var require_writer_buffer = __commonJS((exports2, module2) => {
   };
   function writeStringBuffer(val, buf, pos) {
     if (val.length < 40)
-      util2.utf8.write(val, buf, pos);
+      util6.utf8.write(val, buf, pos);
     else if (buf.utf8Write)
       buf.utf8Write(val, pos);
     else
       buf.write(val, pos);
   }
   BufferWriter.prototype.string = function write_string_buffer(value) {
-    var len = util2.Buffer.byteLength(value);
+    var len = util6.Buffer.byteLength(value);
     this.uint32(len);
     if (len)
       this._push(writeStringBuffer, len, value);
@@ -964,10 +964,10 @@ var require_writer_buffer = __commonJS((exports2, module2) => {
 var require_reader = __commonJS((exports2, module2) => {
   "use strict";
   module2.exports = Reader5;
-  var util2 = require_minimal();
+  var util6 = require_minimal();
   var BufferReader;
-  var LongBits = util2.LongBits;
-  var utf8 = util2.utf8;
+  var LongBits = util6.LongBits;
+  var utf8 = util6.utf8;
   function indexOutOfRange(reader, writeLength) {
     return RangeError("index out of range: " + reader.pos + " + " + (writeLength || 1) + " > " + reader.len);
   }
@@ -986,14 +986,14 @@ var require_reader = __commonJS((exports2, module2) => {
     throw Error("illegal buffer");
   };
   var create = function create2() {
-    return util2.Buffer ? function create_buffer_setup(buffer) {
+    return util6.Buffer ? function create_buffer_setup(buffer) {
       return (Reader5.create = function create_buffer(buffer2) {
-        return util2.Buffer.isBuffer(buffer2) ? new BufferReader(buffer2) : create_array(buffer2);
+        return util6.Buffer.isBuffer(buffer2) ? new BufferReader(buffer2) : create_array(buffer2);
       })(buffer);
     } : create_array;
   };
   Reader5.create = create();
-  Reader5.prototype._slice = util2.Array.prototype.subarray || util2.Array.prototype.slice;
+  Reader5.prototype._slice = util6.Array.prototype.subarray || util6.Array.prototype.slice;
   Reader5.prototype.uint32 = function read_uint32_setup() {
     var value = 4294967295;
     return function read_uint32() {
@@ -1092,14 +1092,14 @@ var require_reader = __commonJS((exports2, module2) => {
   Reader5.prototype.float = function read_float() {
     if (this.pos + 4 > this.len)
       throw indexOutOfRange(this, 4);
-    var value = util2.float.readFloatLE(this.buf, this.pos);
+    var value = util6.float.readFloatLE(this.buf, this.pos);
     this.pos += 4;
     return value;
   };
   Reader5.prototype.double = function read_double() {
     if (this.pos + 8 > this.len)
       throw indexOutOfRange(this, 4);
-    var value = util2.float.readDoubleLE(this.buf, this.pos);
+    var value = util6.float.readDoubleLE(this.buf, this.pos);
     this.pos += 8;
     return value;
   };
@@ -1157,8 +1157,8 @@ var require_reader = __commonJS((exports2, module2) => {
     BufferReader = BufferReader_;
     Reader5.create = create();
     BufferReader._configure();
-    var fn = util2.Long ? "toLong" : "toNumber";
-    util2.merge(Reader5.prototype, {
+    var fn = util6.Long ? "toLong" : "toNumber";
+    util6.merge(Reader5.prototype, {
       int64: function read_int64() {
         return readLongVarint.call(this)[fn](false);
       },
@@ -1184,13 +1184,13 @@ var require_reader_buffer = __commonJS((exports2, module2) => {
   module2.exports = BufferReader;
   var Reader5 = require_reader();
   (BufferReader.prototype = Object.create(Reader5.prototype)).constructor = BufferReader;
-  var util2 = require_minimal();
+  var util6 = require_minimal();
   function BufferReader(buffer) {
     Reader5.call(this, buffer);
   }
   BufferReader._configure = function() {
-    if (util2.Buffer)
-      BufferReader.prototype._slice = util2.Buffer.prototype.slice;
+    if (util6.Buffer)
+      BufferReader.prototype._slice = util6.Buffer.prototype.slice;
   };
   BufferReader.prototype.string = function read_string_buffer() {
     var len = this.uint32();
@@ -1203,12 +1203,12 @@ var require_reader_buffer = __commonJS((exports2, module2) => {
 var require_service = __commonJS((exports2, module2) => {
   "use strict";
   module2.exports = Service;
-  var util2 = require_minimal();
-  (Service.prototype = Object.create(util2.EventEmitter.prototype)).constructor = Service;
+  var util6 = require_minimal();
+  (Service.prototype = Object.create(util6.EventEmitter.prototype)).constructor = Service;
   function Service(rpcImpl, requestDelimited, responseDelimited) {
     if (typeof rpcImpl !== "function")
       throw TypeError("rpcImpl must be a function");
-    util2.EventEmitter.call(this);
+    util6.EventEmitter.call(this);
     this.rpcImpl = rpcImpl;
     this.requestDelimited = Boolean(requestDelimited);
     this.responseDelimited = Boolean(responseDelimited);
@@ -1218,7 +1218,7 @@ var require_service = __commonJS((exports2, module2) => {
       throw TypeError("request must be specified");
     var self2 = this;
     if (!callback)
-      return util2.asPromise(rpcCall, self2, method, requestCtor, responseCtor, request);
+      return util6.asPromise(rpcCall, self2, method, requestCtor, responseCtor, request);
     if (!self2.rpcImpl) {
       setTimeout(function() {
         callback(Error("already ended"));
@@ -1290,13 +1290,13 @@ var require_index_minimal = __commonJS((exports2) => {
   protobuf2.util = require_minimal();
   protobuf2.rpc = require_rpc();
   protobuf2.roots = require_roots();
-  protobuf2.configure = configure2;
-  function configure2() {
+  protobuf2.configure = configure6;
+  function configure6() {
     protobuf2.util._configure();
     protobuf2.Writer._configure(protobuf2.BufferWriter);
     protobuf2.Reader._configure(protobuf2.BufferReader);
   }
-  configure2();
+  configure6();
 });
 
 // node_modules/protobufjs/minimal.js
@@ -1307,7 +1307,7 @@ var require_minimal2 = __commonJS((exports2, module2) => {
 
 // node_modules/long/src/long.js
 var require_long = __commonJS((exports2, module2) => {
-  module2.exports = Long2;
+  module2.exports = Long6;
   var wasm = null;
   try {
     wasm = new WebAssembly.Instance(new WebAssembly.Module(new Uint8Array([
@@ -1600,17 +1600,17 @@ var require_long = __commonJS((exports2, module2) => {
     ])), {}).exports;
   } catch (e) {
   }
-  function Long2(low, high, unsigned) {
+  function Long6(low, high, unsigned) {
     this.low = low | 0;
     this.high = high | 0;
     this.unsigned = !!unsigned;
   }
-  Long2.prototype.__isLong__;
-  Object.defineProperty(Long2.prototype, "__isLong__", {value: true});
+  Long6.prototype.__isLong__;
+  Object.defineProperty(Long6.prototype, "__isLong__", {value: true});
   function isLong(obj) {
     return (obj && obj["__isLong__"]) === true;
   }
-  Long2.isLong = isLong;
+  Long6.isLong = isLong;
   var INT_CACHE = {};
   var UINT_CACHE = {};
   function fromInt(value, unsigned) {
@@ -1639,7 +1639,7 @@ var require_long = __commonJS((exports2, module2) => {
       return obj;
     }
   }
-  Long2.fromInt = fromInt;
+  Long6.fromInt = fromInt;
   function fromNumber(value, unsigned) {
     if (isNaN(value))
       return unsigned ? UZERO : ZERO;
@@ -1658,11 +1658,11 @@ var require_long = __commonJS((exports2, module2) => {
       return fromNumber(-value, unsigned).neg();
     return fromBits(value % TWO_PWR_32_DBL | 0, value / TWO_PWR_32_DBL | 0, unsigned);
   }
-  Long2.fromNumber = fromNumber;
+  Long6.fromNumber = fromNumber;
   function fromBits(lowBits, highBits, unsigned) {
-    return new Long2(lowBits, highBits, unsigned);
+    return new Long6(lowBits, highBits, unsigned);
   }
-  Long2.fromBits = fromBits;
+  Long6.fromBits = fromBits;
   var pow_dbl = Math.pow;
   function fromString(str, unsigned, radix) {
     if (str.length === 0)
@@ -1698,7 +1698,7 @@ var require_long = __commonJS((exports2, module2) => {
     result.unsigned = unsigned;
     return result;
   }
-  Long2.fromString = fromString;
+  Long6.fromString = fromString;
   function fromValue(val, unsigned) {
     if (typeof val === "number")
       return fromNumber(val, unsigned);
@@ -1706,7 +1706,7 @@ var require_long = __commonJS((exports2, module2) => {
       return fromString(val, unsigned);
     return fromBits(val.low, val.high, typeof unsigned === "boolean" ? unsigned : val.unsigned);
   }
-  Long2.fromValue = fromValue;
+  Long6.fromValue = fromValue;
   var TWO_PWR_16_DBL = 1 << 16;
   var TWO_PWR_24_DBL = 1 << 24;
   var TWO_PWR_32_DBL = TWO_PWR_16_DBL * TWO_PWR_16_DBL;
@@ -1714,22 +1714,22 @@ var require_long = __commonJS((exports2, module2) => {
   var TWO_PWR_63_DBL = TWO_PWR_64_DBL / 2;
   var TWO_PWR_24 = fromInt(TWO_PWR_24_DBL);
   var ZERO = fromInt(0);
-  Long2.ZERO = ZERO;
+  Long6.ZERO = ZERO;
   var UZERO = fromInt(0, true);
-  Long2.UZERO = UZERO;
+  Long6.UZERO = UZERO;
   var ONE = fromInt(1);
-  Long2.ONE = ONE;
+  Long6.ONE = ONE;
   var UONE = fromInt(1, true);
-  Long2.UONE = UONE;
+  Long6.UONE = UONE;
   var NEG_ONE = fromInt(-1);
-  Long2.NEG_ONE = NEG_ONE;
+  Long6.NEG_ONE = NEG_ONE;
   var MAX_VALUE = fromBits(4294967295 | 0, 2147483647 | 0, false);
-  Long2.MAX_VALUE = MAX_VALUE;
+  Long6.MAX_VALUE = MAX_VALUE;
   var MAX_UNSIGNED_VALUE = fromBits(4294967295 | 0, 4294967295 | 0, true);
-  Long2.MAX_UNSIGNED_VALUE = MAX_UNSIGNED_VALUE;
+  Long6.MAX_UNSIGNED_VALUE = MAX_UNSIGNED_VALUE;
   var MIN_VALUE = fromBits(0, 2147483648 | 0, false);
-  Long2.MIN_VALUE = MIN_VALUE;
-  var LongPrototype = Long2.prototype;
+  Long6.MIN_VALUE = MIN_VALUE;
+  var LongPrototype = Long6.prototype;
   LongPrototype.toInt = function toInt() {
     return this.unsigned ? this.low >>> 0 : this.low;
   };
@@ -2117,14 +2117,14 @@ var require_long = __commonJS((exports2, module2) => {
       lo & 255
     ];
   };
-  Long2.fromBytes = function fromBytes(bytes, unsigned, le) {
-    return le ? Long2.fromBytesLE(bytes, unsigned) : Long2.fromBytesBE(bytes, unsigned);
+  Long6.fromBytes = function fromBytes(bytes, unsigned, le) {
+    return le ? Long6.fromBytesLE(bytes, unsigned) : Long6.fromBytesBE(bytes, unsigned);
   };
-  Long2.fromBytesLE = function fromBytesLE(bytes, unsigned) {
-    return new Long2(bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24, bytes[4] | bytes[5] << 8 | bytes[6] << 16 | bytes[7] << 24, unsigned);
+  Long6.fromBytesLE = function fromBytesLE(bytes, unsigned) {
+    return new Long6(bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24, bytes[4] | bytes[5] << 8 | bytes[6] << 16 | bytes[7] << 24, unsigned);
   };
-  Long2.fromBytesBE = function fromBytesBE(bytes, unsigned) {
-    return new Long2(bytes[4] << 24 | bytes[5] << 16 | bytes[6] << 8 | bytes[7], bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], unsigned);
+  Long6.fromBytesBE = function fromBytesBE(bytes, unsigned) {
+    return new Long6(bytes[4] << 24 | bytes[5] << 16 | bytes[6] << 8 | bytes[7], bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], unsigned);
   };
 });
 
@@ -2136,6 +2136,7 @@ var protobuf = __toModule(require_minimal2());
 var import_long = __toModule(require_long());
 
 // google/protobuf/timestamp.ts
+var Long = __toModule(require_long());
 var import_minimal = __toModule(require_minimal2());
 var baseTimestamp = {
   seconds: 0,
@@ -2195,16 +2196,22 @@ var Timestamp = {
   },
   toJSON(message) {
     const obj = {};
-    obj.seconds = message.seconds || 0;
-    obj.nanos = message.nanos || 0;
+    message.seconds !== void 0 && (obj.seconds = message.seconds);
+    message.nanos !== void 0 && (obj.nanos = message.nanos);
     return obj;
   }
 };
+if (import_minimal.util.Long !== Long) {
+  import_minimal.util.Long = Long;
+  import_minimal.configure();
+}
 
 // github.com/heroiclabs/nakama-common/api/api.ts
+var Long3 = __toModule(require_long());
 var import_minimal3 = __toModule(require_minimal2());
 
 // google/protobuf/wrappers.ts
+var Long2 = __toModule(require_long());
 var import_minimal2 = __toModule(require_minimal2());
 var baseInt32Value = {
   value: 0
@@ -2253,7 +2260,7 @@ var Int32Value = {
   },
   toJSON(message) {
     const obj = {};
-    obj.value = message.value || 0;
+    message.value !== void 0 && (obj.value = message.value);
     return obj;
   }
 };
@@ -2295,7 +2302,7 @@ var BoolValue = {
   },
   toJSON(message) {
     const obj = {};
-    obj.value = message.value || false;
+    message.value !== void 0 && (obj.value = message.value);
     return obj;
   }
 };
@@ -2337,10 +2344,14 @@ var StringValue = {
   },
   toJSON(message) {
     const obj = {};
-    obj.value = message.value || "";
+    message.value !== void 0 && (obj.value = message.value);
     return obj;
   }
 };
+if (import_minimal2.util.Long !== Long2) {
+  import_minimal2.util.Long = Long2;
+  import_minimal2.configure();
+}
 var windowBase64 = globalThis;
 var atob = windowBase64.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
 var btoa = windowBase64.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
@@ -2389,6 +2400,30 @@ function fromTimestamp(t) {
   millis += t.nanos / 1e6;
   return new Date(millis);
 }
+var Friend_State;
+(function(Friend_State2) {
+  Friend_State2[Friend_State2["FRIEND"] = 0] = "FRIEND";
+  Friend_State2[Friend_State2["INVITE_SENT"] = 1] = "INVITE_SENT";
+  Friend_State2[Friend_State2["INVITE_RECEIVED"] = 2] = "INVITE_RECEIVED";
+  Friend_State2[Friend_State2["BLOCKED"] = 3] = "BLOCKED";
+  Friend_State2[Friend_State2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(Friend_State || (Friend_State = {}));
+var GroupUserList_GroupUser_State;
+(function(GroupUserList_GroupUser_State2) {
+  GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["SUPERADMIN"] = 0] = "SUPERADMIN";
+  GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["ADMIN"] = 1] = "ADMIN";
+  GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["MEMBER"] = 2] = "MEMBER";
+  GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["JOIN_REQUEST"] = 3] = "JOIN_REQUEST";
+  GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(GroupUserList_GroupUser_State || (GroupUserList_GroupUser_State = {}));
+var UserGroupList_UserGroup_State;
+(function(UserGroupList_UserGroup_State2) {
+  UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["SUPERADMIN"] = 0] = "SUPERADMIN";
+  UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["ADMIN"] = 1] = "ADMIN";
+  UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["MEMBER"] = 2] = "MEMBER";
+  UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["JOIN_REQUEST"] = 3] = "JOIN_REQUEST";
+  UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(UserGroupList_UserGroup_State || (UserGroupList_UserGroup_State = {}));
 var ChannelMessage = {
   encode(message, writer = import_minimal3.Writer.create()) {
     writer.uint32(10).string(message.channel_id);
@@ -2555,19 +2590,19 @@ var ChannelMessage = {
   },
   toJSON(message) {
     const obj = {};
-    obj.channel_id = message.channel_id || "";
-    obj.message_id = message.message_id || "";
-    obj.code = message.code || void 0;
-    obj.sender_id = message.sender_id || "";
-    obj.username = message.username || "";
-    obj.content = message.content || "";
-    obj.create_time = message.create_time !== void 0 ? message.create_time.toISOString() : null;
-    obj.update_time = message.update_time !== void 0 ? message.update_time.toISOString() : null;
-    obj.persistent = message.persistent || void 0;
-    obj.room_name = message.room_name || "";
-    obj.group_id = message.group_id || "";
-    obj.user_id_one = message.user_id_one || "";
-    obj.user_id_two = message.user_id_two || "";
+    message.channel_id !== void 0 && (obj.channel_id = message.channel_id);
+    message.message_id !== void 0 && (obj.message_id = message.message_id);
+    message.code !== void 0 && (obj.code = message.code);
+    message.sender_id !== void 0 && (obj.sender_id = message.sender_id);
+    message.username !== void 0 && (obj.username = message.username);
+    message.content !== void 0 && (obj.content = message.content);
+    message.create_time !== void 0 && (obj.create_time = message.create_time !== void 0 ? message.create_time.toISOString() : null);
+    message.update_time !== void 0 && (obj.update_time = message.update_time !== void 0 ? message.update_time.toISOString() : null);
+    message.persistent !== void 0 && (obj.persistent = message.persistent);
+    message.room_name !== void 0 && (obj.room_name = message.room_name);
+    message.group_id !== void 0 && (obj.group_id = message.group_id);
+    message.user_id_one !== void 0 && (obj.user_id_one = message.user_id_one);
+    message.user_id_two !== void 0 && (obj.user_id_two = message.user_id_two);
     return obj;
   }
 };
@@ -2671,13 +2706,13 @@ var Notification = {
   },
   toJSON(message) {
     const obj = {};
-    obj.id = message.id || "";
-    obj.subject = message.subject || "";
-    obj.content = message.content || "";
-    obj.code = message.code || 0;
-    obj.sender_id = message.sender_id || "";
-    obj.create_time = message.create_time !== void 0 ? message.create_time.toISOString() : null;
-    obj.persistent = message.persistent || false;
+    message.id !== void 0 && (obj.id = message.id);
+    message.subject !== void 0 && (obj.subject = message.subject);
+    message.content !== void 0 && (obj.content = message.content);
+    message.code !== void 0 && (obj.code = message.code);
+    message.sender_id !== void 0 && (obj.sender_id = message.sender_id);
+    message.create_time !== void 0 && (obj.create_time = message.create_time !== void 0 ? message.create_time.toISOString() : null);
+    message.persistent !== void 0 && (obj.persistent = message.persistent);
     return obj;
   }
 };
@@ -2739,14 +2774,19 @@ var Rpc = {
   },
   toJSON(message) {
     const obj = {};
-    obj.id = message.id || "";
-    obj.payload = message.payload || "";
-    obj.http_key = message.http_key || "";
+    message.id !== void 0 && (obj.id = message.id);
+    message.payload !== void 0 && (obj.payload = message.payload);
+    message.http_key !== void 0 && (obj.http_key = message.http_key);
     return obj;
   }
 };
+if (import_minimal3.util.Long !== Long3) {
+  import_minimal3.util.Long = Long3;
+  import_minimal3.configure();
+}
 
 // github.com/heroiclabs/nakama-common/rtapi/realtime.ts
+var Long4 = __toModule(require_long());
 var import_minimal4 = __toModule(require_minimal2());
 var baseEnvelope = {
   cid: ""
@@ -2845,7 +2885,9 @@ var baseMatchmakerAdd_NumericPropertiesEntry = {
 var baseMatchmakerMatched = {
   ticket: ""
 };
-var baseMatchmakerMatched_MatchmakerUser = {};
+var baseMatchmakerMatched_MatchmakerUser = {
+  party_id: ""
+};
 var baseMatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
   key: "",
   value: ""
@@ -2861,6 +2903,75 @@ var baseMatchmakerTicket = {
   ticket: ""
 };
 var baseNotifications = {};
+var baseParty = {
+  party_id: "",
+  open: false,
+  max_size: 0
+};
+var basePartyCreate = {
+  open: false,
+  max_size: 0
+};
+var basePartyJoin = {
+  party_id: ""
+};
+var basePartyLeave = {
+  party_id: ""
+};
+var basePartyPromote = {
+  party_id: ""
+};
+var basePartyLeader = {
+  party_id: ""
+};
+var basePartyAccept = {
+  party_id: ""
+};
+var basePartyRemove = {
+  party_id: ""
+};
+var basePartyClose = {
+  party_id: ""
+};
+var basePartyJoinRequestList = {
+  party_id: ""
+};
+var basePartyJoinRequest = {
+  party_id: ""
+};
+var basePartyMatchmakerAdd = {
+  party_id: "",
+  min_count: 0,
+  max_count: 0,
+  query: ""
+};
+var basePartyMatchmakerAdd_StringPropertiesEntry = {
+  key: "",
+  value: ""
+};
+var basePartyMatchmakerAdd_NumericPropertiesEntry = {
+  key: "",
+  value: 0
+};
+var basePartyMatchmakerRemove = {
+  party_id: "",
+  ticket: ""
+};
+var basePartyMatchmakerTicket = {
+  party_id: "",
+  ticket: ""
+};
+var basePartyData = {
+  party_id: "",
+  op_code: 0
+};
+var basePartyDataSend = {
+  party_id: "",
+  op_code: 0
+};
+var basePartyPresenceEvent = {
+  party_id: ""
+};
 var basePing = {};
 var basePong = {};
 var baseStatus = {};
@@ -2915,105 +3026,176 @@ function longToNumber2(long) {
   }
   return long.toNumber();
 }
+var ChannelJoin_Type;
+(function(ChannelJoin_Type2) {
+  ChannelJoin_Type2[ChannelJoin_Type2["TYPE_UNSPECIFIED"] = 0] = "TYPE_UNSPECIFIED";
+  ChannelJoin_Type2[ChannelJoin_Type2["ROOM"] = 1] = "ROOM";
+  ChannelJoin_Type2[ChannelJoin_Type2["DIRECT_MESSAGE"] = 2] = "DIRECT_MESSAGE";
+  ChannelJoin_Type2[ChannelJoin_Type2["GROUP"] = 3] = "GROUP";
+  ChannelJoin_Type2[ChannelJoin_Type2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(ChannelJoin_Type || (ChannelJoin_Type = {}));
+var Error_Code;
+(function(Error_Code2) {
+  Error_Code2[Error_Code2["RUNTIME_EXCEPTION"] = 0] = "RUNTIME_EXCEPTION";
+  Error_Code2[Error_Code2["UNRECOGNIZED_PAYLOAD"] = 1] = "UNRECOGNIZED_PAYLOAD";
+  Error_Code2[Error_Code2["MISSING_PAYLOAD"] = 2] = "MISSING_PAYLOAD";
+  Error_Code2[Error_Code2["BAD_INPUT"] = 3] = "BAD_INPUT";
+  Error_Code2[Error_Code2["MATCH_NOT_FOUND"] = 4] = "MATCH_NOT_FOUND";
+  Error_Code2[Error_Code2["MATCH_JOIN_REJECTED"] = 5] = "MATCH_JOIN_REJECTED";
+  Error_Code2[Error_Code2["RUNTIME_FUNCTION_NOT_FOUND"] = 6] = "RUNTIME_FUNCTION_NOT_FOUND";
+  Error_Code2[Error_Code2["RUNTIME_FUNCTION_EXCEPTION"] = 7] = "RUNTIME_FUNCTION_EXCEPTION";
+  Error_Code2[Error_Code2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(Error_Code || (Error_Code = {}));
 var Envelope = {
   encode(message, writer = import_minimal4.Writer.create()) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W;
     writer.uint32(10).string(message.cid);
-    if (((_a = message.message) == null ? void 0 : _a.$case) === "channel" && ((_b = message.message) == null ? void 0 : _b.channel) !== void 0) {
+    if (((_a = message.message) == null ? void 0 : _a.$case) === "channel") {
       Channel.encode(message.message.channel, writer.uint32(18).fork()).ldelim();
     }
-    if (((_c = message.message) == null ? void 0 : _c.$case) === "channel_join" && ((_d = message.message) == null ? void 0 : _d.channel_join) !== void 0) {
+    if (((_b = message.message) == null ? void 0 : _b.$case) === "channel_join") {
       ChannelJoin.encode(message.message.channel_join, writer.uint32(26).fork()).ldelim();
     }
-    if (((_e = message.message) == null ? void 0 : _e.$case) === "channel_leave" && ((_f = message.message) == null ? void 0 : _f.channel_leave) !== void 0) {
+    if (((_c = message.message) == null ? void 0 : _c.$case) === "channel_leave") {
       ChannelLeave.encode(message.message.channel_leave, writer.uint32(34).fork()).ldelim();
     }
-    if (((_g = message.message) == null ? void 0 : _g.$case) === "channel_message" && ((_h = message.message) == null ? void 0 : _h.channel_message) !== void 0) {
+    if (((_d = message.message) == null ? void 0 : _d.$case) === "channel_message") {
       ChannelMessage.encode(message.message.channel_message, writer.uint32(42).fork()).ldelim();
     }
-    if (((_i = message.message) == null ? void 0 : _i.$case) === "channel_message_ack" && ((_j = message.message) == null ? void 0 : _j.channel_message_ack) !== void 0) {
+    if (((_e = message.message) == null ? void 0 : _e.$case) === "channel_message_ack") {
       ChannelMessageAck.encode(message.message.channel_message_ack, writer.uint32(50).fork()).ldelim();
     }
-    if (((_k = message.message) == null ? void 0 : _k.$case) === "channel_message_send" && ((_l = message.message) == null ? void 0 : _l.channel_message_send) !== void 0) {
+    if (((_f = message.message) == null ? void 0 : _f.$case) === "channel_message_send") {
       ChannelMessageSend.encode(message.message.channel_message_send, writer.uint32(58).fork()).ldelim();
     }
-    if (((_m = message.message) == null ? void 0 : _m.$case) === "channel_message_update" && ((_n = message.message) == null ? void 0 : _n.channel_message_update) !== void 0) {
+    if (((_g = message.message) == null ? void 0 : _g.$case) === "channel_message_update") {
       ChannelMessageUpdate.encode(message.message.channel_message_update, writer.uint32(66).fork()).ldelim();
     }
-    if (((_o = message.message) == null ? void 0 : _o.$case) === "channel_message_remove" && ((_p = message.message) == null ? void 0 : _p.channel_message_remove) !== void 0) {
+    if (((_h = message.message) == null ? void 0 : _h.$case) === "channel_message_remove") {
       ChannelMessageRemove.encode(message.message.channel_message_remove, writer.uint32(74).fork()).ldelim();
     }
-    if (((_q = message.message) == null ? void 0 : _q.$case) === "channel_presence_event" && ((_r = message.message) == null ? void 0 : _r.channel_presence_event) !== void 0) {
+    if (((_i = message.message) == null ? void 0 : _i.$case) === "channel_presence_event") {
       ChannelPresenceEvent.encode(message.message.channel_presence_event, writer.uint32(82).fork()).ldelim();
     }
-    if (((_s = message.message) == null ? void 0 : _s.$case) === "error" && ((_t = message.message) == null ? void 0 : _t.error) !== void 0) {
+    if (((_j = message.message) == null ? void 0 : _j.$case) === "error") {
       Error2.encode(message.message.error, writer.uint32(90).fork()).ldelim();
     }
-    if (((_u = message.message) == null ? void 0 : _u.$case) === "match" && ((_v = message.message) == null ? void 0 : _v.match) !== void 0) {
+    if (((_k = message.message) == null ? void 0 : _k.$case) === "match") {
       Match.encode(message.message.match, writer.uint32(98).fork()).ldelim();
     }
-    if (((_w = message.message) == null ? void 0 : _w.$case) === "match_create" && ((_x = message.message) == null ? void 0 : _x.match_create) !== void 0) {
+    if (((_l = message.message) == null ? void 0 : _l.$case) === "match_create") {
       MatchCreate.encode(message.message.match_create, writer.uint32(106).fork()).ldelim();
     }
-    if (((_y = message.message) == null ? void 0 : _y.$case) === "match_data" && ((_z = message.message) == null ? void 0 : _z.match_data) !== void 0) {
+    if (((_m = message.message) == null ? void 0 : _m.$case) === "match_data") {
       MatchData.encode(message.message.match_data, writer.uint32(114).fork()).ldelim();
     }
-    if (((_A = message.message) == null ? void 0 : _A.$case) === "match_data_send" && ((_B = message.message) == null ? void 0 : _B.match_data_send) !== void 0) {
+    if (((_n = message.message) == null ? void 0 : _n.$case) === "match_data_send") {
       MatchDataSend.encode(message.message.match_data_send, writer.uint32(122).fork()).ldelim();
     }
-    if (((_C = message.message) == null ? void 0 : _C.$case) === "match_join" && ((_D = message.message) == null ? void 0 : _D.match_join) !== void 0) {
+    if (((_o = message.message) == null ? void 0 : _o.$case) === "match_join") {
       MatchJoin.encode(message.message.match_join, writer.uint32(130).fork()).ldelim();
     }
-    if (((_E = message.message) == null ? void 0 : _E.$case) === "match_leave" && ((_F = message.message) == null ? void 0 : _F.match_leave) !== void 0) {
+    if (((_p = message.message) == null ? void 0 : _p.$case) === "match_leave") {
       MatchLeave.encode(message.message.match_leave, writer.uint32(138).fork()).ldelim();
     }
-    if (((_G = message.message) == null ? void 0 : _G.$case) === "match_presence_event" && ((_H = message.message) == null ? void 0 : _H.match_presence_event) !== void 0) {
+    if (((_q = message.message) == null ? void 0 : _q.$case) === "match_presence_event") {
       MatchPresenceEvent.encode(message.message.match_presence_event, writer.uint32(146).fork()).ldelim();
     }
-    if (((_I = message.message) == null ? void 0 : _I.$case) === "matchmaker_add" && ((_J = message.message) == null ? void 0 : _J.matchmaker_add) !== void 0) {
+    if (((_r = message.message) == null ? void 0 : _r.$case) === "matchmaker_add") {
       MatchmakerAdd.encode(message.message.matchmaker_add, writer.uint32(154).fork()).ldelim();
     }
-    if (((_K = message.message) == null ? void 0 : _K.$case) === "matchmaker_matched" && ((_L = message.message) == null ? void 0 : _L.matchmaker_matched) !== void 0) {
+    if (((_s = message.message) == null ? void 0 : _s.$case) === "matchmaker_matched") {
       MatchmakerMatched.encode(message.message.matchmaker_matched, writer.uint32(162).fork()).ldelim();
     }
-    if (((_M = message.message) == null ? void 0 : _M.$case) === "matchmaker_remove" && ((_N = message.message) == null ? void 0 : _N.matchmaker_remove) !== void 0) {
+    if (((_t = message.message) == null ? void 0 : _t.$case) === "matchmaker_remove") {
       MatchmakerRemove.encode(message.message.matchmaker_remove, writer.uint32(170).fork()).ldelim();
     }
-    if (((_O = message.message) == null ? void 0 : _O.$case) === "matchmaker_ticket" && ((_P = message.message) == null ? void 0 : _P.matchmaker_ticket) !== void 0) {
+    if (((_u = message.message) == null ? void 0 : _u.$case) === "matchmaker_ticket") {
       MatchmakerTicket.encode(message.message.matchmaker_ticket, writer.uint32(178).fork()).ldelim();
     }
-    if (((_Q = message.message) == null ? void 0 : _Q.$case) === "notifications" && ((_R = message.message) == null ? void 0 : _R.notifications) !== void 0) {
+    if (((_v = message.message) == null ? void 0 : _v.$case) === "notifications") {
       Notifications.encode(message.message.notifications, writer.uint32(186).fork()).ldelim();
     }
-    if (((_S = message.message) == null ? void 0 : _S.$case) === "rpc" && ((_T = message.message) == null ? void 0 : _T.rpc) !== void 0) {
+    if (((_w = message.message) == null ? void 0 : _w.$case) === "rpc") {
       Rpc.encode(message.message.rpc, writer.uint32(194).fork()).ldelim();
     }
-    if (((_U = message.message) == null ? void 0 : _U.$case) === "status" && ((_V = message.message) == null ? void 0 : _V.status) !== void 0) {
+    if (((_x = message.message) == null ? void 0 : _x.$case) === "status") {
       Status.encode(message.message.status, writer.uint32(202).fork()).ldelim();
     }
-    if (((_W = message.message) == null ? void 0 : _W.$case) === "status_follow" && ((_X = message.message) == null ? void 0 : _X.status_follow) !== void 0) {
+    if (((_y = message.message) == null ? void 0 : _y.$case) === "status_follow") {
       StatusFollow.encode(message.message.status_follow, writer.uint32(210).fork()).ldelim();
     }
-    if (((_Y = message.message) == null ? void 0 : _Y.$case) === "status_presence_event" && ((_Z = message.message) == null ? void 0 : _Z.status_presence_event) !== void 0) {
+    if (((_z = message.message) == null ? void 0 : _z.$case) === "status_presence_event") {
       StatusPresenceEvent.encode(message.message.status_presence_event, writer.uint32(218).fork()).ldelim();
     }
-    if (((__ = message.message) == null ? void 0 : __.$case) === "status_unfollow" && ((_$ = message.message) == null ? void 0 : _$.status_unfollow) !== void 0) {
+    if (((_A = message.message) == null ? void 0 : _A.$case) === "status_unfollow") {
       StatusUnfollow.encode(message.message.status_unfollow, writer.uint32(226).fork()).ldelim();
     }
-    if (((_aa = message.message) == null ? void 0 : _aa.$case) === "status_update" && ((_ba = message.message) == null ? void 0 : _ba.status_update) !== void 0) {
+    if (((_B = message.message) == null ? void 0 : _B.$case) === "status_update") {
       StatusUpdate.encode(message.message.status_update, writer.uint32(234).fork()).ldelim();
     }
-    if (((_ca = message.message) == null ? void 0 : _ca.$case) === "stream_data" && ((_da = message.message) == null ? void 0 : _da.stream_data) !== void 0) {
+    if (((_C = message.message) == null ? void 0 : _C.$case) === "stream_data") {
       StreamData.encode(message.message.stream_data, writer.uint32(242).fork()).ldelim();
     }
-    if (((_ea = message.message) == null ? void 0 : _ea.$case) === "stream_presence_event" && ((_fa = message.message) == null ? void 0 : _fa.stream_presence_event) !== void 0) {
+    if (((_D = message.message) == null ? void 0 : _D.$case) === "stream_presence_event") {
       StreamPresenceEvent.encode(message.message.stream_presence_event, writer.uint32(250).fork()).ldelim();
     }
-    if (((_ga = message.message) == null ? void 0 : _ga.$case) === "ping" && ((_ha = message.message) == null ? void 0 : _ha.ping) !== void 0) {
+    if (((_E = message.message) == null ? void 0 : _E.$case) === "ping") {
       Ping.encode(message.message.ping, writer.uint32(258).fork()).ldelim();
     }
-    if (((_ia = message.message) == null ? void 0 : _ia.$case) === "pong" && ((_ja = message.message) == null ? void 0 : _ja.pong) !== void 0) {
+    if (((_F = message.message) == null ? void 0 : _F.$case) === "pong") {
       Pong.encode(message.message.pong, writer.uint32(266).fork()).ldelim();
+    }
+    if (((_G = message.message) == null ? void 0 : _G.$case) === "party") {
+      Party.encode(message.message.party, writer.uint32(274).fork()).ldelim();
+    }
+    if (((_H = message.message) == null ? void 0 : _H.$case) === "party_create") {
+      PartyCreate.encode(message.message.party_create, writer.uint32(282).fork()).ldelim();
+    }
+    if (((_I = message.message) == null ? void 0 : _I.$case) === "party_join") {
+      PartyJoin.encode(message.message.party_join, writer.uint32(290).fork()).ldelim();
+    }
+    if (((_J = message.message) == null ? void 0 : _J.$case) === "party_leave") {
+      PartyLeave.encode(message.message.party_leave, writer.uint32(298).fork()).ldelim();
+    }
+    if (((_K = message.message) == null ? void 0 : _K.$case) === "party_promote") {
+      PartyPromote.encode(message.message.party_promote, writer.uint32(306).fork()).ldelim();
+    }
+    if (((_L = message.message) == null ? void 0 : _L.$case) === "party_leader") {
+      PartyLeader.encode(message.message.party_leader, writer.uint32(314).fork()).ldelim();
+    }
+    if (((_M = message.message) == null ? void 0 : _M.$case) === "party_accept") {
+      PartyAccept.encode(message.message.party_accept, writer.uint32(322).fork()).ldelim();
+    }
+    if (((_N = message.message) == null ? void 0 : _N.$case) === "party_remove") {
+      PartyRemove.encode(message.message.party_remove, writer.uint32(330).fork()).ldelim();
+    }
+    if (((_O = message.message) == null ? void 0 : _O.$case) === "party_close") {
+      PartyClose.encode(message.message.party_close, writer.uint32(338).fork()).ldelim();
+    }
+    if (((_P = message.message) == null ? void 0 : _P.$case) === "party_join_request_list") {
+      PartyJoinRequestList.encode(message.message.party_join_request_list, writer.uint32(346).fork()).ldelim();
+    }
+    if (((_Q = message.message) == null ? void 0 : _Q.$case) === "party_join_request") {
+      PartyJoinRequest.encode(message.message.party_join_request, writer.uint32(354).fork()).ldelim();
+    }
+    if (((_R = message.message) == null ? void 0 : _R.$case) === "party_matchmaker_add") {
+      PartyMatchmakerAdd.encode(message.message.party_matchmaker_add, writer.uint32(362).fork()).ldelim();
+    }
+    if (((_S = message.message) == null ? void 0 : _S.$case) === "party_matchmaker_remove") {
+      PartyMatchmakerRemove.encode(message.message.party_matchmaker_remove, writer.uint32(370).fork()).ldelim();
+    }
+    if (((_T = message.message) == null ? void 0 : _T.$case) === "party_matchmaker_ticket") {
+      PartyMatchmakerTicket.encode(message.message.party_matchmaker_ticket, writer.uint32(378).fork()).ldelim();
+    }
+    if (((_U = message.message) == null ? void 0 : _U.$case) === "party_data") {
+      PartyData.encode(message.message.party_data, writer.uint32(386).fork()).ldelim();
+    }
+    if (((_V = message.message) == null ? void 0 : _V.$case) === "party_data_send") {
+      PartyDataSend.encode(message.message.party_data_send, writer.uint32(394).fork()).ldelim();
+    }
+    if (((_W = message.message) == null ? void 0 : _W.$case) === "party_presence_event") {
+      PartyPresenceEvent.encode(message.message.party_presence_event, writer.uint32(402).fork()).ldelim();
     }
     return writer;
   },
@@ -3123,6 +3305,57 @@ var Envelope = {
         case 33:
           message.message = {$case: "pong", pong: Pong.decode(reader, reader.uint32())};
           break;
+        case 34:
+          message.message = {$case: "party", party: Party.decode(reader, reader.uint32())};
+          break;
+        case 35:
+          message.message = {$case: "party_create", party_create: PartyCreate.decode(reader, reader.uint32())};
+          break;
+        case 36:
+          message.message = {$case: "party_join", party_join: PartyJoin.decode(reader, reader.uint32())};
+          break;
+        case 37:
+          message.message = {$case: "party_leave", party_leave: PartyLeave.decode(reader, reader.uint32())};
+          break;
+        case 38:
+          message.message = {$case: "party_promote", party_promote: PartyPromote.decode(reader, reader.uint32())};
+          break;
+        case 39:
+          message.message = {$case: "party_leader", party_leader: PartyLeader.decode(reader, reader.uint32())};
+          break;
+        case 40:
+          message.message = {$case: "party_accept", party_accept: PartyAccept.decode(reader, reader.uint32())};
+          break;
+        case 41:
+          message.message = {$case: "party_remove", party_remove: PartyRemove.decode(reader, reader.uint32())};
+          break;
+        case 42:
+          message.message = {$case: "party_close", party_close: PartyClose.decode(reader, reader.uint32())};
+          break;
+        case 43:
+          message.message = {$case: "party_join_request_list", party_join_request_list: PartyJoinRequestList.decode(reader, reader.uint32())};
+          break;
+        case 44:
+          message.message = {$case: "party_join_request", party_join_request: PartyJoinRequest.decode(reader, reader.uint32())};
+          break;
+        case 45:
+          message.message = {$case: "party_matchmaker_add", party_matchmaker_add: PartyMatchmakerAdd.decode(reader, reader.uint32())};
+          break;
+        case 46:
+          message.message = {$case: "party_matchmaker_remove", party_matchmaker_remove: PartyMatchmakerRemove.decode(reader, reader.uint32())};
+          break;
+        case 47:
+          message.message = {$case: "party_matchmaker_ticket", party_matchmaker_ticket: PartyMatchmakerTicket.decode(reader, reader.uint32())};
+          break;
+        case 48:
+          message.message = {$case: "party_data", party_data: PartyData.decode(reader, reader.uint32())};
+          break;
+        case 49:
+          message.message = {$case: "party_data_send", party_data_send: PartyDataSend.decode(reader, reader.uint32())};
+          break;
+        case 50:
+          message.message = {$case: "party_presence_event", party_presence_event: PartyPresenceEvent.decode(reader, reader.uint32())};
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -3231,10 +3464,61 @@ var Envelope = {
     if (object.pong !== void 0 && object.pong !== null) {
       message.message = {$case: "pong", pong: Pong.fromJSON(object.pong)};
     }
+    if (object.party !== void 0 && object.party !== null) {
+      message.message = {$case: "party", party: Party.fromJSON(object.party)};
+    }
+    if (object.party_create !== void 0 && object.party_create !== null) {
+      message.message = {$case: "party_create", party_create: PartyCreate.fromJSON(object.party_create)};
+    }
+    if (object.party_join !== void 0 && object.party_join !== null) {
+      message.message = {$case: "party_join", party_join: PartyJoin.fromJSON(object.party_join)};
+    }
+    if (object.party_leave !== void 0 && object.party_leave !== null) {
+      message.message = {$case: "party_leave", party_leave: PartyLeave.fromJSON(object.party_leave)};
+    }
+    if (object.party_promote !== void 0 && object.party_promote !== null) {
+      message.message = {$case: "party_promote", party_promote: PartyPromote.fromJSON(object.party_promote)};
+    }
+    if (object.party_leader !== void 0 && object.party_leader !== null) {
+      message.message = {$case: "party_leader", party_leader: PartyLeader.fromJSON(object.party_leader)};
+    }
+    if (object.party_accept !== void 0 && object.party_accept !== null) {
+      message.message = {$case: "party_accept", party_accept: PartyAccept.fromJSON(object.party_accept)};
+    }
+    if (object.party_remove !== void 0 && object.party_remove !== null) {
+      message.message = {$case: "party_remove", party_remove: PartyRemove.fromJSON(object.party_remove)};
+    }
+    if (object.party_close !== void 0 && object.party_close !== null) {
+      message.message = {$case: "party_close", party_close: PartyClose.fromJSON(object.party_close)};
+    }
+    if (object.party_join_request_list !== void 0 && object.party_join_request_list !== null) {
+      message.message = {$case: "party_join_request_list", party_join_request_list: PartyJoinRequestList.fromJSON(object.party_join_request_list)};
+    }
+    if (object.party_join_request !== void 0 && object.party_join_request !== null) {
+      message.message = {$case: "party_join_request", party_join_request: PartyJoinRequest.fromJSON(object.party_join_request)};
+    }
+    if (object.party_matchmaker_add !== void 0 && object.party_matchmaker_add !== null) {
+      message.message = {$case: "party_matchmaker_add", party_matchmaker_add: PartyMatchmakerAdd.fromJSON(object.party_matchmaker_add)};
+    }
+    if (object.party_matchmaker_remove !== void 0 && object.party_matchmaker_remove !== null) {
+      message.message = {$case: "party_matchmaker_remove", party_matchmaker_remove: PartyMatchmakerRemove.fromJSON(object.party_matchmaker_remove)};
+    }
+    if (object.party_matchmaker_ticket !== void 0 && object.party_matchmaker_ticket !== null) {
+      message.message = {$case: "party_matchmaker_ticket", party_matchmaker_ticket: PartyMatchmakerTicket.fromJSON(object.party_matchmaker_ticket)};
+    }
+    if (object.party_data !== void 0 && object.party_data !== null) {
+      message.message = {$case: "party_data", party_data: PartyData.fromJSON(object.party_data)};
+    }
+    if (object.party_data_send !== void 0 && object.party_data_send !== null) {
+      message.message = {$case: "party_data_send", party_data_send: PartyDataSend.fromJSON(object.party_data_send)};
+    }
+    if (object.party_presence_event !== void 0 && object.party_presence_event !== null) {
+      message.message = {$case: "party_presence_event", party_presence_event: PartyPresenceEvent.fromJSON(object.party_presence_event)};
+    }
     return message;
   },
   fromPartial(object) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka, _la, _ma, _na, _oa, _pa, _qa, _ra, _sa, _ta, _ua, _va, _wa, _xa, _ya, _za, _Aa, _Ba, _Ca, _Da, _Ea, _Fa, _Ga, _Ha, _Ia, _Ja, _Ka, _La, _Ma, _Na, _Oa, _Pa;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka, _la, _ma, _na, _oa, _pa, _qa, _ra, _sa, _ta, _ua, _va, _wa, _xa, _ya, _za, _Aa, _Ba, _Ca, _Da, _Ea, _Fa, _Ga, _Ha, _Ia, _Ja, _Ka, _La, _Ma, _Na, _Oa, _Pa, _Qa, _Ra, _Sa, _Ta, _Ua, _Va, _Wa, _Xa, _Ya, _Za, __a, _$a, _ab, _bb, _cb, _db, _eb, _fb, _gb, _hb, _ib, _jb, _kb, _lb, _mb, _nb, _ob, _pb, _qb, _rb, _sb, _tb, _ub, _vb, _wb, _xb, _yb, _zb, _Ab, _Bb, _Cb, _Db, _Eb, _Fb, _Gb, _Hb, _Ib, _Jb, _Kb, _Lb, _Mb;
     const message = __assign({}, baseEnvelope);
     if (object.cid !== void 0 && object.cid !== null) {
       message.cid = object.cid;
@@ -3335,44 +3619,112 @@ var Envelope = {
     if (((_Na = object.message) == null ? void 0 : _Na.$case) === "pong" && ((_Oa = object.message) == null ? void 0 : _Oa.pong) !== void 0 && ((_Pa = object.message) == null ? void 0 : _Pa.pong) !== null) {
       message.message = {$case: "pong", pong: Pong.fromPartial(object.message.pong)};
     }
+    if (((_Qa = object.message) == null ? void 0 : _Qa.$case) === "party" && ((_Ra = object.message) == null ? void 0 : _Ra.party) !== void 0 && ((_Sa = object.message) == null ? void 0 : _Sa.party) !== null) {
+      message.message = {$case: "party", party: Party.fromPartial(object.message.party)};
+    }
+    if (((_Ta = object.message) == null ? void 0 : _Ta.$case) === "party_create" && ((_Ua = object.message) == null ? void 0 : _Ua.party_create) !== void 0 && ((_Va = object.message) == null ? void 0 : _Va.party_create) !== null) {
+      message.message = {$case: "party_create", party_create: PartyCreate.fromPartial(object.message.party_create)};
+    }
+    if (((_Wa = object.message) == null ? void 0 : _Wa.$case) === "party_join" && ((_Xa = object.message) == null ? void 0 : _Xa.party_join) !== void 0 && ((_Ya = object.message) == null ? void 0 : _Ya.party_join) !== null) {
+      message.message = {$case: "party_join", party_join: PartyJoin.fromPartial(object.message.party_join)};
+    }
+    if (((_Za = object.message) == null ? void 0 : _Za.$case) === "party_leave" && ((__a = object.message) == null ? void 0 : __a.party_leave) !== void 0 && ((_$a = object.message) == null ? void 0 : _$a.party_leave) !== null) {
+      message.message = {$case: "party_leave", party_leave: PartyLeave.fromPartial(object.message.party_leave)};
+    }
+    if (((_ab = object.message) == null ? void 0 : _ab.$case) === "party_promote" && ((_bb = object.message) == null ? void 0 : _bb.party_promote) !== void 0 && ((_cb = object.message) == null ? void 0 : _cb.party_promote) !== null) {
+      message.message = {$case: "party_promote", party_promote: PartyPromote.fromPartial(object.message.party_promote)};
+    }
+    if (((_db = object.message) == null ? void 0 : _db.$case) === "party_leader" && ((_eb = object.message) == null ? void 0 : _eb.party_leader) !== void 0 && ((_fb = object.message) == null ? void 0 : _fb.party_leader) !== null) {
+      message.message = {$case: "party_leader", party_leader: PartyLeader.fromPartial(object.message.party_leader)};
+    }
+    if (((_gb = object.message) == null ? void 0 : _gb.$case) === "party_accept" && ((_hb = object.message) == null ? void 0 : _hb.party_accept) !== void 0 && ((_ib = object.message) == null ? void 0 : _ib.party_accept) !== null) {
+      message.message = {$case: "party_accept", party_accept: PartyAccept.fromPartial(object.message.party_accept)};
+    }
+    if (((_jb = object.message) == null ? void 0 : _jb.$case) === "party_remove" && ((_kb = object.message) == null ? void 0 : _kb.party_remove) !== void 0 && ((_lb = object.message) == null ? void 0 : _lb.party_remove) !== null) {
+      message.message = {$case: "party_remove", party_remove: PartyRemove.fromPartial(object.message.party_remove)};
+    }
+    if (((_mb = object.message) == null ? void 0 : _mb.$case) === "party_close" && ((_nb = object.message) == null ? void 0 : _nb.party_close) !== void 0 && ((_ob = object.message) == null ? void 0 : _ob.party_close) !== null) {
+      message.message = {$case: "party_close", party_close: PartyClose.fromPartial(object.message.party_close)};
+    }
+    if (((_pb = object.message) == null ? void 0 : _pb.$case) === "party_join_request_list" && ((_qb = object.message) == null ? void 0 : _qb.party_join_request_list) !== void 0 && ((_rb = object.message) == null ? void 0 : _rb.party_join_request_list) !== null) {
+      message.message = {$case: "party_join_request_list", party_join_request_list: PartyJoinRequestList.fromPartial(object.message.party_join_request_list)};
+    }
+    if (((_sb = object.message) == null ? void 0 : _sb.$case) === "party_join_request" && ((_tb = object.message) == null ? void 0 : _tb.party_join_request) !== void 0 && ((_ub = object.message) == null ? void 0 : _ub.party_join_request) !== null) {
+      message.message = {$case: "party_join_request", party_join_request: PartyJoinRequest.fromPartial(object.message.party_join_request)};
+    }
+    if (((_vb = object.message) == null ? void 0 : _vb.$case) === "party_matchmaker_add" && ((_wb = object.message) == null ? void 0 : _wb.party_matchmaker_add) !== void 0 && ((_xb = object.message) == null ? void 0 : _xb.party_matchmaker_add) !== null) {
+      message.message = {$case: "party_matchmaker_add", party_matchmaker_add: PartyMatchmakerAdd.fromPartial(object.message.party_matchmaker_add)};
+    }
+    if (((_yb = object.message) == null ? void 0 : _yb.$case) === "party_matchmaker_remove" && ((_zb = object.message) == null ? void 0 : _zb.party_matchmaker_remove) !== void 0 && ((_Ab = object.message) == null ? void 0 : _Ab.party_matchmaker_remove) !== null) {
+      message.message = {$case: "party_matchmaker_remove", party_matchmaker_remove: PartyMatchmakerRemove.fromPartial(object.message.party_matchmaker_remove)};
+    }
+    if (((_Bb = object.message) == null ? void 0 : _Bb.$case) === "party_matchmaker_ticket" && ((_Cb = object.message) == null ? void 0 : _Cb.party_matchmaker_ticket) !== void 0 && ((_Db = object.message) == null ? void 0 : _Db.party_matchmaker_ticket) !== null) {
+      message.message = {$case: "party_matchmaker_ticket", party_matchmaker_ticket: PartyMatchmakerTicket.fromPartial(object.message.party_matchmaker_ticket)};
+    }
+    if (((_Eb = object.message) == null ? void 0 : _Eb.$case) === "party_data" && ((_Fb = object.message) == null ? void 0 : _Fb.party_data) !== void 0 && ((_Gb = object.message) == null ? void 0 : _Gb.party_data) !== null) {
+      message.message = {$case: "party_data", party_data: PartyData.fromPartial(object.message.party_data)};
+    }
+    if (((_Hb = object.message) == null ? void 0 : _Hb.$case) === "party_data_send" && ((_Ib = object.message) == null ? void 0 : _Ib.party_data_send) !== void 0 && ((_Jb = object.message) == null ? void 0 : _Jb.party_data_send) !== null) {
+      message.message = {$case: "party_data_send", party_data_send: PartyDataSend.fromPartial(object.message.party_data_send)};
+    }
+    if (((_Kb = object.message) == null ? void 0 : _Kb.$case) === "party_presence_event" && ((_Lb = object.message) == null ? void 0 : _Lb.party_presence_event) !== void 0 && ((_Mb = object.message) == null ? void 0 : _Mb.party_presence_event) !== null) {
+      message.message = {$case: "party_presence_event", party_presence_event: PartyPresenceEvent.fromPartial(object.message.party_presence_event)};
+    }
     return message;
   },
   toJSON(message) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka, _la, _ma, _na, _oa, _pa, _qa, _ra, _sa, _ta, _ua, _va, _wa, _xa, _ya, _za, _Aa, _Ba, _Ca, _Da, _Ea, _Fa, _Ga, _Ha, _Ia, _Ja, _Ka, _La, _Ma, _Na, _Oa, _Pa;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka, _la, _ma, _na, _oa, _pa, _qa, _ra, _sa, _ta, _ua, _va, _wa, _xa, _ya, _za, _Aa, _Ba, _Ca, _Da, _Ea, _Fa, _Ga, _Ha, _Ia, _Ja, _Ka, _La, _Ma, _Na, _Oa, _Pa, _Qa, _Ra, _Sa, _Ta, _Ua, _Va, _Wa, _Xa, _Ya, _Za, __a, _$a, _ab, _bb, _cb, _db, _eb, _fb, _gb, _hb, _ib, _jb, _kb, _lb, _mb, _nb, _ob, _pb, _qb, _rb, _sb, _tb, _ub, _vb, _wb, _xb, _yb, _zb, _Ab, _Bb, _Cb, _Db, _Eb, _Fb, _Gb, _Hb, _Ib, _Jb, _Kb, _Lb, _Mb;
     const obj = {};
-    obj.cid = message.cid || "";
-    obj.channel = ((_a = message.message) == null ? void 0 : _a.$case) === "channel" && ((_b = message.message) == null ? void 0 : _b.channel) ? Channel.toJSON((_c = message.message) == null ? void 0 : _c.channel) : void 0;
-    obj.channel_join = ((_d = message.message) == null ? void 0 : _d.$case) === "channel_join" && ((_e = message.message) == null ? void 0 : _e.channel_join) ? ChannelJoin.toJSON((_f = message.message) == null ? void 0 : _f.channel_join) : void 0;
-    obj.channel_leave = ((_g = message.message) == null ? void 0 : _g.$case) === "channel_leave" && ((_h = message.message) == null ? void 0 : _h.channel_leave) ? ChannelLeave.toJSON((_i = message.message) == null ? void 0 : _i.channel_leave) : void 0;
-    obj.channel_message = ((_j = message.message) == null ? void 0 : _j.$case) === "channel_message" && ((_k = message.message) == null ? void 0 : _k.channel_message) ? ChannelMessage.toJSON((_l = message.message) == null ? void 0 : _l.channel_message) : void 0;
-    obj.channel_message_ack = ((_m = message.message) == null ? void 0 : _m.$case) === "channel_message_ack" && ((_n = message.message) == null ? void 0 : _n.channel_message_ack) ? ChannelMessageAck.toJSON((_o = message.message) == null ? void 0 : _o.channel_message_ack) : void 0;
-    obj.channel_message_send = ((_p = message.message) == null ? void 0 : _p.$case) === "channel_message_send" && ((_q = message.message) == null ? void 0 : _q.channel_message_send) ? ChannelMessageSend.toJSON((_r = message.message) == null ? void 0 : _r.channel_message_send) : void 0;
-    obj.channel_message_update = ((_s = message.message) == null ? void 0 : _s.$case) === "channel_message_update" && ((_t = message.message) == null ? void 0 : _t.channel_message_update) ? ChannelMessageUpdate.toJSON((_u = message.message) == null ? void 0 : _u.channel_message_update) : void 0;
-    obj.channel_message_remove = ((_v = message.message) == null ? void 0 : _v.$case) === "channel_message_remove" && ((_w = message.message) == null ? void 0 : _w.channel_message_remove) ? ChannelMessageRemove.toJSON((_x = message.message) == null ? void 0 : _x.channel_message_remove) : void 0;
-    obj.channel_presence_event = ((_y = message.message) == null ? void 0 : _y.$case) === "channel_presence_event" && ((_z = message.message) == null ? void 0 : _z.channel_presence_event) ? ChannelPresenceEvent.toJSON((_A = message.message) == null ? void 0 : _A.channel_presence_event) : void 0;
-    obj.error = ((_B = message.message) == null ? void 0 : _B.$case) === "error" && ((_C = message.message) == null ? void 0 : _C.error) ? Error2.toJSON((_D = message.message) == null ? void 0 : _D.error) : void 0;
-    obj.match = ((_E = message.message) == null ? void 0 : _E.$case) === "match" && ((_F = message.message) == null ? void 0 : _F.match) ? Match.toJSON((_G = message.message) == null ? void 0 : _G.match) : void 0;
-    obj.match_create = ((_H = message.message) == null ? void 0 : _H.$case) === "match_create" && ((_I = message.message) == null ? void 0 : _I.match_create) ? MatchCreate.toJSON((_J = message.message) == null ? void 0 : _J.match_create) : void 0;
-    obj.match_data = ((_K = message.message) == null ? void 0 : _K.$case) === "match_data" && ((_L = message.message) == null ? void 0 : _L.match_data) ? MatchData.toJSON((_M = message.message) == null ? void 0 : _M.match_data) : void 0;
-    obj.match_data_send = ((_N = message.message) == null ? void 0 : _N.$case) === "match_data_send" && ((_O = message.message) == null ? void 0 : _O.match_data_send) ? MatchDataSend.toJSON((_P = message.message) == null ? void 0 : _P.match_data_send) : void 0;
-    obj.match_join = ((_Q = message.message) == null ? void 0 : _Q.$case) === "match_join" && ((_R = message.message) == null ? void 0 : _R.match_join) ? MatchJoin.toJSON((_S = message.message) == null ? void 0 : _S.match_join) : void 0;
-    obj.match_leave = ((_T = message.message) == null ? void 0 : _T.$case) === "match_leave" && ((_U = message.message) == null ? void 0 : _U.match_leave) ? MatchLeave.toJSON((_V = message.message) == null ? void 0 : _V.match_leave) : void 0;
-    obj.match_presence_event = ((_W = message.message) == null ? void 0 : _W.$case) === "match_presence_event" && ((_X = message.message) == null ? void 0 : _X.match_presence_event) ? MatchPresenceEvent.toJSON((_Y = message.message) == null ? void 0 : _Y.match_presence_event) : void 0;
-    obj.matchmaker_add = ((_Z = message.message) == null ? void 0 : _Z.$case) === "matchmaker_add" && ((__ = message.message) == null ? void 0 : __.matchmaker_add) ? MatchmakerAdd.toJSON((_$ = message.message) == null ? void 0 : _$.matchmaker_add) : void 0;
-    obj.matchmaker_matched = ((_aa = message.message) == null ? void 0 : _aa.$case) === "matchmaker_matched" && ((_ba = message.message) == null ? void 0 : _ba.matchmaker_matched) ? MatchmakerMatched.toJSON((_ca = message.message) == null ? void 0 : _ca.matchmaker_matched) : void 0;
-    obj.matchmaker_remove = ((_da = message.message) == null ? void 0 : _da.$case) === "matchmaker_remove" && ((_ea = message.message) == null ? void 0 : _ea.matchmaker_remove) ? MatchmakerRemove.toJSON((_fa = message.message) == null ? void 0 : _fa.matchmaker_remove) : void 0;
-    obj.matchmaker_ticket = ((_ga = message.message) == null ? void 0 : _ga.$case) === "matchmaker_ticket" && ((_ha = message.message) == null ? void 0 : _ha.matchmaker_ticket) ? MatchmakerTicket.toJSON((_ia = message.message) == null ? void 0 : _ia.matchmaker_ticket) : void 0;
-    obj.notifications = ((_ja = message.message) == null ? void 0 : _ja.$case) === "notifications" && ((_ka = message.message) == null ? void 0 : _ka.notifications) ? Notifications.toJSON((_la = message.message) == null ? void 0 : _la.notifications) : void 0;
-    obj.rpc = ((_ma = message.message) == null ? void 0 : _ma.$case) === "rpc" && ((_na = message.message) == null ? void 0 : _na.rpc) ? Rpc.toJSON((_oa = message.message) == null ? void 0 : _oa.rpc) : void 0;
-    obj.status = ((_pa = message.message) == null ? void 0 : _pa.$case) === "status" && ((_qa = message.message) == null ? void 0 : _qa.status) ? Status.toJSON((_ra = message.message) == null ? void 0 : _ra.status) : void 0;
-    obj.status_follow = ((_sa = message.message) == null ? void 0 : _sa.$case) === "status_follow" && ((_ta = message.message) == null ? void 0 : _ta.status_follow) ? StatusFollow.toJSON((_ua = message.message) == null ? void 0 : _ua.status_follow) : void 0;
-    obj.status_presence_event = ((_va = message.message) == null ? void 0 : _va.$case) === "status_presence_event" && ((_wa = message.message) == null ? void 0 : _wa.status_presence_event) ? StatusPresenceEvent.toJSON((_xa = message.message) == null ? void 0 : _xa.status_presence_event) : void 0;
-    obj.status_unfollow = ((_ya = message.message) == null ? void 0 : _ya.$case) === "status_unfollow" && ((_za = message.message) == null ? void 0 : _za.status_unfollow) ? StatusUnfollow.toJSON((_Aa = message.message) == null ? void 0 : _Aa.status_unfollow) : void 0;
-    obj.status_update = ((_Ba = message.message) == null ? void 0 : _Ba.$case) === "status_update" && ((_Ca = message.message) == null ? void 0 : _Ca.status_update) ? StatusUpdate.toJSON((_Da = message.message) == null ? void 0 : _Da.status_update) : void 0;
-    obj.stream_data = ((_Ea = message.message) == null ? void 0 : _Ea.$case) === "stream_data" && ((_Fa = message.message) == null ? void 0 : _Fa.stream_data) ? StreamData.toJSON((_Ga = message.message) == null ? void 0 : _Ga.stream_data) : void 0;
-    obj.stream_presence_event = ((_Ha = message.message) == null ? void 0 : _Ha.$case) === "stream_presence_event" && ((_Ia = message.message) == null ? void 0 : _Ia.stream_presence_event) ? StreamPresenceEvent.toJSON((_Ja = message.message) == null ? void 0 : _Ja.stream_presence_event) : void 0;
-    obj.ping = ((_Ka = message.message) == null ? void 0 : _Ka.$case) === "ping" && ((_La = message.message) == null ? void 0 : _La.ping) ? Ping.toJSON((_Ma = message.message) == null ? void 0 : _Ma.ping) : void 0;
-    obj.pong = ((_Na = message.message) == null ? void 0 : _Na.$case) === "pong" && ((_Oa = message.message) == null ? void 0 : _Oa.pong) ? Pong.toJSON((_Pa = message.message) == null ? void 0 : _Pa.pong) : void 0;
+    message.cid !== void 0 && (obj.cid = message.cid);
+    ((_a = message.message) == null ? void 0 : _a.$case) === "channel" && (obj.channel = ((_b = message.message) == null ? void 0 : _b.channel) ? Channel.toJSON((_c = message.message) == null ? void 0 : _c.channel) : void 0);
+    ((_d = message.message) == null ? void 0 : _d.$case) === "channel_join" && (obj.channel_join = ((_e = message.message) == null ? void 0 : _e.channel_join) ? ChannelJoin.toJSON((_f = message.message) == null ? void 0 : _f.channel_join) : void 0);
+    ((_g = message.message) == null ? void 0 : _g.$case) === "channel_leave" && (obj.channel_leave = ((_h = message.message) == null ? void 0 : _h.channel_leave) ? ChannelLeave.toJSON((_i = message.message) == null ? void 0 : _i.channel_leave) : void 0);
+    ((_j = message.message) == null ? void 0 : _j.$case) === "channel_message" && (obj.channel_message = ((_k = message.message) == null ? void 0 : _k.channel_message) ? ChannelMessage.toJSON((_l = message.message) == null ? void 0 : _l.channel_message) : void 0);
+    ((_m = message.message) == null ? void 0 : _m.$case) === "channel_message_ack" && (obj.channel_message_ack = ((_n = message.message) == null ? void 0 : _n.channel_message_ack) ? ChannelMessageAck.toJSON((_o = message.message) == null ? void 0 : _o.channel_message_ack) : void 0);
+    ((_p = message.message) == null ? void 0 : _p.$case) === "channel_message_send" && (obj.channel_message_send = ((_q = message.message) == null ? void 0 : _q.channel_message_send) ? ChannelMessageSend.toJSON((_r = message.message) == null ? void 0 : _r.channel_message_send) : void 0);
+    ((_s = message.message) == null ? void 0 : _s.$case) === "channel_message_update" && (obj.channel_message_update = ((_t = message.message) == null ? void 0 : _t.channel_message_update) ? ChannelMessageUpdate.toJSON((_u = message.message) == null ? void 0 : _u.channel_message_update) : void 0);
+    ((_v = message.message) == null ? void 0 : _v.$case) === "channel_message_remove" && (obj.channel_message_remove = ((_w = message.message) == null ? void 0 : _w.channel_message_remove) ? ChannelMessageRemove.toJSON((_x = message.message) == null ? void 0 : _x.channel_message_remove) : void 0);
+    ((_y = message.message) == null ? void 0 : _y.$case) === "channel_presence_event" && (obj.channel_presence_event = ((_z = message.message) == null ? void 0 : _z.channel_presence_event) ? ChannelPresenceEvent.toJSON((_A = message.message) == null ? void 0 : _A.channel_presence_event) : void 0);
+    ((_B = message.message) == null ? void 0 : _B.$case) === "error" && (obj.error = ((_C = message.message) == null ? void 0 : _C.error) ? Error2.toJSON((_D = message.message) == null ? void 0 : _D.error) : void 0);
+    ((_E = message.message) == null ? void 0 : _E.$case) === "match" && (obj.match = ((_F = message.message) == null ? void 0 : _F.match) ? Match.toJSON((_G = message.message) == null ? void 0 : _G.match) : void 0);
+    ((_H = message.message) == null ? void 0 : _H.$case) === "match_create" && (obj.match_create = ((_I = message.message) == null ? void 0 : _I.match_create) ? MatchCreate.toJSON((_J = message.message) == null ? void 0 : _J.match_create) : void 0);
+    ((_K = message.message) == null ? void 0 : _K.$case) === "match_data" && (obj.match_data = ((_L = message.message) == null ? void 0 : _L.match_data) ? MatchData.toJSON((_M = message.message) == null ? void 0 : _M.match_data) : void 0);
+    ((_N = message.message) == null ? void 0 : _N.$case) === "match_data_send" && (obj.match_data_send = ((_O = message.message) == null ? void 0 : _O.match_data_send) ? MatchDataSend.toJSON((_P = message.message) == null ? void 0 : _P.match_data_send) : void 0);
+    ((_Q = message.message) == null ? void 0 : _Q.$case) === "match_join" && (obj.match_join = ((_R = message.message) == null ? void 0 : _R.match_join) ? MatchJoin.toJSON((_S = message.message) == null ? void 0 : _S.match_join) : void 0);
+    ((_T = message.message) == null ? void 0 : _T.$case) === "match_leave" && (obj.match_leave = ((_U = message.message) == null ? void 0 : _U.match_leave) ? MatchLeave.toJSON((_V = message.message) == null ? void 0 : _V.match_leave) : void 0);
+    ((_W = message.message) == null ? void 0 : _W.$case) === "match_presence_event" && (obj.match_presence_event = ((_X = message.message) == null ? void 0 : _X.match_presence_event) ? MatchPresenceEvent.toJSON((_Y = message.message) == null ? void 0 : _Y.match_presence_event) : void 0);
+    ((_Z = message.message) == null ? void 0 : _Z.$case) === "matchmaker_add" && (obj.matchmaker_add = ((__ = message.message) == null ? void 0 : __.matchmaker_add) ? MatchmakerAdd.toJSON((_$ = message.message) == null ? void 0 : _$.matchmaker_add) : void 0);
+    ((_aa = message.message) == null ? void 0 : _aa.$case) === "matchmaker_matched" && (obj.matchmaker_matched = ((_ba = message.message) == null ? void 0 : _ba.matchmaker_matched) ? MatchmakerMatched.toJSON((_ca = message.message) == null ? void 0 : _ca.matchmaker_matched) : void 0);
+    ((_da = message.message) == null ? void 0 : _da.$case) === "matchmaker_remove" && (obj.matchmaker_remove = ((_ea = message.message) == null ? void 0 : _ea.matchmaker_remove) ? MatchmakerRemove.toJSON((_fa = message.message) == null ? void 0 : _fa.matchmaker_remove) : void 0);
+    ((_ga = message.message) == null ? void 0 : _ga.$case) === "matchmaker_ticket" && (obj.matchmaker_ticket = ((_ha = message.message) == null ? void 0 : _ha.matchmaker_ticket) ? MatchmakerTicket.toJSON((_ia = message.message) == null ? void 0 : _ia.matchmaker_ticket) : void 0);
+    ((_ja = message.message) == null ? void 0 : _ja.$case) === "notifications" && (obj.notifications = ((_ka = message.message) == null ? void 0 : _ka.notifications) ? Notifications.toJSON((_la = message.message) == null ? void 0 : _la.notifications) : void 0);
+    ((_ma = message.message) == null ? void 0 : _ma.$case) === "rpc" && (obj.rpc = ((_na = message.message) == null ? void 0 : _na.rpc) ? Rpc.toJSON((_oa = message.message) == null ? void 0 : _oa.rpc) : void 0);
+    ((_pa = message.message) == null ? void 0 : _pa.$case) === "status" && (obj.status = ((_qa = message.message) == null ? void 0 : _qa.status) ? Status.toJSON((_ra = message.message) == null ? void 0 : _ra.status) : void 0);
+    ((_sa = message.message) == null ? void 0 : _sa.$case) === "status_follow" && (obj.status_follow = ((_ta = message.message) == null ? void 0 : _ta.status_follow) ? StatusFollow.toJSON((_ua = message.message) == null ? void 0 : _ua.status_follow) : void 0);
+    ((_va = message.message) == null ? void 0 : _va.$case) === "status_presence_event" && (obj.status_presence_event = ((_wa = message.message) == null ? void 0 : _wa.status_presence_event) ? StatusPresenceEvent.toJSON((_xa = message.message) == null ? void 0 : _xa.status_presence_event) : void 0);
+    ((_ya = message.message) == null ? void 0 : _ya.$case) === "status_unfollow" && (obj.status_unfollow = ((_za = message.message) == null ? void 0 : _za.status_unfollow) ? StatusUnfollow.toJSON((_Aa = message.message) == null ? void 0 : _Aa.status_unfollow) : void 0);
+    ((_Ba = message.message) == null ? void 0 : _Ba.$case) === "status_update" && (obj.status_update = ((_Ca = message.message) == null ? void 0 : _Ca.status_update) ? StatusUpdate.toJSON((_Da = message.message) == null ? void 0 : _Da.status_update) : void 0);
+    ((_Ea = message.message) == null ? void 0 : _Ea.$case) === "stream_data" && (obj.stream_data = ((_Fa = message.message) == null ? void 0 : _Fa.stream_data) ? StreamData.toJSON((_Ga = message.message) == null ? void 0 : _Ga.stream_data) : void 0);
+    ((_Ha = message.message) == null ? void 0 : _Ha.$case) === "stream_presence_event" && (obj.stream_presence_event = ((_Ia = message.message) == null ? void 0 : _Ia.stream_presence_event) ? StreamPresenceEvent.toJSON((_Ja = message.message) == null ? void 0 : _Ja.stream_presence_event) : void 0);
+    ((_Ka = message.message) == null ? void 0 : _Ka.$case) === "ping" && (obj.ping = ((_La = message.message) == null ? void 0 : _La.ping) ? Ping.toJSON((_Ma = message.message) == null ? void 0 : _Ma.ping) : void 0);
+    ((_Na = message.message) == null ? void 0 : _Na.$case) === "pong" && (obj.pong = ((_Oa = message.message) == null ? void 0 : _Oa.pong) ? Pong.toJSON((_Pa = message.message) == null ? void 0 : _Pa.pong) : void 0);
+    ((_Qa = message.message) == null ? void 0 : _Qa.$case) === "party" && (obj.party = ((_Ra = message.message) == null ? void 0 : _Ra.party) ? Party.toJSON((_Sa = message.message) == null ? void 0 : _Sa.party) : void 0);
+    ((_Ta = message.message) == null ? void 0 : _Ta.$case) === "party_create" && (obj.party_create = ((_Ua = message.message) == null ? void 0 : _Ua.party_create) ? PartyCreate.toJSON((_Va = message.message) == null ? void 0 : _Va.party_create) : void 0);
+    ((_Wa = message.message) == null ? void 0 : _Wa.$case) === "party_join" && (obj.party_join = ((_Xa = message.message) == null ? void 0 : _Xa.party_join) ? PartyJoin.toJSON((_Ya = message.message) == null ? void 0 : _Ya.party_join) : void 0);
+    ((_Za = message.message) == null ? void 0 : _Za.$case) === "party_leave" && (obj.party_leave = ((__a = message.message) == null ? void 0 : __a.party_leave) ? PartyLeave.toJSON((_$a = message.message) == null ? void 0 : _$a.party_leave) : void 0);
+    ((_ab = message.message) == null ? void 0 : _ab.$case) === "party_promote" && (obj.party_promote = ((_bb = message.message) == null ? void 0 : _bb.party_promote) ? PartyPromote.toJSON((_cb = message.message) == null ? void 0 : _cb.party_promote) : void 0);
+    ((_db = message.message) == null ? void 0 : _db.$case) === "party_leader" && (obj.party_leader = ((_eb = message.message) == null ? void 0 : _eb.party_leader) ? PartyLeader.toJSON((_fb = message.message) == null ? void 0 : _fb.party_leader) : void 0);
+    ((_gb = message.message) == null ? void 0 : _gb.$case) === "party_accept" && (obj.party_accept = ((_hb = message.message) == null ? void 0 : _hb.party_accept) ? PartyAccept.toJSON((_ib = message.message) == null ? void 0 : _ib.party_accept) : void 0);
+    ((_jb = message.message) == null ? void 0 : _jb.$case) === "party_remove" && (obj.party_remove = ((_kb = message.message) == null ? void 0 : _kb.party_remove) ? PartyRemove.toJSON((_lb = message.message) == null ? void 0 : _lb.party_remove) : void 0);
+    ((_mb = message.message) == null ? void 0 : _mb.$case) === "party_close" && (obj.party_close = ((_nb = message.message) == null ? void 0 : _nb.party_close) ? PartyClose.toJSON((_ob = message.message) == null ? void 0 : _ob.party_close) : void 0);
+    ((_pb = message.message) == null ? void 0 : _pb.$case) === "party_join_request_list" && (obj.party_join_request_list = ((_qb = message.message) == null ? void 0 : _qb.party_join_request_list) ? PartyJoinRequestList.toJSON((_rb = message.message) == null ? void 0 : _rb.party_join_request_list) : void 0);
+    ((_sb = message.message) == null ? void 0 : _sb.$case) === "party_join_request" && (obj.party_join_request = ((_tb = message.message) == null ? void 0 : _tb.party_join_request) ? PartyJoinRequest.toJSON((_ub = message.message) == null ? void 0 : _ub.party_join_request) : void 0);
+    ((_vb = message.message) == null ? void 0 : _vb.$case) === "party_matchmaker_add" && (obj.party_matchmaker_add = ((_wb = message.message) == null ? void 0 : _wb.party_matchmaker_add) ? PartyMatchmakerAdd.toJSON((_xb = message.message) == null ? void 0 : _xb.party_matchmaker_add) : void 0);
+    ((_yb = message.message) == null ? void 0 : _yb.$case) === "party_matchmaker_remove" && (obj.party_matchmaker_remove = ((_zb = message.message) == null ? void 0 : _zb.party_matchmaker_remove) ? PartyMatchmakerRemove.toJSON((_Ab = message.message) == null ? void 0 : _Ab.party_matchmaker_remove) : void 0);
+    ((_Bb = message.message) == null ? void 0 : _Bb.$case) === "party_matchmaker_ticket" && (obj.party_matchmaker_ticket = ((_Cb = message.message) == null ? void 0 : _Cb.party_matchmaker_ticket) ? PartyMatchmakerTicket.toJSON((_Db = message.message) == null ? void 0 : _Db.party_matchmaker_ticket) : void 0);
+    ((_Eb = message.message) == null ? void 0 : _Eb.$case) === "party_data" && (obj.party_data = ((_Fb = message.message) == null ? void 0 : _Fb.party_data) ? PartyData.toJSON((_Gb = message.message) == null ? void 0 : _Gb.party_data) : void 0);
+    ((_Hb = message.message) == null ? void 0 : _Hb.$case) === "party_data_send" && (obj.party_data_send = ((_Ib = message.message) == null ? void 0 : _Ib.party_data_send) ? PartyDataSend.toJSON((_Jb = message.message) == null ? void 0 : _Jb.party_data_send) : void 0);
+    ((_Kb = message.message) == null ? void 0 : _Kb.$case) === "party_presence_event" && (obj.party_presence_event = ((_Lb = message.message) == null ? void 0 : _Lb.party_presence_event) ? PartyPresenceEvent.toJSON((_Mb = message.message) == null ? void 0 : _Mb.party_presence_event) : void 0);
     return obj;
   }
 };
@@ -3485,17 +3837,17 @@ var Channel = {
   },
   toJSON(message) {
     const obj = {};
-    obj.id = message.id || "";
+    message.id !== void 0 && (obj.id = message.id);
     if (message.presences) {
       obj.presences = message.presences.map((e) => e ? UserPresence.toJSON(e) : void 0);
     } else {
       obj.presences = [];
     }
-    obj.self = message.self ? UserPresence.toJSON(message.self) : void 0;
-    obj.room_name = message.room_name || "";
-    obj.group_id = message.group_id || "";
-    obj.user_id_one = message.user_id_one || "";
-    obj.user_id_two = message.user_id_two || "";
+    message.self !== void 0 && (obj.self = message.self ? UserPresence.toJSON(message.self) : void 0);
+    message.room_name !== void 0 && (obj.room_name = message.room_name);
+    message.group_id !== void 0 && (obj.group_id = message.group_id);
+    message.user_id_one !== void 0 && (obj.user_id_one = message.user_id_one);
+    message.user_id_two !== void 0 && (obj.user_id_two = message.user_id_two);
     return obj;
   }
 };
@@ -3571,10 +3923,10 @@ var ChannelJoin = {
   },
   toJSON(message) {
     const obj = {};
-    obj.target = message.target || "";
-    obj.type = message.type || 0;
-    obj.persistence = message.persistence || void 0;
-    obj.hidden = message.hidden || void 0;
+    message.target !== void 0 && (obj.target = message.target);
+    message.type !== void 0 && (obj.type = message.type);
+    message.persistence !== void 0 && (obj.persistence = message.persistence);
+    message.hidden !== void 0 && (obj.hidden = message.hidden);
     return obj;
   }
 };
@@ -3616,7 +3968,7 @@ var ChannelLeave = {
   },
   toJSON(message) {
     const obj = {};
-    obj.channel_id = message.channel_id || "";
+    message.channel_id !== void 0 && (obj.channel_id = message.channel_id);
     return obj;
   }
 };
@@ -3766,17 +4118,17 @@ var ChannelMessageAck = {
   },
   toJSON(message) {
     const obj = {};
-    obj.channel_id = message.channel_id || "";
-    obj.message_id = message.message_id || "";
-    obj.code = message.code || void 0;
-    obj.username = message.username || "";
-    obj.create_time = message.create_time !== void 0 ? message.create_time.toISOString() : null;
-    obj.update_time = message.update_time !== void 0 ? message.update_time.toISOString() : null;
-    obj.persistent = message.persistent || void 0;
-    obj.room_name = message.room_name || "";
-    obj.group_id = message.group_id || "";
-    obj.user_id_one = message.user_id_one || "";
-    obj.user_id_two = message.user_id_two || "";
+    message.channel_id !== void 0 && (obj.channel_id = message.channel_id);
+    message.message_id !== void 0 && (obj.message_id = message.message_id);
+    message.code !== void 0 && (obj.code = message.code);
+    message.username !== void 0 && (obj.username = message.username);
+    message.create_time !== void 0 && (obj.create_time = message.create_time !== void 0 ? message.create_time.toISOString() : null);
+    message.update_time !== void 0 && (obj.update_time = message.update_time !== void 0 ? message.update_time.toISOString() : null);
+    message.persistent !== void 0 && (obj.persistent = message.persistent);
+    message.room_name !== void 0 && (obj.room_name = message.room_name);
+    message.group_id !== void 0 && (obj.group_id = message.group_id);
+    message.user_id_one !== void 0 && (obj.user_id_one = message.user_id_one);
+    message.user_id_two !== void 0 && (obj.user_id_two = message.user_id_two);
     return obj;
   }
 };
@@ -3828,8 +4180,8 @@ var ChannelMessageSend = {
   },
   toJSON(message) {
     const obj = {};
-    obj.channel_id = message.channel_id || "";
-    obj.content = message.content || "";
+    message.channel_id !== void 0 && (obj.channel_id = message.channel_id);
+    message.content !== void 0 && (obj.content = message.content);
     return obj;
   }
 };
@@ -3891,9 +4243,9 @@ var ChannelMessageUpdate = {
   },
   toJSON(message) {
     const obj = {};
-    obj.channel_id = message.channel_id || "";
-    obj.message_id = message.message_id || "";
-    obj.content = message.content || "";
+    message.channel_id !== void 0 && (obj.channel_id = message.channel_id);
+    message.message_id !== void 0 && (obj.message_id = message.message_id);
+    message.content !== void 0 && (obj.content = message.content);
     return obj;
   }
 };
@@ -3945,8 +4297,8 @@ var ChannelMessageRemove = {
   },
   toJSON(message) {
     const obj = {};
-    obj.channel_id = message.channel_id || "";
-    obj.message_id = message.message_id || "";
+    message.channel_id !== void 0 && (obj.channel_id = message.channel_id);
+    message.message_id !== void 0 && (obj.message_id = message.message_id);
     return obj;
   }
 };
@@ -4066,7 +4418,7 @@ var ChannelPresenceEvent = {
   },
   toJSON(message) {
     const obj = {};
-    obj.channel_id = message.channel_id || "";
+    message.channel_id !== void 0 && (obj.channel_id = message.channel_id);
     if (message.joins) {
       obj.joins = message.joins.map((e) => e ? UserPresence.toJSON(e) : void 0);
     } else {
@@ -4077,10 +4429,10 @@ var ChannelPresenceEvent = {
     } else {
       obj.leaves = [];
     }
-    obj.room_name = message.room_name || "";
-    obj.group_id = message.group_id || "";
-    obj.user_id_one = message.user_id_one || "";
-    obj.user_id_two = message.user_id_two || "";
+    message.room_name !== void 0 && (obj.room_name = message.room_name);
+    message.group_id !== void 0 && (obj.group_id = message.group_id);
+    message.user_id_one !== void 0 && (obj.user_id_one = message.user_id_one);
+    message.user_id_two !== void 0 && (obj.user_id_two = message.user_id_two);
     return obj;
   }
 };
@@ -4156,9 +4508,14 @@ var Error2 = {
   },
   toJSON(message) {
     const obj = {};
-    obj.code = message.code || 0;
-    obj.message = message.message || "";
-    obj.context = message.context || void 0;
+    message.code !== void 0 && (obj.code = message.code);
+    message.message !== void 0 && (obj.message = message.message);
+    obj.context = {};
+    if (message.context) {
+      Object.entries(message.context).forEach(([k, v]) => {
+        obj.context[k] = v;
+      });
+    }
     return obj;
   }
 };
@@ -4210,8 +4567,8 @@ var Error_ContextEntry = {
   },
   toJSON(message) {
     const obj = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== void 0 && (obj.key = message.key);
+    message.value !== void 0 && (obj.value = message.value);
     return obj;
   }
 };
@@ -4316,16 +4673,16 @@ var Match = {
   },
   toJSON(message) {
     const obj = {};
-    obj.match_id = message.match_id || "";
-    obj.authoritative = message.authoritative || false;
-    obj.label = message.label || void 0;
-    obj.size = message.size || 0;
+    message.match_id !== void 0 && (obj.match_id = message.match_id);
+    message.authoritative !== void 0 && (obj.authoritative = message.authoritative);
+    message.label !== void 0 && (obj.label = message.label);
+    message.size !== void 0 && (obj.size = message.size);
     if (message.presences) {
       obj.presences = message.presences.map((e) => e ? UserPresence.toJSON(e) : void 0);
     } else {
       obj.presences = [];
     }
-    obj.self = message.self ? UserPresence.toJSON(message.self) : void 0;
+    message.self !== void 0 && (obj.self = message.self ? UserPresence.toJSON(message.self) : void 0);
     return obj;
   }
 };
@@ -4440,11 +4797,11 @@ var MatchData = {
   },
   toJSON(message) {
     const obj = {};
-    obj.match_id = message.match_id || "";
-    obj.presence = message.presence ? UserPresence.toJSON(message.presence) : void 0;
-    obj.op_code = message.op_code || 0;
-    obj.data = message.data !== void 0 ? base64FromBytes(message.data) : void 0;
-    obj.reliable = message.reliable || false;
+    message.match_id !== void 0 && (obj.match_id = message.match_id);
+    message.presence !== void 0 && (obj.presence = message.presence ? UserPresence.toJSON(message.presence) : void 0);
+    message.op_code !== void 0 && (obj.op_code = message.op_code);
+    message.data !== void 0 && (obj.data = base64FromBytes(message.data !== void 0 ? message.data : new Uint8Array()));
+    message.reliable !== void 0 && (obj.reliable = message.reliable);
     return obj;
   }
 };
@@ -4535,25 +4892,25 @@ var MatchDataSend = {
   },
   toJSON(message) {
     const obj = {};
-    obj.match_id = message.match_id || "";
-    obj.op_code = message.op_code || 0;
-    obj.data = message.data !== void 0 ? base64FromBytes(message.data) : void 0;
+    message.match_id !== void 0 && (obj.match_id = message.match_id);
+    message.op_code !== void 0 && (obj.op_code = message.op_code);
+    message.data !== void 0 && (obj.data = base64FromBytes(message.data !== void 0 ? message.data : new Uint8Array()));
     if (message.presences) {
       obj.presences = message.presences.map((e) => e ? UserPresence.toJSON(e) : void 0);
     } else {
       obj.presences = [];
     }
-    obj.reliable = message.reliable || false;
+    message.reliable !== void 0 && (obj.reliable = message.reliable);
     return obj;
   }
 };
 var MatchJoin = {
   encode(message, writer = import_minimal4.Writer.create()) {
-    var _a, _b, _c, _d;
-    if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = message.id) == null ? void 0 : _b.match_id) !== "") {
+    var _a, _b;
+    if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id") {
       writer.uint32(10).string(message.id.match_id);
     }
-    if (((_c = message.id) == null ? void 0 : _c.$case) === "token" && ((_d = message.id) == null ? void 0 : _d.token) !== "") {
+    if (((_b = message.id) == null ? void 0 : _b.$case) === "token") {
       writer.uint32(18).string(message.id.token);
     }
     Object.entries(message.metadata).forEach(([key, value]) => {
@@ -4626,9 +4983,14 @@ var MatchJoin = {
   toJSON(message) {
     var _a, _b, _c, _d;
     const obj = {};
-    obj.match_id = ((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = message.id) == null ? void 0 : _b.match_id) || void 0;
-    obj.token = ((_c = message.id) == null ? void 0 : _c.$case) === "token" && ((_d = message.id) == null ? void 0 : _d.token) || void 0;
-    obj.metadata = message.metadata || void 0;
+    ((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && (obj.match_id = (_b = message.id) == null ? void 0 : _b.match_id);
+    ((_c = message.id) == null ? void 0 : _c.$case) === "token" && (obj.token = (_d = message.id) == null ? void 0 : _d.token);
+    obj.metadata = {};
+    if (message.metadata) {
+      Object.entries(message.metadata).forEach(([k, v]) => {
+        obj.metadata[k] = v;
+      });
+    }
     return obj;
   }
 };
@@ -4680,8 +5042,8 @@ var MatchJoin_MetadataEntry = {
   },
   toJSON(message) {
     const obj = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== void 0 && (obj.key = message.key);
+    message.value !== void 0 && (obj.value = message.value);
     return obj;
   }
 };
@@ -4723,7 +5085,7 @@ var MatchLeave = {
   },
   toJSON(message) {
     const obj = {};
-    obj.match_id = message.match_id || "";
+    message.match_id !== void 0 && (obj.match_id = message.match_id);
     return obj;
   }
 };
@@ -4803,7 +5165,7 @@ var MatchPresenceEvent = {
   },
   toJSON(message) {
     const obj = {};
-    obj.match_id = message.match_id || "";
+    message.match_id !== void 0 && (obj.match_id = message.match_id);
     if (message.joins) {
       obj.joins = message.joins.map((e) => e ? UserPresence.toJSON(e) : void 0);
     } else {
@@ -4923,11 +5285,21 @@ var MatchmakerAdd = {
   },
   toJSON(message) {
     const obj = {};
-    obj.min_count = message.min_count || 0;
-    obj.max_count = message.max_count || 0;
-    obj.query = message.query || "";
-    obj.string_properties = message.string_properties || void 0;
-    obj.numeric_properties = message.numeric_properties || void 0;
+    message.min_count !== void 0 && (obj.min_count = message.min_count);
+    message.max_count !== void 0 && (obj.max_count = message.max_count);
+    message.query !== void 0 && (obj.query = message.query);
+    obj.string_properties = {};
+    if (message.string_properties) {
+      Object.entries(message.string_properties).forEach(([k, v]) => {
+        obj.string_properties[k] = v;
+      });
+    }
+    obj.numeric_properties = {};
+    if (message.numeric_properties) {
+      Object.entries(message.numeric_properties).forEach(([k, v]) => {
+        obj.numeric_properties[k] = v;
+      });
+    }
     return obj;
   }
 };
@@ -4979,8 +5351,8 @@ var MatchmakerAdd_StringPropertiesEntry = {
   },
   toJSON(message) {
     const obj = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== void 0 && (obj.key = message.key);
+    message.value !== void 0 && (obj.value = message.value);
     return obj;
   }
 };
@@ -5032,19 +5404,19 @@ var MatchmakerAdd_NumericPropertiesEntry = {
   },
   toJSON(message) {
     const obj = {};
-    obj.key = message.key || "";
-    obj.value = message.value || 0;
+    message.key !== void 0 && (obj.key = message.key);
+    message.value !== void 0 && (obj.value = message.value);
     return obj;
   }
 };
 var MatchmakerMatched = {
   encode(message, writer = import_minimal4.Writer.create()) {
-    var _a, _b, _c, _d;
+    var _a, _b;
     writer.uint32(10).string(message.ticket);
-    if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = message.id) == null ? void 0 : _b.match_id) !== "") {
+    if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id") {
       writer.uint32(18).string(message.id.match_id);
     }
-    if (((_c = message.id) == null ? void 0 : _c.$case) === "token" && ((_d = message.id) == null ? void 0 : _d.token) !== "") {
+    if (((_b = message.id) == null ? void 0 : _b.$case) === "token") {
       writer.uint32(26).string(message.id.token);
     }
     for (const v of message.users) {
@@ -5133,15 +5505,15 @@ var MatchmakerMatched = {
   toJSON(message) {
     var _a, _b, _c, _d;
     const obj = {};
-    obj.ticket = message.ticket || "";
-    obj.match_id = ((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = message.id) == null ? void 0 : _b.match_id) || void 0;
-    obj.token = ((_c = message.id) == null ? void 0 : _c.$case) === "token" && ((_d = message.id) == null ? void 0 : _d.token) || void 0;
+    message.ticket !== void 0 && (obj.ticket = message.ticket);
+    ((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && (obj.match_id = (_b = message.id) == null ? void 0 : _b.match_id);
+    ((_c = message.id) == null ? void 0 : _c.$case) === "token" && (obj.token = (_d = message.id) == null ? void 0 : _d.token);
     if (message.users) {
       obj.users = message.users.map((e) => e ? MatchmakerMatched_MatchmakerUser.toJSON(e) : void 0);
     } else {
       obj.users = [];
     }
-    obj.self = message.self ? MatchmakerMatched_MatchmakerUser.toJSON(message.self) : void 0;
+    message.self !== void 0 && (obj.self = message.self ? MatchmakerMatched_MatchmakerUser.toJSON(message.self) : void 0);
     return obj;
   }
 };
@@ -5150,6 +5522,7 @@ var MatchmakerMatched_MatchmakerUser = {
     if (message.presence !== void 0 && message.presence !== void 0) {
       UserPresence.encode(message.presence, writer.uint32(10).fork()).ldelim();
     }
+    writer.uint32(18).string(message.party_id);
     Object.entries(message.string_properties).forEach(([key, value]) => {
       MatchmakerMatched_MatchmakerUser_StringPropertiesEntry.encode({key, value}, writer.uint32(42).fork()).ldelim();
     });
@@ -5169,6 +5542,9 @@ var MatchmakerMatched_MatchmakerUser = {
       switch (tag >>> 3) {
         case 1:
           message.presence = UserPresence.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.party_id = reader.string();
           break;
         case 5:
           const entry5 = MatchmakerMatched_MatchmakerUser_StringPropertiesEntry.decode(reader, reader.uint32());
@@ -5196,6 +5572,9 @@ var MatchmakerMatched_MatchmakerUser = {
     if (object.presence !== void 0 && object.presence !== null) {
       message.presence = UserPresence.fromJSON(object.presence);
     }
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
     if (object.string_properties !== void 0 && object.string_properties !== null) {
       Object.entries(object.string_properties).forEach(([key, value]) => {
         message.string_properties[key] = String(value);
@@ -5215,6 +5594,9 @@ var MatchmakerMatched_MatchmakerUser = {
     if (object.presence !== void 0 && object.presence !== null) {
       message.presence = UserPresence.fromPartial(object.presence);
     }
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
     if (object.string_properties !== void 0 && object.string_properties !== null) {
       Object.entries(object.string_properties).forEach(([key, value]) => {
         if (value !== void 0) {
@@ -5233,9 +5615,20 @@ var MatchmakerMatched_MatchmakerUser = {
   },
   toJSON(message) {
     const obj = {};
-    obj.presence = message.presence ? UserPresence.toJSON(message.presence) : void 0;
-    obj.string_properties = message.string_properties || void 0;
-    obj.numeric_properties = message.numeric_properties || void 0;
+    message.presence !== void 0 && (obj.presence = message.presence ? UserPresence.toJSON(message.presence) : void 0);
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    obj.string_properties = {};
+    if (message.string_properties) {
+      Object.entries(message.string_properties).forEach(([k, v]) => {
+        obj.string_properties[k] = v;
+      });
+    }
+    obj.numeric_properties = {};
+    if (message.numeric_properties) {
+      Object.entries(message.numeric_properties).forEach(([k, v]) => {
+        obj.numeric_properties[k] = v;
+      });
+    }
     return obj;
   }
 };
@@ -5287,8 +5680,8 @@ var MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
   },
   toJSON(message) {
     const obj = {};
-    obj.key = message.key || "";
-    obj.value = message.value || "";
+    message.key !== void 0 && (obj.key = message.key);
+    message.value !== void 0 && (obj.value = message.value);
     return obj;
   }
 };
@@ -5340,8 +5733,8 @@ var MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
   },
   toJSON(message) {
     const obj = {};
-    obj.key = message.key || "";
-    obj.value = message.value || 0;
+    message.key !== void 0 && (obj.key = message.key);
+    message.value !== void 0 && (obj.value = message.value);
     return obj;
   }
 };
@@ -5383,7 +5776,7 @@ var MatchmakerRemove = {
   },
   toJSON(message) {
     const obj = {};
-    obj.ticket = message.ticket || "";
+    message.ticket !== void 0 && (obj.ticket = message.ticket);
     return obj;
   }
 };
@@ -5425,7 +5818,7 @@ var MatchmakerTicket = {
   },
   toJSON(message) {
     const obj = {};
-    obj.ticket = message.ticket || "";
+    message.ticket !== void 0 && (obj.ticket = message.ticket);
     return obj;
   }
 };
@@ -5480,6 +5873,1205 @@ var Notifications = {
       obj.notifications = message.notifications.map((e) => e ? Notification.toJSON(e) : void 0);
     } else {
       obj.notifications = [];
+    }
+    return obj;
+  }
+};
+var Party = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    writer.uint32(16).bool(message.open);
+    writer.uint32(24).int32(message.max_size);
+    if (message.self !== void 0 && message.self !== void 0) {
+      UserPresence.encode(message.self, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.leader !== void 0 && message.leader !== void 0) {
+      UserPresence.encode(message.leader, writer.uint32(42).fork()).ldelim();
+    }
+    for (const v of message.presences) {
+      UserPresence.encode(v, writer.uint32(50).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, baseParty);
+    message.presences = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.open = reader.bool();
+          break;
+        case 3:
+          message.max_size = reader.int32();
+          break;
+        case 4:
+          message.self = UserPresence.decode(reader, reader.uint32());
+          break;
+        case 5:
+          message.leader = UserPresence.decode(reader, reader.uint32());
+          break;
+        case 6:
+          message.presences.push(UserPresence.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, baseParty);
+    message.presences = [];
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.open !== void 0 && object.open !== null) {
+      message.open = Boolean(object.open);
+    }
+    if (object.max_size !== void 0 && object.max_size !== null) {
+      message.max_size = Number(object.max_size);
+    }
+    if (object.self !== void 0 && object.self !== null) {
+      message.self = UserPresence.fromJSON(object.self);
+    }
+    if (object.leader !== void 0 && object.leader !== null) {
+      message.leader = UserPresence.fromJSON(object.leader);
+    }
+    if (object.presences !== void 0 && object.presences !== null) {
+      for (const e of object.presences) {
+        message.presences.push(UserPresence.fromJSON(e));
+      }
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, baseParty);
+    message.presences = [];
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.open !== void 0 && object.open !== null) {
+      message.open = object.open;
+    }
+    if (object.max_size !== void 0 && object.max_size !== null) {
+      message.max_size = object.max_size;
+    }
+    if (object.self !== void 0 && object.self !== null) {
+      message.self = UserPresence.fromPartial(object.self);
+    }
+    if (object.leader !== void 0 && object.leader !== null) {
+      message.leader = UserPresence.fromPartial(object.leader);
+    }
+    if (object.presences !== void 0 && object.presences !== null) {
+      for (const e of object.presences) {
+        message.presences.push(UserPresence.fromPartial(e));
+      }
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    message.open !== void 0 && (obj.open = message.open);
+    message.max_size !== void 0 && (obj.max_size = message.max_size);
+    message.self !== void 0 && (obj.self = message.self ? UserPresence.toJSON(message.self) : void 0);
+    message.leader !== void 0 && (obj.leader = message.leader ? UserPresence.toJSON(message.leader) : void 0);
+    if (message.presences) {
+      obj.presences = message.presences.map((e) => e ? UserPresence.toJSON(e) : void 0);
+    } else {
+      obj.presences = [];
+    }
+    return obj;
+  }
+};
+var PartyCreate = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(8).bool(message.open);
+    writer.uint32(16).int32(message.max_size);
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyCreate);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.open = reader.bool();
+          break;
+        case 2:
+          message.max_size = reader.int32();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyCreate);
+    if (object.open !== void 0 && object.open !== null) {
+      message.open = Boolean(object.open);
+    }
+    if (object.max_size !== void 0 && object.max_size !== null) {
+      message.max_size = Number(object.max_size);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyCreate);
+    if (object.open !== void 0 && object.open !== null) {
+      message.open = object.open;
+    }
+    if (object.max_size !== void 0 && object.max_size !== null) {
+      message.max_size = object.max_size;
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.open !== void 0 && (obj.open = message.open);
+    message.max_size !== void 0 && (obj.max_size = message.max_size);
+    return obj;
+  }
+};
+var PartyJoin = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyJoin);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyJoin);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyJoin);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    return obj;
+  }
+};
+var PartyLeave = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyLeave);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyLeave);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyLeave);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    return obj;
+  }
+};
+var PartyPromote = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    if (message.presence !== void 0 && message.presence !== void 0) {
+      UserPresence.encode(message.presence, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyPromote);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.presence = UserPresence.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyPromote);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.presence !== void 0 && object.presence !== null) {
+      message.presence = UserPresence.fromJSON(object.presence);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyPromote);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.presence !== void 0 && object.presence !== null) {
+      message.presence = UserPresence.fromPartial(object.presence);
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    message.presence !== void 0 && (obj.presence = message.presence ? UserPresence.toJSON(message.presence) : void 0);
+    return obj;
+  }
+};
+var PartyLeader = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    if (message.presence !== void 0 && message.presence !== void 0) {
+      UserPresence.encode(message.presence, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyLeader);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.presence = UserPresence.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyLeader);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.presence !== void 0 && object.presence !== null) {
+      message.presence = UserPresence.fromJSON(object.presence);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyLeader);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.presence !== void 0 && object.presence !== null) {
+      message.presence = UserPresence.fromPartial(object.presence);
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    message.presence !== void 0 && (obj.presence = message.presence ? UserPresence.toJSON(message.presence) : void 0);
+    return obj;
+  }
+};
+var PartyAccept = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    if (message.presence !== void 0 && message.presence !== void 0) {
+      UserPresence.encode(message.presence, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyAccept);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.presence = UserPresence.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyAccept);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.presence !== void 0 && object.presence !== null) {
+      message.presence = UserPresence.fromJSON(object.presence);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyAccept);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.presence !== void 0 && object.presence !== null) {
+      message.presence = UserPresence.fromPartial(object.presence);
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    message.presence !== void 0 && (obj.presence = message.presence ? UserPresence.toJSON(message.presence) : void 0);
+    return obj;
+  }
+};
+var PartyRemove = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    if (message.presence !== void 0 && message.presence !== void 0) {
+      UserPresence.encode(message.presence, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyRemove);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.presence = UserPresence.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyRemove);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.presence !== void 0 && object.presence !== null) {
+      message.presence = UserPresence.fromJSON(object.presence);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyRemove);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.presence !== void 0 && object.presence !== null) {
+      message.presence = UserPresence.fromPartial(object.presence);
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    message.presence !== void 0 && (obj.presence = message.presence ? UserPresence.toJSON(message.presence) : void 0);
+    return obj;
+  }
+};
+var PartyClose = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyClose);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyClose);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyClose);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    return obj;
+  }
+};
+var PartyJoinRequestList = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyJoinRequestList);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyJoinRequestList);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyJoinRequestList);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    return obj;
+  }
+};
+var PartyJoinRequest = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    for (const v of message.presences) {
+      UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyJoinRequest);
+    message.presences = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.presences.push(UserPresence.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyJoinRequest);
+    message.presences = [];
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.presences !== void 0 && object.presences !== null) {
+      for (const e of object.presences) {
+        message.presences.push(UserPresence.fromJSON(e));
+      }
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyJoinRequest);
+    message.presences = [];
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.presences !== void 0 && object.presences !== null) {
+      for (const e of object.presences) {
+        message.presences.push(UserPresence.fromPartial(e));
+      }
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    if (message.presences) {
+      obj.presences = message.presences.map((e) => e ? UserPresence.toJSON(e) : void 0);
+    } else {
+      obj.presences = [];
+    }
+    return obj;
+  }
+};
+var PartyMatchmakerAdd = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    writer.uint32(16).int32(message.min_count);
+    writer.uint32(24).int32(message.max_count);
+    writer.uint32(34).string(message.query);
+    Object.entries(message.string_properties).forEach(([key, value]) => {
+      PartyMatchmakerAdd_StringPropertiesEntry.encode({key, value}, writer.uint32(42).fork()).ldelim();
+    });
+    Object.entries(message.numeric_properties).forEach(([key, value]) => {
+      PartyMatchmakerAdd_NumericPropertiesEntry.encode({key, value}, writer.uint32(50).fork()).ldelim();
+    });
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyMatchmakerAdd);
+    message.string_properties = {};
+    message.numeric_properties = {};
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.min_count = reader.int32();
+          break;
+        case 3:
+          message.max_count = reader.int32();
+          break;
+        case 4:
+          message.query = reader.string();
+          break;
+        case 5:
+          const entry5 = PartyMatchmakerAdd_StringPropertiesEntry.decode(reader, reader.uint32());
+          if (entry5.value !== void 0) {
+            message.string_properties[entry5.key] = entry5.value;
+          }
+          break;
+        case 6:
+          const entry6 = PartyMatchmakerAdd_NumericPropertiesEntry.decode(reader, reader.uint32());
+          if (entry6.value !== void 0) {
+            message.numeric_properties[entry6.key] = entry6.value;
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyMatchmakerAdd);
+    message.string_properties = {};
+    message.numeric_properties = {};
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.min_count !== void 0 && object.min_count !== null) {
+      message.min_count = Number(object.min_count);
+    }
+    if (object.max_count !== void 0 && object.max_count !== null) {
+      message.max_count = Number(object.max_count);
+    }
+    if (object.query !== void 0 && object.query !== null) {
+      message.query = String(object.query);
+    }
+    if (object.string_properties !== void 0 && object.string_properties !== null) {
+      Object.entries(object.string_properties).forEach(([key, value]) => {
+        message.string_properties[key] = String(value);
+      });
+    }
+    if (object.numeric_properties !== void 0 && object.numeric_properties !== null) {
+      Object.entries(object.numeric_properties).forEach(([key, value]) => {
+        message.numeric_properties[key] = Number(value);
+      });
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyMatchmakerAdd);
+    message.string_properties = {};
+    message.numeric_properties = {};
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.min_count !== void 0 && object.min_count !== null) {
+      message.min_count = object.min_count;
+    }
+    if (object.max_count !== void 0 && object.max_count !== null) {
+      message.max_count = object.max_count;
+    }
+    if (object.query !== void 0 && object.query !== null) {
+      message.query = object.query;
+    }
+    if (object.string_properties !== void 0 && object.string_properties !== null) {
+      Object.entries(object.string_properties).forEach(([key, value]) => {
+        if (value !== void 0) {
+          message.string_properties[key] = String(value);
+        }
+      });
+    }
+    if (object.numeric_properties !== void 0 && object.numeric_properties !== null) {
+      Object.entries(object.numeric_properties).forEach(([key, value]) => {
+        if (value !== void 0) {
+          message.numeric_properties[key] = Number(value);
+        }
+      });
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    message.min_count !== void 0 && (obj.min_count = message.min_count);
+    message.max_count !== void 0 && (obj.max_count = message.max_count);
+    message.query !== void 0 && (obj.query = message.query);
+    obj.string_properties = {};
+    if (message.string_properties) {
+      Object.entries(message.string_properties).forEach(([k, v]) => {
+        obj.string_properties[k] = v;
+      });
+    }
+    obj.numeric_properties = {};
+    if (message.numeric_properties) {
+      Object.entries(message.numeric_properties).forEach(([k, v]) => {
+        obj.numeric_properties[k] = v;
+      });
+    }
+    return obj;
+  }
+};
+var PartyMatchmakerAdd_StringPropertiesEntry = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.key);
+    writer.uint32(18).string(message.value);
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyMatchmakerAdd_StringPropertiesEntry);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyMatchmakerAdd_StringPropertiesEntry);
+    if (object.key !== void 0 && object.key !== null) {
+      message.key = String(object.key);
+    }
+    if (object.value !== void 0 && object.value !== null) {
+      message.value = String(object.value);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyMatchmakerAdd_StringPropertiesEntry);
+    if (object.key !== void 0 && object.key !== null) {
+      message.key = object.key;
+    }
+    if (object.value !== void 0 && object.value !== null) {
+      message.value = object.value;
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.key !== void 0 && (obj.key = message.key);
+    message.value !== void 0 && (obj.value = message.value);
+    return obj;
+  }
+};
+var PartyMatchmakerAdd_NumericPropertiesEntry = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.key);
+    writer.uint32(17).double(message.value);
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyMatchmakerAdd_NumericPropertiesEntry);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = reader.double();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyMatchmakerAdd_NumericPropertiesEntry);
+    if (object.key !== void 0 && object.key !== null) {
+      message.key = String(object.key);
+    }
+    if (object.value !== void 0 && object.value !== null) {
+      message.value = Number(object.value);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyMatchmakerAdd_NumericPropertiesEntry);
+    if (object.key !== void 0 && object.key !== null) {
+      message.key = object.key;
+    }
+    if (object.value !== void 0 && object.value !== null) {
+      message.value = object.value;
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.key !== void 0 && (obj.key = message.key);
+    message.value !== void 0 && (obj.value = message.value);
+    return obj;
+  }
+};
+var PartyMatchmakerRemove = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    writer.uint32(18).string(message.ticket);
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyMatchmakerRemove);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.ticket = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyMatchmakerRemove);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.ticket !== void 0 && object.ticket !== null) {
+      message.ticket = String(object.ticket);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyMatchmakerRemove);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.ticket !== void 0 && object.ticket !== null) {
+      message.ticket = object.ticket;
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    message.ticket !== void 0 && (obj.ticket = message.ticket);
+    return obj;
+  }
+};
+var PartyMatchmakerTicket = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    writer.uint32(18).string(message.ticket);
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyMatchmakerTicket);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.ticket = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyMatchmakerTicket);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.ticket !== void 0 && object.ticket !== null) {
+      message.ticket = String(object.ticket);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyMatchmakerTicket);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.ticket !== void 0 && object.ticket !== null) {
+      message.ticket = object.ticket;
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    message.ticket !== void 0 && (obj.ticket = message.ticket);
+    return obj;
+  }
+};
+var PartyData = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    if (message.presence !== void 0 && message.presence !== void 0) {
+      UserPresence.encode(message.presence, writer.uint32(18).fork()).ldelim();
+    }
+    writer.uint32(24).int64(message.op_code);
+    writer.uint32(34).bytes(message.data);
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyData);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.presence = UserPresence.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.op_code = longToNumber2(reader.int64());
+          break;
+        case 4:
+          message.data = reader.bytes();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyData);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.presence !== void 0 && object.presence !== null) {
+      message.presence = UserPresence.fromJSON(object.presence);
+    }
+    if (object.op_code !== void 0 && object.op_code !== null) {
+      message.op_code = Number(object.op_code);
+    }
+    if (object.data !== void 0 && object.data !== null) {
+      message.data = bytesFromBase64(object.data);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyData);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.presence !== void 0 && object.presence !== null) {
+      message.presence = UserPresence.fromPartial(object.presence);
+    }
+    if (object.op_code !== void 0 && object.op_code !== null) {
+      message.op_code = object.op_code;
+    }
+    if (object.data !== void 0 && object.data !== null) {
+      message.data = object.data;
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    message.presence !== void 0 && (obj.presence = message.presence ? UserPresence.toJSON(message.presence) : void 0);
+    message.op_code !== void 0 && (obj.op_code = message.op_code);
+    message.data !== void 0 && (obj.data = base64FromBytes(message.data !== void 0 ? message.data : new Uint8Array()));
+    return obj;
+  }
+};
+var PartyDataSend = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    writer.uint32(16).int64(message.op_code);
+    writer.uint32(26).bytes(message.data);
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyDataSend);
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.op_code = longToNumber2(reader.int64());
+          break;
+        case 3:
+          message.data = reader.bytes();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyDataSend);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.op_code !== void 0 && object.op_code !== null) {
+      message.op_code = Number(object.op_code);
+    }
+    if (object.data !== void 0 && object.data !== null) {
+      message.data = bytesFromBase64(object.data);
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyDataSend);
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.op_code !== void 0 && object.op_code !== null) {
+      message.op_code = object.op_code;
+    }
+    if (object.data !== void 0 && object.data !== null) {
+      message.data = object.data;
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    message.op_code !== void 0 && (obj.op_code = message.op_code);
+    message.data !== void 0 && (obj.data = base64FromBytes(message.data !== void 0 ? message.data : new Uint8Array()));
+    return obj;
+  }
+};
+var PartyPresenceEvent = {
+  encode(message, writer = import_minimal4.Writer.create()) {
+    writer.uint32(10).string(message.party_id);
+    for (const v of message.joins) {
+      UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
+    }
+    for (const v of message.leaves) {
+      UserPresence.encode(v, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input, length) {
+    const reader = input instanceof Uint8Array ? new import_minimal4.Reader(input) : input;
+    let end = length === void 0 ? reader.len : reader.pos + length;
+    const message = __assign({}, basePartyPresenceEvent);
+    message.joins = [];
+    message.leaves = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.party_id = reader.string();
+          break;
+        case 2:
+          message.joins.push(UserPresence.decode(reader, reader.uint32()));
+          break;
+        case 3:
+          message.leaves.push(UserPresence.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object) {
+    const message = __assign({}, basePartyPresenceEvent);
+    message.joins = [];
+    message.leaves = [];
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = String(object.party_id);
+    }
+    if (object.joins !== void 0 && object.joins !== null) {
+      for (const e of object.joins) {
+        message.joins.push(UserPresence.fromJSON(e));
+      }
+    }
+    if (object.leaves !== void 0 && object.leaves !== null) {
+      for (const e of object.leaves) {
+        message.leaves.push(UserPresence.fromJSON(e));
+      }
+    }
+    return message;
+  },
+  fromPartial(object) {
+    const message = __assign({}, basePartyPresenceEvent);
+    message.joins = [];
+    message.leaves = [];
+    if (object.party_id !== void 0 && object.party_id !== null) {
+      message.party_id = object.party_id;
+    }
+    if (object.joins !== void 0 && object.joins !== null) {
+      for (const e of object.joins) {
+        message.joins.push(UserPresence.fromPartial(e));
+      }
+    }
+    if (object.leaves !== void 0 && object.leaves !== null) {
+      for (const e of object.leaves) {
+        message.leaves.push(UserPresence.fromPartial(e));
+      }
+    }
+    return message;
+  },
+  toJSON(message) {
+    const obj = {};
+    message.party_id !== void 0 && (obj.party_id = message.party_id);
+    if (message.joins) {
+      obj.joins = message.joins.map((e) => e ? UserPresence.toJSON(e) : void 0);
+    } else {
+      obj.joins = [];
+    }
+    if (message.leaves) {
+      obj.leaves = message.leaves.map((e) => e ? UserPresence.toJSON(e) : void 0);
+    } else {
+      obj.leaves = [];
     }
     return obj;
   }
@@ -5668,12 +7260,12 @@ var StatusFollow = {
   toJSON(message) {
     const obj = {};
     if (message.user_ids) {
-      obj.user_ids = message.user_ids.map((e) => e || "");
+      obj.user_ids = message.user_ids.map((e) => e);
     } else {
       obj.user_ids = [];
     }
     if (message.usernames) {
-      obj.usernames = message.usernames.map((e) => e || "");
+      obj.usernames = message.usernames.map((e) => e);
     } else {
       obj.usernames = [];
     }
@@ -5807,7 +7399,7 @@ var StatusUnfollow = {
   toJSON(message) {
     const obj = {};
     if (message.user_ids) {
-      obj.user_ids = message.user_ids.map((e) => e || "");
+      obj.user_ids = message.user_ids.map((e) => e);
     } else {
       obj.user_ids = [];
     }
@@ -5854,7 +7446,7 @@ var StatusUpdate = {
   },
   toJSON(message) {
     const obj = {};
-    obj.status = message.status || void 0;
+    message.status !== void 0 && (obj.status = message.status);
     return obj;
   }
 };
@@ -5926,10 +7518,10 @@ var Stream = {
   },
   toJSON(message) {
     const obj = {};
-    obj.mode = message.mode || 0;
-    obj.subject = message.subject || "";
-    obj.subcontext = message.subcontext || "";
-    obj.label = message.label || "";
+    message.mode !== void 0 && (obj.mode = message.mode);
+    message.subject !== void 0 && (obj.subject = message.subject);
+    message.subcontext !== void 0 && (obj.subcontext = message.subcontext);
+    message.label !== void 0 && (obj.label = message.label);
     return obj;
   }
 };
@@ -6005,10 +7597,10 @@ var StreamData = {
   },
   toJSON(message) {
     const obj = {};
-    obj.stream = message.stream ? Stream.toJSON(message.stream) : void 0;
-    obj.sender = message.sender ? UserPresence.toJSON(message.sender) : void 0;
-    obj.data = message.data || "";
-    obj.reliable = message.reliable || false;
+    message.stream !== void 0 && (obj.stream = message.stream ? Stream.toJSON(message.stream) : void 0);
+    message.sender !== void 0 && (obj.sender = message.sender ? UserPresence.toJSON(message.sender) : void 0);
+    message.data !== void 0 && (obj.data = message.data);
+    message.reliable !== void 0 && (obj.reliable = message.reliable);
     return obj;
   }
 };
@@ -6090,7 +7682,7 @@ var StreamPresenceEvent = {
   },
   toJSON(message) {
     const obj = {};
-    obj.stream = message.stream ? Stream.toJSON(message.stream) : void 0;
+    message.stream !== void 0 && (obj.stream = message.stream ? Stream.toJSON(message.stream) : void 0);
     if (message.joins) {
       obj.joins = message.joins.map((e) => e ? UserPresence.toJSON(e) : void 0);
     } else {
@@ -6184,14 +7776,18 @@ var UserPresence = {
   },
   toJSON(message) {
     const obj = {};
-    obj.user_id = message.user_id || "";
-    obj.session_id = message.session_id || "";
-    obj.username = message.username || "";
-    obj.persistence = message.persistence || false;
-    obj.status = message.status || void 0;
+    message.user_id !== void 0 && (obj.user_id = message.user_id);
+    message.session_id !== void 0 && (obj.session_id = message.session_id);
+    message.username !== void 0 && (obj.username = message.username);
+    message.persistence !== void 0 && (obj.persistence = message.persistence);
+    message.status !== void 0 && (obj.status = message.status);
     return obj;
   }
 };
+if (import_minimal4.util.Long !== Long4) {
+  import_minimal4.util.Long = Long4;
+  import_minimal4.configure();
+}
 var windowBase642 = globalThis;
 var atob2 = windowBase642.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
 var btoa2 = windowBase642.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));

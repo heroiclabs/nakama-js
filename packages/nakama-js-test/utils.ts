@@ -18,6 +18,7 @@ import { Page } from "puppeteer";
 const fs = require("fs");
 const crypto = require("crypto");
 const base64url = require("base64url");
+import global from "jest-environment-puppeteer"
 
 // util to generate a random id.
 export function generateid(): string {
