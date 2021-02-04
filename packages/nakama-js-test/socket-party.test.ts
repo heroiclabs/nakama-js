@@ -407,7 +407,6 @@ describe('Party Tests', () => {
       return id1MatchedPromise;
     }, customid1, customid2, customid3, adapter);
 
-    console.log(JSON.stringify(response));
     expect(response).toBeDefined();
     expect(response.token).toBeDefined();
     expect(response.users.length).toEqual(3);
