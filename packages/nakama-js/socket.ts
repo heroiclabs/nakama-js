@@ -339,7 +339,7 @@ export interface PartyMatchmakerRemove {
 }
 
 // A response from starting a new party matchmaking process.
-export interface PartyMatchmakerMatched {
+export interface PartyMatchmakerTicket {
   party_id: string;
   ticket: string;
 }
@@ -409,7 +409,7 @@ export interface Socket {
   // Begin matchmaking as a party.
   addMatchmakerParty(party_id: string, query : string, min_count : number, max_count : number,
     string_properties? : Record<string, string>, numericProperties? : Record<string, number>)
-    : Promise<PartyMatchmakerMatched>;
+    : Promise<PartyMatchmakerTicket>;
 
   // End a party, kicking all party members and closing it.
   closeParty(party_id : string) : Promise<void>;
@@ -518,7 +518,7 @@ export interface Socket {
   onpartypresence: (partyPresence : PartyPresenceEvent) => void;
 
   // Receive matchmaking results.
-  onpartymatchmakermatched: (matchmakerMatched: PartyMatchmakerMatched) => void;
+  onpartymatchmakerticket: (matchmakerMatched: PartyMatchmakerTicket) => void;
 
   // Receive status presence updates.
   onstatuspresence: (statusPresence: StatusPresenceEvent) => void;
@@ -624,7 +624,7 @@ export class DefaultSocket implements Socket {
         } else if (message.party_leader) {
           this.onpartyleader(<PartyLeader> message.party_leader);
         } else if (message.party_matchmaker_ticket)  {
-          this.onpartymatchmakermatched(message.party_matchmaker_ticket);
+          this.onpartymatchmakerticket(message.party_matchmaker_ticket);
         } else if (message.party_presence_event) {
           this.onpartypresence(<PartyPresenceEvent> message.party_presence_event);
         } else if (message.party) {
@@ -753,7 +753,7 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  onpartymatchmakermatched(partyMatched: PartyMatchmakerMatched) {
+  onpartymatchmakerticket(partyMatched: PartyMatchmakerTicket) {
     if (this.verbose && window && window.console) {
       console.log(partyMatched);
     }
@@ -850,7 +850,7 @@ export class DefaultSocket implements Socket {
       return response.matchmaker_ticket;
   }
 
-  async addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<PartyMatchmakerMatched> {
+  async addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<PartyMatchmakerTicket> {
 
     const response = await this.send({
       party_matchmaker_add: {

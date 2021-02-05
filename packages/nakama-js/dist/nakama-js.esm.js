@@ -1545,7 +1545,7 @@ var DefaultSocket = class {
         } else if (message.party_leader) {
           this.onpartyleader(message.party_leader);
         } else if (message.party_matchmaker_ticket) {
-          this.onpartymatchmakermatched(message.party_matchmaker_ticket);
+          this.onpartymatchmakerticket(message.party_matchmaker_ticket);
         } else if (message.party_presence_event) {
           this.onpartypresence(message.party_presence_event);
         } else if (message.party) {
@@ -1657,7 +1657,7 @@ var DefaultSocket = class {
       console.log(partyLeader);
     }
   }
-  onpartymatchmakermatched(partyMatched) {
+  onpartymatchmakerticket(partyMatched) {
     if (this.verbose && window && window.console) {
       console.log(partyMatched);
     }
@@ -1684,7 +1684,6 @@ var DefaultSocket = class {
   }
   send(message) {
     const untypedMessage = message;
-    console.log("sending socket message " + JSON.stringify(untypedMessage));
     return new Promise((resolve, reject) => {
       if (!this.adapter.isConnected) {
         reject("Socket connection has not been established yet.");

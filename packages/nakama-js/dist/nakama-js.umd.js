@@ -1876,7 +1876,7 @@
                       _this.onpartyleader(message.party_leader);
                   }
                   else if (message.party_matchmaker_ticket) {
-                      _this.onpartymatchmakermatched(message.party_matchmaker_ticket);
+                      _this.onpartymatchmakerticket(message.party_matchmaker_ticket);
                   }
                   else if (message.party_presence_event) {
                       _this.onpartypresence(message.party_presence_event);
@@ -1994,7 +1994,7 @@
               console.log(partyLeader);
           }
       };
-      DefaultSocket.prototype.onpartymatchmakermatched = function (partyMatched) {
+      DefaultSocket.prototype.onpartymatchmakerticket = function (partyMatched) {
           if (this.verbose && window && window.console) {
               console.log(partyMatched);
           }
@@ -2022,7 +2022,6 @@
       DefaultSocket.prototype.send = function (message) {
           var _this = this;
           var untypedMessage = message;
-          console.log("sending socket message " + JSON.stringify(untypedMessage));
           return new Promise(function (resolve, reject) {
               if (!_this.adapter.isConnected) {
                   reject("Socket connection has not been established yet.");
