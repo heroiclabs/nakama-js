@@ -409,7 +409,7 @@ export interface Socket {
   // Begin matchmaking as a party.
   addMatchmakerParty(party_id: string, query : string, min_count : number, max_count : number,
     string_properties? : Record<string, string>, numericProperties? : Record<string, number>)
-    : Promise<PartyMatchmakerTicket>;
+    : Promise<void>;
 
   // End a party, kicking all party members and closing it.
   closeParty(party_id : string) : Promise<void>;
@@ -824,7 +824,7 @@ export class DefaultSocket implements Socket {
       }
 
       if (this.verbose && window && window.console) {
-        console.log("Sent message: %o", untypedMessage);
+        console.log("Sent message: %o", JSON.stringify(untypedMessage));
       }
     });
   }
@@ -850,9 +850,9 @@ export class DefaultSocket implements Socket {
       return response.matchmaker_ticket;
   }
 
-  async addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<PartyMatchmakerTicket> {
+  async addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<void> {
 
-    const response = await this.send({
+    return this.send({
       party_matchmaker_add: {
         party_id : party_id,
         min_count: min_count,
@@ -861,8 +861,6 @@ export class DefaultSocket implements Socket {
         string_properties: string_properties,
         numeric_properties: numeric_properties
     }});
-
-    return response.party_matchmaker_ticket;
   }
 
   async closeParty(party_id: string): Promise<void> {

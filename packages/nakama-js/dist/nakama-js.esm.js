@@ -1709,7 +1709,7 @@ var DefaultSocket = class {
         }
       }
       if (this.verbose && window && window.console) {
-        console.log("Sent message: %o", untypedMessage);
+        console.log("Sent message: %o", JSON.stringify(untypedMessage));
       }
     });
   }
@@ -1732,7 +1732,7 @@ var DefaultSocket = class {
   }
   addMatchmakerParty(party_id, query, min_count, max_count, string_properties, numeric_properties) {
     return __async(this, null, function* () {
-      const response = yield this.send({
+      return this.send({
         party_matchmaker_add: {
           party_id,
           min_count,
@@ -1742,7 +1742,6 @@ var DefaultSocket = class {
           numeric_properties
         }
       });
-      return response.party_matchmaker_ticket;
     });
   }
   closeParty(party_id) {
