@@ -286,7 +286,7 @@ export interface Socket {
     addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numericProperties?: Record<string, number>): Promise<PartyMatchmakerTicket>;
     closeParty(party_id: string): Promise<void>;
     createMatch(): Promise<Match>;
-    createParty(open: boolean, max_size: number): Promise<Party>;
+    createParty(open: boolean, max_size: number): Promise<void>;
     followUsers(user_ids: string[]): Promise<Status>;
     joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel>;
     joinParty(party_id: string): Promise<void>;
@@ -366,7 +366,7 @@ export declare class DefaultSocket implements Socket {
     addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<PartyMatchmakerTicket>;
     closeParty(party_id: string): Promise<void>;
     createMatch(): Promise<Match>;
-    createParty(open: boolean, max_size: number): Promise<Party>;
+    createParty(open: boolean, max_size: number): Promise<void>;
     followUsers(userIds: string[]): Promise<Status>;
     joinChat(target: string, type: number, persistence: boolean, hidden: boolean): Promise<Channel>;
     joinMatch(match_id?: string, token?: string, metadata?: {}): Promise<Match>;

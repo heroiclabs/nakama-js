@@ -2126,14 +2126,8 @@
       };
       DefaultSocket.prototype.createParty = function (open, max_size) {
           return __awaiter(this, void 0, void 0, function () {
-              var response;
               return __generator(this, function (_a) {
-                  switch (_a.label) {
-                      case 0: return [4, this.send({ party_create: { open: open, max_size: max_size } })];
-                      case 1:
-                          response = _a.sent();
-                          return [2, response.party_create];
-                  }
+                  return [2, this.send({ party_create: { open: open, max_size: max_size } })];
               });
           });
       };
