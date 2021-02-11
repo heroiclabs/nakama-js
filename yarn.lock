@@ -1784,7 +1784,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js-webpack-example@workspace:packages/nakama-js-webpack-example"
   dependencies:
-    "@heroiclabs/nakama-js": 2.1.3
+    "@heroiclabs/nakama-js": 2.1.4
     ts-loader: ^8.0.14
     typescript: ^4.1.3
     webpack: ^5.12.2
