@@ -264,7 +264,7 @@ export interface Socket {
   // Connect to the server.
   connect(session: Session, createStatus: boolean): Promise<Session>;
   // Disconnect from the server.
-  disconnect(fireDisconnectEvent: boolean): void;
+  disconnect(fireDisconnectEvent: boolean, evt?: any): void;
   // Send message to the server. This method remains in the API for backwards compatibility.
   // We recommend that you use the other socket-based methods below for improved
   // type checking and code readability.
