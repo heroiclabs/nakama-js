@@ -17,6 +17,7 @@
 // Rollup is the legacy build system for nakama-js and is only used for cocos2d-x-js support.
 
 import typescript from '@rollup/plugin-typescript';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 export default {
     input: './index.ts',
@@ -30,7 +31,8 @@ export default {
         typescript({
             include: ["**/*.ts"],
             target: "es5"
-        })
+        }),
+        nodeResolve()
     ],
     moduleContext: {
         [require.resolve('whatwg-fetch')]: 'window'
