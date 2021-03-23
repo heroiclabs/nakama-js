@@ -3,6 +3,10 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [2.1.5]
+### Fixed
+- Fixed issue where rollup.js was not bundling in js-base64 library to UMD distribution.
+
 ### [2.1.4]
 
 ### Added
