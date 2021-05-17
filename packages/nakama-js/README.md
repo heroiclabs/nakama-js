@@ -165,6 +165,11 @@ docker-compose -f ./docker-compose.yml up
 yarn workspace @heroiclabs/nakama-js-test run test
 ```
 
+Note on Yarn workspaces and testing particular versions of `nakama-js` from the `nakama-js-test` workspace:
+Yarn will first look at the remote NPM registry for the `nakama-js` version specified. If that is not found,
+it will symlink the local `nakama-js` workspace into `node_modules` which is necessary for running tests
+against local changes.
+
 ### Protocol Buffer Web Socket Adapter
 
 To update the generated Typescript required for using the protocol buffer adapter, `cd` into
