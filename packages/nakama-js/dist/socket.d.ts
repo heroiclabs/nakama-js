@@ -14,7 +14,7 @@ export interface Channel {
     presences: Presence[];
     self: Presence;
 }
-export interface ChannelJoin {
+interface ChannelJoin {
     channel_join: {
         target: string;
         type: number;
@@ -22,7 +22,7 @@ export interface ChannelJoin {
         hidden: boolean;
     };
 }
-export interface ChannelLeave {
+interface ChannelLeave {
     channel_leave: {
         channel_id: string;
     };
@@ -51,20 +51,20 @@ export interface ChannelMessageAck {
     update_time: string;
     persistence: boolean;
 }
-export interface ChannelMessageSend {
+interface ChannelMessageSend {
     channel_message_send: {
         channel_id: string;
         content: any;
     };
 }
-export interface ChannelMessageUpdate {
+interface ChannelMessageUpdate {
     channel_message_update: {
         channel_id: string;
         message_id: string;
         content: any;
     };
 }
-export interface ChannelMessageRemove {
+interface ChannelMessageRemove {
     channel_message_remove: {
         channel_id: string;
         message_id: string;
@@ -96,7 +96,7 @@ export interface MatchPresenceEvent {
     joins: Presence[];
     leaves: Presence[];
 }
-export interface MatchmakerAdd {
+interface MatchmakerAdd {
     matchmaker_add: {
         min_count: number;
         max_count: number;
@@ -105,7 +105,7 @@ export interface MatchmakerAdd {
         numeric_properties?: Record<string, number>;
     };
 }
-export interface MatchmakerRemove {
+interface MatchmakerRemove {
     matchmaker_remove: {
         ticket: string;
     };
@@ -131,17 +131,17 @@ export interface Match {
     presences: Presence[];
     self: Presence;
 }
-export interface CreateMatch {
+interface CreateMatch {
     match_create: {};
 }
-export interface JoinMatch {
+interface JoinMatch {
     match_join: {
         match_id?: string;
         token?: string;
         metadata?: {};
     };
 }
-export interface LeaveMatch {
+interface LeaveMatch {
     match_leave: {
         match_id: string;
     };
@@ -152,7 +152,7 @@ export interface MatchData {
     data: any;
     presences: Presence[];
 }
-export interface MatchDataSend {
+interface MatchDataSend {
     match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
 }
 export interface Party {
@@ -169,17 +169,17 @@ export interface PartyCreate {
         max_size: number;
     };
 }
-export interface PartyJoin {
+interface PartyJoin {
     party_join: {
         party_id: string;
     };
 }
-export interface PartyLeave {
+interface PartyLeave {
     party_leave: {
         party_id: string;
     };
 }
-export interface PartyPromote {
+interface PartyPromote {
     party_promote: {
         party_id: string;
         presence: Presence;
@@ -189,13 +189,13 @@ export interface PartyLeader {
     party_id: string;
     presence: Presence;
 }
-export interface PartyAccept {
+interface PartyAccept {
     party_accept: {
         party_id: string;
         presence: Presence;
     };
 }
-export interface PartyClose {
+interface PartyClose {
     party_close: {
         party_id: string;
     };
@@ -206,7 +206,7 @@ export interface PartyData {
     op_code: number;
     data: any;
 }
-export interface PartyDataSend {
+interface PartyDataSend {
     party_data_send: {
         party_id: string;
         op_code: number;
@@ -222,7 +222,7 @@ export interface PartyJoinRequestList {
         party_id: string;
     };
 }
-export interface PartyMatchmakerAdd {
+interface PartyMatchmakerAdd {
     party_matchmaker_add: {
         party_id: string;
         min_count: number;
@@ -232,7 +232,7 @@ export interface PartyMatchmakerAdd {
         numeric_properties?: Record<string, number>;
     };
 }
-export interface PartyMatchmakerRemove {
+interface PartyMatchmakerRemove {
     party_matchmaker_remove: {
         party_id: string;
         ticket: string;
@@ -247,19 +247,19 @@ export interface PartyPresenceEvent {
     joins: Presence[];
     leaves: Presence[];
 }
-export interface PartyRemove {
+interface PartyRemove {
     party_remove: {
         party_id: string;
         presence: Presence;
     };
 }
-export interface Rpc {
+interface Rpc {
     rpc: ApiRpc;
 }
 export interface Status {
     presences: Presence[];
 }
-export interface StatusFollow {
+interface StatusFollow {
     status_follow: {
         user_ids: string[];
     };
@@ -268,12 +268,12 @@ export interface StatusPresenceEvent {
     joins: Presence[];
     leaves: Presence[];
 }
-export interface StatusUnfollow {
+interface StatusUnfollow {
     status_unfollow: {
         user_ids: string[];
     };
 }
-export interface StatusUpdate {
+interface StatusUpdate {
     status_update: {
         status?: string;
     };

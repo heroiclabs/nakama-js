@@ -20,7 +20,6 @@ import {Notification} from "./client";
 import {WebSocketAdapter, WebSocketAdapterText} from "./web_socket_adapter"
 import {b64DecodeUnicode, b64EncodeUnicode} from "./utils";
 
-
 /** Requires the set of keys K to exist in type T. */
 type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
 
@@ -45,7 +44,7 @@ export interface Channel {
 }
 
 /** Join a realtime chat channel. */
-export interface ChannelJoin {
+interface ChannelJoin {
   channel_join: {
     target: string;
     type: number;
@@ -55,7 +54,7 @@ export interface ChannelJoin {
 }
 
 /** Leave a realtime chat channel. */
-export interface ChannelLeave {
+interface ChannelLeave {
   channel_leave: {
     channel_id: string;
   };
@@ -90,7 +89,7 @@ export interface ChannelMessageAck {
 }
 
 /** Send a message to a realtime chat channel. */
-export interface ChannelMessageSend {
+interface ChannelMessageSend {
   channel_message_send: {
     channel_id: string;
     content: any;
@@ -98,7 +97,7 @@ export interface ChannelMessageSend {
 }
 
 /** Update a message previously sent to a realtime chat channel. */
-export interface ChannelMessageUpdate {
+interface ChannelMessageUpdate {
   channel_message_update: {
     channel_id: string,
     message_id: string,
@@ -107,7 +106,7 @@ export interface ChannelMessageUpdate {
 }
 
 /** Remove a message previously sent to a realtime chat channel. */
-export interface ChannelMessageRemove {
+interface ChannelMessageRemove {
   channel_message_remove: {
     channel_id: string;
     message_id: string;
@@ -151,7 +150,7 @@ export interface MatchPresenceEvent {
 }
 
 /** Start a matchmaking process. */
-export interface MatchmakerAdd {
+interface MatchmakerAdd {
   matchmaker_add: {
     min_count: number;
     max_count: number;
@@ -162,7 +161,7 @@ export interface MatchmakerAdd {
 }
 
 /** Cancel a matchmaking process. */
-export interface MatchmakerRemove {
+interface MatchmakerRemove {
   matchmaker_remove: {
     ticket: string;
   };
@@ -196,12 +195,12 @@ export interface Match {
 }
 
 /** Create a multiplayer match. */
-export interface CreateMatch {
+interface CreateMatch {
   match_create: {};
 }
 
 /** Join a multiplayer match. */
-export interface JoinMatch {
+interface JoinMatch {
   match_join: {
     match_id?: string;
     token?: string;
@@ -210,7 +209,7 @@ export interface JoinMatch {
 }
 
 /** Leave a multiplayer match. */
-export interface LeaveMatch {
+interface LeaveMatch {
   match_leave: {
     match_id: string;
   };
@@ -225,7 +224,7 @@ export interface MatchData {
 }
 
 /** Send a message contains match data. */
-export interface MatchDataSend {
+interface MatchDataSend {
   match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
 }
 
@@ -239,6 +238,7 @@ export interface Party {
   presences : Presence[];
 }
 
+// Create a party.
 export interface PartyCreate {
   party_create: {
     open : boolean;
@@ -246,21 +246,22 @@ export interface PartyCreate {
   }
 }
 
-export interface PartyJoin {
+// Join a party.
+interface PartyJoin {
   party_join: {
     party_id : string;
   }
 }
 
 // Leave a party.
-export interface PartyLeave {
+interface PartyLeave {
   party_leave: {
     party_id : string;
   }
 }
 
 // Promote a new party leader.
-export interface PartyPromote {
+interface PartyPromote {
   party_promote: {
     party_id : string;
     presence : Presence;
@@ -274,7 +275,7 @@ export interface PartyLeader {
 }
 
 // Accept a request to join.
-export interface PartyAccept {
+interface PartyAccept {
   party_accept: {
     party_id : string;
     presence : Presence;
@@ -282,7 +283,7 @@ export interface PartyAccept {
 }
 
 // End a party, kicking all party members and closing it.
-export interface PartyClose {
+interface PartyClose {
   party_close: {
     party_id : string;
   }
@@ -297,7 +298,7 @@ export interface PartyData {
 }
 
 // A client to server request to send data to a party.
-export interface PartyDataSend {
+interface PartyDataSend {
   party_data_send: {
     party_id : string;
     op_code : number;
@@ -319,7 +320,7 @@ export interface PartyJoinRequestList {
 }
 
 // Begin matchmaking as a party.
-export interface PartyMatchmakerAdd {
+interface PartyMatchmakerAdd {
   party_matchmaker_add: {
     party_id : string;
     min_count : number;
@@ -331,7 +332,7 @@ export interface PartyMatchmakerAdd {
 }
 
 // Cancel a party matchmaking process using a ticket.
-export interface PartyMatchmakerRemove {
+interface PartyMatchmakerRemove {
   party_matchmaker_remove: {
     party_id : string;
     ticket : string;
@@ -352,7 +353,7 @@ export interface PartyPresenceEvent {
 }
 
 // Kick a party member, or decline a request to join.
-export interface PartyRemove {
+interface PartyRemove {
   party_remove: {
     party_id : string;
     presence : Presence;
@@ -360,7 +361,7 @@ export interface PartyRemove {
 }
 
 /** Execute an Lua function on the server. */
-export interface Rpc {
+interface Rpc {
   rpc: ApiRpc;
 }
 
@@ -370,7 +371,7 @@ export interface Status {
 }
 
 /** Start receiving status updates for some set of users. */
-export interface StatusFollow {
+interface StatusFollow {
   status_follow: {user_ids: string[];}
 }
 
@@ -381,12 +382,12 @@ export interface StatusPresenceEvent {
 }
 
 /** Stop receiving status updates for some set of users. */
-export interface StatusUnfollow {
+interface StatusUnfollow {
   status_unfollow: {user_ids: string[];};
 }
 
 /** Set the user's own status. */
-export interface StatusUpdate {
+interface StatusUpdate {
   status_update: {status?: string;};
 }
 

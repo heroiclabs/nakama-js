@@ -3,6 +3,10 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [Unreleased]
+- Removes the deprecated generalist `socket.Send` function for sending data. Use the other exported Socket methods
+such as `socket.addMatchmaker` for better type checking.
+
 ### [2.1.5]
 ### Fixed
 - Fixed issue where rollup.js was not bundling in js-base64 library to UMD distribution.
