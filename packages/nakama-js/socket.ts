@@ -418,7 +418,7 @@ export interface Socket {
   createMatch() : Promise<Match>;
 
   // Create a party.
-  createParty(open : boolean, max_size : number) : Promise<void>;
+  createParty(open : boolean, max_size : number) : Promise<Party>;
 
   // Subscribe to one or more users for their status updates.
   followUsers(user_ids: string[]) : Promise<Status>;
@@ -872,8 +872,9 @@ export class DefaultSocket implements Socket {
     return response.match;
   }
 
-  async createParty(open: boolean, max_size: number): Promise<void> {
-    return this.send({party_create: {open: open, max_size: max_size}});
+  async createParty(open: boolean, max_size: number): Promise<Party> {
+    const response = await this.send({party_create: {open: open, max_size: max_size}});
+    return response.party_create;
   }
 
   async followUsers(userIds : string[]): Promise<Status> {

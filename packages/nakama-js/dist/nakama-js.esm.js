@@ -1757,7 +1757,8 @@ var DefaultSocket = class {
   }
   createParty(open, max_size) {
     return __async(this, null, function* () {
-      return this.send({party_create: {open, max_size}});
+      const response = yield this.send({party_create: {open, max_size}});
+      return response.party_create;
     });
   }
   followUsers(userIds) {
