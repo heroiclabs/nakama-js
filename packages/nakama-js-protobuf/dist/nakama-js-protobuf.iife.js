@@ -7,7 +7,7 @@ var nakamajsprotobuf = (() => {
   var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
   var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, {enumerable: true, configurable: true, writable: true, value}) : obj[key] = value;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
   var __spreadValues = (a, b) => {
     for (var prop in b || (b = {}))
       if (__hasOwnProp.call(b, prop))
@@ -19,24 +19,24 @@ var nakamajsprotobuf = (() => {
       }
     return a;
   };
-  var __markAsModule = (target) => __defProp(target, "__esModule", {value: true});
+  var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
   var __commonJS = (cb, mod) => function __require() {
-    return mod || (0, cb[Object.keys(cb)[0]])((mod = {exports: {}}).exports, mod), mod.exports;
+    return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
   var __export = (target, all) => {
     for (var name in all)
-      __defProp(target, name, {get: all[name], enumerable: true});
+      __defProp(target, name, { get: all[name], enumerable: true });
   };
   var __reExport = (target, module2, desc) => {
     if (module2 && typeof module2 === "object" || typeof module2 === "function") {
       for (let key of __getOwnPropNames(module2))
         if (!__hasOwnProp.call(target, key) && key !== "default")
-          __defProp(target, key, {get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable});
+          __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
     }
     return target;
   };
   var __toModule = (module2) => {
-    return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? {get: () => module2.default, enumerable: true} : {value: module2, enumerable: true})), module2);
+    return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
   };
 
   // node_modules/@protobufjs/aspromise/index.js
@@ -586,7 +586,7 @@ var nakamajsprotobuf = (() => {
         return this.lo + this.hi * 4294967296;
       };
       LongBits.prototype.toLong = function toLong(unsigned) {
-        return util5.Long ? new util5.Long(this.lo | 0, this.hi | 0, Boolean(unsigned)) : {low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned)};
+        return util5.Long ? new util5.Long(this.lo | 0, this.hi | 0, Boolean(unsigned)) : { low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned) };
       };
       var charCodeAt = String.prototype.charCodeAt;
       LongBits.fromHash = function fromHash(hash) {
@@ -689,20 +689,20 @@ var nakamajsprotobuf = (() => {
         function CustomError(message, properties) {
           if (!(this instanceof CustomError))
             return new CustomError(message, properties);
-          Object.defineProperty(this, "message", {get: function() {
+          Object.defineProperty(this, "message", { get: function() {
             return message;
-          }});
+          } });
           if (Error.captureStackTrace)
             Error.captureStackTrace(this, CustomError);
           else
-            Object.defineProperty(this, "stack", {value: new Error().stack || ""});
+            Object.defineProperty(this, "stack", { value: new Error().stack || "" });
           if (properties)
             merge(this, properties);
         }
         (CustomError.prototype = Object.create(Error.prototype)).constructor = CustomError;
-        Object.defineProperty(CustomError.prototype, "name", {get: function() {
+        Object.defineProperty(CustomError.prototype, "name", { get: function() {
           return name;
-        }});
+        } });
         CustomError.prototype.toString = function toString() {
           return this.name + ": " + this.message;
         };
@@ -1649,7 +1649,7 @@ var nakamajsprotobuf = (() => {
         this.unsigned = !!unsigned;
       }
       Long5.prototype.__isLong__;
-      Object.defineProperty(Long5.prototype, "__isLong__", {value: true});
+      Object.defineProperty(Long5.prototype, "__isLong__", { value: true });
       function isLong(obj) {
         return (obj && obj["__isLong__"]) === true;
       }
@@ -2448,7 +2448,7 @@ var nakamajsprotobuf = (() => {
         writer.uint32(18).string(message.message_id);
       }
       if (message.code !== void 0) {
-        Int32Value.encode({value: message.code}, writer.uint32(26).fork()).ldelim();
+        Int32Value.encode({ value: message.code }, writer.uint32(26).fork()).ldelim();
       }
       if (message.sender_id !== "") {
         writer.uint32(34).string(message.sender_id);
@@ -2466,7 +2466,7 @@ var nakamajsprotobuf = (() => {
         Timestamp.encode(toTimestamp(message.update_time), writer.uint32(66).fork()).ldelim();
       }
       if (message.persistent !== void 0) {
-        BoolValue.encode({value: message.persistent}, writer.uint32(74).fork()).ldelim();
+        BoolValue.encode({ value: message.persistent }, writer.uint32(74).fork()).ldelim();
       }
       if (message.room_name !== "") {
         writer.uint32(82).string(message.room_name);
@@ -2769,7 +2769,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseRpc = {id: "", payload: "", http_key: ""};
+  var baseRpc = { id: "", payload: "", http_key: "" };
   var Rpc = {
     encode(message, writer = import_minimal3.Writer.create()) {
       if (message.id !== "") {
@@ -2854,7 +2854,7 @@ var nakamajsprotobuf = (() => {
   function toTimestamp(date) {
     const seconds = date.getTime() / 1e3;
     const nanos = date.getTime() % 1e3 * 1e6;
-    return {seconds, nanos};
+    return { seconds, nanos };
   }
   function fromTimestamp(t) {
     let millis = t.seconds * 1e3;
@@ -2896,7 +2896,7 @@ var nakamajsprotobuf = (() => {
     Error_Code2[Error_Code2["RUNTIME_FUNCTION_EXCEPTION"] = 7] = "RUNTIME_FUNCTION_EXCEPTION";
     Error_Code2[Error_Code2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
   })(Error_Code || (Error_Code = {}));
-  var baseEnvelope = {cid: ""};
+  var baseEnvelope = { cid: "" };
   var Envelope = {
     encode(message, writer = import_minimal4.Writer.create()) {
       var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W;
@@ -3423,10 +3423,10 @@ var nakamajsprotobuf = (() => {
         };
       }
       if (object.error !== void 0 && object.error !== null) {
-        message.message = {$case: "error", error: Error2.fromJSON(object.error)};
+        message.message = { $case: "error", error: Error2.fromJSON(object.error) };
       }
       if (object.match !== void 0 && object.match !== null) {
-        message.message = {$case: "match", match: Match.fromJSON(object.match)};
+        message.message = { $case: "match", match: Match.fromJSON(object.match) };
       }
       if (object.match_create !== void 0 && object.match_create !== null) {
         message.message = {
@@ -3495,7 +3495,7 @@ var nakamajsprotobuf = (() => {
         };
       }
       if (object.rpc !== void 0 && object.rpc !== null) {
-        message.message = {$case: "rpc", rpc: Rpc.fromJSON(object.rpc)};
+        message.message = { $case: "rpc", rpc: Rpc.fromJSON(object.rpc) };
       }
       if (object.status !== void 0 && object.status !== null) {
         message.message = {
@@ -3540,13 +3540,13 @@ var nakamajsprotobuf = (() => {
         };
       }
       if (object.ping !== void 0 && object.ping !== null) {
-        message.message = {$case: "ping", ping: Ping.fromJSON(object.ping)};
+        message.message = { $case: "ping", ping: Ping.fromJSON(object.ping) };
       }
       if (object.pong !== void 0 && object.pong !== null) {
-        message.message = {$case: "pong", pong: Pong.fromJSON(object.pong)};
+        message.message = { $case: "pong", pong: Pong.fromJSON(object.pong) };
       }
       if (object.party !== void 0 && object.party !== null) {
-        message.message = {$case: "party", party: Party.fromJSON(object.party)};
+        message.message = { $case: "party", party: Party.fromJSON(object.party) };
       }
       if (object.party_create !== void 0 && object.party_create !== null) {
         message.message = {
@@ -4144,7 +4144,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseChannelJoin = {target: "", type: 0};
+  var baseChannelJoin = { target: "", type: 0 };
   var ChannelJoin = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.target !== "") {
@@ -4154,10 +4154,10 @@ var nakamajsprotobuf = (() => {
         writer.uint32(16).int32(message.type);
       }
       if (message.persistence !== void 0) {
-        BoolValue.encode({value: message.persistence}, writer.uint32(26).fork()).ldelim();
+        BoolValue.encode({ value: message.persistence }, writer.uint32(26).fork()).ldelim();
       }
       if (message.hidden !== void 0) {
-        BoolValue.encode({value: message.hidden}, writer.uint32(34).fork()).ldelim();
+        BoolValue.encode({ value: message.hidden }, writer.uint32(34).fork()).ldelim();
       }
       return writer;
     },
@@ -4228,7 +4228,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseChannelLeave = {channel_id: ""};
+  var baseChannelLeave = { channel_id: "" };
   var ChannelLeave = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.channel_id !== "") {
@@ -4291,7 +4291,7 @@ var nakamajsprotobuf = (() => {
         writer.uint32(18).string(message.message_id);
       }
       if (message.code !== void 0) {
-        Int32Value.encode({value: message.code}, writer.uint32(26).fork()).ldelim();
+        Int32Value.encode({ value: message.code }, writer.uint32(26).fork()).ldelim();
       }
       if (message.username !== "") {
         writer.uint32(34).string(message.username);
@@ -4303,7 +4303,7 @@ var nakamajsprotobuf = (() => {
         Timestamp.encode(toTimestamp2(message.update_time), writer.uint32(50).fork()).ldelim();
       }
       if (message.persistent !== void 0) {
-        BoolValue.encode({value: message.persistent}, writer.uint32(58).fork()).ldelim();
+        BoolValue.encode({ value: message.persistent }, writer.uint32(58).fork()).ldelim();
       }
       if (message.room_name !== "") {
         writer.uint32(66).string(message.room_name);
@@ -4456,7 +4456,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseChannelMessageSend = {channel_id: "", content: ""};
+  var baseChannelMessageSend = { channel_id: "", content: "" };
   var ChannelMessageSend = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.channel_id !== "") {
@@ -4589,7 +4589,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseChannelMessageRemove = {channel_id: "", message_id: ""};
+  var baseChannelMessageRemove = { channel_id: "", message_id: "" };
   var ChannelMessageRemove = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.channel_id !== "") {
@@ -4798,7 +4798,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseError = {code: 0, message: ""};
+  var baseError = { code: 0, message: "" };
   var Error2 = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.code !== 0) {
@@ -4808,7 +4808,7 @@ var nakamajsprotobuf = (() => {
         writer.uint32(18).string(message.message);
       }
       Object.entries(message.context).forEach(([key, value]) => {
-        Error_ContextEntry.encode({key, value}, writer.uint32(26).fork()).ldelim();
+        Error_ContextEntry.encode({ key, value }, writer.uint32(26).fork()).ldelim();
       });
       return writer;
     },
@@ -4886,7 +4886,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseError_ContextEntry = {key: "", value: ""};
+  var baseError_ContextEntry = { key: "", value: "" };
   var Error_ContextEntry = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.key !== "") {
@@ -4944,7 +4944,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatch = {match_id: "", authoritative: false, size: 0};
+  var baseMatch = { match_id: "", authoritative: false, size: 0 };
   var Match = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.match_id !== "") {
@@ -4954,7 +4954,7 @@ var nakamajsprotobuf = (() => {
         writer.uint32(16).bool(message.authoritative);
       }
       if (message.label !== void 0) {
-        StringValue.encode({value: message.label}, writer.uint32(26).fork()).ldelim();
+        StringValue.encode({ value: message.label }, writer.uint32(26).fork()).ldelim();
       }
       if (message.size !== 0) {
         writer.uint32(32).int32(message.size);
@@ -5097,7 +5097,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchData = {match_id: "", op_code: 0, reliable: false};
+  var baseMatchData = { match_id: "", op_code: 0, reliable: false };
   var MatchData = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.match_id !== "") {
@@ -5196,7 +5196,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchDataSend = {match_id: "", op_code: 0, reliable: false};
+  var baseMatchDataSend = { match_id: "", op_code: 0, reliable: false };
   var MatchDataSend = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.match_id !== "") {
@@ -5317,7 +5317,7 @@ var nakamajsprotobuf = (() => {
         writer.uint32(18).string(message.id.token);
       }
       Object.entries(message.metadata).forEach(([key, value]) => {
-        MatchJoin_MetadataEntry.encode({key, value}, writer.uint32(26).fork()).ldelim();
+        MatchJoin_MetadataEntry.encode({ key, value }, writer.uint32(26).fork()).ldelim();
       });
       return writer;
     },
@@ -5330,10 +5330,10 @@ var nakamajsprotobuf = (() => {
         const tag = reader.uint32();
         switch (tag >>> 3) {
           case 1:
-            message.id = {$case: "match_id", match_id: reader.string()};
+            message.id = { $case: "match_id", match_id: reader.string() };
             break;
           case 2:
-            message.id = {$case: "token", token: reader.string()};
+            message.id = { $case: "token", token: reader.string() };
             break;
           case 3:
             const entry3 = MatchJoin_MetadataEntry.decode(reader, reader.uint32());
@@ -5352,10 +5352,10 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchJoin);
       message.metadata = {};
       if (object.match_id !== void 0 && object.match_id !== null) {
-        message.id = {$case: "match_id", match_id: String(object.match_id)};
+        message.id = { $case: "match_id", match_id: String(object.match_id) };
       }
       if (object.token !== void 0 && object.token !== null) {
-        message.id = {$case: "token", token: String(object.token)};
+        message.id = { $case: "token", token: String(object.token) };
       }
       if (object.metadata !== void 0 && object.metadata !== null) {
         Object.entries(object.metadata).forEach(([key, value]) => {
@@ -5382,10 +5382,10 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchJoin);
       message.metadata = {};
       if (((_a = object.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = object.id) == null ? void 0 : _b.match_id) !== void 0 && ((_c = object.id) == null ? void 0 : _c.match_id) !== null) {
-        message.id = {$case: "match_id", match_id: object.id.match_id};
+        message.id = { $case: "match_id", match_id: object.id.match_id };
       }
       if (((_d = object.id) == null ? void 0 : _d.$case) === "token" && ((_e = object.id) == null ? void 0 : _e.token) !== void 0 && ((_f = object.id) == null ? void 0 : _f.token) !== null) {
-        message.id = {$case: "token", token: object.id.token};
+        message.id = { $case: "token", token: object.id.token };
       }
       if (object.metadata !== void 0 && object.metadata !== null) {
         Object.entries(object.metadata).forEach(([key, value]) => {
@@ -5397,7 +5397,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchJoin_MetadataEntry = {key: "", value: ""};
+  var baseMatchJoin_MetadataEntry = { key: "", value: "" };
   var MatchJoin_MetadataEntry = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.key !== "") {
@@ -5455,7 +5455,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchLeave = {match_id: ""};
+  var baseMatchLeave = { match_id: "" };
   var MatchLeave = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.match_id !== "") {
@@ -5500,7 +5500,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchPresenceEvent = {match_id: ""};
+  var baseMatchPresenceEvent = { match_id: "" };
   var MatchPresenceEvent = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.match_id !== "") {
@@ -5593,7 +5593,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchmakerAdd = {min_count: 0, max_count: 0, query: ""};
+  var baseMatchmakerAdd = { min_count: 0, max_count: 0, query: "" };
   var MatchmakerAdd = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.min_count !== 0) {
@@ -5606,10 +5606,10 @@ var nakamajsprotobuf = (() => {
         writer.uint32(26).string(message.query);
       }
       Object.entries(message.string_properties).forEach(([key, value]) => {
-        MatchmakerAdd_StringPropertiesEntry.encode({key, value}, writer.uint32(34).fork()).ldelim();
+        MatchmakerAdd_StringPropertiesEntry.encode({ key, value }, writer.uint32(34).fork()).ldelim();
       });
       Object.entries(message.numeric_properties).forEach(([key, value]) => {
-        MatchmakerAdd_NumericPropertiesEntry.encode({key, value}, writer.uint32(42).fork()).ldelim();
+        MatchmakerAdd_NumericPropertiesEntry.encode({ key, value }, writer.uint32(42).fork()).ldelim();
       });
       return writer;
     },
@@ -5724,7 +5724,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchmakerAdd_StringPropertiesEntry = {key: "", value: ""};
+  var baseMatchmakerAdd_StringPropertiesEntry = { key: "", value: "" };
   var MatchmakerAdd_StringPropertiesEntry = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.key !== "") {
@@ -5782,7 +5782,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchmakerAdd_NumericPropertiesEntry = {key: "", value: 0};
+  var baseMatchmakerAdd_NumericPropertiesEntry = { key: "", value: 0 };
   var MatchmakerAdd_NumericPropertiesEntry = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.key !== "") {
@@ -5840,7 +5840,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchmakerMatched = {ticket: ""};
+  var baseMatchmakerMatched = { ticket: "" };
   var MatchmakerMatched = {
     encode(message, writer = import_minimal4.Writer.create()) {
       var _a, _b;
@@ -5873,10 +5873,10 @@ var nakamajsprotobuf = (() => {
             message.ticket = reader.string();
             break;
           case 2:
-            message.id = {$case: "match_id", match_id: reader.string()};
+            message.id = { $case: "match_id", match_id: reader.string() };
             break;
           case 3:
-            message.id = {$case: "token", token: reader.string()};
+            message.id = { $case: "token", token: reader.string() };
             break;
           case 4:
             message.users.push(MatchmakerMatched_MatchmakerUser.decode(reader, reader.uint32()));
@@ -5898,10 +5898,10 @@ var nakamajsprotobuf = (() => {
         message.ticket = String(object.ticket);
       }
       if (object.match_id !== void 0 && object.match_id !== null) {
-        message.id = {$case: "match_id", match_id: String(object.match_id)};
+        message.id = { $case: "match_id", match_id: String(object.match_id) };
       }
       if (object.token !== void 0 && object.token !== null) {
-        message.id = {$case: "token", token: String(object.token)};
+        message.id = { $case: "token", token: String(object.token) };
       }
       if (object.users !== void 0 && object.users !== null) {
         for (const e of object.users) {
@@ -5935,10 +5935,10 @@ var nakamajsprotobuf = (() => {
         message.ticket = object.ticket;
       }
       if (((_a = object.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = object.id) == null ? void 0 : _b.match_id) !== void 0 && ((_c = object.id) == null ? void 0 : _c.match_id) !== null) {
-        message.id = {$case: "match_id", match_id: object.id.match_id};
+        message.id = { $case: "match_id", match_id: object.id.match_id };
       }
       if (((_d = object.id) == null ? void 0 : _d.$case) === "token" && ((_e = object.id) == null ? void 0 : _e.token) !== void 0 && ((_f = object.id) == null ? void 0 : _f.token) !== null) {
-        message.id = {$case: "token", token: object.id.token};
+        message.id = { $case: "token", token: object.id.token };
       }
       if (object.users !== void 0 && object.users !== null) {
         for (const e of object.users) {
@@ -5951,7 +5951,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchmakerMatched_MatchmakerUser = {party_id: ""};
+  var baseMatchmakerMatched_MatchmakerUser = { party_id: "" };
   var MatchmakerMatched_MatchmakerUser = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.presence !== void 0) {
@@ -5961,10 +5961,10 @@ var nakamajsprotobuf = (() => {
         writer.uint32(18).string(message.party_id);
       }
       Object.entries(message.string_properties).forEach(([key, value]) => {
-        MatchmakerMatched_MatchmakerUser_StringPropertiesEntry.encode({key, value}, writer.uint32(42).fork()).ldelim();
+        MatchmakerMatched_MatchmakerUser_StringPropertiesEntry.encode({ key, value }, writer.uint32(42).fork()).ldelim();
       });
       Object.entries(message.numeric_properties).forEach(([key, value]) => {
-        MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry.encode({key, value}, writer.uint32(50).fork()).ldelim();
+        MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry.encode({ key, value }, writer.uint32(50).fork()).ldelim();
       });
       return writer;
     },
@@ -6191,7 +6191,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchmakerRemove = {ticket: ""};
+  var baseMatchmakerRemove = { ticket: "" };
   var MatchmakerRemove = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.ticket !== "") {
@@ -6236,7 +6236,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseMatchmakerTicket = {ticket: ""};
+  var baseMatchmakerTicket = { ticket: "" };
   var MatchmakerTicket = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.ticket !== "") {
@@ -6337,7 +6337,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseParty = {party_id: "", open: false, max_size: 0};
+  var baseParty = { party_id: "", open: false, max_size: 0 };
   var Party = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -6458,7 +6458,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyCreate = {open: false, max_size: 0};
+  var basePartyCreate = { open: false, max_size: 0 };
   var PartyCreate = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.open === true) {
@@ -6516,7 +6516,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyJoin = {party_id: ""};
+  var basePartyJoin = { party_id: "" };
   var PartyJoin = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -6561,7 +6561,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyLeave = {party_id: ""};
+  var basePartyLeave = { party_id: "" };
   var PartyLeave = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -6606,7 +6606,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyPromote = {party_id: ""};
+  var basePartyPromote = { party_id: "" };
   var PartyPromote = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -6664,7 +6664,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyLeader = {party_id: ""};
+  var basePartyLeader = { party_id: "" };
   var PartyLeader = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -6722,7 +6722,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyAccept = {party_id: ""};
+  var basePartyAccept = { party_id: "" };
   var PartyAccept = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -6780,7 +6780,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyRemove = {party_id: ""};
+  var basePartyRemove = { party_id: "" };
   var PartyRemove = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -6838,7 +6838,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyClose = {party_id: ""};
+  var basePartyClose = { party_id: "" };
   var PartyClose = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -6883,7 +6883,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyJoinRequestList = {party_id: ""};
+  var basePartyJoinRequestList = { party_id: "" };
   var PartyJoinRequestList = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -6928,7 +6928,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyJoinRequest = {party_id: ""};
+  var basePartyJoinRequest = { party_id: "" };
   var PartyJoinRequest = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -7018,10 +7018,10 @@ var nakamajsprotobuf = (() => {
         writer.uint32(34).string(message.query);
       }
       Object.entries(message.string_properties).forEach(([key, value]) => {
-        PartyMatchmakerAdd_StringPropertiesEntry.encode({key, value}, writer.uint32(42).fork()).ldelim();
+        PartyMatchmakerAdd_StringPropertiesEntry.encode({ key, value }, writer.uint32(42).fork()).ldelim();
       });
       Object.entries(message.numeric_properties).forEach(([key, value]) => {
-        PartyMatchmakerAdd_NumericPropertiesEntry.encode({key, value}, writer.uint32(50).fork()).ldelim();
+        PartyMatchmakerAdd_NumericPropertiesEntry.encode({ key, value }, writer.uint32(50).fork()).ldelim();
       });
       return writer;
     },
@@ -7268,7 +7268,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyMatchmakerRemove = {party_id: "", ticket: ""};
+  var basePartyMatchmakerRemove = { party_id: "", ticket: "" };
   var PartyMatchmakerRemove = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -7326,7 +7326,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyMatchmakerTicket = {party_id: "", ticket: ""};
+  var basePartyMatchmakerTicket = { party_id: "", ticket: "" };
   var PartyMatchmakerTicket = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -7384,7 +7384,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyData = {party_id: "", op_code: 0};
+  var basePartyData = { party_id: "", op_code: 0 };
   var PartyData = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -7470,7 +7470,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyDataSend = {party_id: "", op_code: 0};
+  var basePartyDataSend = { party_id: "", op_code: 0 };
   var PartyDataSend = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -7543,7 +7543,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var basePartyPresenceEvent = {party_id: ""};
+  var basePartyPresenceEvent = { party_id: "" };
   var PartyPresenceEvent = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.party_id !== "") {
@@ -7756,7 +7756,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseStatusFollow = {user_ids: "", usernames: ""};
+  var baseStatusFollow = { user_ids: "", usernames: "" };
   var StatusFollow = {
     encode(message, writer = import_minimal4.Writer.create()) {
       for (const v of message.user_ids) {
@@ -7916,7 +7916,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseStatusUnfollow = {user_ids: ""};
+  var baseStatusUnfollow = { user_ids: "" };
   var StatusUnfollow = {
     encode(message, writer = import_minimal4.Writer.create()) {
       for (const v of message.user_ids) {
@@ -7976,7 +7976,7 @@ var nakamajsprotobuf = (() => {
   var StatusUpdate = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.status !== void 0) {
-        StringValue.encode({value: message.status}, writer.uint32(10).fork()).ldelim();
+        StringValue.encode({ value: message.status }, writer.uint32(10).fork()).ldelim();
       }
       return writer;
     },
@@ -8017,7 +8017,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseStream = {mode: 0, subject: "", subcontext: "", label: ""};
+  var baseStream = { mode: 0, subject: "", subcontext: "", label: "" };
   var Stream = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.mode !== 0) {
@@ -8101,7 +8101,7 @@ var nakamajsprotobuf = (() => {
       return message;
     }
   };
-  var baseStreamData = {data: "", reliable: false};
+  var baseStreamData = { data: "", reliable: false };
   var StreamData = {
     encode(message, writer = import_minimal4.Writer.create()) {
       if (message.stream !== void 0) {
@@ -8299,7 +8299,7 @@ var nakamajsprotobuf = (() => {
         writer.uint32(32).bool(message.persistence);
       }
       if (message.status !== void 0) {
-        StringValue.encode({value: message.status}, writer.uint32(42).fork()).ldelim();
+        StringValue.encode({ value: message.status }, writer.uint32(42).fork()).ldelim();
       }
       return writer;
     },
@@ -8411,7 +8411,7 @@ var nakamajsprotobuf = (() => {
   function toTimestamp2(date) {
     const seconds = date.getTime() / 1e3;
     const nanos = date.getTime() % 1e3 * 1e6;
-    return {seconds, nanos};
+    return { seconds, nanos };
   }
   function fromTimestamp2(t) {
     let millis = t.seconds * 1e3;

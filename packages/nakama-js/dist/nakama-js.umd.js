@@ -1842,6 +1842,9 @@
                   else if (message.match_presence_event) {
                       _this.onmatchpresence(message.match_presence_event);
                   }
+                  else if (message.matchmaker_ticket) {
+                      _this.onmatchmakerticket(message.matchmaker_ticket);
+                  }
                   else if (message.matchmaker_matched) {
                       _this.onmatchmakermatched(message.matchmaker_matched);
                   }
@@ -1962,6 +1965,11 @@
       DefaultSocket.prototype.onmatchpresence = function (matchPresence) {
           if (this.verbose && window && window.console) {
               console.log(matchPresence);
+          }
+      };
+      DefaultSocket.prototype.onmatchmakerticket = function (matchmakerTicket) {
+          if (this.verbose && window && window.console) {
+              console.log(matchmakerTicket);
           }
       };
       DefaultSocket.prototype.onmatchmakermatched = function (matchmakerMatched) {

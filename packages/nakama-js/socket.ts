@@ -160,6 +160,11 @@ interface MatchmakerAdd {
   };
 }
 
+/** The matchmaker ticket received from the server. */
+export interface MatchmakerTicket {
+    ticket : string;
+}
+
 /** Cancel a matchmaking process. */
 interface MatchmakerRemove {
   matchmaker_remove: {
@@ -405,7 +410,7 @@ export interface Socket {
   /// Join the matchmaker pool and search for opponents on the server.
   addMatchmaker(query : string, minCount : number, maxCount : number,
     stringProperties? : Record<string, string>, numericProperties? : Record<string, number>)
-    : Promise<MatchmakerMatched>;
+    : Promise<MatchmakerTicket>;
 
   // Begin matchmaking as a party.
   addMatchmakerParty(party_id: string, query : string, min_count : number, max_count : number,
@@ -497,6 +502,9 @@ export interface Socket {
   // Receive match presence updates.
   onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
 
+  // Receive a matchmaker ticket.
+  onmatchmakerticket: (matchmakerTicket: MatchmakerTicket) => void;
+
   // Receive matchmaking results.
   onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
 
@@ -519,7 +527,7 @@ export interface Socket {
   onpartypresence: (partyPresence : PartyPresenceEvent) => void;
 
   // Receive matchmaking results.
-  onpartymatchmakerticket: (matchmakerMatched: PartyMatchmakerTicket) => void;
+  onpartymatchmakerticket: (partyMatchmakerMatched: PartyMatchmakerTicket) => void;
 
   // Receive status presence updates.
   onstatuspresence: (statusPresence: StatusPresenceEvent) => void;
@@ -601,6 +609,8 @@ export class DefaultSocket implements Socket {
           this.onmatchdata(message.match_data);
         } else if (message.match_presence_event) {
           this.onmatchpresence(<MatchPresenceEvent>message.match_presence_event);
+        } else if (message.matchmaker_ticket)  {
+          this.onmatchmakerticket(<MatchmakerTicket> message.matchmaker_ticket);
         } else if (message.matchmaker_matched) {
           this.onmatchmakermatched(<MatchmakerMatched>message.matchmaker_matched);
         } else if (message.status_presence_event) {
@@ -715,6 +725,12 @@ export class DefaultSocket implements Socket {
   onmatchpresence(matchPresence: MatchPresenceEvent) {
     if (this.verbose && window && window.console) {
       console.log(matchPresence);
+    }
+  }
+
+  onmatchmakerticket(matchmakerTicket: MatchmakerTicket) {
+    if (this.verbose && window && window.console) {
+      console.log(matchmakerTicket);
     }
   }
 
@@ -836,7 +852,7 @@ export class DefaultSocket implements Socket {
 
   async addMatchmaker(query : string, min_count : number, max_count : number,
     string_properties? : Record<string, string>, numeric_properties? : Record<string, number>)
-    : Promise<MatchmakerMatched> {
+    : Promise<MatchmakerTicket> {
 
       const response = await this.send({
         "matchmaker_add": {

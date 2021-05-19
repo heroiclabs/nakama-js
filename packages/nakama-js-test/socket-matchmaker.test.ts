@@ -91,6 +91,7 @@ describe('Matchmaker Tests', () => {
       return Promise.race([promise1, promise2]);
     }, customid1, customid2, adapter);
 
+
     expect(responseTicket).not.toBeNull();
     expect(responseTicket.match_id).toBeUndefined();
     expect(responseTicket.token).not.toBeNull();

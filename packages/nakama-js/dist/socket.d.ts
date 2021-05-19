@@ -105,6 +105,9 @@ interface MatchmakerAdd {
         numeric_properties?: Record<string, number>;
     };
 }
+export interface MatchmakerTicket {
+    ticket: string;
+}
 interface MatchmakerRemove {
     matchmaker_remove: {
         ticket: string;
@@ -282,7 +285,7 @@ export interface Socket {
     connect(session: Session, createStatus: boolean): Promise<Session>;
     disconnect(fireDisconnectEvent: boolean): void;
     acceptPartyMember(party_id: string, presence: Presence): Promise<void>;
-    addMatchmaker(query: string, minCount: number, maxCount: number, stringProperties?: Record<string, string>, numericProperties?: Record<string, number>): Promise<MatchmakerMatched>;
+    addMatchmaker(query: string, minCount: number, maxCount: number, stringProperties?: Record<string, string>, numericProperties?: Record<string, number>): Promise<MatchmakerTicket>;
     addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numericProperties?: Record<string, number>): Promise<void>;
     closeParty(party_id: string): Promise<void>;
     createMatch(): Promise<Match>;
@@ -312,6 +315,7 @@ export interface Socket {
     onnotification: (notification: Notification) => void;
     onmatchdata: (matchData: MatchData) => void;
     onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
+    onmatchmakerticket: (matchmakerTicket: MatchmakerTicket) => void;
     onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
     onparty: (party: Party) => void;
     onpartyclose: (partyClose: PartyClose) => void;
@@ -319,7 +323,7 @@ export interface Socket {
     onpartyjoinrequest: (partyJoinRequest: PartyJoinRequest) => void;
     onpartyleader: (partyLeader: PartyLeader) => void;
     onpartypresence: (partyPresence: PartyPresenceEvent) => void;
-    onpartymatchmakerticket: (matchmakerMatched: PartyMatchmakerTicket) => void;
+    onpartymatchmakerticket: (partyMatchmakerMatched: PartyMatchmakerTicket) => void;
     onstatuspresence: (statusPresence: StatusPresenceEvent) => void;
     onstreampresence: (streamPresence: StreamPresenceEvent) => void;
     onstreamdata: (streamData: StreamData) => void;
@@ -349,6 +353,7 @@ export declare class DefaultSocket implements Socket {
     onnotification(notification: Notification): void;
     onmatchdata(matchData: MatchData): void;
     onmatchpresence(matchPresence: MatchPresenceEvent): void;
+    onmatchmakerticket(matchmakerTicket: MatchmakerTicket): void;
     onmatchmakermatched(matchmakerMatched: MatchmakerMatched): void;
     onparty(party: Party): void;
     onpartyclose(): void;
@@ -362,7 +367,7 @@ export declare class DefaultSocket implements Socket {
     onstreamdata(streamData: StreamData): void;
     send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin | PartyJoinRequestList | PartyLeave | PartyMatchmakerAdd | PartyMatchmakerRemove | PartyPromote | PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
     acceptPartyMember(party_id: string, presence: Presence): Promise<void>;
-    addMatchmaker(query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<MatchmakerMatched>;
+    addMatchmaker(query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<MatchmakerTicket>;
     addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<void>;
     closeParty(party_id: string): Promise<void>;
     createMatch(): Promise<Match>;

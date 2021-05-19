@@ -6,7 +6,7 @@ var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, {enumerable: true, configurable: true, writable: true, value}) : obj[key] = value;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __spreadValues = (a, b) => {
   for (var prop in b || (b = {}))
     if (__hasOwnProp.call(b, prop))
@@ -18,20 +18,20 @@ var __spreadValues = (a, b) => {
     }
   return a;
 };
-var __markAsModule = (target) => __defProp(target, "__esModule", {value: true});
+var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
 var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[Object.keys(cb)[0]])((mod = {exports: {}}).exports, mod), mod.exports;
+  return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 var __reExport = (target, module, desc) => {
   if (module && typeof module === "object" || typeof module === "function") {
     for (let key of __getOwnPropNames(module))
       if (!__hasOwnProp.call(target, key) && key !== "default")
-        __defProp(target, key, {get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable});
+        __defProp(target, key, { get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable });
   }
   return target;
 };
 var __toModule = (module) => {
-  return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? {get: () => module.default, enumerable: true} : {value: module, enumerable: true})), module);
+  return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
 };
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
@@ -114,7 +114,7 @@ var require_fetch = __commonJS({
         var iterator = {
           next: function() {
             var value = items.shift();
-            return {done: value === void 0, value};
+            return { done: value === void 0, value };
           }
         };
         if (support.iterable) {
@@ -355,7 +355,7 @@ var require_fetch = __commonJS({
         this._initBody(body);
       }
       Request.prototype.clone = function() {
-        return new Request(this, {body: this._bodyInit});
+        return new Request(this, { body: this._bodyInit });
       };
       function decode2(body) {
         var form = new FormData();
@@ -405,7 +405,7 @@ var require_fetch = __commonJS({
         });
       };
       Response.error = function() {
-        var response = new Response(null, {status: 0, statusText: ""});
+        var response = new Response(null, { status: 0, statusText: "" });
         response.type = "error";
         return response;
       };
@@ -414,7 +414,7 @@ var require_fetch = __commonJS({
         if (redirectStatuses.indexOf(status) === -1) {
           throw new RangeError("Invalid status code");
         }
-        return new Response(null, {status, headers: {location: url}});
+        return new Response(null, { status, headers: { location: url } });
       };
       self2.Headers = Headers;
       self2.Request = Request;
@@ -561,7 +561,7 @@ var NakamaApi = class {
         }
       }
     }).join("");
-    const fetchOptions = __spreadValues(__spreadValues({}, {method}), options);
+    const fetchOptions = __spreadValues(__spreadValues({}, { method }), options);
     fetchOptions.headers = __spreadValues({}, options.headers);
     const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
     if (!(descriptor == null ? void 0 : descriptor.set)) {
@@ -1527,6 +1527,8 @@ var DefaultSocket = class {
           this.onmatchdata(message.match_data);
         } else if (message.match_presence_event) {
           this.onmatchpresence(message.match_presence_event);
+        } else if (message.matchmaker_ticket) {
+          this.onmatchmakerticket(message.matchmaker_ticket);
         } else if (message.matchmaker_matched) {
           this.onmatchmakermatched(message.matchmaker_matched);
         } else if (message.status_presence_event) {
@@ -1633,6 +1635,11 @@ var DefaultSocket = class {
       console.log(matchPresence);
     }
   }
+  onmatchmakerticket(matchmakerTicket) {
+    if (this.verbose && window && window.console) {
+      console.log(matchmakerTicket);
+    }
+  }
   onmatchmakermatched(matchmakerMatched) {
     if (this.verbose && window && window.console) {
       console.log(matchmakerMatched);
@@ -1709,7 +1716,7 @@ var DefaultSocket = class {
             untypedMessage.channel_message_update.content = JSON.stringify(untypedMessage.channel_message_update.content);
           }
           const cid = this.generatecid();
-          this.cIds[cid] = {resolve, reject};
+          this.cIds[cid] = { resolve, reject };
           untypedMessage.cid = cid;
           this.adapter.send(untypedMessage);
         }
@@ -1720,7 +1727,7 @@ var DefaultSocket = class {
     });
   }
   acceptPartyMember(party_id, presence) {
-    return this.send({party_accept: {party_id, presence}});
+    return this.send({ party_accept: { party_id, presence } });
   }
   addMatchmaker(query, min_count, max_count, string_properties, numeric_properties) {
     return __async(this, null, function* () {
@@ -1752,24 +1759,24 @@ var DefaultSocket = class {
   }
   closeParty(party_id) {
     return __async(this, null, function* () {
-      return yield this.send({party_close: {party_id}});
+      return yield this.send({ party_close: { party_id } });
     });
   }
   createMatch() {
     return __async(this, null, function* () {
-      const response = yield this.send({match_create: {}});
+      const response = yield this.send({ match_create: {} });
       return response.match;
     });
   }
   createParty(open, max_size) {
     return __async(this, null, function* () {
-      const response = yield this.send({party_create: {open, max_size}});
+      const response = yield this.send({ party_create: { open, max_size } });
       return response.party_create;
     });
   }
   followUsers(userIds) {
     return __async(this, null, function* () {
-      const response = yield this.send({status_follow: {user_ids: userIds}});
+      const response = yield this.send({ status_follow: { user_ids: userIds } });
       return response.status;
     });
   }
@@ -1788,7 +1795,7 @@ var DefaultSocket = class {
   }
   joinMatch(match_id, token, metadata) {
     return __async(this, null, function* () {
-      const join = {match_join: {metadata}};
+      const join = { match_join: { metadata } };
       if (token) {
         join.match_join.token = token;
       } else {
@@ -1800,27 +1807,27 @@ var DefaultSocket = class {
   }
   joinParty(party_id) {
     return __async(this, null, function* () {
-      return yield this.send({party_join: {party_id}});
+      return yield this.send({ party_join: { party_id } });
     });
   }
   leaveChat(channel_id) {
-    return this.send({channel_leave: {channel_id}});
+    return this.send({ channel_leave: { channel_id } });
   }
   leaveMatch(matchId) {
-    return this.send({match_leave: {match_id: matchId}});
+    return this.send({ match_leave: { match_id: matchId } });
   }
   leaveParty(party_id) {
-    return this.send({party_leave: {party_id}});
+    return this.send({ party_leave: { party_id } });
   }
   listPartyJoinRequests(party_id) {
     return __async(this, null, function* () {
-      const response = yield this.send({party_join_request_list: {party_id}});
+      const response = yield this.send({ party_join_request_list: { party_id } });
       return response.party_join_request;
     });
   }
   promotePartyMember(party_id, party_member) {
     return __async(this, null, function* () {
-      const response = yield this.send({party_promote: {party_id, presence: party_member}});
+      const response = yield this.send({ party_promote: { party_id, presence: party_member } });
       return response.party_leader;
     });
   }
@@ -1836,7 +1843,7 @@ var DefaultSocket = class {
     });
   }
   removeMatchmaker(ticket) {
-    return this.send({matchmaker_remove: {ticket}});
+    return this.send({ matchmaker_remove: { ticket } });
   }
   removeMatchmakerParty(party_id, ticket) {
     return this.send({
@@ -1848,10 +1855,10 @@ var DefaultSocket = class {
   }
   removePartyMember(party_id, member) {
     return __async(this, null, function* () {
-      return this.send({party_remove: {
+      return this.send({ party_remove: {
         party_id,
         presence: member
-      }});
+      } });
     });
   }
   rpc(id, payload, http_key) {
@@ -1879,23 +1886,23 @@ var DefaultSocket = class {
     });
   }
   sendPartyData(party_id, op_code, data) {
-    return this.send({party_data_send: {party_id, op_code, data}});
+    return this.send({ party_data_send: { party_id, op_code, data } });
   }
   unfollowUsers(user_ids) {
-    return this.send({status_unfollow: {user_ids}});
+    return this.send({ status_unfollow: { user_ids } });
   }
   updateChatMessage(channel_id, message_id, content) {
     return __async(this, null, function* () {
-      const response = yield this.send({channel_message_update: {channel_id, message_id, content}});
+      const response = yield this.send({ channel_message_update: { channel_id, message_id, content } });
       return response.channel_message_ack;
     });
   }
   updateStatus(status) {
-    return this.send({status_update: {status}});
+    return this.send({ status_update: { status } });
   }
   writeChatMessage(channel_id, content) {
     return __async(this, null, function* () {
-      const response = yield this.send({channel_message_send: {channel_id, content}});
+      const response = yield this.send({ channel_message_send: { channel_id, content } });
       return response.channel_message_ack;
     });
   }
@@ -1977,7 +1984,7 @@ var Client = class {
       "signed_player_info": signedPlayerInfo,
       "vars": vars
     };
-    return this.apiClient.authenticateFacebookInstantGame({signed_player_info: request.signed_player_info, vars: request.vars}, create, username, options).then((apiSession) => {
+    return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then((apiSession) => {
       return Session.restore(apiSession.token || "");
     });
   }
@@ -2648,7 +2655,7 @@ var Client = class {
   readStorageObjects(session, request) {
     this.configuration.bearerToken = session && session.token;
     return this.apiClient.readStorageObjects(request).then((response) => {
-      var result = {objects: []};
+      var result = { objects: [] };
       if (response.objects == null) {
         return Promise.resolve(result);
       }
@@ -2785,7 +2792,7 @@ var Client = class {
   }
   writeStorageObjects(session, objects) {
     this.configuration.bearerToken = session && session.token;
-    var request = {objects: []};
+    var request = { objects: [] };
     objects.forEach((o) => {
       request.objects.push({
         collection: o.collection,
