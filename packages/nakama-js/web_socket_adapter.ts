@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import { ChannelJoin, ChannelLeave, ChannelMessageSend, ChannelMessageUpdate, ChannelMessageRemove,
-    CreateMatch, JoinMatch, LeaveMatch, MatchDataSend, MatchmakerAdd, MatchmakerRemove, PartyAccept,
-    Rpc, StatusFollow, StatusUnfollow, StatusUpdate } from "./socket";
-
 /**
  * An interface used by Nakama's web socket to determine the payload protocol.
  */
@@ -46,9 +42,7 @@ export interface WebSocketAdapter {
     readonly isConnected: boolean;
     close() : void;
     connect(scheme: string, host: string, port : string, createStatus: boolean, token : string) : void;
-    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate |
-        ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd |
-        MatchmakerRemove | PartyAccept | Rpc | StatusFollow | StatusUnfollow | StatusUpdate) : void;
+    send(message: any) : void;
 }
 
 /**

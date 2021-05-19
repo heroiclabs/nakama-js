@@ -1,57 +1,42 @@
 /* eslint-disable */
-// *
-//  The Nakama server RPC protocol for games and apps.
-//
-import { Timestamp } from '../../../../google/protobuf/timestamp';
-import * as Long from 'long';
-import { Writer, Reader, util, configure } from 'protobufjs/minimal';
-import { BoolValue, Int32Value, StringValue, UInt32Value, Int64Value } from '../../../../google/protobuf/wrappers';
+import { util, configure, Writer, Reader } from "protobufjs/minimal";
+import * as Long from "long";
+import { Timestamp } from "../../../../google/protobuf/timestamp";
+import {
+  BoolValue,
+  Int32Value,
+  StringValue,
+  UInt32Value,
+  Int64Value,
+} from "../../../../google/protobuf/wrappers";
 
-/**
- *  A user with additional account details. Always the current user.
- */
+export const protobufPackage = "nakama.api";
+
+/** The Nakama server RPC protocol for games and apps. */
+
+/** A user with additional account details. Always the current user. */
 export interface Account {
-  /**
-   *  The user object.
-   */
+  /** The user object. */
   user?: User;
-  /**
-   *  The user's wallet data.
-   */
+  /** The user's wallet data. */
   wallet: string;
-  /**
-   *  The email address of the user.
-   */
+  /** The email address of the user. */
   email: string;
-  /**
-   *  The devices which belong to the user's account.
-   */
+  /** The devices which belong to the user's account. */
   devices: AccountDevice[];
-  /**
-   *  The custom id in the user's account.
-   */
+  /** The custom id in the user's account. */
   custom_id: string;
-  /**
-   *  The UNIX time when the user's email was verified.
-   */
+  /** The UNIX time when the user's email was verified. */
   verify_time?: Date;
-  /**
-   *  The UNIX time when the user's account was disabled/banned.
-   */
+  /** The UNIX time when the user's account was disabled/banned. */
   disable_time?: Date;
 }
 
-/**
- *  Obtain a new authentication token using a refresh token.
- */
+/** Obtain a new authentication token using a refresh token. */
 export interface AccountRefresh {
-  /**
-   *  Refresh token.
-   */
+  /** Refresh token. */
   token: string;
-  /**
-   *  Extra information that will be bundled in the session token.
-   */
+  /** Extra information that will be bundled in the session token. */
   vars: { [key: string]: string };
 }
 
@@ -60,17 +45,11 @@ export interface AccountRefresh_VarsEntry {
   value: string;
 }
 
-/**
- *  Send a Apple Sign In token to the server. Used with authenticate/link/unlink.
- */
+/** Send a Apple Sign In token to the server. Used with authenticate/link/unlink. */
 export interface AccountApple {
-  /**
-   *  The ID token received from Apple to validate.
-   */
+  /** The ID token received from Apple to validate. */
   token: string;
-  /**
-   *  Extra information that will be bundled in the session token.
-   */
+  /** Extra information that will be bundled in the session token. */
   vars: { [key: string]: string };
 }
 
@@ -79,17 +58,11 @@ export interface AccountApple_VarsEntry {
   value: string;
 }
 
-/**
- *  Send a custom ID to the server. Used with authenticate/link/unlink.
- */
+/** Send a custom ID to the server. Used with authenticate/link/unlink. */
 export interface AccountCustom {
-  /**
-   *  A custom identifier.
-   */
+  /** A custom identifier. */
   id: string;
-  /**
-   *  Extra information that will be bundled in the session token.
-   */
+  /** Extra information that will be bundled in the session token. */
   vars: { [key: string]: string };
 }
 
@@ -98,17 +71,11 @@ export interface AccountCustom_VarsEntry {
   value: string;
 }
 
-/**
- *  Send a device to the server. Used with authenticate/link/unlink and user.
- */
+/** Send a device to the server. Used with authenticate/link/unlink and user. */
 export interface AccountDevice {
-  /**
-   *  A device identifier. Should be obtained by a platform-specific device API.
-   */
+  /** A device identifier. Should be obtained by a platform-specific device API. */
   id: string;
-  /**
-   *  Extra information that will be bundled in the session token.
-   */
+  /** Extra information that will be bundled in the session token. */
   vars: { [key: string]: string };
 }
 
@@ -117,21 +84,13 @@ export interface AccountDevice_VarsEntry {
   value: string;
 }
 
-/**
- *  Send an email with password to the server. Used with authenticate/link/unlink.
- */
+/** Send an email with password to the server. Used with authenticate/link/unlink. */
 export interface AccountEmail {
-  /**
-   *  A valid RFC-5322 email address.
-   */
+  /** A valid RFC-5322 email address. */
   email: string;
-  /**
-   *  A password for the user account.
-   */
+  /** A password for the user account. */
   password: string;
-  /**
-   *  Extra information that will be bundled in the session token.
-   */
+  /** Extra information that will be bundled in the session token. */
   vars: { [key: string]: string };
 }
 
@@ -140,17 +99,11 @@ export interface AccountEmail_VarsEntry {
   value: string;
 }
 
-/**
- *  Send a Facebook token to the server. Used with authenticate/link/unlink.
- */
+/** Send a Facebook token to the server. Used with authenticate/link/unlink. */
 export interface AccountFacebook {
-  /**
-   *  The OAuth token received from Facebook to access their profile API.
-   */
+  /** The OAuth token received from Facebook to access their profile API. */
   token: string;
-  /**
-   *  Extra information that will be bundled in the session token.
-   */
+  /** Extra information that will be bundled in the session token. */
   vars: { [key: string]: string };
 }
 
@@ -159,17 +112,11 @@ export interface AccountFacebook_VarsEntry {
   value: string;
 }
 
-/**
- *  Send a Facebook Instant Game token to the server. Used with authenticate/link/unlink.
- */
+/** Send a Facebook Instant Game token to the server. Used with authenticate/link/unlink. */
 export interface AccountFacebookInstantGame {
-  /**
-   *  The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
-   */
+  /** The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration) */
   signed_player_info: string;
-  /**
-   *  Extra information that will be bundled in the session token.
-   */
+  /** Extra information that will be bundled in the session token. */
   vars: { [key: string]: string };
 }
 
@@ -178,37 +125,21 @@ export interface AccountFacebookInstantGame_VarsEntry {
   value: string;
 }
 
-/**
- *  Send Apple's Game Center account credentials to the server. Used with authenticate/link/unlink.
- */
+/** Send Apple's Game Center account credentials to the server. Used with authenticate/link/unlink. */
 export interface AccountGameCenter {
-  /**
-   *  Player ID (generated by GameCenter).
-   */
+  /** Player ID (generated by GameCenter). */
   player_id: string;
-  /**
-   *  Bundle ID (generated by GameCenter).
-   */
+  /** Bundle ID (generated by GameCenter). */
   bundle_id: string;
-  /**
-   *  Time since UNIX epoch when the signature was created.
-   */
+  /** Time since UNIX epoch when the signature was created. */
   timestamp_seconds: number;
-  /**
-   *  A random "NSString" used to compute the hash and keep it randomized.
-   */
+  /** A random "NSString" used to compute the hash and keep it randomized. */
   salt: string;
-  /**
-   *  The verification signature data generated.
-   */
+  /** The verification signature data generated. */
   signature: string;
-  /**
-   *  The URL for the public encryption key.
-   */
+  /** The URL for the public encryption key. */
   public_key_url: string;
-  /**
-   *  Extra information that will be bundled in the session token.
-   */
+  /** Extra information that will be bundled in the session token. */
   vars: { [key: string]: string };
 }
 
@@ -217,17 +148,11 @@ export interface AccountGameCenter_VarsEntry {
   value: string;
 }
 
-/**
- *  Send a Google token to the server. Used with authenticate/link/unlink.
- */
+/** Send a Google token to the server. Used with authenticate/link/unlink. */
 export interface AccountGoogle {
-  /**
-   *  The OAuth token received from Google to access their profile API.
-   */
+  /** The OAuth token received from Google to access their profile API. */
   token: string;
-  /**
-   *  Extra information that will be bundled in the session token.
-   */
+  /** Extra information that will be bundled in the session token. */
   vars: { [key: string]: string };
 }
 
@@ -236,17 +161,11 @@ export interface AccountGoogle_VarsEntry {
   value: string;
 }
 
-/**
- *  Send a Steam token to the server. Used with authenticate/link/unlink.
- */
+/** Send a Steam token to the server. Used with authenticate/link/unlink. */
 export interface AccountSteam {
-  /**
-   *  The account token received from Steam to access their profile API.
-   */
+  /** The account token received from Steam to access their profile API. */
   token: string;
-  /**
-   *  Extra information that will be bundled in the session token.
-   */
+  /** Extra information that will be bundled in the session token. */
   vars: { [key: string]: string };
 }
 
@@ -255,45 +174,27 @@ export interface AccountSteam_VarsEntry {
   value: string;
 }
 
-/**
- *  Add one or more friends to the current user.
- */
+/** Add one or more friends to the current user. */
 export interface AddFriendsRequest {
-  /**
-   *  The account id of a user.
-   */
+  /** The account id of a user. */
   ids: string[];
-  /**
-   *  The account username of a user.
-   */
+  /** The account username of a user. */
   usernames: string[];
 }
 
-/**
- *  Add users to a group.
- */
+/** Add users to a group. */
 export interface AddGroupUsersRequest {
-  /**
-   *  The group to add users to.
-   */
+  /** The group to add users to. */
   group_id: string;
-  /**
-   *  The users to add.
-   */
+  /** The users to add. */
   user_ids: string[];
 }
 
-/**
- *  Authenticate against the server with a refresh token.
- */
+/** Authenticate against the server with a refresh token. */
 export interface SessionRefreshRequest {
-  /**
-   *  Refresh token.
-   */
+  /** Refresh token. */
   token: string;
-  /**
-   *  Extra information that will be bundled in the session token.
-   */
+  /** Extra information that will be bundled in the session token. */
   vars: { [key: string]: string };
 }
 
@@ -302,401 +203,223 @@ export interface SessionRefreshRequest_VarsEntry {
   value: string;
 }
 
-/**
- *  Authenticate against the server with Apple Sign In.
- */
+/** Authenticate against the server with Apple Sign In. */
 export interface AuthenticateAppleRequest {
-  /**
-   *  The Apple account details.
-   */
+  /** The Apple account details. */
   account?: AccountApple;
-  /**
-   *  Register the account if the user does not already exist.
-   */
+  /** Register the account if the user does not already exist. */
   create?: boolean;
-  /**
-   *  Set the username on the account at register. Must be unique.
-   */
+  /** Set the username on the account at register. Must be unique. */
   username: string;
 }
 
-/**
- *  Authenticate against the server with a custom ID.
- */
+/** Authenticate against the server with a custom ID. */
 export interface AuthenticateCustomRequest {
-  /**
-   *  The custom account details.
-   */
+  /** The custom account details. */
   account?: AccountCustom;
-  /**
-   *  Register the account if the user does not already exist.
-   */
+  /** Register the account if the user does not already exist. */
   create?: boolean;
-  /**
-   *  Set the username on the account at register. Must be unique.
-   */
+  /** Set the username on the account at register. Must be unique. */
   username: string;
 }
 
-/**
- *  Authenticate against the server with a device ID.
- */
+/** Authenticate against the server with a device ID. */
 export interface AuthenticateDeviceRequest {
-  /**
-   *  The device account details.
-   */
+  /** The device account details. */
   account?: AccountDevice;
-  /**
-   *  Register the account if the user does not already exist.
-   */
+  /** Register the account if the user does not already exist. */
   create?: boolean;
-  /**
-   *  Set the username on the account at register. Must be unique.
-   */
+  /** Set the username on the account at register. Must be unique. */
   username: string;
 }
 
-/**
- *  Authenticate against the server with email+password.
- */
+/** Authenticate against the server with email+password. */
 export interface AuthenticateEmailRequest {
-  /**
-   *  The email account details.
-   */
+  /** The email account details. */
   account?: AccountEmail;
-  /**
-   *  Register the account if the user does not already exist.
-   */
+  /** Register the account if the user does not already exist. */
   create?: boolean;
-  /**
-   *  Set the username on the account at register. Must be unique.
-   */
+  /** Set the username on the account at register. Must be unique. */
   username: string;
 }
 
-/**
- *  Authenticate against the server with Facebook.
- */
+/** Authenticate against the server with Facebook. */
 export interface AuthenticateFacebookRequest {
-  /**
-   *  The Facebook account details.
-   */
+  /** The Facebook account details. */
   account?: AccountFacebook;
-  /**
-   *  Register the account if the user does not already exist.
-   */
+  /** Register the account if the user does not already exist. */
   create?: boolean;
-  /**
-   *  Set the username on the account at register. Must be unique.
-   */
+  /** Set the username on the account at register. Must be unique. */
   username: string;
-  /**
-   *  Import Facebook friends for the user.
-   */
+  /** Import Facebook friends for the user. */
   sync?: boolean;
 }
 
-/**
- *  Authenticate against the server with Facebook Instant Game token.
- */
+/** Authenticate against the server with Facebook Instant Game token. */
 export interface AuthenticateFacebookInstantGameRequest {
-  /**
-   *  The Facebook Instant Game account details.
-   */
+  /** The Facebook Instant Game account details. */
   account?: AccountFacebookInstantGame;
-  /**
-   *  Register the account if the user does not already exist.
-   */
+  /** Register the account if the user does not already exist. */
   create?: boolean;
-  /**
-   *  Set the username on the account at register. Must be unique.
-   */
+  /** Set the username on the account at register. Must be unique. */
   username: string;
 }
 
-/**
- *  Authenticate against the server with Apple's Game Center.
- */
+/** Authenticate against the server with Apple's Game Center. */
 export interface AuthenticateGameCenterRequest {
-  /**
-   *  The Game Center account details.
-   */
+  /** The Game Center account details. */
   account?: AccountGameCenter;
-  /**
-   *  Register the account if the user does not already exist.
-   */
+  /** Register the account if the user does not already exist. */
   create?: boolean;
-  /**
-   *  Set the username on the account at register. Must be unique.
-   */
+  /** Set the username on the account at register. Must be unique. */
   username: string;
 }
 
-/**
- *  Authenticate against the server with Google.
- */
+/** Authenticate against the server with Google. */
 export interface AuthenticateGoogleRequest {
-  /**
-   *  The Google account details.
-   */
+  /** The Google account details. */
   account?: AccountGoogle;
-  /**
-   *  Register the account if the user does not already exist.
-   */
+  /** Register the account if the user does not already exist. */
   create?: boolean;
-  /**
-   *  Set the username on the account at register. Must be unique.
-   */
+  /** Set the username on the account at register. Must be unique. */
   username: string;
 }
 
-/**
- *  Authenticate against the server with Steam.
- */
+/** Authenticate against the server with Steam. */
 export interface AuthenticateSteamRequest {
-  /**
-   *  The Steam account details.
-   */
+  /** The Steam account details. */
   account?: AccountSteam;
-  /**
-   *  Register the account if the user does not already exist.
-   */
+  /** Register the account if the user does not already exist. */
   create?: boolean;
-  /**
-   *  Set the username on the account at register. Must be unique.
-   */
+  /** Set the username on the account at register. Must be unique. */
   username: string;
 }
 
-/**
- *  Ban users from a group.
- */
+/** Ban users from a group. */
 export interface BanGroupUsersRequest {
-  /**
-   *  The group to ban users from.
-   */
+  /** The group to ban users from. */
   group_id: string;
-  /**
-   *  The users to ban.
-   */
+  /** The users to ban. */
   user_ids: string[];
 }
 
-/**
- *  Block one or more friends for the current user.
- */
+/** Block one or more friends for the current user. */
 export interface BlockFriendsRequest {
-  /**
-   *  The account id of a user.
-   */
+  /** The account id of a user. */
   ids: string[];
-  /**
-   *  The account username of a user.
-   */
+  /** The account username of a user. */
   usernames: string[];
 }
 
-/**
- *  A message sent on a channel.
- */
+/** A message sent on a channel. */
 export interface ChannelMessage {
-  /**
-   *  The channel this message belongs to.
-   */
+  /** The channel this message belongs to. */
   channel_id: string;
-  /**
-   *  The unique ID of this message.
-   */
+  /** The unique ID of this message. */
   message_id: string;
-  /**
-   *  The code representing a message type or category.
-   */
+  /** The code representing a message type or category. */
   code?: number;
-  /**
-   *  Message sender, usually a user ID.
-   */
+  /** Message sender, usually a user ID. */
   sender_id: string;
-  /**
-   *  The username of the message sender, if any.
-   */
+  /** The username of the message sender, if any. */
   username: string;
-  /**
-   *  The content payload.
-   */
+  /** The content payload. */
   content: string;
-  /**
-   *  The UNIX time when the message was created.
-   */
+  /** The UNIX time when the message was created. */
   create_time?: Date;
-  /**
-   *  The UNIX time when the message was last updated.
-   */
+  /** The UNIX time when the message was last updated. */
   update_time?: Date;
-  /**
-   *  True if the message was persisted to the channel's history, false otherwise.
-   */
+  /** True if the message was persisted to the channel's history, false otherwise. */
   persistent?: boolean;
-  /**
-   *  The name of the chat room, or an empty string if this message was not sent through a chat room.
-   */
+  /** The name of the chat room, or an empty string if this message was not sent through a chat room. */
   room_name: string;
-  /**
-   *  The ID of the group, or an empty string if this message was not sent through a group channel.
-   */
+  /** The ID of the group, or an empty string if this message was not sent through a group channel. */
   group_id: string;
-  /**
-   *  The ID of the first DM user, or an empty string if this message was not sent through a DM chat.
-   */
+  /** The ID of the first DM user, or an empty string if this message was not sent through a DM chat. */
   user_id_one: string;
-  /**
-   *  The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
-   */
+  /** The ID of the second DM user, or an empty string if this message was not sent through a DM chat. */
   user_id_two: string;
 }
 
-/**
- *  A list of channel messages, usually a result of a list operation.
- */
+/** A list of channel messages, usually a result of a list operation. */
 export interface ChannelMessageList {
-  /**
-   *  A list of messages.
-   */
+  /** A list of messages. */
   messages: ChannelMessage[];
-  /**
-   *  The cursor to send when retrieving the next page, if any.
-   */
+  /** The cursor to send when retrieving the next page, if any. */
   next_cursor: string;
-  /**
-   *  The cursor to send when retrieving the previous page, if any.
-   */
+  /** The cursor to send when retrieving the previous page, if any. */
   prev_cursor: string;
-  /**
-   *  Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
-   */
+  /** Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors. */
   cacheable_cursor: string;
 }
 
-/**
- *  Create a group with the current user as owner.
- */
+/** Create a group with the current user as owner. */
 export interface CreateGroupRequest {
-  /**
-   *  A unique name for the group.
-   */
+  /** A unique name for the group. */
   name: string;
-  /**
-   *  A description for the group.
-   */
+  /** A description for the group. */
   description: string;
-  /**
-   *  The language expected to be a tag which follows the BCP-47 spec.
-   */
+  /** The language expected to be a tag which follows the BCP-47 spec. */
   lang_tag: string;
-  /**
-   *  A URL for an avatar image.
-   */
+  /** A URL for an avatar image. */
   avatar_url: string;
-  /**
-   *  Mark a group as open or not where only admins can accept members.
-   */
+  /** Mark a group as open or not where only admins can accept members. */
   open: boolean;
-  /**
-   *  Maximum number of group members.
-   */
+  /** Maximum number of group members. */
   max_count: number;
 }
 
-/**
- *  Delete one or more friends for the current user.
- */
+/** Delete one or more friends for the current user. */
 export interface DeleteFriendsRequest {
-  /**
-   *  The account id of a user.
-   */
+  /** The account id of a user. */
   ids: string[];
-  /**
-   *  The account username of a user.
-   */
+  /** The account username of a user. */
   usernames: string[];
 }
 
-/**
- *  Delete a group the user has access to.
- */
+/** Delete a group the user has access to. */
 export interface DeleteGroupRequest {
-  /**
-   *  The id of a group.
-   */
+  /** The id of a group. */
   group_id: string;
 }
 
-/**
- *  Delete a leaderboard record.
- */
+/** Delete a leaderboard record. */
 export interface DeleteLeaderboardRecordRequest {
-  /**
-   *  The leaderboard ID to delete from.
-   */
+  /** The leaderboard ID to delete from. */
   leaderboard_id: string;
 }
 
-/**
- *  Delete one or more notifications for the current user.
- */
+/** Delete one or more notifications for the current user. */
 export interface DeleteNotificationsRequest {
-  /**
-   *  The id of notifications.
-   */
+  /** The id of notifications. */
   ids: string[];
 }
 
-/**
- *  Storage objects to delete.
- */
+/** Storage objects to delete. */
 export interface DeleteStorageObjectId {
-  /**
-   *  The collection which stores the object.
-   */
+  /** The collection which stores the object. */
   collection: string;
-  /**
-   *  The key of the object within the collection.
-   */
+  /** The key of the object within the collection. */
   key: string;
-  /**
-   *  The version hash of the object.
-   */
+  /** The version hash of the object. */
   version: string;
 }
 
-/**
- *  Batch delete storage objects.
- */
+/** Batch delete storage objects. */
 export interface DeleteStorageObjectsRequest {
-  /**
-   *  Batch of storage objects.
-   */
+  /** Batch of storage objects. */
   object_ids: DeleteStorageObjectId[];
 }
 
-/**
- *  Represents an event to be passed through the server to registered event handlers.
- */
+/** Represents an event to be passed through the server to registered event handlers. */
 export interface Event {
-  /**
-   *  An event name, type, category, or identifier.
-   */
+  /** An event name, type, category, or identifier. */
   name: string;
-  /**
-   *  Arbitrary event property values.
-   */
+  /** Arbitrary event property values. */
   properties: { [key: string]: string };
-  /**
-   *  The time when the event was triggered.
-   */
+  /** The time when the event was triggered. */
   timestamp?: Date;
-  /**
-   *  True if the event came directly from a client call, false otherwise.
-   */
+  /** True if the event came directly from a client call, false otherwise. */
   external: boolean;
 }
 
@@ -705,1849 +428,25 @@ export interface Event_PropertiesEntry {
   value: string;
 }
 
-/**
- *  A friend of a user.
- */
+/** A friend of a user. */
 export interface Friend {
-  /**
-   *  The user object.
-   */
+  /** The user object. */
   user?: User;
-  /**
-   *  The friend status.
-   */
+  /** The friend status. */
   state?: number;
-  /**
-   *  Time of the latest relationship update.
-   */
+  /** Time of the latest relationship update. */
   update_time?: Date;
 }
 
-/**
- *  A collection of zero or more friends of the user.
- */
-export interface FriendList {
-  /**
-   *  The Friend objects.
-   */
-  friends: Friend[];
-  /**
-   *  Cursor for the next page of results, if any.
-   */
-  cursor: string;
-}
-
-/**
- *  Fetch a batch of zero or more users from the server.
- */
-export interface GetUsersRequest {
-  /**
-   *  The account id of a user.
-   */
-  ids: string[];
-  /**
-   *  The account username of a user.
-   */
-  usernames: string[];
-  /**
-   *  The Facebook ID of a user.
-   */
-  facebook_ids: string[];
-}
-
-/**
- *  A group in the server.
- */
-export interface Group {
-  /**
-   *  The id of a group.
-   */
-  id: string;
-  /**
-   *  The id of the user who created the group.
-   */
-  creator_id: string;
-  /**
-   *  The unique name of the group.
-   */
-  name: string;
-  /**
-   *  A description for the group.
-   */
-  description: string;
-  /**
-   *  The language expected to be a tag which follows the BCP-47 spec.
-   */
-  lang_tag: string;
-  /**
-   *  Additional information stored as a JSON object.
-   */
-  metadata: string;
-  /**
-   *  A URL for an avatar image.
-   */
-  avatar_url: string;
-  /**
-   *  Anyone can join open groups, otherwise only admins can accept members.
-   */
-  open?: boolean;
-  /**
-   *  The current count of all members in the group.
-   */
-  edge_count: number;
-  /**
-   *  The maximum number of members allowed.
-   */
-  max_count: number;
-  /**
-   *  The UNIX time when the group was created.
-   */
-  create_time?: Date;
-  /**
-   *  The UNIX time when the group was last updated.
-   */
-  update_time?: Date;
-}
-
-/**
- *  One or more groups returned from a listing operation.
- */
-export interface GroupList {
-  /**
-   *  One or more groups.
-   */
-  groups: Group[];
-  /**
-   *  A cursor used to get the next page.
-   */
-  cursor: string;
-}
-
-/**
- *  A list of users belonging to a group, along with their role.
- */
-export interface GroupUserList {
-  /**
-   *  User-role pairs for a group.
-   */
-  group_users: GroupUserList_GroupUser[];
-  /**
-   *  Cursor for the next page of results, if any.
-   */
-  cursor: string;
-}
-
-/**
- *  A single user-role pair.
- */
-export interface GroupUserList_GroupUser {
-  /**
-   *  User.
-   */
-  user?: User;
-  /**
-   *  Their relationship to the group.
-   */
-  state?: number;
-}
-
-/**
- *  Import Facebook friends into the current user's account.
- */
-export interface ImportFacebookFriendsRequest {
-  /**
-   *  The Facebook account details.
-   */
-  account?: AccountFacebook;
-  /**
-   *  Reset the current user's friends list.
-   */
-  reset?: boolean;
-}
-
-/**
- *  Immediately join an open group, or request to join a closed one.
- */
-export interface JoinGroupRequest {
-  /**
-   *  The group ID to join. The group must already exist.
-   */
-  group_id: string;
-}
-
-/**
- *  The request to join a tournament.
- */
-export interface JoinTournamentRequest {
-  /**
-   *  The ID of the tournament to join. The tournament must already exist.
-   */
-  tournament_id: string;
-}
-
-/**
- *  Kick a set of users from a group.
- */
-export interface KickGroupUsersRequest {
-  /**
-   *  The group ID to kick from.
-   */
-  group_id: string;
-  /**
-   *  The users to kick.
-   */
-  user_ids: string[];
-}
-
-/**
- *  Represents a complete leaderboard record with all scores and associated metadata.
- */
-export interface LeaderboardRecord {
-  /**
-   *  The ID of the leaderboard this score belongs to.
-   */
-  leaderboard_id: string;
-  /**
-   *  The ID of the score owner, usually a user or group.
-   */
-  owner_id: string;
-  /**
-   *  The username of the score owner, if the owner is a user.
-   */
-  username?: string;
-  /**
-   *  The score value.
-   */
-  score: number;
-  /**
-   *  An optional subscore value.
-   */
-  subscore: number;
-  /**
-   *  The number of submissions to this score record.
-   */
-  num_score: number;
-  /**
-   *  Metadata.
-   */
-  metadata: string;
-  /**
-   *  The UNIX time when the leaderboard record was created.
-   */
-  create_time?: Date;
-  /**
-   *  The UNIX time when the leaderboard record was updated.
-   */
-  update_time?: Date;
-  /**
-   *  The UNIX time when the leaderboard record expires.
-   */
-  expiry_time?: Date;
-  /**
-   *  The rank of this record.
-   */
-  rank: number;
-  /**
-   *  The maximum number of score updates allowed by the owner.
-   */
-  max_num_score: number;
-}
-
-/**
- *  A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records.
- */
-export interface LeaderboardRecordList {
-  /**
-   *  A list of leaderboard records.
-   */
-  records: LeaderboardRecord[];
-  /**
-   *  A batched set of leaderboard records belonging to specified owners.
-   */
-  owner_records: LeaderboardRecord[];
-  /**
-   *  The cursor to send when retrieving the next page, if any.
-   */
-  next_cursor: string;
-  /**
-   *  The cursor to send when retrieving the previous page, if any.
-   */
-  prev_cursor: string;
-}
-
-/**
- *  Leave a group.
- */
-export interface LeaveGroupRequest {
-  /**
-   *  The group ID to leave.
-   */
-  group_id: string;
-}
-
-/**
- *  Link Facebook to the current user's account.
- */
-export interface LinkFacebookRequest {
-  /**
-   *  The Facebook account details.
-   */
-  account?: AccountFacebook;
-  /**
-   *  Import Facebook friends for the user.
-   */
-  sync?: boolean;
-}
-
-/**
- *  List a channel's message history.
- */
-export interface ListChannelMessagesRequest {
-  /**
-   *  The channel ID to list from.
-   */
-  channel_id: string;
-  /**
-   *  Max number of records to return. Between 1 and 100.
-   */
-  limit?: number;
-  /**
-   *  True if listing should be older messages to newer, false if reverse.
-   */
-  forward?: boolean;
-  /**
-   *  A pagination cursor, if any.
-   */
-  cursor: string;
-}
-
-/**
- *  List friends for a user.
- */
-export interface ListFriendsRequest {
-  /**
-   *  Max number of records to return. Between 1 and 100.
-   */
-  limit?: number;
-  /**
-   *  The friend state to list.
-   */
-  state?: number;
-  /**
-   *  An optional next page cursor.
-   */
-  cursor: string;
-}
-
-/**
- *  List groups based on given filters.
- */
-export interface ListGroupsRequest {
-  /**
-   *  List groups that contain this value in their names.
-   */
-  name: string;
-  /**
-   *  Optional pagination cursor.
-   */
-  cursor: string;
-  /**
-   *  Max number of groups to return. Between 1 and 100.
-   */
-  limit?: number;
-}
-
-/**
- *  List all users that are part of a group.
- */
-export interface ListGroupUsersRequest {
-  /**
-   *  The group ID to list from.
-   */
-  group_id: string;
-  /**
-   *  Max number of records to return. Between 1 and 100.
-   */
-  limit?: number;
-  /**
-   *  The group user state to list.
-   */
-  state?: number;
-  /**
-   *  An optional next page cursor.
-   */
-  cursor: string;
-}
-
-/**
- *  List leaerboard records from a given leaderboard around the owner.
- */
-export interface ListLeaderboardRecordsAroundOwnerRequest {
-  /**
-   *  The ID of the tournament to list for.
-   */
-  leaderboard_id: string;
-  /**
-   *  Max number of records to return. Between 1 and 100.
-   */
-  limit?: number;
-  /**
-   *  The owner to retrieve records around.
-   */
-  owner_id: string;
-  /**
-   *  Expiry in seconds (since epoch) to begin fetching records from.
-   */
-  expiry?: number;
-}
-
-/**
- *  List leaderboard records from a given leaderboard.
- */
-export interface ListLeaderboardRecordsRequest {
-  /**
-   *  The ID of the leaderboard to list for.
-   */
-  leaderboard_id: string;
-  /**
-   *  One or more owners to retrieve records for.
-   */
-  owner_ids: string[];
-  /**
-   *  Max number of records to return. Between 1 and 100.
-   */
-  limit?: number;
-  /**
-   *  A next or previous page cursor.
-   */
-  cursor: string;
-  /**
-   *  Expiry in seconds (since epoch) to begin fetching records from. Optional. 0 means from current time.
-   */
-  expiry?: number;
-}
-
-/**
- *  List realtime matches.
- */
-export interface ListMatchesRequest {
-  /**
-   *  Limit the number of returned matches.
-   */
-  limit?: number;
-  /**
-   *  Authoritative or relayed matches.
-   */
-  authoritative?: boolean;
-  /**
-   *  Label filter.
-   */
-  label?: string;
-  /**
-   *  Minimum user count.
-   */
-  min_size?: number;
-  /**
-   *  Maximum user count.
-   */
-  max_size?: number;
-  /**
-   *  Arbitrary label query.
-   */
-  query?: string;
-}
-
-/**
- *  Get a list of unexpired notifications.
- */
-export interface ListNotificationsRequest {
-  /**
-   *  The number of notifications to get. Between 1 and 100.
-   */
-  limit?: number;
-  /**
-   *  A cursor to page through notifications. May be cached by clients to get from point in time forwards.
-   */
-  cacheable_cursor: string;
-}
-
-/**
- *  List publicly readable storage objects in a given collection.
- */
-export interface ListStorageObjectsRequest {
-  /**
-   *  ID of the user.
-   */
-  user_id: string;
-  /**
-   *  The collection which stores the object.
-   */
-  collection: string;
-  /**
-   *  The number of storage objects to list. Between 1 and 100.
-   */
-  limit?: number;
-  /**
-   *  The cursor to page through results from.
-   */
-  cursor: string;
-}
-
-/**
- *  List tournament records from a given tournament around the owner.
- */
-export interface ListTournamentRecordsAroundOwnerRequest {
-  /**
-   *  The ID of the tournament to list for.
-   */
-  tournament_id: string;
-  /**
-   *  Max number of records to return. Between 1 and 100.
-   */
-  limit?: number;
-  /**
-   *  The owner to retrieve records around.
-   */
-  owner_id: string;
-  /**
-   *  Expiry in seconds (since epoch) to begin fetching records from.
-   */
-  expiry?: number;
-}
-
-/**
- *  List tournament records from a given tournament.
- */
-export interface ListTournamentRecordsRequest {
-  /**
-   *  The ID of the tournament to list for.
-   */
-  tournament_id: string;
-  /**
-   *  One or more owners to retrieve records for.
-   */
-  owner_ids: string[];
-  /**
-   *  Max number of records to return. Between 1 and 100.
-   */
-  limit?: number;
-  /**
-   *  A next or previous page cursor.
-   */
-  cursor: string;
-  /**
-   *  Expiry in seconds (since epoch) to begin fetching records from.
-   */
-  expiry?: number;
-}
-
-/**
- *  List active/upcoming tournaments based on given filters.
- */
-export interface ListTournamentsRequest {
-  /**
-   *  The start of the categories to include. Defaults to 0.
-   */
-  category_start?: number;
-  /**
-   *  The end of the categories to include. Defaults to 128.
-   */
-  category_end?: number;
-  /**
-   *  The start time for tournaments. Defaults to epoch.
-   */
-  start_time?: number;
-  /**
-   *  The end time for tournaments. Defaults to +1 year from current Unix time.
-   */
-  end_time?: number;
-  /**
-   *  Max number of records to return. Between 1 and 100.
-   */
-  limit?: number;
-  /**
-   *  A next page cursor for listings (optional).
-   */
-  cursor: string;
-}
-
-/**
- *  List the groups a user is part of, and their relationship to each.
- */
-export interface ListUserGroupsRequest {
-  /**
-   *  ID of the user.
-   */
-  user_id: string;
-  /**
-   *  Max number of records to return. Between 1 and 100.
-   */
-  limit?: number;
-  /**
-   *  The user group state to list.
-   */
-  state?: number;
-  /**
-   *  An optional next page cursor.
-   */
-  cursor: string;
-}
-
-/**
- *  Represents a realtime match.
- */
-export interface Match {
-  /**
-   *  The ID of the match, can be used to join.
-   */
-  match_id: string;
-  /**
-   *  True if it's an server-managed authoritative match, false otherwise.
-   */
-  authoritative: boolean;
-  /**
-   *  Match label, if any.
-   */
-  label?: string;
-  /**
-   *  Current number of users in the match.
-   */
-  size: number;
-  /**
-   *  Tick Rate
-   */
-  tick_rate: number;
-  /**
-   *  Handler name
-   */
-  handler_name: string;
-}
-
-/**
- *  A list of realtime matches.
- */
-export interface MatchList {
-  /**
-   *  A number of matches corresponding to a list operation.
-   */
-  matches: Match[];
-}
-
-/**
- *  A notification in the server.
- */
-export interface Notification {
-  /**
-   *  ID of the Notification.
-   */
-  id: string;
-  /**
-   *  Subject of the notification.
-   */
-  subject: string;
-  /**
-   *  Content of the notification in JSON.
-   */
-  content: string;
-  /**
-   *  Category code for this notification.
-   */
-  code: number;
-  /**
-   *  ID of the sender, if a user. Otherwise 'null'.
-   */
-  sender_id: string;
-  /**
-   *  The UNIX time when the notification was created.
-   */
-  create_time?: Date;
-  /**
-   *  True if this notification was persisted to the database.
-   */
-  persistent: boolean;
-}
-
-/**
- *  A collection of zero or more notifications.
- */
-export interface NotificationList {
-  /**
-   *  Collection of notifications.
-   */
-  notifications: Notification[];
-  /**
-   *  Use this cursor to paginate notifications. Cache this to catch up to new notifications.
-   */
-  cacheable_cursor: string;
-}
-
-/**
- *  Promote a set of users in a group to the next role up.
- */
-export interface PromoteGroupUsersRequest {
-  /**
-   *  The group ID to promote in.
-   */
-  group_id: string;
-  /**
-   *  The users to promote.
-   */
-  user_ids: string[];
-}
-
-/**
- *  Demote a set of users in a group to the next role down.
- */
-export interface DemoteGroupUsersRequest {
-  /**
-   *  The group ID to demote in.
-   */
-  group_id: string;
-  /**
-   *  The users to demote.
-   */
-  user_ids: string[];
-}
-
-/**
- *  Storage objects to get.
- */
-export interface ReadStorageObjectId {
-  /**
-   *  The collection which stores the object.
-   */
-  collection: string;
-  /**
-   *  The key of the object within the collection.
-   */
-  key: string;
-  /**
-   *  The user owner of the object.
-   */
-  user_id: string;
-}
-
-/**
- *  Batch get storage objects.
- */
-export interface ReadStorageObjectsRequest {
-  /**
-   *  Batch of storage objects.
-   */
-  object_ids: ReadStorageObjectId[];
-}
-
-/**
- *  Execute an Lua function on the server.
- */
-export interface Rpc {
-  /**
-   *  The identifier of the function.
-   */
-  id: string;
-  /**
-   *  The payload of the function which must be a JSON object.
-   */
-  payload: string;
-  /**
-   *  The authentication key used when executed as a non-client HTTP request.
-   */
-  http_key: string;
-}
-
-/**
- *  A user's session used to authenticate messages.
- */
-export interface Session {
-  /**
-   *  True if the corresponding account was just created, false otherwise.
-   */
-  created: boolean;
-  /**
-   *  Authentication credentials.
-   */
-  token: string;
-  /**
-   *  Refresh token that can be used for session token renewal.
-   */
-  refresh_token: string;
-}
-
-/**
- *  An object within the storage engine.
- */
-export interface StorageObject {
-  /**
-   *  The collection which stores the object.
-   */
-  collection: string;
-  /**
-   *  The key of the object within the collection.
-   */
-  key: string;
-  /**
-   *  The user owner of the object.
-   */
-  user_id: string;
-  /**
-   *  The value of the object.
-   */
-  value: string;
-  /**
-   *  The version hash of the object.
-   */
-  version: string;
-  /**
-   *  The read access permissions for the object.
-   */
-  permission_read: number;
-  /**
-   *  The write access permissions for the object.
-   */
-  permission_write: number;
-  /**
-   *  The UNIX time when the object was created.
-   */
-  create_time?: Date;
-  /**
-   *  The UNIX time when the object was last updated.
-   */
-  update_time?: Date;
-}
-
-/**
- *  A storage acknowledgement.
- */
-export interface StorageObjectAck {
-  /**
-   *  The collection which stores the object.
-   */
-  collection: string;
-  /**
-   *  The key of the object within the collection.
-   */
-  key: string;
-  /**
-   *  The version hash of the object.
-   */
-  version: string;
-  /**
-   *  The owner of the object.
-   */
-  user_id: string;
-}
-
-/**
- *  Batch of acknowledgements for the storage object write.
- */
-export interface StorageObjectAcks {
-  /**
-   *  Batch of storage write acknowledgements.
-   */
-  acks: StorageObjectAck[];
-}
-
-/**
- *  Batch of storage objects.
- */
-export interface StorageObjects {
-  /**
-   *  The batch of storage objects.
-   */
-  objects: StorageObject[];
-}
-
-/**
- *  List of storage objects.
- */
-export interface StorageObjectList {
-  /**
-   *  The list of storage objects.
-   */
-  objects: StorageObject[];
-  /**
-   *  The cursor for the next page of results, if any.
-   */
-  cursor: string;
-}
-
-/**
- *  A tournament on the server.
- */
-export interface Tournament {
-  /**
-   *  The ID of the tournament.
-   */
-  id: string;
-  /**
-   *  The title for the tournament.
-   */
-  title: string;
-  /**
-   *  The description of the tournament. May be blank.
-   */
-  description: string;
-  /**
-   *  The category of the tournament. e.g. "vip" could be category 1.
-   */
-  category: number;
-  /**
-   *  ASC or DESC sort mode of scores in the tournament.
-   */
-  sort_order: number;
-  /**
-   *  The current number of players in the tournament.
-   */
-  size: number;
-  /**
-   *  The maximum number of players for the tournament.
-   */
-  max_size: number;
-  /**
-   *  The maximum score updates allowed per player for the current tournament.
-   */
-  max_num_score: number;
-  /**
-   *  True if the tournament is active and can enter. A computed value.
-   */
-  can_enter: boolean;
-  /**
-   *  The UNIX time when the tournament stops being active until next reset. A computed value.
-   */
-  end_active: number;
-  /**
-   *  The UNIX time when the tournament is next playable. A computed value.
-   */
-  next_reset: number;
-  /**
-   *  Additional information stored as a JSON object.
-   */
-  metadata: string;
-  /**
-   *  The UNIX time when the tournament was created.
-   */
-  create_time?: Date;
-  /**
-   *  The UNIX time when the tournament will start.
-   */
-  start_time?: Date;
-  /**
-   *  The UNIX time when the tournament will be stopped.
-   */
-  end_time?: Date;
-  /**
-   *  Duration of the tournament in seconds.
-   */
-  duration: number;
-  /**
-   *  The UNIX time when the tournament start being active. A computed value.
-   */
-  start_active: number;
-}
-
-/**
- *  A list of tournaments.
- */
-export interface TournamentList {
-  /**
-   *  The list of tournaments returned.
-   */
-  tournaments: Tournament[];
-  /**
-   *  A pagination cursor (optional).
-   */
-  cursor: string;
-}
-
-/**
- *  A set of tournament records which may be part of a tournament records page or a batch of individual records.
- */
-export interface TournamentRecordList {
-  /**
-   *  A list of tournament records.
-   */
-  records: LeaderboardRecord[];
-  /**
-   *  A batched set of tournament records belonging to specified owners.
-   */
-  owner_records: LeaderboardRecord[];
-  /**
-   *  The cursor to send when retireving the next page (optional).
-   */
-  next_cursor: string;
-  /**
-   *  The cursor to send when retrieving the previous page (optional).
-   */
-  prev_cursor: string;
-}
-
-/**
- *  Update a user's account details.
- */
-export interface UpdateAccountRequest {
-  /**
-   *  The username of the user's account.
-   */
-  username?: string;
-  /**
-   *  The display name of the user.
-   */
-  display_name?: string;
-  /**
-   *  A URL for an avatar image.
-   */
-  avatar_url?: string;
-  /**
-   *  The language expected to be a tag which follows the BCP-47 spec.
-   */
-  lang_tag?: string;
-  /**
-   *  The location set by the user.
-   */
-  location?: string;
-  /**
-   *  The timezone set by the user.
-   */
-  timezone?: string;
-}
-
-/**
- *  Update fields in a given group.
- */
-export interface UpdateGroupRequest {
-  /**
-   *  The ID of the group to update.
-   */
-  group_id: string;
-  /**
-   *  Name.
-   */
-  name?: string;
-  /**
-   *  Description string.
-   */
-  description?: string;
-  /**
-   *  Lang tag.
-   */
-  lang_tag?: string;
-  /**
-   *  Avatar URL.
-   */
-  avatar_url?: string;
-  /**
-   *  Open is true if anyone should be allowed to join, or false if joins must be approved by a group admin.
-   */
-  open?: boolean;
-}
-
-/**
- *  A user in the server.
- */
-export interface User {
-  /**
-   *  The id of the user's account.
-   */
-  id: string;
-  /**
-   *  The username of the user's account.
-   */
-  username: string;
-  /**
-   *  The display name of the user.
-   */
-  display_name: string;
-  /**
-   *  A URL for an avatar image.
-   */
-  avatar_url: string;
-  /**
-   *  The language expected to be a tag which follows the BCP-47 spec.
-   */
-  lang_tag: string;
-  /**
-   *  The location set by the user.
-   */
-  location: string;
-  /**
-   *  The timezone set by the user.
-   */
-  timezone: string;
-  /**
-   *  Additional information stored as a JSON object.
-   */
-  metadata: string;
-  /**
-   *  The Facebook id in the user's account.
-   */
-  facebook_id: string;
-  /**
-   *  The Google id in the user's account.
-   */
-  google_id: string;
-  /**
-   *  The Apple Game Center in of the user's account.
-   */
-  gamecenter_id: string;
-  /**
-   *  The Steam id in the user's account.
-   */
-  steam_id: string;
-  /**
-   *  Indicates whether the user is currently online.
-   */
-  online: boolean;
-  /**
-   *  Number of related edges to this user.
-   */
-  edge_count: number;
-  /**
-   *  The UNIX time when the user was created.
-   */
-  create_time?: Date;
-  /**
-   *  The UNIX time when the user was last updated.
-   */
-  update_time?: Date;
-  /**
-   *  The Facebook Instant Game ID in the user's account.
-   */
-  facebook_instant_game_id: string;
-  /**
-   *  The Apple Sign In ID in the user's account.
-   */
-  apple_id: string;
-}
-
-/**
- *  A list of groups belonging to a user, along with the user's role in each group.
- */
-export interface UserGroupList {
-  /**
-   *  Group-role pairs for a user.
-   */
-  user_groups: UserGroupList_UserGroup[];
-  /**
-   *  Cursor for the next page of results, if any.
-   */
-  cursor: string;
-}
-
-/**
- *  A single group-role pair.
- */
-export interface UserGroupList_UserGroup {
-  /**
-   *  Group.
-   */
-  group?: Group;
-  /**
-   *  The user's relationship to the group.
-   */
-  state?: number;
-}
-
-/**
- *  A collection of zero or more users.
- */
-export interface Users {
-  /**
-   *  The User objects.
-   */
-  users: User[];
-}
-
-/**
- *  A request to submit a score to a leaderboard.
- */
-export interface WriteLeaderboardRecordRequest {
-  /**
-   *  The ID of the leaderboard to write to.
-   */
-  leaderboard_id: string;
-  /**
-   *  Record input.
-   */
-  record?: WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
-}
-
-/**
- *  Record values to write.
- */
-export interface WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
-  /**
-   *  The score value to submit.
-   */
-  score: number;
-  /**
-   *  An optional secondary value.
-   */
-  subscore: number;
-  /**
-   *  Optional record metadata.
-   */
-  metadata: string;
-}
-
-/**
- *  The object to store.
- */
-export interface WriteStorageObject {
-  /**
-   *  The collection to store the object.
-   */
-  collection: string;
-  /**
-   *  The key for the object within the collection.
-   */
-  key: string;
-  /**
-   *  The value of the object.
-   */
-  value: string;
-  /**
-   *  The version hash of the object to check. Possible values are: ["", "*", "#hash#"].
-   */
-  version: string;
-  /**
-   *  The read access permissions for the object.
-   */
-  permission_read?: number;
-  /**
-   *  The write access permissions for the object.
-   */
-  permission_write?: number;
-}
-
-/**
- *  Write objects to the storage engine.
- */
-export interface WriteStorageObjectsRequest {
-  /**
-   *  The objects to store on the server.
-   */
-  objects: WriteStorageObject[];
-}
-
-/**
- *  A request to submit a score to a tournament.
- */
-export interface WriteTournamentRecordRequest {
-  /**
-   *  The tournament ID to write the record for.
-   */
-  tournament_id: string;
-  /**
-   *  Record input.
-   */
-  record?: WriteTournamentRecordRequest_TournamentRecordWrite;
-}
-
-/**
- *  Record values to write.
- */
-export interface WriteTournamentRecordRequest_TournamentRecordWrite {
-  /**
-   *  The score value to submit.
-   */
-  score: number;
-  /**
-   *  An optional secondary value.
-   */
-  subscore: number;
-  /**
-   *  A JSON object of additional properties (optional).
-   */
-  metadata: string;
-}
-
-const baseAccount: object = {
-  wallet: "",
-  email: "",
-  custom_id: "",
-};
-
-const baseAccountRefresh: object = {
-  token: "",
-};
-
-const baseAccountRefresh_VarsEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseAccountApple: object = {
-  token: "",
-};
-
-const baseAccountApple_VarsEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseAccountCustom: object = {
-  id: "",
-};
-
-const baseAccountCustom_VarsEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseAccountDevice: object = {
-  id: "",
-};
-
-const baseAccountDevice_VarsEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseAccountEmail: object = {
-  email: "",
-  password: "",
-};
-
-const baseAccountEmail_VarsEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseAccountFacebook: object = {
-  token: "",
-};
-
-const baseAccountFacebook_VarsEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseAccountFacebookInstantGame: object = {
-  signed_player_info: "",
-};
-
-const baseAccountFacebookInstantGame_VarsEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseAccountGameCenter: object = {
-  player_id: "",
-  bundle_id: "",
-  timestamp_seconds: 0,
-  salt: "",
-  signature: "",
-  public_key_url: "",
-};
-
-const baseAccountGameCenter_VarsEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseAccountGoogle: object = {
-  token: "",
-};
-
-const baseAccountGoogle_VarsEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseAccountSteam: object = {
-  token: "",
-};
-
-const baseAccountSteam_VarsEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseAddFriendsRequest: object = {
-  ids: "",
-  usernames: "",
-};
-
-const baseAddGroupUsersRequest: object = {
-  group_id: "",
-  user_ids: "",
-};
-
-const baseSessionRefreshRequest: object = {
-  token: "",
-};
-
-const baseSessionRefreshRequest_VarsEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseAuthenticateAppleRequest: object = {
-  username: "",
-};
-
-const baseAuthenticateCustomRequest: object = {
-  username: "",
-};
-
-const baseAuthenticateDeviceRequest: object = {
-  username: "",
-};
-
-const baseAuthenticateEmailRequest: object = {
-  username: "",
-};
-
-const baseAuthenticateFacebookRequest: object = {
-  username: "",
-};
-
-const baseAuthenticateFacebookInstantGameRequest: object = {
-  username: "",
-};
-
-const baseAuthenticateGameCenterRequest: object = {
-  username: "",
-};
-
-const baseAuthenticateGoogleRequest: object = {
-  username: "",
-};
-
-const baseAuthenticateSteamRequest: object = {
-  username: "",
-};
-
-const baseBanGroupUsersRequest: object = {
-  group_id: "",
-  user_ids: "",
-};
-
-const baseBlockFriendsRequest: object = {
-  ids: "",
-  usernames: "",
-};
-
-const baseChannelMessage: object = {
-  channel_id: "",
-  message_id: "",
-  sender_id: "",
-  username: "",
-  content: "",
-  room_name: "",
-  group_id: "",
-  user_id_one: "",
-  user_id_two: "",
-};
-
-const baseChannelMessageList: object = {
-  next_cursor: "",
-  prev_cursor: "",
-  cacheable_cursor: "",
-};
-
-const baseCreateGroupRequest: object = {
-  name: "",
-  description: "",
-  lang_tag: "",
-  avatar_url: "",
-  open: false,
-  max_count: 0,
-};
-
-const baseDeleteFriendsRequest: object = {
-  ids: "",
-  usernames: "",
-};
-
-const baseDeleteGroupRequest: object = {
-  group_id: "",
-};
-
-const baseDeleteLeaderboardRecordRequest: object = {
-  leaderboard_id: "",
-};
-
-const baseDeleteNotificationsRequest: object = {
-  ids: "",
-};
-
-const baseDeleteStorageObjectId: object = {
-  collection: "",
-  key: "",
-  version: "",
-};
-
-const baseDeleteStorageObjectsRequest: object = {
-};
-
-const baseEvent: object = {
-  name: "",
-  external: false,
-};
-
-const baseEvent_PropertiesEntry: object = {
-  key: "",
-  value: "",
-};
-
-const baseFriend: object = {
-};
-
-const baseFriendList: object = {
-  cursor: "",
-};
-
-const baseGetUsersRequest: object = {
-  ids: "",
-  usernames: "",
-  facebook_ids: "",
-};
-
-const baseGroup: object = {
-  id: "",
-  creator_id: "",
-  name: "",
-  description: "",
-  lang_tag: "",
-  metadata: "",
-  avatar_url: "",
-  edge_count: 0,
-  max_count: 0,
-};
-
-const baseGroupList: object = {
-  cursor: "",
-};
-
-const baseGroupUserList: object = {
-  cursor: "",
-};
-
-const baseGroupUserList_GroupUser: object = {
-};
-
-const baseImportFacebookFriendsRequest: object = {
-};
-
-const baseJoinGroupRequest: object = {
-  group_id: "",
-};
-
-const baseJoinTournamentRequest: object = {
-  tournament_id: "",
-};
-
-const baseKickGroupUsersRequest: object = {
-  group_id: "",
-  user_ids: "",
-};
-
-const baseLeaderboardRecord: object = {
-  leaderboard_id: "",
-  owner_id: "",
-  score: 0,
-  subscore: 0,
-  num_score: 0,
-  metadata: "",
-  rank: 0,
-  max_num_score: 0,
-};
-
-const baseLeaderboardRecordList: object = {
-  next_cursor: "",
-  prev_cursor: "",
-};
-
-const baseLeaveGroupRequest: object = {
-  group_id: "",
-};
-
-const baseLinkFacebookRequest: object = {
-};
-
-const baseListChannelMessagesRequest: object = {
-  channel_id: "",
-  cursor: "",
-};
-
-const baseListFriendsRequest: object = {
-  cursor: "",
-};
-
-const baseListGroupsRequest: object = {
-  name: "",
-  cursor: "",
-};
-
-const baseListGroupUsersRequest: object = {
-  group_id: "",
-  cursor: "",
-};
-
-const baseListLeaderboardRecordsAroundOwnerRequest: object = {
-  leaderboard_id: "",
-  owner_id: "",
-};
-
-const baseListLeaderboardRecordsRequest: object = {
-  leaderboard_id: "",
-  owner_ids: "",
-  cursor: "",
-};
-
-const baseListMatchesRequest: object = {
-};
-
-const baseListNotificationsRequest: object = {
-  cacheable_cursor: "",
-};
-
-const baseListStorageObjectsRequest: object = {
-  user_id: "",
-  collection: "",
-  cursor: "",
-};
-
-const baseListTournamentRecordsAroundOwnerRequest: object = {
-  tournament_id: "",
-  owner_id: "",
-};
-
-const baseListTournamentRecordsRequest: object = {
-  tournament_id: "",
-  owner_ids: "",
-  cursor: "",
-};
-
-const baseListTournamentsRequest: object = {
-  cursor: "",
-};
-
-const baseListUserGroupsRequest: object = {
-  user_id: "",
-  cursor: "",
-};
-
-const baseMatch: object = {
-  match_id: "",
-  authoritative: false,
-  size: 0,
-  tick_rate: 0,
-  handler_name: "",
-};
-
-const baseMatchList: object = {
-};
-
-const baseNotification: object = {
-  id: "",
-  subject: "",
-  content: "",
-  code: 0,
-  sender_id: "",
-  persistent: false,
-};
-
-const baseNotificationList: object = {
-  cacheable_cursor: "",
-};
-
-const basePromoteGroupUsersRequest: object = {
-  group_id: "",
-  user_ids: "",
-};
-
-const baseDemoteGroupUsersRequest: object = {
-  group_id: "",
-  user_ids: "",
-};
-
-const baseReadStorageObjectId: object = {
-  collection: "",
-  key: "",
-  user_id: "",
-};
-
-const baseReadStorageObjectsRequest: object = {
-};
-
-const baseRpc: object = {
-  id: "",
-  payload: "",
-  http_key: "",
-};
-
-const baseSession: object = {
-  created: false,
-  token: "",
-  refresh_token: "",
-};
-
-const baseStorageObject: object = {
-  collection: "",
-  key: "",
-  user_id: "",
-  value: "",
-  version: "",
-  permission_read: 0,
-  permission_write: 0,
-};
-
-const baseStorageObjectAck: object = {
-  collection: "",
-  key: "",
-  version: "",
-  user_id: "",
-};
-
-const baseStorageObjectAcks: object = {
-};
-
-const baseStorageObjects: object = {
-};
-
-const baseStorageObjectList: object = {
-  cursor: "",
-};
-
-const baseTournament: object = {
-  id: "",
-  title: "",
-  description: "",
-  category: 0,
-  sort_order: 0,
-  size: 0,
-  max_size: 0,
-  max_num_score: 0,
-  can_enter: false,
-  end_active: 0,
-  next_reset: 0,
-  metadata: "",
-  duration: 0,
-  start_active: 0,
-};
-
-const baseTournamentList: object = {
-  cursor: "",
-};
-
-const baseTournamentRecordList: object = {
-  next_cursor: "",
-  prev_cursor: "",
-};
-
-const baseUpdateAccountRequest: object = {
-};
-
-const baseUpdateGroupRequest: object = {
-  group_id: "",
-};
-
-const baseUser: object = {
-  id: "",
-  username: "",
-  display_name: "",
-  avatar_url: "",
-  lang_tag: "",
-  location: "",
-  timezone: "",
-  metadata: "",
-  facebook_id: "",
-  google_id: "",
-  gamecenter_id: "",
-  steam_id: "",
-  online: false,
-  edge_count: 0,
-  facebook_instant_game_id: "",
-  apple_id: "",
-};
-
-const baseUserGroupList: object = {
-  cursor: "",
-};
-
-const baseUserGroupList_UserGroup: object = {
-};
-
-const baseUsers: object = {
-};
-
-const baseWriteLeaderboardRecordRequest: object = {
-  leaderboard_id: "",
-};
-
-const baseWriteLeaderboardRecordRequest_LeaderboardRecordWrite: object = {
-  score: 0,
-  subscore: 0,
-  metadata: "",
-};
-
-const baseWriteStorageObject: object = {
-  collection: "",
-  key: "",
-  value: "",
-  version: "",
-};
-
-const baseWriteStorageObjectsRequest: object = {
-};
-
-const baseWriteTournamentRecordRequest: object = {
-  tournament_id: "",
-};
-
-const baseWriteTournamentRecordRequest_TournamentRecordWrite: object = {
-  score: 0,
-  subscore: 0,
-  metadata: "",
-};
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
-  }
-}
-
-function toTimestamp(date: Date): Timestamp {
-  const seconds = date.getTime() / 1_000;
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = t.seconds * 1_000;
-  millis += t.nanos / 1_000_000;
-  return new Date(millis);
-}
-
-function longToNumber(long: Long) {
-  if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  return long.toNumber();
-}
-
-export const protobufPackage = 'nakama.api'
-
-/**  The friendship status.
- */
+/** The friendship status. */
 export enum Friend_State {
-  /** FRIEND -  The user is a friend of the current user.
-   */
+  /** FRIEND - The user is a friend of the current user. */
   FRIEND = 0,
-  /** INVITE_SENT -  The current user has sent an invite to the user.
-   */
+  /** INVITE_SENT - The current user has sent an invite to the user. */
   INVITE_SENT = 1,
-  /** INVITE_RECEIVED -  The current user has received an invite from this user.
-   */
+  /** INVITE_RECEIVED - The current user has received an invite from this user. */
   INVITE_RECEIVED = 2,
-  /** BLOCKED -  The current user has blocked this user.
-   */
+  /** BLOCKED - The current user has blocked this user. */
   BLOCKED = 3,
   UNRECOGNIZED = -1,
 }
@@ -2588,25 +487,92 @@ export function friend_StateToJSON(object: Friend_State): string {
   }
 }
 
-/**  The group role status.
- */
+/** A collection of zero or more friends of the user. */
+export interface FriendList {
+  /** The Friend objects. */
+  friends: Friend[];
+  /** Cursor for the next page of results, if any. */
+  cursor: string;
+}
+
+/** Fetch a batch of zero or more users from the server. */
+export interface GetUsersRequest {
+  /** The account id of a user. */
+  ids: string[];
+  /** The account username of a user. */
+  usernames: string[];
+  /** The Facebook ID of a user. */
+  facebook_ids: string[];
+}
+
+/** A group in the server. */
+export interface Group {
+  /** The id of a group. */
+  id: string;
+  /** The id of the user who created the group. */
+  creator_id: string;
+  /** The unique name of the group. */
+  name: string;
+  /** A description for the group. */
+  description: string;
+  /** The language expected to be a tag which follows the BCP-47 spec. */
+  lang_tag: string;
+  /** Additional information stored as a JSON object. */
+  metadata: string;
+  /** A URL for an avatar image. */
+  avatar_url: string;
+  /** Anyone can join open groups, otherwise only admins can accept members. */
+  open?: boolean;
+  /** The current count of all members in the group. */
+  edge_count: number;
+  /** The maximum number of members allowed. */
+  max_count: number;
+  /** The UNIX time when the group was created. */
+  create_time?: Date;
+  /** The UNIX time when the group was last updated. */
+  update_time?: Date;
+}
+
+/** One or more groups returned from a listing operation. */
+export interface GroupList {
+  /** One or more groups. */
+  groups: Group[];
+  /** A cursor used to get the next page. */
+  cursor: string;
+}
+
+/** A list of users belonging to a group, along with their role. */
+export interface GroupUserList {
+  /** User-role pairs for a group. */
+  group_users: GroupUserList_GroupUser[];
+  /** Cursor for the next page of results, if any. */
+  cursor: string;
+}
+
+/** A single user-role pair. */
+export interface GroupUserList_GroupUser {
+  /** User. */
+  user?: User;
+  /** Their relationship to the group. */
+  state?: number;
+}
+
+/** The group role status. */
 export enum GroupUserList_GroupUser_State {
-  /** SUPERADMIN -  The user is a superadmin with full control of the group.
-   */
+  /** SUPERADMIN - The user is a superadmin with full control of the group. */
   SUPERADMIN = 0,
-  /** ADMIN -  The user is an admin with additional privileges.
-   */
+  /** ADMIN - The user is an admin with additional privileges. */
   ADMIN = 1,
-  /** MEMBER -  The user is a regular member.
-   */
+  /** MEMBER - The user is a regular member. */
   MEMBER = 2,
-  /** JOIN_REQUEST -  The user has requested to join the group
-   */
+  /** JOIN_REQUEST - The user has requested to join the group */
   JOIN_REQUEST = 3,
   UNRECOGNIZED = -1,
 }
 
-export function groupUserList_GroupUser_StateFromJSON(object: any): GroupUserList_GroupUser_State {
+export function groupUserList_GroupUser_StateFromJSON(
+  object: any
+): GroupUserList_GroupUser_State {
   switch (object) {
     case 0:
     case "SUPERADMIN":
@@ -2627,7 +593,9 @@ export function groupUserList_GroupUser_StateFromJSON(object: any): GroupUserLis
   }
 }
 
-export function groupUserList_GroupUser_StateToJSON(object: GroupUserList_GroupUser_State): string {
+export function groupUserList_GroupUser_StateToJSON(
+  object: GroupUserList_GroupUser_State
+): string {
   switch (object) {
     case GroupUserList_GroupUser_State.SUPERADMIN:
       return "SUPERADMIN";
@@ -2642,25 +610,564 @@ export function groupUserList_GroupUser_StateToJSON(object: GroupUserList_GroupU
   }
 }
 
-/**  The group role status.
- */
+/** Import Facebook friends into the current user's account. */
+export interface ImportFacebookFriendsRequest {
+  /** The Facebook account details. */
+  account?: AccountFacebook;
+  /** Reset the current user's friends list. */
+  reset?: boolean;
+}
+
+/** Immediately join an open group, or request to join a closed one. */
+export interface JoinGroupRequest {
+  /** The group ID to join. The group must already exist. */
+  group_id: string;
+}
+
+/** The request to join a tournament. */
+export interface JoinTournamentRequest {
+  /** The ID of the tournament to join. The tournament must already exist. */
+  tournament_id: string;
+}
+
+/** Kick a set of users from a group. */
+export interface KickGroupUsersRequest {
+  /** The group ID to kick from. */
+  group_id: string;
+  /** The users to kick. */
+  user_ids: string[];
+}
+
+/** Represents a complete leaderboard record with all scores and associated metadata. */
+export interface LeaderboardRecord {
+  /** The ID of the leaderboard this score belongs to. */
+  leaderboard_id: string;
+  /** The ID of the score owner, usually a user or group. */
+  owner_id: string;
+  /** The username of the score owner, if the owner is a user. */
+  username?: string;
+  /** The score value. */
+  score: number;
+  /** An optional subscore value. */
+  subscore: number;
+  /** The number of submissions to this score record. */
+  num_score: number;
+  /** Metadata. */
+  metadata: string;
+  /** The UNIX time when the leaderboard record was created. */
+  create_time?: Date;
+  /** The UNIX time when the leaderboard record was updated. */
+  update_time?: Date;
+  /** The UNIX time when the leaderboard record expires. */
+  expiry_time?: Date;
+  /** The rank of this record. */
+  rank: number;
+  /** The maximum number of score updates allowed by the owner. */
+  max_num_score: number;
+}
+
+/** A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records. */
+export interface LeaderboardRecordList {
+  /** A list of leaderboard records. */
+  records: LeaderboardRecord[];
+  /** A batched set of leaderboard records belonging to specified owners. */
+  owner_records: LeaderboardRecord[];
+  /** The cursor to send when retrieving the next page, if any. */
+  next_cursor: string;
+  /** The cursor to send when retrieving the previous page, if any. */
+  prev_cursor: string;
+}
+
+/** Leave a group. */
+export interface LeaveGroupRequest {
+  /** The group ID to leave. */
+  group_id: string;
+}
+
+/** Link Facebook to the current user's account. */
+export interface LinkFacebookRequest {
+  /** The Facebook account details. */
+  account?: AccountFacebook;
+  /** Import Facebook friends for the user. */
+  sync?: boolean;
+}
+
+/** List a channel's message history. */
+export interface ListChannelMessagesRequest {
+  /** The channel ID to list from. */
+  channel_id: string;
+  /** Max number of records to return. Between 1 and 100. */
+  limit?: number;
+  /** True if listing should be older messages to newer, false if reverse. */
+  forward?: boolean;
+  /** A pagination cursor, if any. */
+  cursor: string;
+}
+
+/** List friends for a user. */
+export interface ListFriendsRequest {
+  /** Max number of records to return. Between 1 and 100. */
+  limit?: number;
+  /** The friend state to list. */
+  state?: number;
+  /** An optional next page cursor. */
+  cursor: string;
+}
+
+/** List groups based on given filters. */
+export interface ListGroupsRequest {
+  /** List groups that contain this value in their names. */
+  name: string;
+  /** Optional pagination cursor. */
+  cursor: string;
+  /** Max number of groups to return. Between 1 and 100. */
+  limit?: number;
+}
+
+/** List all users that are part of a group. */
+export interface ListGroupUsersRequest {
+  /** The group ID to list from. */
+  group_id: string;
+  /** Max number of records to return. Between 1 and 100. */
+  limit?: number;
+  /** The group user state to list. */
+  state?: number;
+  /** An optional next page cursor. */
+  cursor: string;
+}
+
+/** List leaerboard records from a given leaderboard around the owner. */
+export interface ListLeaderboardRecordsAroundOwnerRequest {
+  /** The ID of the tournament to list for. */
+  leaderboard_id: string;
+  /** Max number of records to return. Between 1 and 100. */
+  limit?: number;
+  /** The owner to retrieve records around. */
+  owner_id: string;
+  /** Expiry in seconds (since epoch) to begin fetching records from. */
+  expiry?: number;
+}
+
+/** List leaderboard records from a given leaderboard. */
+export interface ListLeaderboardRecordsRequest {
+  /** The ID of the leaderboard to list for. */
+  leaderboard_id: string;
+  /** One or more owners to retrieve records for. */
+  owner_ids: string[];
+  /** Max number of records to return. Between 1 and 100. */
+  limit?: number;
+  /** A next or previous page cursor. */
+  cursor: string;
+  /** Expiry in seconds (since epoch) to begin fetching records from. Optional. 0 means from current time. */
+  expiry?: number;
+}
+
+/** List realtime matches. */
+export interface ListMatchesRequest {
+  /** Limit the number of returned matches. */
+  limit?: number;
+  /** Authoritative or relayed matches. */
+  authoritative?: boolean;
+  /** Label filter. */
+  label?: string;
+  /** Minimum user count. */
+  min_size?: number;
+  /** Maximum user count. */
+  max_size?: number;
+  /** Arbitrary label query. */
+  query?: string;
+}
+
+/** Get a list of unexpired notifications. */
+export interface ListNotificationsRequest {
+  /** The number of notifications to get. Between 1 and 100. */
+  limit?: number;
+  /** A cursor to page through notifications. May be cached by clients to get from point in time forwards. */
+  cacheable_cursor: string;
+}
+
+/** List publicly readable storage objects in a given collection. */
+export interface ListStorageObjectsRequest {
+  /** ID of the user. */
+  user_id: string;
+  /** The collection which stores the object. */
+  collection: string;
+  /** The number of storage objects to list. Between 1 and 100. */
+  limit?: number;
+  /** The cursor to page through results from. */
+  cursor: string;
+}
+
+/** List tournament records from a given tournament around the owner. */
+export interface ListTournamentRecordsAroundOwnerRequest {
+  /** The ID of the tournament to list for. */
+  tournament_id: string;
+  /** Max number of records to return. Between 1 and 100. */
+  limit?: number;
+  /** The owner to retrieve records around. */
+  owner_id: string;
+  /** Expiry in seconds (since epoch) to begin fetching records from. */
+  expiry?: number;
+}
+
+/** List tournament records from a given tournament. */
+export interface ListTournamentRecordsRequest {
+  /** The ID of the tournament to list for. */
+  tournament_id: string;
+  /** One or more owners to retrieve records for. */
+  owner_ids: string[];
+  /** Max number of records to return. Between 1 and 100. */
+  limit?: number;
+  /** A next or previous page cursor. */
+  cursor: string;
+  /** Expiry in seconds (since epoch) to begin fetching records from. */
+  expiry?: number;
+}
+
+/** List active/upcoming tournaments based on given filters. */
+export interface ListTournamentsRequest {
+  /** The start of the categories to include. Defaults to 0. */
+  category_start?: number;
+  /** The end of the categories to include. Defaults to 128. */
+  category_end?: number;
+  /** The start time for tournaments. Defaults to epoch. */
+  start_time?: number;
+  /** The end time for tournaments. Defaults to +1 year from current Unix time. */
+  end_time?: number;
+  /** Max number of records to return. Between 1 and 100. */
+  limit?: number;
+  /** A next page cursor for listings (optional). */
+  cursor: string;
+}
+
+/** List the groups a user is part of, and their relationship to each. */
+export interface ListUserGroupsRequest {
+  /** ID of the user. */
+  user_id: string;
+  /** Max number of records to return. Between 1 and 100. */
+  limit?: number;
+  /** The user group state to list. */
+  state?: number;
+  /** An optional next page cursor. */
+  cursor: string;
+}
+
+/** Represents a realtime match. */
+export interface Match {
+  /** The ID of the match, can be used to join. */
+  match_id: string;
+  /** True if it's an server-managed authoritative match, false otherwise. */
+  authoritative: boolean;
+  /** Match label, if any. */
+  label?: string;
+  /** Current number of users in the match. */
+  size: number;
+  /** Tick Rate */
+  tick_rate: number;
+  /** Handler name */
+  handler_name: string;
+}
+
+/** A list of realtime matches. */
+export interface MatchList {
+  /** A number of matches corresponding to a list operation. */
+  matches: Match[];
+}
+
+/** A notification in the server. */
+export interface Notification {
+  /** ID of the Notification. */
+  id: string;
+  /** Subject of the notification. */
+  subject: string;
+  /** Content of the notification in JSON. */
+  content: string;
+  /** Category code for this notification. */
+  code: number;
+  /** ID of the sender, if a user. Otherwise 'null'. */
+  sender_id: string;
+  /** The UNIX time when the notification was created. */
+  create_time?: Date;
+  /** True if this notification was persisted to the database. */
+  persistent: boolean;
+}
+
+/** A collection of zero or more notifications. */
+export interface NotificationList {
+  /** Collection of notifications. */
+  notifications: Notification[];
+  /** Use this cursor to paginate notifications. Cache this to catch up to new notifications. */
+  cacheable_cursor: string;
+}
+
+/** Promote a set of users in a group to the next role up. */
+export interface PromoteGroupUsersRequest {
+  /** The group ID to promote in. */
+  group_id: string;
+  /** The users to promote. */
+  user_ids: string[];
+}
+
+/** Demote a set of users in a group to the next role down. */
+export interface DemoteGroupUsersRequest {
+  /** The group ID to demote in. */
+  group_id: string;
+  /** The users to demote. */
+  user_ids: string[];
+}
+
+/** Storage objects to get. */
+export interface ReadStorageObjectId {
+  /** The collection which stores the object. */
+  collection: string;
+  /** The key of the object within the collection. */
+  key: string;
+  /** The user owner of the object. */
+  user_id: string;
+}
+
+/** Batch get storage objects. */
+export interface ReadStorageObjectsRequest {
+  /** Batch of storage objects. */
+  object_ids: ReadStorageObjectId[];
+}
+
+/** Execute an Lua function on the server. */
+export interface Rpc {
+  /** The identifier of the function. */
+  id: string;
+  /** The payload of the function which must be a JSON object. */
+  payload: string;
+  /** The authentication key used when executed as a non-client HTTP request. */
+  http_key: string;
+}
+
+/** A user's session used to authenticate messages. */
+export interface Session {
+  /** True if the corresponding account was just created, false otherwise. */
+  created: boolean;
+  /** Authentication credentials. */
+  token: string;
+  /** Refresh token that can be used for session token renewal. */
+  refresh_token: string;
+}
+
+/** An object within the storage engine. */
+export interface StorageObject {
+  /** The collection which stores the object. */
+  collection: string;
+  /** The key of the object within the collection. */
+  key: string;
+  /** The user owner of the object. */
+  user_id: string;
+  /** The value of the object. */
+  value: string;
+  /** The version hash of the object. */
+  version: string;
+  /** The read access permissions for the object. */
+  permission_read: number;
+  /** The write access permissions for the object. */
+  permission_write: number;
+  /** The UNIX time when the object was created. */
+  create_time?: Date;
+  /** The UNIX time when the object was last updated. */
+  update_time?: Date;
+}
+
+/** A storage acknowledgement. */
+export interface StorageObjectAck {
+  /** The collection which stores the object. */
+  collection: string;
+  /** The key of the object within the collection. */
+  key: string;
+  /** The version hash of the object. */
+  version: string;
+  /** The owner of the object. */
+  user_id: string;
+}
+
+/** Batch of acknowledgements for the storage object write. */
+export interface StorageObjectAcks {
+  /** Batch of storage write acknowledgements. */
+  acks: StorageObjectAck[];
+}
+
+/** Batch of storage objects. */
+export interface StorageObjects {
+  /** The batch of storage objects. */
+  objects: StorageObject[];
+}
+
+/** List of storage objects. */
+export interface StorageObjectList {
+  /** The list of storage objects. */
+  objects: StorageObject[];
+  /** The cursor for the next page of results, if any. */
+  cursor: string;
+}
+
+/** A tournament on the server. */
+export interface Tournament {
+  /** The ID of the tournament. */
+  id: string;
+  /** The title for the tournament. */
+  title: string;
+  /** The description of the tournament. May be blank. */
+  description: string;
+  /** The category of the tournament. e.g. "vip" could be category 1. */
+  category: number;
+  /** ASC or DESC sort mode of scores in the tournament. */
+  sort_order: number;
+  /** The current number of players in the tournament. */
+  size: number;
+  /** The maximum number of players for the tournament. */
+  max_size: number;
+  /** The maximum score updates allowed per player for the current tournament. */
+  max_num_score: number;
+  /** True if the tournament is active and can enter. A computed value. */
+  can_enter: boolean;
+  /** The UNIX time when the tournament stops being active until next reset. A computed value. */
+  end_active: number;
+  /** The UNIX time when the tournament is next playable. A computed value. */
+  next_reset: number;
+  /** Additional information stored as a JSON object. */
+  metadata: string;
+  /** The UNIX time when the tournament was created. */
+  create_time?: Date;
+  /** The UNIX time when the tournament will start. */
+  start_time?: Date;
+  /** The UNIX time when the tournament will be stopped. */
+  end_time?: Date;
+  /** Duration of the tournament in seconds. */
+  duration: number;
+  /** The UNIX time when the tournament start being active. A computed value. */
+  start_active: number;
+}
+
+/** A list of tournaments. */
+export interface TournamentList {
+  /** The list of tournaments returned. */
+  tournaments: Tournament[];
+  /** A pagination cursor (optional). */
+  cursor: string;
+}
+
+/** A set of tournament records which may be part of a tournament records page or a batch of individual records. */
+export interface TournamentRecordList {
+  /** A list of tournament records. */
+  records: LeaderboardRecord[];
+  /** A batched set of tournament records belonging to specified owners. */
+  owner_records: LeaderboardRecord[];
+  /** The cursor to send when retireving the next page (optional). */
+  next_cursor: string;
+  /** The cursor to send when retrieving the previous page (optional). */
+  prev_cursor: string;
+}
+
+/** Update a user's account details. */
+export interface UpdateAccountRequest {
+  /** The username of the user's account. */
+  username?: string;
+  /** The display name of the user. */
+  display_name?: string;
+  /** A URL for an avatar image. */
+  avatar_url?: string;
+  /** The language expected to be a tag which follows the BCP-47 spec. */
+  lang_tag?: string;
+  /** The location set by the user. */
+  location?: string;
+  /** The timezone set by the user. */
+  timezone?: string;
+}
+
+/** Update fields in a given group. */
+export interface UpdateGroupRequest {
+  /** The ID of the group to update. */
+  group_id: string;
+  /** Name. */
+  name?: string;
+  /** Description string. */
+  description?: string;
+  /** Lang tag. */
+  lang_tag?: string;
+  /** Avatar URL. */
+  avatar_url?: string;
+  /** Open is true if anyone should be allowed to join, or false if joins must be approved by a group admin. */
+  open?: boolean;
+}
+
+/** A user in the server. */
+export interface User {
+  /** The id of the user's account. */
+  id: string;
+  /** The username of the user's account. */
+  username: string;
+  /** The display name of the user. */
+  display_name: string;
+  /** A URL for an avatar image. */
+  avatar_url: string;
+  /** The language expected to be a tag which follows the BCP-47 spec. */
+  lang_tag: string;
+  /** The location set by the user. */
+  location: string;
+  /** The timezone set by the user. */
+  timezone: string;
+  /** Additional information stored as a JSON object. */
+  metadata: string;
+  /** The Facebook id in the user's account. */
+  facebook_id: string;
+  /** The Google id in the user's account. */
+  google_id: string;
+  /** The Apple Game Center in of the user's account. */
+  gamecenter_id: string;
+  /** The Steam id in the user's account. */
+  steam_id: string;
+  /** Indicates whether the user is currently online. */
+  online: boolean;
+  /** Number of related edges to this user. */
+  edge_count: number;
+  /** The UNIX time when the user was created. */
+  create_time?: Date;
+  /** The UNIX time when the user was last updated. */
+  update_time?: Date;
+  /** The Facebook Instant Game ID in the user's account. */
+  facebook_instant_game_id: string;
+  /** The Apple Sign In ID in the user's account. */
+  apple_id: string;
+}
+
+/** A list of groups belonging to a user, along with the user's role in each group. */
+export interface UserGroupList {
+  /** Group-role pairs for a user. */
+  user_groups: UserGroupList_UserGroup[];
+  /** Cursor for the next page of results, if any. */
+  cursor: string;
+}
+
+/** A single group-role pair. */
+export interface UserGroupList_UserGroup {
+  /** Group. */
+  group?: Group;
+  /** The user's relationship to the group. */
+  state?: number;
+}
+
+/** The group role status. */
 export enum UserGroupList_UserGroup_State {
-  /** SUPERADMIN -  The user is a superadmin with full control of the group.
-   */
+  /** SUPERADMIN - The user is a superadmin with full control of the group. */
   SUPERADMIN = 0,
-  /** ADMIN -  The user is an admin with additional privileges.
-   */
+  /** ADMIN - The user is an admin with additional privileges. */
   ADMIN = 1,
-  /** MEMBER -  The user is a regular member.
-   */
+  /** MEMBER - The user is a regular member. */
   MEMBER = 2,
-  /** JOIN_REQUEST -  The user has requested to join the group
-   */
+  /** JOIN_REQUEST - The user has requested to join the group */
   JOIN_REQUEST = 3,
   UNRECOGNIZED = -1,
 }
 
-export function userGroupList_UserGroup_StateFromJSON(object: any): UserGroupList_UserGroup_State {
+export function userGroupList_UserGroup_StateFromJSON(
+  object: any
+): UserGroupList_UserGroup_State {
   switch (object) {
     case 0:
     case "SUPERADMIN":
@@ -2681,7 +1188,9 @@ export function userGroupList_UserGroup_StateFromJSON(object: any): UserGroupLis
   }
 }
 
-export function userGroupList_UserGroup_StateToJSON(object: UserGroupList_UserGroup_State): string {
+export function userGroupList_UserGroup_StateToJSON(
+  object: UserGroupList_UserGroup_State
+): string {
   switch (object) {
     case UserGroupList_UserGroup_State.SUPERADMIN:
       return "SUPERADMIN";
@@ -2696,27 +1205,106 @@ export function userGroupList_UserGroup_StateToJSON(object: UserGroupList_UserGr
   }
 }
 
+/** A collection of zero or more users. */
+export interface Users {
+  /** The User objects. */
+  users: User[];
+}
+
+/** A request to submit a score to a leaderboard. */
+export interface WriteLeaderboardRecordRequest {
+  /** The ID of the leaderboard to write to. */
+  leaderboard_id: string;
+  /** Record input. */
+  record?: WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
+}
+
+/** Record values to write. */
+export interface WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
+  /** The score value to submit. */
+  score: number;
+  /** An optional secondary value. */
+  subscore: number;
+  /** Optional record metadata. */
+  metadata: string;
+}
+
+/** The object to store. */
+export interface WriteStorageObject {
+  /** The collection to store the object. */
+  collection: string;
+  /** The key for the object within the collection. */
+  key: string;
+  /** The value of the object. */
+  value: string;
+  /** The version hash of the object to check. Possible values are: ["", "*", "#hash#"]. */
+  version: string;
+  /** The read access permissions for the object. */
+  permission_read?: number;
+  /** The write access permissions for the object. */
+  permission_write?: number;
+}
+
+/** Write objects to the storage engine. */
+export interface WriteStorageObjectsRequest {
+  /** The objects to store on the server. */
+  objects: WriteStorageObject[];
+}
+
+/** A request to submit a score to a tournament. */
+export interface WriteTournamentRecordRequest {
+  /** The tournament ID to write the record for. */
+  tournament_id: string;
+  /** Record input. */
+  record?: WriteTournamentRecordRequest_TournamentRecordWrite;
+}
+
+/** Record values to write. */
+export interface WriteTournamentRecordRequest_TournamentRecordWrite {
+  /** The score value to submit. */
+  score: number;
+  /** An optional secondary value. */
+  subscore: number;
+  /** A JSON object of additional properties (optional). */
+  metadata: string;
+}
+
+const baseAccount: object = { wallet: "", email: "", custom_id: "" };
+
 export const Account = {
   encode(message: Account, writer: Writer = Writer.create()): Writer {
-    if (message.user !== undefined && message.user !== undefined) {
+    if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(10).fork()).ldelim();
     }
-    writer.uint32(18).string(message.wallet);
-    writer.uint32(26).string(message.email);
+    if (message.wallet !== "") {
+      writer.uint32(18).string(message.wallet);
+    }
+    if (message.email !== "") {
+      writer.uint32(26).string(message.email);
+    }
     for (const v of message.devices) {
       AccountDevice.encode(v!, writer.uint32(34).fork()).ldelim();
     }
-    writer.uint32(42).string(message.custom_id);
-    if (message.verify_time !== undefined && message.verify_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.verify_time), writer.uint32(50).fork()).ldelim();
+    if (message.custom_id !== "") {
+      writer.uint32(42).string(message.custom_id);
     }
-    if (message.disable_time !== undefined && message.disable_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.disable_time), writer.uint32(58).fork()).ldelim();
+    if (message.verify_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.verify_time),
+        writer.uint32(50).fork()
+      ).ldelim();
+    }
+    if (message.disable_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.disable_time),
+        writer.uint32(58).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): Account {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): Account {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccount } as Account;
     message.devices = [];
@@ -2739,10 +1327,14 @@ export const Account = {
           message.custom_id = reader.string();
           break;
         case 6:
-          message.verify_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.verify_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 7:
-          message.disable_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.disable_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -2751,6 +1343,7 @@ export const Account = {
     }
     return message;
   },
+
   fromJSON(object: any): Account {
     const message = { ...baseAccount } as Account;
     message.devices = [];
@@ -2779,6 +1372,28 @@ export const Account = {
     }
     return message;
   },
+
+  toJSON(message: Account): unknown {
+    const obj: any = {};
+    message.user !== undefined &&
+      (obj.user = message.user ? User.toJSON(message.user) : undefined);
+    message.wallet !== undefined && (obj.wallet = message.wallet);
+    message.email !== undefined && (obj.email = message.email);
+    if (message.devices) {
+      obj.devices = message.devices.map((e) =>
+        e ? AccountDevice.toJSON(e) : undefined
+      );
+    } else {
+      obj.devices = [];
+    }
+    message.custom_id !== undefined && (obj.custom_id = message.custom_id);
+    message.verify_time !== undefined &&
+      (obj.verify_time = message.verify_time.toISOString());
+    message.disable_time !== undefined &&
+      (obj.disable_time = message.disable_time.toISOString());
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<Account>): Account {
     const message = { ...baseAccount } as Account;
     message.devices = [];
@@ -2807,33 +1422,26 @@ export const Account = {
     }
     return message;
   },
-  toJSON(message: Account): unknown {
-    const obj: any = {};
-    message.user !== undefined && (obj.user = message.user ? User.toJSON(message.user) : undefined);
-    message.wallet !== undefined && (obj.wallet = message.wallet);
-    message.email !== undefined && (obj.email = message.email);
-    if (message.devices) {
-      obj.devices = message.devices.map(e => e ? AccountDevice.toJSON(e) : undefined);
-    } else {
-      obj.devices = [];
-    }
-    message.custom_id !== undefined && (obj.custom_id = message.custom_id);
-    message.verify_time !== undefined && (obj.verify_time = message.verify_time !== undefined ? message.verify_time.toISOString() : null);
-    message.disable_time !== undefined && (obj.disable_time = message.disable_time !== undefined ? message.disable_time.toISOString() : null);
-    return obj;
-  },
 };
+
+const baseAccountRefresh: object = { token: "" };
 
 export const AccountRefresh = {
   encode(message: AccountRefresh, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.token);
+    if (message.token !== "") {
+      writer.uint32(10).string(message.token);
+    }
     Object.entries(message.vars).forEach(([key, value]) => {
-      AccountRefresh_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
-    })
+      AccountRefresh_VarsEntry.encode(
+        { key: key as any, value },
+        writer.uint32(18).fork()
+      ).ldelim();
+    });
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountRefresh {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountRefresh {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountRefresh } as AccountRefresh;
     message.vars = {};
@@ -2844,7 +1452,10 @@ export const AccountRefresh = {
           message.token = reader.string();
           break;
         case 2:
-          const entry2 = AccountRefresh_VarsEntry.decode(reader, reader.uint32());
+          const entry2 = AccountRefresh_VarsEntry.decode(
+            reader,
+            reader.uint32()
+          );
           if (entry2.value !== undefined) {
             message.vars[entry2.key] = entry2.value;
           }
@@ -2856,6 +1467,7 @@ export const AccountRefresh = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountRefresh {
     const message = { ...baseAccountRefresh } as AccountRefresh;
     message.vars = {};
@@ -2865,10 +1477,23 @@ export const AccountRefresh = {
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
         message.vars[key] = String(value);
-      })
+      });
     }
     return message;
   },
+
+  toJSON(message: AccountRefresh): unknown {
+    const obj: any = {};
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      });
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<AccountRefresh>): AccountRefresh {
     const message = { ...baseAccountRefresh } as AccountRefresh;
     message.vars = {};
@@ -2880,33 +1505,37 @@ export const AccountRefresh = {
         if (value !== undefined) {
           message.vars[key] = String(value);
         }
-      })
+      });
     }
     return message;
   },
-  toJSON(message: AccountRefresh): unknown {
-    const obj: any = {};
-    message.token !== undefined && (obj.token = message.token);
-    obj.vars = {};
-    if (message.vars) {
-      Object.entries(message.vars).forEach(([k, v]) => {
-        obj.vars[k] = v;
-      })
-    }
-    return obj;
-  },
 };
 
+const baseAccountRefresh_VarsEntry: object = { key: "", value: "" };
+
 export const AccountRefresh_VarsEntry = {
-  encode(message: AccountRefresh_VarsEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: AccountRefresh_VarsEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountRefresh_VarsEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AccountRefresh_VarsEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAccountRefresh_VarsEntry } as AccountRefresh_VarsEntry;
+    const message = {
+      ...baseAccountRefresh_VarsEntry,
+    } as AccountRefresh_VarsEntry;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -2923,8 +1552,11 @@ export const AccountRefresh_VarsEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountRefresh_VarsEntry {
-    const message = { ...baseAccountRefresh_VarsEntry } as AccountRefresh_VarsEntry;
+    const message = {
+      ...baseAccountRefresh_VarsEntry,
+    } as AccountRefresh_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
     }
@@ -2933,8 +1565,20 @@ export const AccountRefresh_VarsEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AccountRefresh_VarsEntry>): AccountRefresh_VarsEntry {
-    const message = { ...baseAccountRefresh_VarsEntry } as AccountRefresh_VarsEntry;
+
+  toJSON(message: AccountRefresh_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AccountRefresh_VarsEntry>
+  ): AccountRefresh_VarsEntry {
+    const message = {
+      ...baseAccountRefresh_VarsEntry,
+    } as AccountRefresh_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
     }
@@ -2943,24 +1587,26 @@ export const AccountRefresh_VarsEntry = {
     }
     return message;
   },
-  toJSON(message: AccountRefresh_VarsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
 };
+
+const baseAccountApple: object = { token: "" };
 
 export const AccountApple = {
   encode(message: AccountApple, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.token);
+    if (message.token !== "") {
+      writer.uint32(10).string(message.token);
+    }
     Object.entries(message.vars).forEach(([key, value]) => {
-      AccountApple_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
-    })
+      AccountApple_VarsEntry.encode(
+        { key: key as any, value },
+        writer.uint32(18).fork()
+      ).ldelim();
+    });
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountApple {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountApple {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountApple } as AccountApple;
     message.vars = {};
@@ -2983,6 +1629,7 @@ export const AccountApple = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountApple {
     const message = { ...baseAccountApple } as AccountApple;
     message.vars = {};
@@ -2992,10 +1639,23 @@ export const AccountApple = {
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
         message.vars[key] = String(value);
-      })
+      });
     }
     return message;
   },
+
+  toJSON(message: AccountApple): unknown {
+    const obj: any = {};
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      });
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<AccountApple>): AccountApple {
     const message = { ...baseAccountApple } as AccountApple;
     message.vars = {};
@@ -3007,31 +1667,30 @@ export const AccountApple = {
         if (value !== undefined) {
           message.vars[key] = String(value);
         }
-      })
+      });
     }
     return message;
   },
-  toJSON(message: AccountApple): unknown {
-    const obj: any = {};
-    message.token !== undefined && (obj.token = message.token);
-    obj.vars = {};
-    if (message.vars) {
-      Object.entries(message.vars).forEach(([k, v]) => {
-        obj.vars[k] = v;
-      })
-    }
-    return obj;
-  },
 };
 
+const baseAccountApple_VarsEntry: object = { key: "", value: "" };
+
 export const AccountApple_VarsEntry = {
-  encode(message: AccountApple_VarsEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: AccountApple_VarsEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountApple_VarsEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountApple_VarsEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountApple_VarsEntry } as AccountApple_VarsEntry;
     while (reader.pos < end) {
@@ -3050,6 +1709,7 @@ export const AccountApple_VarsEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountApple_VarsEntry {
     const message = { ...baseAccountApple_VarsEntry } as AccountApple_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
@@ -3060,7 +1720,17 @@ export const AccountApple_VarsEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AccountApple_VarsEntry>): AccountApple_VarsEntry {
+
+  toJSON(message: AccountApple_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AccountApple_VarsEntry>
+  ): AccountApple_VarsEntry {
     const message = { ...baseAccountApple_VarsEntry } as AccountApple_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
@@ -3070,24 +1740,26 @@ export const AccountApple_VarsEntry = {
     }
     return message;
   },
-  toJSON(message: AccountApple_VarsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
 };
+
+const baseAccountCustom: object = { id: "" };
 
 export const AccountCustom = {
   encode(message: AccountCustom, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.id);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
     Object.entries(message.vars).forEach(([key, value]) => {
-      AccountCustom_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
-    })
+      AccountCustom_VarsEntry.encode(
+        { key: key as any, value },
+        writer.uint32(18).fork()
+      ).ldelim();
+    });
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountCustom {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountCustom {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountCustom } as AccountCustom;
     message.vars = {};
@@ -3098,7 +1770,10 @@ export const AccountCustom = {
           message.id = reader.string();
           break;
         case 2:
-          const entry2 = AccountCustom_VarsEntry.decode(reader, reader.uint32());
+          const entry2 = AccountCustom_VarsEntry.decode(
+            reader,
+            reader.uint32()
+          );
           if (entry2.value !== undefined) {
             message.vars[entry2.key] = entry2.value;
           }
@@ -3110,6 +1785,7 @@ export const AccountCustom = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountCustom {
     const message = { ...baseAccountCustom } as AccountCustom;
     message.vars = {};
@@ -3119,10 +1795,23 @@ export const AccountCustom = {
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
         message.vars[key] = String(value);
-      })
+      });
     }
     return message;
   },
+
+  toJSON(message: AccountCustom): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      });
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<AccountCustom>): AccountCustom {
     const message = { ...baseAccountCustom } as AccountCustom;
     message.vars = {};
@@ -3134,33 +1823,34 @@ export const AccountCustom = {
         if (value !== undefined) {
           message.vars[key] = String(value);
         }
-      })
+      });
     }
     return message;
   },
-  toJSON(message: AccountCustom): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    obj.vars = {};
-    if (message.vars) {
-      Object.entries(message.vars).forEach(([k, v]) => {
-        obj.vars[k] = v;
-      })
-    }
-    return obj;
-  },
 };
 
+const baseAccountCustom_VarsEntry: object = { key: "", value: "" };
+
 export const AccountCustom_VarsEntry = {
-  encode(message: AccountCustom_VarsEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: AccountCustom_VarsEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountCustom_VarsEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountCustom_VarsEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAccountCustom_VarsEntry } as AccountCustom_VarsEntry;
+    const message = {
+      ...baseAccountCustom_VarsEntry,
+    } as AccountCustom_VarsEntry;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -3177,8 +1867,11 @@ export const AccountCustom_VarsEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountCustom_VarsEntry {
-    const message = { ...baseAccountCustom_VarsEntry } as AccountCustom_VarsEntry;
+    const message = {
+      ...baseAccountCustom_VarsEntry,
+    } as AccountCustom_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
     }
@@ -3187,8 +1880,20 @@ export const AccountCustom_VarsEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AccountCustom_VarsEntry>): AccountCustom_VarsEntry {
-    const message = { ...baseAccountCustom_VarsEntry } as AccountCustom_VarsEntry;
+
+  toJSON(message: AccountCustom_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AccountCustom_VarsEntry>
+  ): AccountCustom_VarsEntry {
+    const message = {
+      ...baseAccountCustom_VarsEntry,
+    } as AccountCustom_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
     }
@@ -3197,24 +1902,26 @@ export const AccountCustom_VarsEntry = {
     }
     return message;
   },
-  toJSON(message: AccountCustom_VarsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
 };
+
+const baseAccountDevice: object = { id: "" };
 
 export const AccountDevice = {
   encode(message: AccountDevice, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.id);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
     Object.entries(message.vars).forEach(([key, value]) => {
-      AccountDevice_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
-    })
+      AccountDevice_VarsEntry.encode(
+        { key: key as any, value },
+        writer.uint32(18).fork()
+      ).ldelim();
+    });
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountDevice {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountDevice {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountDevice } as AccountDevice;
     message.vars = {};
@@ -3225,7 +1932,10 @@ export const AccountDevice = {
           message.id = reader.string();
           break;
         case 2:
-          const entry2 = AccountDevice_VarsEntry.decode(reader, reader.uint32());
+          const entry2 = AccountDevice_VarsEntry.decode(
+            reader,
+            reader.uint32()
+          );
           if (entry2.value !== undefined) {
             message.vars[entry2.key] = entry2.value;
           }
@@ -3237,6 +1947,7 @@ export const AccountDevice = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountDevice {
     const message = { ...baseAccountDevice } as AccountDevice;
     message.vars = {};
@@ -3246,10 +1957,23 @@ export const AccountDevice = {
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
         message.vars[key] = String(value);
-      })
+      });
     }
     return message;
   },
+
+  toJSON(message: AccountDevice): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      });
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<AccountDevice>): AccountDevice {
     const message = { ...baseAccountDevice } as AccountDevice;
     message.vars = {};
@@ -3261,33 +1985,34 @@ export const AccountDevice = {
         if (value !== undefined) {
           message.vars[key] = String(value);
         }
-      })
+      });
     }
     return message;
   },
-  toJSON(message: AccountDevice): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    obj.vars = {};
-    if (message.vars) {
-      Object.entries(message.vars).forEach(([k, v]) => {
-        obj.vars[k] = v;
-      })
-    }
-    return obj;
-  },
 };
 
+const baseAccountDevice_VarsEntry: object = { key: "", value: "" };
+
 export const AccountDevice_VarsEntry = {
-  encode(message: AccountDevice_VarsEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: AccountDevice_VarsEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountDevice_VarsEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountDevice_VarsEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAccountDevice_VarsEntry } as AccountDevice_VarsEntry;
+    const message = {
+      ...baseAccountDevice_VarsEntry,
+    } as AccountDevice_VarsEntry;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -3304,8 +2029,11 @@ export const AccountDevice_VarsEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountDevice_VarsEntry {
-    const message = { ...baseAccountDevice_VarsEntry } as AccountDevice_VarsEntry;
+    const message = {
+      ...baseAccountDevice_VarsEntry,
+    } as AccountDevice_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
     }
@@ -3314,8 +2042,20 @@ export const AccountDevice_VarsEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AccountDevice_VarsEntry>): AccountDevice_VarsEntry {
-    const message = { ...baseAccountDevice_VarsEntry } as AccountDevice_VarsEntry;
+
+  toJSON(message: AccountDevice_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AccountDevice_VarsEntry>
+  ): AccountDevice_VarsEntry {
+    const message = {
+      ...baseAccountDevice_VarsEntry,
+    } as AccountDevice_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
     }
@@ -3324,25 +2064,29 @@ export const AccountDevice_VarsEntry = {
     }
     return message;
   },
-  toJSON(message: AccountDevice_VarsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
 };
+
+const baseAccountEmail: object = { email: "", password: "" };
 
 export const AccountEmail = {
   encode(message: AccountEmail, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.email);
-    writer.uint32(18).string(message.password);
+    if (message.email !== "") {
+      writer.uint32(10).string(message.email);
+    }
+    if (message.password !== "") {
+      writer.uint32(18).string(message.password);
+    }
     Object.entries(message.vars).forEach(([key, value]) => {
-      AccountEmail_VarsEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).ldelim();
-    })
+      AccountEmail_VarsEntry.encode(
+        { key: key as any, value },
+        writer.uint32(26).fork()
+      ).ldelim();
+    });
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountEmail {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountEmail {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountEmail } as AccountEmail;
     message.vars = {};
@@ -3368,6 +2112,7 @@ export const AccountEmail = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountEmail {
     const message = { ...baseAccountEmail } as AccountEmail;
     message.vars = {};
@@ -3380,10 +2125,24 @@ export const AccountEmail = {
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
         message.vars[key] = String(value);
-      })
+      });
     }
     return message;
   },
+
+  toJSON(message: AccountEmail): unknown {
+    const obj: any = {};
+    message.email !== undefined && (obj.email = message.email);
+    message.password !== undefined && (obj.password = message.password);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      });
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<AccountEmail>): AccountEmail {
     const message = { ...baseAccountEmail } as AccountEmail;
     message.vars = {};
@@ -3398,32 +2157,30 @@ export const AccountEmail = {
         if (value !== undefined) {
           message.vars[key] = String(value);
         }
-      })
+      });
     }
     return message;
   },
-  toJSON(message: AccountEmail): unknown {
-    const obj: any = {};
-    message.email !== undefined && (obj.email = message.email);
-    message.password !== undefined && (obj.password = message.password);
-    obj.vars = {};
-    if (message.vars) {
-      Object.entries(message.vars).forEach(([k, v]) => {
-        obj.vars[k] = v;
-      })
-    }
-    return obj;
-  },
 };
 
+const baseAccountEmail_VarsEntry: object = { key: "", value: "" };
+
 export const AccountEmail_VarsEntry = {
-  encode(message: AccountEmail_VarsEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: AccountEmail_VarsEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountEmail_VarsEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountEmail_VarsEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountEmail_VarsEntry } as AccountEmail_VarsEntry;
     while (reader.pos < end) {
@@ -3442,6 +2199,7 @@ export const AccountEmail_VarsEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountEmail_VarsEntry {
     const message = { ...baseAccountEmail_VarsEntry } as AccountEmail_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
@@ -3452,7 +2210,17 @@ export const AccountEmail_VarsEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AccountEmail_VarsEntry>): AccountEmail_VarsEntry {
+
+  toJSON(message: AccountEmail_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AccountEmail_VarsEntry>
+  ): AccountEmail_VarsEntry {
     const message = { ...baseAccountEmail_VarsEntry } as AccountEmail_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
@@ -3462,24 +2230,26 @@ export const AccountEmail_VarsEntry = {
     }
     return message;
   },
-  toJSON(message: AccountEmail_VarsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
 };
+
+const baseAccountFacebook: object = { token: "" };
 
 export const AccountFacebook = {
   encode(message: AccountFacebook, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.token);
+    if (message.token !== "") {
+      writer.uint32(10).string(message.token);
+    }
     Object.entries(message.vars).forEach(([key, value]) => {
-      AccountFacebook_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
-    })
+      AccountFacebook_VarsEntry.encode(
+        { key: key as any, value },
+        writer.uint32(18).fork()
+      ).ldelim();
+    });
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountFacebook {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountFacebook {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountFacebook } as AccountFacebook;
     message.vars = {};
@@ -3490,7 +2260,10 @@ export const AccountFacebook = {
           message.token = reader.string();
           break;
         case 2:
-          const entry2 = AccountFacebook_VarsEntry.decode(reader, reader.uint32());
+          const entry2 = AccountFacebook_VarsEntry.decode(
+            reader,
+            reader.uint32()
+          );
           if (entry2.value !== undefined) {
             message.vars[entry2.key] = entry2.value;
           }
@@ -3502,6 +2275,7 @@ export const AccountFacebook = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountFacebook {
     const message = { ...baseAccountFacebook } as AccountFacebook;
     message.vars = {};
@@ -3511,10 +2285,23 @@ export const AccountFacebook = {
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
         message.vars[key] = String(value);
-      })
+      });
     }
     return message;
   },
+
+  toJSON(message: AccountFacebook): unknown {
+    const obj: any = {};
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      });
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<AccountFacebook>): AccountFacebook {
     const message = { ...baseAccountFacebook } as AccountFacebook;
     message.vars = {};
@@ -3526,33 +2313,37 @@ export const AccountFacebook = {
         if (value !== undefined) {
           message.vars[key] = String(value);
         }
-      })
+      });
     }
     return message;
   },
-  toJSON(message: AccountFacebook): unknown {
-    const obj: any = {};
-    message.token !== undefined && (obj.token = message.token);
-    obj.vars = {};
-    if (message.vars) {
-      Object.entries(message.vars).forEach(([k, v]) => {
-        obj.vars[k] = v;
-      })
-    }
-    return obj;
-  },
 };
 
+const baseAccountFacebook_VarsEntry: object = { key: "", value: "" };
+
 export const AccountFacebook_VarsEntry = {
-  encode(message: AccountFacebook_VarsEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: AccountFacebook_VarsEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountFacebook_VarsEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AccountFacebook_VarsEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAccountFacebook_VarsEntry } as AccountFacebook_VarsEntry;
+    const message = {
+      ...baseAccountFacebook_VarsEntry,
+    } as AccountFacebook_VarsEntry;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -3569,8 +2360,11 @@ export const AccountFacebook_VarsEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountFacebook_VarsEntry {
-    const message = { ...baseAccountFacebook_VarsEntry } as AccountFacebook_VarsEntry;
+    const message = {
+      ...baseAccountFacebook_VarsEntry,
+    } as AccountFacebook_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
     }
@@ -3579,8 +2373,20 @@ export const AccountFacebook_VarsEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AccountFacebook_VarsEntry>): AccountFacebook_VarsEntry {
-    const message = { ...baseAccountFacebook_VarsEntry } as AccountFacebook_VarsEntry;
+
+  toJSON(message: AccountFacebook_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AccountFacebook_VarsEntry>
+  ): AccountFacebook_VarsEntry {
+    const message = {
+      ...baseAccountFacebook_VarsEntry,
+    } as AccountFacebook_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
     }
@@ -3589,26 +2395,36 @@ export const AccountFacebook_VarsEntry = {
     }
     return message;
   },
-  toJSON(message: AccountFacebook_VarsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
 };
 
+const baseAccountFacebookInstantGame: object = { signed_player_info: "" };
+
 export const AccountFacebookInstantGame = {
-  encode(message: AccountFacebookInstantGame, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.signed_player_info);
+  encode(
+    message: AccountFacebookInstantGame,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.signed_player_info !== "") {
+      writer.uint32(10).string(message.signed_player_info);
+    }
     Object.entries(message.vars).forEach(([key, value]) => {
-      AccountFacebookInstantGame_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
-    })
+      AccountFacebookInstantGame_VarsEntry.encode(
+        { key: key as any, value },
+        writer.uint32(18).fork()
+      ).ldelim();
+    });
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountFacebookInstantGame {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AccountFacebookInstantGame {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAccountFacebookInstantGame } as AccountFacebookInstantGame;
+    const message = {
+      ...baseAccountFacebookInstantGame,
+    } as AccountFacebookInstantGame;
     message.vars = {};
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3617,7 +2433,10 @@ export const AccountFacebookInstantGame = {
           message.signed_player_info = reader.string();
           break;
         case 2:
-          const entry2 = AccountFacebookInstantGame_VarsEntry.decode(reader, reader.uint32());
+          const entry2 = AccountFacebookInstantGame_VarsEntry.decode(
+            reader,
+            reader.uint32()
+          );
           if (entry2.value !== undefined) {
             message.vars[entry2.key] = entry2.value;
           }
@@ -3629,23 +2448,50 @@ export const AccountFacebookInstantGame = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountFacebookInstantGame {
-    const message = { ...baseAccountFacebookInstantGame } as AccountFacebookInstantGame;
+    const message = {
+      ...baseAccountFacebookInstantGame,
+    } as AccountFacebookInstantGame;
     message.vars = {};
-    if (object.signed_player_info !== undefined && object.signed_player_info !== null) {
+    if (
+      object.signed_player_info !== undefined &&
+      object.signed_player_info !== null
+    ) {
       message.signed_player_info = String(object.signed_player_info);
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
         message.vars[key] = String(value);
-      })
+      });
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AccountFacebookInstantGame>): AccountFacebookInstantGame {
-    const message = { ...baseAccountFacebookInstantGame } as AccountFacebookInstantGame;
+
+  toJSON(message: AccountFacebookInstantGame): unknown {
+    const obj: any = {};
+    message.signed_player_info !== undefined &&
+      (obj.signed_player_info = message.signed_player_info);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      });
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AccountFacebookInstantGame>
+  ): AccountFacebookInstantGame {
+    const message = {
+      ...baseAccountFacebookInstantGame,
+    } as AccountFacebookInstantGame;
     message.vars = {};
-    if (object.signed_player_info !== undefined && object.signed_player_info !== null) {
+    if (
+      object.signed_player_info !== undefined &&
+      object.signed_player_info !== null
+    ) {
       message.signed_player_info = object.signed_player_info;
     }
     if (object.vars !== undefined && object.vars !== null) {
@@ -3653,33 +2499,37 @@ export const AccountFacebookInstantGame = {
         if (value !== undefined) {
           message.vars[key] = String(value);
         }
-      })
+      });
     }
     return message;
   },
-  toJSON(message: AccountFacebookInstantGame): unknown {
-    const obj: any = {};
-    message.signed_player_info !== undefined && (obj.signed_player_info = message.signed_player_info);
-    obj.vars = {};
-    if (message.vars) {
-      Object.entries(message.vars).forEach(([k, v]) => {
-        obj.vars[k] = v;
-      })
-    }
-    return obj;
-  },
 };
 
+const baseAccountFacebookInstantGame_VarsEntry: object = { key: "", value: "" };
+
 export const AccountFacebookInstantGame_VarsEntry = {
-  encode(message: AccountFacebookInstantGame_VarsEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: AccountFacebookInstantGame_VarsEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountFacebookInstantGame_VarsEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AccountFacebookInstantGame_VarsEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAccountFacebookInstantGame_VarsEntry } as AccountFacebookInstantGame_VarsEntry;
+    const message = {
+      ...baseAccountFacebookInstantGame_VarsEntry,
+    } as AccountFacebookInstantGame_VarsEntry;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -3696,8 +2546,11 @@ export const AccountFacebookInstantGame_VarsEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountFacebookInstantGame_VarsEntry {
-    const message = { ...baseAccountFacebookInstantGame_VarsEntry } as AccountFacebookInstantGame_VarsEntry;
+    const message = {
+      ...baseAccountFacebookInstantGame_VarsEntry,
+    } as AccountFacebookInstantGame_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
     }
@@ -3706,8 +2559,20 @@ export const AccountFacebookInstantGame_VarsEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AccountFacebookInstantGame_VarsEntry>): AccountFacebookInstantGame_VarsEntry {
-    const message = { ...baseAccountFacebookInstantGame_VarsEntry } as AccountFacebookInstantGame_VarsEntry;
+
+  toJSON(message: AccountFacebookInstantGame_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AccountFacebookInstantGame_VarsEntry>
+  ): AccountFacebookInstantGame_VarsEntry {
+    const message = {
+      ...baseAccountFacebookInstantGame_VarsEntry,
+    } as AccountFacebookInstantGame_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
     }
@@ -3716,29 +2581,48 @@ export const AccountFacebookInstantGame_VarsEntry = {
     }
     return message;
   },
-  toJSON(message: AccountFacebookInstantGame_VarsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
+};
+
+const baseAccountGameCenter: object = {
+  player_id: "",
+  bundle_id: "",
+  timestamp_seconds: 0,
+  salt: "",
+  signature: "",
+  public_key_url: "",
 };
 
 export const AccountGameCenter = {
   encode(message: AccountGameCenter, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.player_id);
-    writer.uint32(18).string(message.bundle_id);
-    writer.uint32(24).int64(message.timestamp_seconds);
-    writer.uint32(34).string(message.salt);
-    writer.uint32(42).string(message.signature);
-    writer.uint32(50).string(message.public_key_url);
+    if (message.player_id !== "") {
+      writer.uint32(10).string(message.player_id);
+    }
+    if (message.bundle_id !== "") {
+      writer.uint32(18).string(message.bundle_id);
+    }
+    if (message.timestamp_seconds !== 0) {
+      writer.uint32(24).int64(message.timestamp_seconds);
+    }
+    if (message.salt !== "") {
+      writer.uint32(34).string(message.salt);
+    }
+    if (message.signature !== "") {
+      writer.uint32(42).string(message.signature);
+    }
+    if (message.public_key_url !== "") {
+      writer.uint32(50).string(message.public_key_url);
+    }
     Object.entries(message.vars).forEach(([key, value]) => {
-      AccountGameCenter_VarsEntry.encode({ key: key as any, value }, writer.uint32(58).fork()).ldelim();
-    })
+      AccountGameCenter_VarsEntry.encode(
+        { key: key as any, value },
+        writer.uint32(58).fork()
+      ).ldelim();
+    });
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountGameCenter {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountGameCenter {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountGameCenter } as AccountGameCenter;
     message.vars = {};
@@ -3764,7 +2648,10 @@ export const AccountGameCenter = {
           message.public_key_url = reader.string();
           break;
         case 7:
-          const entry7 = AccountGameCenter_VarsEntry.decode(reader, reader.uint32());
+          const entry7 = AccountGameCenter_VarsEntry.decode(
+            reader,
+            reader.uint32()
+          );
           if (entry7.value !== undefined) {
             message.vars[entry7.key] = entry7.value;
           }
@@ -3776,6 +2663,7 @@ export const AccountGameCenter = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountGameCenter {
     const message = { ...baseAccountGameCenter } as AccountGameCenter;
     message.vars = {};
@@ -3785,7 +2673,10 @@ export const AccountGameCenter = {
     if (object.bundle_id !== undefined && object.bundle_id !== null) {
       message.bundle_id = String(object.bundle_id);
     }
-    if (object.timestamp_seconds !== undefined && object.timestamp_seconds !== null) {
+    if (
+      object.timestamp_seconds !== undefined &&
+      object.timestamp_seconds !== null
+    ) {
       message.timestamp_seconds = Number(object.timestamp_seconds);
     }
     if (object.salt !== undefined && object.salt !== null) {
@@ -3800,10 +2691,30 @@ export const AccountGameCenter = {
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
         message.vars[key] = String(value);
-      })
+      });
     }
     return message;
   },
+
+  toJSON(message: AccountGameCenter): unknown {
+    const obj: any = {};
+    message.player_id !== undefined && (obj.player_id = message.player_id);
+    message.bundle_id !== undefined && (obj.bundle_id = message.bundle_id);
+    message.timestamp_seconds !== undefined &&
+      (obj.timestamp_seconds = message.timestamp_seconds);
+    message.salt !== undefined && (obj.salt = message.salt);
+    message.signature !== undefined && (obj.signature = message.signature);
+    message.public_key_url !== undefined &&
+      (obj.public_key_url = message.public_key_url);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      });
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<AccountGameCenter>): AccountGameCenter {
     const message = { ...baseAccountGameCenter } as AccountGameCenter;
     message.vars = {};
@@ -3813,7 +2724,10 @@ export const AccountGameCenter = {
     if (object.bundle_id !== undefined && object.bundle_id !== null) {
       message.bundle_id = object.bundle_id;
     }
-    if (object.timestamp_seconds !== undefined && object.timestamp_seconds !== null) {
+    if (
+      object.timestamp_seconds !== undefined &&
+      object.timestamp_seconds !== null
+    ) {
       message.timestamp_seconds = object.timestamp_seconds;
     }
     if (object.salt !== undefined && object.salt !== null) {
@@ -3830,38 +2744,37 @@ export const AccountGameCenter = {
         if (value !== undefined) {
           message.vars[key] = String(value);
         }
-      })
+      });
     }
     return message;
   },
-  toJSON(message: AccountGameCenter): unknown {
-    const obj: any = {};
-    message.player_id !== undefined && (obj.player_id = message.player_id);
-    message.bundle_id !== undefined && (obj.bundle_id = message.bundle_id);
-    message.timestamp_seconds !== undefined && (obj.timestamp_seconds = message.timestamp_seconds);
-    message.salt !== undefined && (obj.salt = message.salt);
-    message.signature !== undefined && (obj.signature = message.signature);
-    message.public_key_url !== undefined && (obj.public_key_url = message.public_key_url);
-    obj.vars = {};
-    if (message.vars) {
-      Object.entries(message.vars).forEach(([k, v]) => {
-        obj.vars[k] = v;
-      })
-    }
-    return obj;
-  },
 };
 
+const baseAccountGameCenter_VarsEntry: object = { key: "", value: "" };
+
 export const AccountGameCenter_VarsEntry = {
-  encode(message: AccountGameCenter_VarsEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: AccountGameCenter_VarsEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountGameCenter_VarsEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AccountGameCenter_VarsEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAccountGameCenter_VarsEntry } as AccountGameCenter_VarsEntry;
+    const message = {
+      ...baseAccountGameCenter_VarsEntry,
+    } as AccountGameCenter_VarsEntry;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -3878,8 +2791,11 @@ export const AccountGameCenter_VarsEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountGameCenter_VarsEntry {
-    const message = { ...baseAccountGameCenter_VarsEntry } as AccountGameCenter_VarsEntry;
+    const message = {
+      ...baseAccountGameCenter_VarsEntry,
+    } as AccountGameCenter_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
     }
@@ -3888,8 +2804,20 @@ export const AccountGameCenter_VarsEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AccountGameCenter_VarsEntry>): AccountGameCenter_VarsEntry {
-    const message = { ...baseAccountGameCenter_VarsEntry } as AccountGameCenter_VarsEntry;
+
+  toJSON(message: AccountGameCenter_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AccountGameCenter_VarsEntry>
+  ): AccountGameCenter_VarsEntry {
+    const message = {
+      ...baseAccountGameCenter_VarsEntry,
+    } as AccountGameCenter_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
     }
@@ -3898,24 +2826,26 @@ export const AccountGameCenter_VarsEntry = {
     }
     return message;
   },
-  toJSON(message: AccountGameCenter_VarsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
 };
+
+const baseAccountGoogle: object = { token: "" };
 
 export const AccountGoogle = {
   encode(message: AccountGoogle, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.token);
+    if (message.token !== "") {
+      writer.uint32(10).string(message.token);
+    }
     Object.entries(message.vars).forEach(([key, value]) => {
-      AccountGoogle_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
-    })
+      AccountGoogle_VarsEntry.encode(
+        { key: key as any, value },
+        writer.uint32(18).fork()
+      ).ldelim();
+    });
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountGoogle {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountGoogle {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountGoogle } as AccountGoogle;
     message.vars = {};
@@ -3926,7 +2856,10 @@ export const AccountGoogle = {
           message.token = reader.string();
           break;
         case 2:
-          const entry2 = AccountGoogle_VarsEntry.decode(reader, reader.uint32());
+          const entry2 = AccountGoogle_VarsEntry.decode(
+            reader,
+            reader.uint32()
+          );
           if (entry2.value !== undefined) {
             message.vars[entry2.key] = entry2.value;
           }
@@ -3938,6 +2871,7 @@ export const AccountGoogle = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountGoogle {
     const message = { ...baseAccountGoogle } as AccountGoogle;
     message.vars = {};
@@ -3947,10 +2881,23 @@ export const AccountGoogle = {
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
         message.vars[key] = String(value);
-      })
+      });
     }
     return message;
   },
+
+  toJSON(message: AccountGoogle): unknown {
+    const obj: any = {};
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      });
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<AccountGoogle>): AccountGoogle {
     const message = { ...baseAccountGoogle } as AccountGoogle;
     message.vars = {};
@@ -3962,33 +2909,34 @@ export const AccountGoogle = {
         if (value !== undefined) {
           message.vars[key] = String(value);
         }
-      })
+      });
     }
     return message;
   },
-  toJSON(message: AccountGoogle): unknown {
-    const obj: any = {};
-    message.token !== undefined && (obj.token = message.token);
-    obj.vars = {};
-    if (message.vars) {
-      Object.entries(message.vars).forEach(([k, v]) => {
-        obj.vars[k] = v;
-      })
-    }
-    return obj;
-  },
 };
 
+const baseAccountGoogle_VarsEntry: object = { key: "", value: "" };
+
 export const AccountGoogle_VarsEntry = {
-  encode(message: AccountGoogle_VarsEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: AccountGoogle_VarsEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountGoogle_VarsEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountGoogle_VarsEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAccountGoogle_VarsEntry } as AccountGoogle_VarsEntry;
+    const message = {
+      ...baseAccountGoogle_VarsEntry,
+    } as AccountGoogle_VarsEntry;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -4005,8 +2953,11 @@ export const AccountGoogle_VarsEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountGoogle_VarsEntry {
-    const message = { ...baseAccountGoogle_VarsEntry } as AccountGoogle_VarsEntry;
+    const message = {
+      ...baseAccountGoogle_VarsEntry,
+    } as AccountGoogle_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
     }
@@ -4015,8 +2966,20 @@ export const AccountGoogle_VarsEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AccountGoogle_VarsEntry>): AccountGoogle_VarsEntry {
-    const message = { ...baseAccountGoogle_VarsEntry } as AccountGoogle_VarsEntry;
+
+  toJSON(message: AccountGoogle_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AccountGoogle_VarsEntry>
+  ): AccountGoogle_VarsEntry {
+    const message = {
+      ...baseAccountGoogle_VarsEntry,
+    } as AccountGoogle_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
     }
@@ -4025,24 +2988,26 @@ export const AccountGoogle_VarsEntry = {
     }
     return message;
   },
-  toJSON(message: AccountGoogle_VarsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
 };
+
+const baseAccountSteam: object = { token: "" };
 
 export const AccountSteam = {
   encode(message: AccountSteam, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.token);
+    if (message.token !== "") {
+      writer.uint32(10).string(message.token);
+    }
     Object.entries(message.vars).forEach(([key, value]) => {
-      AccountSteam_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
-    })
+      AccountSteam_VarsEntry.encode(
+        { key: key as any, value },
+        writer.uint32(18).fork()
+      ).ldelim();
+    });
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountSteam {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountSteam {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountSteam } as AccountSteam;
     message.vars = {};
@@ -4065,6 +3030,7 @@ export const AccountSteam = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountSteam {
     const message = { ...baseAccountSteam } as AccountSteam;
     message.vars = {};
@@ -4074,10 +3040,23 @@ export const AccountSteam = {
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
         message.vars[key] = String(value);
-      })
+      });
     }
     return message;
   },
+
+  toJSON(message: AccountSteam): unknown {
+    const obj: any = {};
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      });
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<AccountSteam>): AccountSteam {
     const message = { ...baseAccountSteam } as AccountSteam;
     message.vars = {};
@@ -4089,31 +3068,30 @@ export const AccountSteam = {
         if (value !== undefined) {
           message.vars[key] = String(value);
         }
-      })
+      });
     }
     return message;
   },
-  toJSON(message: AccountSteam): unknown {
-    const obj: any = {};
-    message.token !== undefined && (obj.token = message.token);
-    obj.vars = {};
-    if (message.vars) {
-      Object.entries(message.vars).forEach(([k, v]) => {
-        obj.vars[k] = v;
-      })
-    }
-    return obj;
-  },
 };
 
+const baseAccountSteam_VarsEntry: object = { key: "", value: "" };
+
 export const AccountSteam_VarsEntry = {
-  encode(message: AccountSteam_VarsEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: AccountSteam_VarsEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AccountSteam_VarsEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AccountSteam_VarsEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountSteam_VarsEntry } as AccountSteam_VarsEntry;
     while (reader.pos < end) {
@@ -4132,6 +3110,7 @@ export const AccountSteam_VarsEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): AccountSteam_VarsEntry {
     const message = { ...baseAccountSteam_VarsEntry } as AccountSteam_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
@@ -4142,7 +3121,17 @@ export const AccountSteam_VarsEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AccountSteam_VarsEntry>): AccountSteam_VarsEntry {
+
+  toJSON(message: AccountSteam_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AccountSteam_VarsEntry>
+  ): AccountSteam_VarsEntry {
     const message = { ...baseAccountSteam_VarsEntry } as AccountSteam_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
@@ -4152,13 +3141,9 @@ export const AccountSteam_VarsEntry = {
     }
     return message;
   },
-  toJSON(message: AccountSteam_VarsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
 };
+
+const baseAddFriendsRequest: object = { ids: "", usernames: "" };
 
 export const AddFriendsRequest = {
   encode(message: AddFriendsRequest, writer: Writer = Writer.create()): Writer {
@@ -4170,8 +3155,9 @@ export const AddFriendsRequest = {
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AddFriendsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AddFriendsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAddFriendsRequest } as AddFriendsRequest;
     message.ids = [];
@@ -4192,6 +3178,7 @@ export const AddFriendsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): AddFriendsRequest {
     const message = { ...baseAddFriendsRequest } as AddFriendsRequest;
     message.ids = [];
@@ -4208,6 +3195,22 @@ export const AddFriendsRequest = {
     }
     return message;
   },
+
+  toJSON(message: AddFriendsRequest): unknown {
+    const obj: any = {};
+    if (message.ids) {
+      obj.ids = message.ids.map((e) => e);
+    } else {
+      obj.ids = [];
+    }
+    if (message.usernames) {
+      obj.usernames = message.usernames.map((e) => e);
+    } else {
+      obj.usernames = [];
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<AddFriendsRequest>): AddFriendsRequest {
     const message = { ...baseAddFriendsRequest } as AddFriendsRequest;
     message.ids = [];
@@ -4224,32 +3227,26 @@ export const AddFriendsRequest = {
     }
     return message;
   },
-  toJSON(message: AddFriendsRequest): unknown {
-    const obj: any = {};
-    if (message.ids) {
-      obj.ids = message.ids.map(e => e);
-    } else {
-      obj.ids = [];
-    }
-    if (message.usernames) {
-      obj.usernames = message.usernames.map(e => e);
-    } else {
-      obj.usernames = [];
-    }
-    return obj;
-  },
 };
 
+const baseAddGroupUsersRequest: object = { group_id: "", user_ids: "" };
+
 export const AddGroupUsersRequest = {
-  encode(message: AddGroupUsersRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.group_id);
+  encode(
+    message: AddGroupUsersRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.group_id !== "") {
+      writer.uint32(10).string(message.group_id);
+    }
     for (const v of message.user_ids) {
       writer.uint32(18).string(v!);
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AddGroupUsersRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): AddGroupUsersRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAddGroupUsersRequest } as AddGroupUsersRequest;
     message.user_ids = [];
@@ -4269,6 +3266,7 @@ export const AddGroupUsersRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): AddGroupUsersRequest {
     const message = { ...baseAddGroupUsersRequest } as AddGroupUsersRequest;
     message.user_ids = [];
@@ -4282,6 +3280,18 @@ export const AddGroupUsersRequest = {
     }
     return message;
   },
+
+  toJSON(message: AddGroupUsersRequest): unknown {
+    const obj: any = {};
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    if (message.user_ids) {
+      obj.user_ids = message.user_ids.map((e) => e);
+    } else {
+      obj.user_ids = [];
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<AddGroupUsersRequest>): AddGroupUsersRequest {
     const message = { ...baseAddGroupUsersRequest } as AddGroupUsersRequest;
     message.user_ids = [];
@@ -4295,28 +3305,29 @@ export const AddGroupUsersRequest = {
     }
     return message;
   },
-  toJSON(message: AddGroupUsersRequest): unknown {
-    const obj: any = {};
-    message.group_id !== undefined && (obj.group_id = message.group_id);
-    if (message.user_ids) {
-      obj.user_ids = message.user_ids.map(e => e);
-    } else {
-      obj.user_ids = [];
-    }
-    return obj;
-  },
 };
 
+const baseSessionRefreshRequest: object = { token: "" };
+
 export const SessionRefreshRequest = {
-  encode(message: SessionRefreshRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.token);
+  encode(
+    message: SessionRefreshRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.token !== "") {
+      writer.uint32(10).string(message.token);
+    }
     Object.entries(message.vars).forEach(([key, value]) => {
-      SessionRefreshRequest_VarsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
-    })
+      SessionRefreshRequest_VarsEntry.encode(
+        { key: key as any, value },
+        writer.uint32(18).fork()
+      ).ldelim();
+    });
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): SessionRefreshRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): SessionRefreshRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseSessionRefreshRequest } as SessionRefreshRequest;
     message.vars = {};
@@ -4327,7 +3338,10 @@ export const SessionRefreshRequest = {
           message.token = reader.string();
           break;
         case 2:
-          const entry2 = SessionRefreshRequest_VarsEntry.decode(reader, reader.uint32());
+          const entry2 = SessionRefreshRequest_VarsEntry.decode(
+            reader,
+            reader.uint32()
+          );
           if (entry2.value !== undefined) {
             message.vars[entry2.key] = entry2.value;
           }
@@ -4339,6 +3353,7 @@ export const SessionRefreshRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): SessionRefreshRequest {
     const message = { ...baseSessionRefreshRequest } as SessionRefreshRequest;
     message.vars = {};
@@ -4348,11 +3363,26 @@ export const SessionRefreshRequest = {
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
         message.vars[key] = String(value);
-      })
+      });
     }
     return message;
   },
-  fromPartial(object: DeepPartial<SessionRefreshRequest>): SessionRefreshRequest {
+
+  toJSON(message: SessionRefreshRequest): unknown {
+    const obj: any = {};
+    message.token !== undefined && (obj.token = message.token);
+    obj.vars = {};
+    if (message.vars) {
+      Object.entries(message.vars).forEach(([k, v]) => {
+        obj.vars[k] = v;
+      });
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<SessionRefreshRequest>
+  ): SessionRefreshRequest {
     const message = { ...baseSessionRefreshRequest } as SessionRefreshRequest;
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
@@ -4363,33 +3393,37 @@ export const SessionRefreshRequest = {
         if (value !== undefined) {
           message.vars[key] = String(value);
         }
-      })
+      });
     }
     return message;
   },
-  toJSON(message: SessionRefreshRequest): unknown {
-    const obj: any = {};
-    message.token !== undefined && (obj.token = message.token);
-    obj.vars = {};
-    if (message.vars) {
-      Object.entries(message.vars).forEach(([k, v]) => {
-        obj.vars[k] = v;
-      })
-    }
-    return obj;
-  },
 };
 
+const baseSessionRefreshRequest_VarsEntry: object = { key: "", value: "" };
+
 export const SessionRefreshRequest_VarsEntry = {
-  encode(message: SessionRefreshRequest_VarsEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: SessionRefreshRequest_VarsEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): SessionRefreshRequest_VarsEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): SessionRefreshRequest_VarsEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseSessionRefreshRequest_VarsEntry } as SessionRefreshRequest_VarsEntry;
+    const message = {
+      ...baseSessionRefreshRequest_VarsEntry,
+    } as SessionRefreshRequest_VarsEntry;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -4406,8 +3440,11 @@ export const SessionRefreshRequest_VarsEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): SessionRefreshRequest_VarsEntry {
-    const message = { ...baseSessionRefreshRequest_VarsEntry } as SessionRefreshRequest_VarsEntry;
+    const message = {
+      ...baseSessionRefreshRequest_VarsEntry,
+    } as SessionRefreshRequest_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
     }
@@ -4416,8 +3453,20 @@ export const SessionRefreshRequest_VarsEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<SessionRefreshRequest_VarsEntry>): SessionRefreshRequest_VarsEntry {
-    const message = { ...baseSessionRefreshRequest_VarsEntry } as SessionRefreshRequest_VarsEntry;
+
+  toJSON(message: SessionRefreshRequest_VarsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<SessionRefreshRequest_VarsEntry>
+  ): SessionRefreshRequest_VarsEntry {
+    const message = {
+      ...baseSessionRefreshRequest_VarsEntry,
+    } as SessionRefreshRequest_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
     }
@@ -4426,29 +3475,39 @@ export const SessionRefreshRequest_VarsEntry = {
     }
     return message;
   },
-  toJSON(message: SessionRefreshRequest_VarsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
 };
 
+const baseAuthenticateAppleRequest: object = { username: "" };
+
 export const AuthenticateAppleRequest = {
-  encode(message: AuthenticateAppleRequest, writer: Writer = Writer.create()): Writer {
-    if (message.account !== undefined && message.account !== undefined) {
+  encode(
+    message: AuthenticateAppleRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
       AccountApple.encode(message.account, writer.uint32(10).fork()).ldelim();
     }
-    if (message.create !== undefined && message.create !== undefined) {
-      BoolValue.encode({ value: message.create! }, writer.uint32(18).fork()).ldelim();
+    if (message.create !== undefined) {
+      BoolValue.encode(
+        { value: message.create! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(26).string(message.username);
+    if (message.username !== "") {
+      writer.uint32(26).string(message.username);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AuthenticateAppleRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AuthenticateAppleRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAuthenticateAppleRequest } as AuthenticateAppleRequest;
+    const message = {
+      ...baseAuthenticateAppleRequest,
+    } as AuthenticateAppleRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -4468,8 +3527,11 @@ export const AuthenticateAppleRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): AuthenticateAppleRequest {
-    const message = { ...baseAuthenticateAppleRequest } as AuthenticateAppleRequest;
+    const message = {
+      ...baseAuthenticateAppleRequest,
+    } as AuthenticateAppleRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountApple.fromJSON(object.account);
     }
@@ -4481,8 +3543,24 @@ export const AuthenticateAppleRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AuthenticateAppleRequest>): AuthenticateAppleRequest {
-    const message = { ...baseAuthenticateAppleRequest } as AuthenticateAppleRequest;
+
+  toJSON(message: AuthenticateAppleRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountApple.toJSON(message.account)
+        : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AuthenticateAppleRequest>
+  ): AuthenticateAppleRequest {
+    const message = {
+      ...baseAuthenticateAppleRequest,
+    } as AuthenticateAppleRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountApple.fromPartial(object.account);
     }
@@ -4494,30 +3572,39 @@ export const AuthenticateAppleRequest = {
     }
     return message;
   },
-  toJSON(message: AuthenticateAppleRequest): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? AccountApple.toJSON(message.account) : undefined);
-    message.create !== undefined && (obj.create = message.create);
-    message.username !== undefined && (obj.username = message.username);
-    return obj;
-  },
 };
 
+const baseAuthenticateCustomRequest: object = { username: "" };
+
 export const AuthenticateCustomRequest = {
-  encode(message: AuthenticateCustomRequest, writer: Writer = Writer.create()): Writer {
-    if (message.account !== undefined && message.account !== undefined) {
+  encode(
+    message: AuthenticateCustomRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
       AccountCustom.encode(message.account, writer.uint32(10).fork()).ldelim();
     }
-    if (message.create !== undefined && message.create !== undefined) {
-      BoolValue.encode({ value: message.create! }, writer.uint32(18).fork()).ldelim();
+    if (message.create !== undefined) {
+      BoolValue.encode(
+        { value: message.create! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(26).string(message.username);
+    if (message.username !== "") {
+      writer.uint32(26).string(message.username);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AuthenticateCustomRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AuthenticateCustomRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAuthenticateCustomRequest } as AuthenticateCustomRequest;
+    const message = {
+      ...baseAuthenticateCustomRequest,
+    } as AuthenticateCustomRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -4537,8 +3624,11 @@ export const AuthenticateCustomRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): AuthenticateCustomRequest {
-    const message = { ...baseAuthenticateCustomRequest } as AuthenticateCustomRequest;
+    const message = {
+      ...baseAuthenticateCustomRequest,
+    } as AuthenticateCustomRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountCustom.fromJSON(object.account);
     }
@@ -4550,8 +3640,24 @@ export const AuthenticateCustomRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AuthenticateCustomRequest>): AuthenticateCustomRequest {
-    const message = { ...baseAuthenticateCustomRequest } as AuthenticateCustomRequest;
+
+  toJSON(message: AuthenticateCustomRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountCustom.toJSON(message.account)
+        : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AuthenticateCustomRequest>
+  ): AuthenticateCustomRequest {
+    const message = {
+      ...baseAuthenticateCustomRequest,
+    } as AuthenticateCustomRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountCustom.fromPartial(object.account);
     }
@@ -4563,30 +3669,39 @@ export const AuthenticateCustomRequest = {
     }
     return message;
   },
-  toJSON(message: AuthenticateCustomRequest): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? AccountCustom.toJSON(message.account) : undefined);
-    message.create !== undefined && (obj.create = message.create);
-    message.username !== undefined && (obj.username = message.username);
-    return obj;
-  },
 };
 
+const baseAuthenticateDeviceRequest: object = { username: "" };
+
 export const AuthenticateDeviceRequest = {
-  encode(message: AuthenticateDeviceRequest, writer: Writer = Writer.create()): Writer {
-    if (message.account !== undefined && message.account !== undefined) {
+  encode(
+    message: AuthenticateDeviceRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
       AccountDevice.encode(message.account, writer.uint32(10).fork()).ldelim();
     }
-    if (message.create !== undefined && message.create !== undefined) {
-      BoolValue.encode({ value: message.create! }, writer.uint32(18).fork()).ldelim();
+    if (message.create !== undefined) {
+      BoolValue.encode(
+        { value: message.create! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(26).string(message.username);
+    if (message.username !== "") {
+      writer.uint32(26).string(message.username);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AuthenticateDeviceRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AuthenticateDeviceRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAuthenticateDeviceRequest } as AuthenticateDeviceRequest;
+    const message = {
+      ...baseAuthenticateDeviceRequest,
+    } as AuthenticateDeviceRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -4606,8 +3721,11 @@ export const AuthenticateDeviceRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): AuthenticateDeviceRequest {
-    const message = { ...baseAuthenticateDeviceRequest } as AuthenticateDeviceRequest;
+    const message = {
+      ...baseAuthenticateDeviceRequest,
+    } as AuthenticateDeviceRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountDevice.fromJSON(object.account);
     }
@@ -4619,8 +3737,24 @@ export const AuthenticateDeviceRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AuthenticateDeviceRequest>): AuthenticateDeviceRequest {
-    const message = { ...baseAuthenticateDeviceRequest } as AuthenticateDeviceRequest;
+
+  toJSON(message: AuthenticateDeviceRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountDevice.toJSON(message.account)
+        : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AuthenticateDeviceRequest>
+  ): AuthenticateDeviceRequest {
+    const message = {
+      ...baseAuthenticateDeviceRequest,
+    } as AuthenticateDeviceRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountDevice.fromPartial(object.account);
     }
@@ -4632,30 +3766,39 @@ export const AuthenticateDeviceRequest = {
     }
     return message;
   },
-  toJSON(message: AuthenticateDeviceRequest): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? AccountDevice.toJSON(message.account) : undefined);
-    message.create !== undefined && (obj.create = message.create);
-    message.username !== undefined && (obj.username = message.username);
-    return obj;
-  },
 };
 
+const baseAuthenticateEmailRequest: object = { username: "" };
+
 export const AuthenticateEmailRequest = {
-  encode(message: AuthenticateEmailRequest, writer: Writer = Writer.create()): Writer {
-    if (message.account !== undefined && message.account !== undefined) {
+  encode(
+    message: AuthenticateEmailRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
       AccountEmail.encode(message.account, writer.uint32(10).fork()).ldelim();
     }
-    if (message.create !== undefined && message.create !== undefined) {
-      BoolValue.encode({ value: message.create! }, writer.uint32(18).fork()).ldelim();
+    if (message.create !== undefined) {
+      BoolValue.encode(
+        { value: message.create! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(26).string(message.username);
+    if (message.username !== "") {
+      writer.uint32(26).string(message.username);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AuthenticateEmailRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AuthenticateEmailRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAuthenticateEmailRequest } as AuthenticateEmailRequest;
+    const message = {
+      ...baseAuthenticateEmailRequest,
+    } as AuthenticateEmailRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -4675,8 +3818,11 @@ export const AuthenticateEmailRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): AuthenticateEmailRequest {
-    const message = { ...baseAuthenticateEmailRequest } as AuthenticateEmailRequest;
+    const message = {
+      ...baseAuthenticateEmailRequest,
+    } as AuthenticateEmailRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountEmail.fromJSON(object.account);
     }
@@ -4688,8 +3834,24 @@ export const AuthenticateEmailRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AuthenticateEmailRequest>): AuthenticateEmailRequest {
-    const message = { ...baseAuthenticateEmailRequest } as AuthenticateEmailRequest;
+
+  toJSON(message: AuthenticateEmailRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountEmail.toJSON(message.account)
+        : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AuthenticateEmailRequest>
+  ): AuthenticateEmailRequest {
+    const message = {
+      ...baseAuthenticateEmailRequest,
+    } as AuthenticateEmailRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountEmail.fromPartial(object.account);
     }
@@ -4701,33 +3863,48 @@ export const AuthenticateEmailRequest = {
     }
     return message;
   },
-  toJSON(message: AuthenticateEmailRequest): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? AccountEmail.toJSON(message.account) : undefined);
-    message.create !== undefined && (obj.create = message.create);
-    message.username !== undefined && (obj.username = message.username);
-    return obj;
-  },
 };
 
+const baseAuthenticateFacebookRequest: object = { username: "" };
+
 export const AuthenticateFacebookRequest = {
-  encode(message: AuthenticateFacebookRequest, writer: Writer = Writer.create()): Writer {
-    if (message.account !== undefined && message.account !== undefined) {
-      AccountFacebook.encode(message.account, writer.uint32(10).fork()).ldelim();
+  encode(
+    message: AuthenticateFacebookRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
+      AccountFacebook.encode(
+        message.account,
+        writer.uint32(10).fork()
+      ).ldelim();
     }
-    if (message.create !== undefined && message.create !== undefined) {
-      BoolValue.encode({ value: message.create! }, writer.uint32(18).fork()).ldelim();
+    if (message.create !== undefined) {
+      BoolValue.encode(
+        { value: message.create! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(26).string(message.username);
-    if (message.sync !== undefined && message.sync !== undefined) {
-      BoolValue.encode({ value: message.sync! }, writer.uint32(34).fork()).ldelim();
+    if (message.username !== "") {
+      writer.uint32(26).string(message.username);
+    }
+    if (message.sync !== undefined) {
+      BoolValue.encode(
+        { value: message.sync! },
+        writer.uint32(34).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AuthenticateFacebookRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AuthenticateFacebookRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAuthenticateFacebookRequest } as AuthenticateFacebookRequest;
+    const message = {
+      ...baseAuthenticateFacebookRequest,
+    } as AuthenticateFacebookRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -4750,8 +3927,11 @@ export const AuthenticateFacebookRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): AuthenticateFacebookRequest {
-    const message = { ...baseAuthenticateFacebookRequest } as AuthenticateFacebookRequest;
+    const message = {
+      ...baseAuthenticateFacebookRequest,
+    } as AuthenticateFacebookRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebook.fromJSON(object.account);
     }
@@ -4766,8 +3946,25 @@ export const AuthenticateFacebookRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AuthenticateFacebookRequest>): AuthenticateFacebookRequest {
-    const message = { ...baseAuthenticateFacebookRequest } as AuthenticateFacebookRequest;
+
+  toJSON(message: AuthenticateFacebookRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountFacebook.toJSON(message.account)
+        : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
+    message.sync !== undefined && (obj.sync = message.sync);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AuthenticateFacebookRequest>
+  ): AuthenticateFacebookRequest {
+    const message = {
+      ...baseAuthenticateFacebookRequest,
+    } as AuthenticateFacebookRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebook.fromPartial(object.account);
     }
@@ -4782,36 +3979,50 @@ export const AuthenticateFacebookRequest = {
     }
     return message;
   },
-  toJSON(message: AuthenticateFacebookRequest): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? AccountFacebook.toJSON(message.account) : undefined);
-    message.create !== undefined && (obj.create = message.create);
-    message.username !== undefined && (obj.username = message.username);
-    message.sync !== undefined && (obj.sync = message.sync);
-    return obj;
-  },
 };
 
+const baseAuthenticateFacebookInstantGameRequest: object = { username: "" };
+
 export const AuthenticateFacebookInstantGameRequest = {
-  encode(message: AuthenticateFacebookInstantGameRequest, writer: Writer = Writer.create()): Writer {
-    if (message.account !== undefined && message.account !== undefined) {
-      AccountFacebookInstantGame.encode(message.account, writer.uint32(10).fork()).ldelim();
+  encode(
+    message: AuthenticateFacebookInstantGameRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
+      AccountFacebookInstantGame.encode(
+        message.account,
+        writer.uint32(10).fork()
+      ).ldelim();
     }
-    if (message.create !== undefined && message.create !== undefined) {
-      BoolValue.encode({ value: message.create! }, writer.uint32(18).fork()).ldelim();
+    if (message.create !== undefined) {
+      BoolValue.encode(
+        { value: message.create! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(26).string(message.username);
+    if (message.username !== "") {
+      writer.uint32(26).string(message.username);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AuthenticateFacebookInstantGameRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AuthenticateFacebookInstantGameRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAuthenticateFacebookInstantGameRequest } as AuthenticateFacebookInstantGameRequest;
+    const message = {
+      ...baseAuthenticateFacebookInstantGameRequest,
+    } as AuthenticateFacebookInstantGameRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.account = AccountFacebookInstantGame.decode(reader, reader.uint32());
+          message.account = AccountFacebookInstantGame.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 2:
           message.create = BoolValue.decode(reader, reader.uint32()).value;
@@ -4826,8 +4037,11 @@ export const AuthenticateFacebookInstantGameRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): AuthenticateFacebookInstantGameRequest {
-    const message = { ...baseAuthenticateFacebookInstantGameRequest } as AuthenticateFacebookInstantGameRequest;
+    const message = {
+      ...baseAuthenticateFacebookInstantGameRequest,
+    } as AuthenticateFacebookInstantGameRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebookInstantGame.fromJSON(object.account);
     }
@@ -4839,8 +4053,24 @@ export const AuthenticateFacebookInstantGameRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AuthenticateFacebookInstantGameRequest>): AuthenticateFacebookInstantGameRequest {
-    const message = { ...baseAuthenticateFacebookInstantGameRequest } as AuthenticateFacebookInstantGameRequest;
+
+  toJSON(message: AuthenticateFacebookInstantGameRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountFacebookInstantGame.toJSON(message.account)
+        : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AuthenticateFacebookInstantGameRequest>
+  ): AuthenticateFacebookInstantGameRequest {
+    const message = {
+      ...baseAuthenticateFacebookInstantGameRequest,
+    } as AuthenticateFacebookInstantGameRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebookInstantGame.fromPartial(object.account);
     }
@@ -4852,30 +4082,42 @@ export const AuthenticateFacebookInstantGameRequest = {
     }
     return message;
   },
-  toJSON(message: AuthenticateFacebookInstantGameRequest): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? AccountFacebookInstantGame.toJSON(message.account) : undefined);
-    message.create !== undefined && (obj.create = message.create);
-    message.username !== undefined && (obj.username = message.username);
-    return obj;
-  },
 };
 
+const baseAuthenticateGameCenterRequest: object = { username: "" };
+
 export const AuthenticateGameCenterRequest = {
-  encode(message: AuthenticateGameCenterRequest, writer: Writer = Writer.create()): Writer {
-    if (message.account !== undefined && message.account !== undefined) {
-      AccountGameCenter.encode(message.account, writer.uint32(10).fork()).ldelim();
+  encode(
+    message: AuthenticateGameCenterRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
+      AccountGameCenter.encode(
+        message.account,
+        writer.uint32(10).fork()
+      ).ldelim();
     }
-    if (message.create !== undefined && message.create !== undefined) {
-      BoolValue.encode({ value: message.create! }, writer.uint32(18).fork()).ldelim();
+    if (message.create !== undefined) {
+      BoolValue.encode(
+        { value: message.create! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(26).string(message.username);
+    if (message.username !== "") {
+      writer.uint32(26).string(message.username);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AuthenticateGameCenterRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AuthenticateGameCenterRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAuthenticateGameCenterRequest } as AuthenticateGameCenterRequest;
+    const message = {
+      ...baseAuthenticateGameCenterRequest,
+    } as AuthenticateGameCenterRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -4895,8 +4137,11 @@ export const AuthenticateGameCenterRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): AuthenticateGameCenterRequest {
-    const message = { ...baseAuthenticateGameCenterRequest } as AuthenticateGameCenterRequest;
+    const message = {
+      ...baseAuthenticateGameCenterRequest,
+    } as AuthenticateGameCenterRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountGameCenter.fromJSON(object.account);
     }
@@ -4908,8 +4153,24 @@ export const AuthenticateGameCenterRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AuthenticateGameCenterRequest>): AuthenticateGameCenterRequest {
-    const message = { ...baseAuthenticateGameCenterRequest } as AuthenticateGameCenterRequest;
+
+  toJSON(message: AuthenticateGameCenterRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountGameCenter.toJSON(message.account)
+        : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AuthenticateGameCenterRequest>
+  ): AuthenticateGameCenterRequest {
+    const message = {
+      ...baseAuthenticateGameCenterRequest,
+    } as AuthenticateGameCenterRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountGameCenter.fromPartial(object.account);
     }
@@ -4921,30 +4182,39 @@ export const AuthenticateGameCenterRequest = {
     }
     return message;
   },
-  toJSON(message: AuthenticateGameCenterRequest): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? AccountGameCenter.toJSON(message.account) : undefined);
-    message.create !== undefined && (obj.create = message.create);
-    message.username !== undefined && (obj.username = message.username);
-    return obj;
-  },
 };
 
+const baseAuthenticateGoogleRequest: object = { username: "" };
+
 export const AuthenticateGoogleRequest = {
-  encode(message: AuthenticateGoogleRequest, writer: Writer = Writer.create()): Writer {
-    if (message.account !== undefined && message.account !== undefined) {
+  encode(
+    message: AuthenticateGoogleRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
       AccountGoogle.encode(message.account, writer.uint32(10).fork()).ldelim();
     }
-    if (message.create !== undefined && message.create !== undefined) {
-      BoolValue.encode({ value: message.create! }, writer.uint32(18).fork()).ldelim();
+    if (message.create !== undefined) {
+      BoolValue.encode(
+        { value: message.create! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(26).string(message.username);
+    if (message.username !== "") {
+      writer.uint32(26).string(message.username);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AuthenticateGoogleRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AuthenticateGoogleRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAuthenticateGoogleRequest } as AuthenticateGoogleRequest;
+    const message = {
+      ...baseAuthenticateGoogleRequest,
+    } as AuthenticateGoogleRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -4964,8 +4234,11 @@ export const AuthenticateGoogleRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): AuthenticateGoogleRequest {
-    const message = { ...baseAuthenticateGoogleRequest } as AuthenticateGoogleRequest;
+    const message = {
+      ...baseAuthenticateGoogleRequest,
+    } as AuthenticateGoogleRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountGoogle.fromJSON(object.account);
     }
@@ -4977,8 +4250,24 @@ export const AuthenticateGoogleRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AuthenticateGoogleRequest>): AuthenticateGoogleRequest {
-    const message = { ...baseAuthenticateGoogleRequest } as AuthenticateGoogleRequest;
+
+  toJSON(message: AuthenticateGoogleRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountGoogle.toJSON(message.account)
+        : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AuthenticateGoogleRequest>
+  ): AuthenticateGoogleRequest {
+    const message = {
+      ...baseAuthenticateGoogleRequest,
+    } as AuthenticateGoogleRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountGoogle.fromPartial(object.account);
     }
@@ -4990,30 +4279,39 @@ export const AuthenticateGoogleRequest = {
     }
     return message;
   },
-  toJSON(message: AuthenticateGoogleRequest): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? AccountGoogle.toJSON(message.account) : undefined);
-    message.create !== undefined && (obj.create = message.create);
-    message.username !== undefined && (obj.username = message.username);
-    return obj;
-  },
 };
 
+const baseAuthenticateSteamRequest: object = { username: "" };
+
 export const AuthenticateSteamRequest = {
-  encode(message: AuthenticateSteamRequest, writer: Writer = Writer.create()): Writer {
-    if (message.account !== undefined && message.account !== undefined) {
+  encode(
+    message: AuthenticateSteamRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
       AccountSteam.encode(message.account, writer.uint32(10).fork()).ldelim();
     }
-    if (message.create !== undefined && message.create !== undefined) {
-      BoolValue.encode({ value: message.create! }, writer.uint32(18).fork()).ldelim();
+    if (message.create !== undefined) {
+      BoolValue.encode(
+        { value: message.create! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(26).string(message.username);
+    if (message.username !== "") {
+      writer.uint32(26).string(message.username);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): AuthenticateSteamRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): AuthenticateSteamRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAuthenticateSteamRequest } as AuthenticateSteamRequest;
+    const message = {
+      ...baseAuthenticateSteamRequest,
+    } as AuthenticateSteamRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -5033,8 +4331,11 @@ export const AuthenticateSteamRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): AuthenticateSteamRequest {
-    const message = { ...baseAuthenticateSteamRequest } as AuthenticateSteamRequest;
+    const message = {
+      ...baseAuthenticateSteamRequest,
+    } as AuthenticateSteamRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountSteam.fromJSON(object.account);
     }
@@ -5046,8 +4347,24 @@ export const AuthenticateSteamRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<AuthenticateSteamRequest>): AuthenticateSteamRequest {
-    const message = { ...baseAuthenticateSteamRequest } as AuthenticateSteamRequest;
+
+  toJSON(message: AuthenticateSteamRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountSteam.toJSON(message.account)
+        : undefined);
+    message.create !== undefined && (obj.create = message.create);
+    message.username !== undefined && (obj.username = message.username);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<AuthenticateSteamRequest>
+  ): AuthenticateSteamRequest {
+    const message = {
+      ...baseAuthenticateSteamRequest,
+    } as AuthenticateSteamRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountSteam.fromPartial(object.account);
     }
@@ -5059,25 +4376,26 @@ export const AuthenticateSteamRequest = {
     }
     return message;
   },
-  toJSON(message: AuthenticateSteamRequest): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? AccountSteam.toJSON(message.account) : undefined);
-    message.create !== undefined && (obj.create = message.create);
-    message.username !== undefined && (obj.username = message.username);
-    return obj;
-  },
 };
 
+const baseBanGroupUsersRequest: object = { group_id: "", user_ids: "" };
+
 export const BanGroupUsersRequest = {
-  encode(message: BanGroupUsersRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.group_id);
+  encode(
+    message: BanGroupUsersRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.group_id !== "") {
+      writer.uint32(10).string(message.group_id);
+    }
     for (const v of message.user_ids) {
       writer.uint32(18).string(v!);
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): BanGroupUsersRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): BanGroupUsersRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseBanGroupUsersRequest } as BanGroupUsersRequest;
     message.user_ids = [];
@@ -5097,6 +4415,7 @@ export const BanGroupUsersRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): BanGroupUsersRequest {
     const message = { ...baseBanGroupUsersRequest } as BanGroupUsersRequest;
     message.user_ids = [];
@@ -5110,6 +4429,18 @@ export const BanGroupUsersRequest = {
     }
     return message;
   },
+
+  toJSON(message: BanGroupUsersRequest): unknown {
+    const obj: any = {};
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    if (message.user_ids) {
+      obj.user_ids = message.user_ids.map((e) => e);
+    } else {
+      obj.user_ids = [];
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<BanGroupUsersRequest>): BanGroupUsersRequest {
     const message = { ...baseBanGroupUsersRequest } as BanGroupUsersRequest;
     message.user_ids = [];
@@ -5123,20 +4454,15 @@ export const BanGroupUsersRequest = {
     }
     return message;
   },
-  toJSON(message: BanGroupUsersRequest): unknown {
-    const obj: any = {};
-    message.group_id !== undefined && (obj.group_id = message.group_id);
-    if (message.user_ids) {
-      obj.user_ids = message.user_ids.map(e => e);
-    } else {
-      obj.user_ids = [];
-    }
-    return obj;
-  },
 };
 
+const baseBlockFriendsRequest: object = { ids: "", usernames: "" };
+
 export const BlockFriendsRequest = {
-  encode(message: BlockFriendsRequest, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: BlockFriendsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
     for (const v of message.ids) {
       writer.uint32(10).string(v!);
     }
@@ -5145,8 +4471,9 @@ export const BlockFriendsRequest = {
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): BlockFriendsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): BlockFriendsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseBlockFriendsRequest } as BlockFriendsRequest;
     message.ids = [];
@@ -5167,6 +4494,7 @@ export const BlockFriendsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): BlockFriendsRequest {
     const message = { ...baseBlockFriendsRequest } as BlockFriendsRequest;
     message.ids = [];
@@ -5183,6 +4511,22 @@ export const BlockFriendsRequest = {
     }
     return message;
   },
+
+  toJSON(message: BlockFriendsRequest): unknown {
+    const obj: any = {};
+    if (message.ids) {
+      obj.ids = message.ids.map((e) => e);
+    } else {
+      obj.ids = [];
+    }
+    if (message.usernames) {
+      obj.usernames = message.usernames.map((e) => e);
+    } else {
+      obj.usernames = [];
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<BlockFriendsRequest>): BlockFriendsRequest {
     const message = { ...baseBlockFriendsRequest } as BlockFriendsRequest;
     message.ids = [];
@@ -5199,49 +4543,78 @@ export const BlockFriendsRequest = {
     }
     return message;
   },
-  toJSON(message: BlockFriendsRequest): unknown {
-    const obj: any = {};
-    if (message.ids) {
-      obj.ids = message.ids.map(e => e);
-    } else {
-      obj.ids = [];
-    }
-    if (message.usernames) {
-      obj.usernames = message.usernames.map(e => e);
-    } else {
-      obj.usernames = [];
-    }
-    return obj;
-  },
+};
+
+const baseChannelMessage: object = {
+  channel_id: "",
+  message_id: "",
+  sender_id: "",
+  username: "",
+  content: "",
+  room_name: "",
+  group_id: "",
+  user_id_one: "",
+  user_id_two: "",
 };
 
 export const ChannelMessage = {
   encode(message: ChannelMessage, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.channel_id);
-    writer.uint32(18).string(message.message_id);
-    if (message.code !== undefined && message.code !== undefined) {
-      Int32Value.encode({ value: message.code! }, writer.uint32(26).fork()).ldelim();
+    if (message.channel_id !== "") {
+      writer.uint32(10).string(message.channel_id);
     }
-    writer.uint32(34).string(message.sender_id);
-    writer.uint32(42).string(message.username);
-    writer.uint32(50).string(message.content);
-    if (message.create_time !== undefined && message.create_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.create_time), writer.uint32(58).fork()).ldelim();
+    if (message.message_id !== "") {
+      writer.uint32(18).string(message.message_id);
     }
-    if (message.update_time !== undefined && message.update_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.update_time), writer.uint32(66).fork()).ldelim();
+    if (message.code !== undefined) {
+      Int32Value.encode(
+        { value: message.code! },
+        writer.uint32(26).fork()
+      ).ldelim();
     }
-    if (message.persistent !== undefined && message.persistent !== undefined) {
-      BoolValue.encode({ value: message.persistent! }, writer.uint32(74).fork()).ldelim();
+    if (message.sender_id !== "") {
+      writer.uint32(34).string(message.sender_id);
     }
-    writer.uint32(82).string(message.room_name);
-    writer.uint32(90).string(message.group_id);
-    writer.uint32(98).string(message.user_id_one);
-    writer.uint32(106).string(message.user_id_two);
+    if (message.username !== "") {
+      writer.uint32(42).string(message.username);
+    }
+    if (message.content !== "") {
+      writer.uint32(50).string(message.content);
+    }
+    if (message.create_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.create_time),
+        writer.uint32(58).fork()
+      ).ldelim();
+    }
+    if (message.update_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.update_time),
+        writer.uint32(66).fork()
+      ).ldelim();
+    }
+    if (message.persistent !== undefined) {
+      BoolValue.encode(
+        { value: message.persistent! },
+        writer.uint32(74).fork()
+      ).ldelim();
+    }
+    if (message.room_name !== "") {
+      writer.uint32(82).string(message.room_name);
+    }
+    if (message.group_id !== "") {
+      writer.uint32(90).string(message.group_id);
+    }
+    if (message.user_id_one !== "") {
+      writer.uint32(98).string(message.user_id_one);
+    }
+    if (message.user_id_two !== "") {
+      writer.uint32(106).string(message.user_id_two);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ChannelMessage {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): ChannelMessage {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseChannelMessage } as ChannelMessage;
     while (reader.pos < end) {
@@ -5266,10 +4639,14 @@ export const ChannelMessage = {
           message.content = reader.string();
           break;
         case 7:
-          message.create_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.create_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 8:
-          message.update_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.update_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 9:
           message.persistent = BoolValue.decode(reader, reader.uint32()).value;
@@ -5293,6 +4670,7 @@ export const ChannelMessage = {
     }
     return message;
   },
+
   fromJSON(object: any): ChannelMessage {
     const message = { ...baseChannelMessage } as ChannelMessage;
     if (object.channel_id !== undefined && object.channel_id !== null) {
@@ -5336,6 +4714,29 @@ export const ChannelMessage = {
     }
     return message;
   },
+
+  toJSON(message: ChannelMessage): unknown {
+    const obj: any = {};
+    message.channel_id !== undefined && (obj.channel_id = message.channel_id);
+    message.message_id !== undefined && (obj.message_id = message.message_id);
+    message.code !== undefined && (obj.code = message.code);
+    message.sender_id !== undefined && (obj.sender_id = message.sender_id);
+    message.username !== undefined && (obj.username = message.username);
+    message.content !== undefined && (obj.content = message.content);
+    message.create_time !== undefined &&
+      (obj.create_time = message.create_time.toISOString());
+    message.update_time !== undefined &&
+      (obj.update_time = message.update_time.toISOString());
+    message.persistent !== undefined && (obj.persistent = message.persistent);
+    message.room_name !== undefined && (obj.room_name = message.room_name);
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    message.user_id_one !== undefined &&
+      (obj.user_id_one = message.user_id_one);
+    message.user_id_two !== undefined &&
+      (obj.user_id_two = message.user_id_two);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<ChannelMessage>): ChannelMessage {
     const message = { ...baseChannelMessage } as ChannelMessage;
     if (object.channel_id !== undefined && object.channel_id !== null) {
@@ -5379,37 +4780,36 @@ export const ChannelMessage = {
     }
     return message;
   },
-  toJSON(message: ChannelMessage): unknown {
-    const obj: any = {};
-    message.channel_id !== undefined && (obj.channel_id = message.channel_id);
-    message.message_id !== undefined && (obj.message_id = message.message_id);
-    message.code !== undefined && (obj.code = message.code);
-    message.sender_id !== undefined && (obj.sender_id = message.sender_id);
-    message.username !== undefined && (obj.username = message.username);
-    message.content !== undefined && (obj.content = message.content);
-    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
-    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
-    message.persistent !== undefined && (obj.persistent = message.persistent);
-    message.room_name !== undefined && (obj.room_name = message.room_name);
-    message.group_id !== undefined && (obj.group_id = message.group_id);
-    message.user_id_one !== undefined && (obj.user_id_one = message.user_id_one);
-    message.user_id_two !== undefined && (obj.user_id_two = message.user_id_two);
-    return obj;
-  },
+};
+
+const baseChannelMessageList: object = {
+  next_cursor: "",
+  prev_cursor: "",
+  cacheable_cursor: "",
 };
 
 export const ChannelMessageList = {
-  encode(message: ChannelMessageList, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: ChannelMessageList,
+    writer: Writer = Writer.create()
+  ): Writer {
     for (const v of message.messages) {
       ChannelMessage.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    writer.uint32(18).string(message.next_cursor);
-    writer.uint32(26).string(message.prev_cursor);
-    writer.uint32(34).string(message.cacheable_cursor);
+    if (message.next_cursor !== "") {
+      writer.uint32(18).string(message.next_cursor);
+    }
+    if (message.prev_cursor !== "") {
+      writer.uint32(26).string(message.prev_cursor);
+    }
+    if (message.cacheable_cursor !== "") {
+      writer.uint32(34).string(message.cacheable_cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ChannelMessageList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): ChannelMessageList {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseChannelMessageList } as ChannelMessageList;
     message.messages = [];
@@ -5435,6 +4835,7 @@ export const ChannelMessageList = {
     }
     return message;
   },
+
   fromJSON(object: any): ChannelMessageList {
     const message = { ...baseChannelMessageList } as ChannelMessageList;
     message.messages = [];
@@ -5449,11 +4850,33 @@ export const ChannelMessageList = {
     if (object.prev_cursor !== undefined && object.prev_cursor !== null) {
       message.prev_cursor = String(object.prev_cursor);
     }
-    if (object.cacheable_cursor !== undefined && object.cacheable_cursor !== null) {
+    if (
+      object.cacheable_cursor !== undefined &&
+      object.cacheable_cursor !== null
+    ) {
       message.cacheable_cursor = String(object.cacheable_cursor);
     }
     return message;
   },
+
+  toJSON(message: ChannelMessageList): unknown {
+    const obj: any = {};
+    if (message.messages) {
+      obj.messages = message.messages.map((e) =>
+        e ? ChannelMessage.toJSON(e) : undefined
+      );
+    } else {
+      obj.messages = [];
+    }
+    message.next_cursor !== undefined &&
+      (obj.next_cursor = message.next_cursor);
+    message.prev_cursor !== undefined &&
+      (obj.prev_cursor = message.prev_cursor);
+    message.cacheable_cursor !== undefined &&
+      (obj.cacheable_cursor = message.cacheable_cursor);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<ChannelMessageList>): ChannelMessageList {
     const message = { ...baseChannelMessageList } as ChannelMessageList;
     message.messages = [];
@@ -5468,37 +4891,53 @@ export const ChannelMessageList = {
     if (object.prev_cursor !== undefined && object.prev_cursor !== null) {
       message.prev_cursor = object.prev_cursor;
     }
-    if (object.cacheable_cursor !== undefined && object.cacheable_cursor !== null) {
+    if (
+      object.cacheable_cursor !== undefined &&
+      object.cacheable_cursor !== null
+    ) {
       message.cacheable_cursor = object.cacheable_cursor;
     }
     return message;
   },
-  toJSON(message: ChannelMessageList): unknown {
-    const obj: any = {};
-    if (message.messages) {
-      obj.messages = message.messages.map(e => e ? ChannelMessage.toJSON(e) : undefined);
-    } else {
-      obj.messages = [];
-    }
-    message.next_cursor !== undefined && (obj.next_cursor = message.next_cursor);
-    message.prev_cursor !== undefined && (obj.prev_cursor = message.prev_cursor);
-    message.cacheable_cursor !== undefined && (obj.cacheable_cursor = message.cacheable_cursor);
-    return obj;
-  },
+};
+
+const baseCreateGroupRequest: object = {
+  name: "",
+  description: "",
+  lang_tag: "",
+  avatar_url: "",
+  open: false,
+  max_count: 0,
 };
 
 export const CreateGroupRequest = {
-  encode(message: CreateGroupRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.name);
-    writer.uint32(18).string(message.description);
-    writer.uint32(26).string(message.lang_tag);
-    writer.uint32(34).string(message.avatar_url);
-    writer.uint32(40).bool(message.open);
-    writer.uint32(48).int32(message.max_count);
+  encode(
+    message: CreateGroupRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.description !== "") {
+      writer.uint32(18).string(message.description);
+    }
+    if (message.lang_tag !== "") {
+      writer.uint32(26).string(message.lang_tag);
+    }
+    if (message.avatar_url !== "") {
+      writer.uint32(34).string(message.avatar_url);
+    }
+    if (message.open === true) {
+      writer.uint32(40).bool(message.open);
+    }
+    if (message.max_count !== 0) {
+      writer.uint32(48).int32(message.max_count);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): CreateGroupRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): CreateGroupRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseCreateGroupRequest } as CreateGroupRequest;
     while (reader.pos < end) {
@@ -5529,6 +4968,7 @@ export const CreateGroupRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): CreateGroupRequest {
     const message = { ...baseCreateGroupRequest } as CreateGroupRequest;
     if (object.name !== undefined && object.name !== null) {
@@ -5551,6 +4991,19 @@ export const CreateGroupRequest = {
     }
     return message;
   },
+
+  toJSON(message: CreateGroupRequest): unknown {
+    const obj: any = {};
+    message.name !== undefined && (obj.name = message.name);
+    message.description !== undefined &&
+      (obj.description = message.description);
+    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
+    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
+    message.open !== undefined && (obj.open = message.open);
+    message.max_count !== undefined && (obj.max_count = message.max_count);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<CreateGroupRequest>): CreateGroupRequest {
     const message = { ...baseCreateGroupRequest } as CreateGroupRequest;
     if (object.name !== undefined && object.name !== null) {
@@ -5573,20 +5026,15 @@ export const CreateGroupRequest = {
     }
     return message;
   },
-  toJSON(message: CreateGroupRequest): unknown {
-    const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
-    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
-    message.open !== undefined && (obj.open = message.open);
-    message.max_count !== undefined && (obj.max_count = message.max_count);
-    return obj;
-  },
 };
 
+const baseDeleteFriendsRequest: object = { ids: "", usernames: "" };
+
 export const DeleteFriendsRequest = {
-  encode(message: DeleteFriendsRequest, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: DeleteFriendsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
     for (const v of message.ids) {
       writer.uint32(10).string(v!);
     }
@@ -5595,8 +5043,9 @@ export const DeleteFriendsRequest = {
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): DeleteFriendsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): DeleteFriendsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseDeleteFriendsRequest } as DeleteFriendsRequest;
     message.ids = [];
@@ -5617,6 +5066,7 @@ export const DeleteFriendsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): DeleteFriendsRequest {
     const message = { ...baseDeleteFriendsRequest } as DeleteFriendsRequest;
     message.ids = [];
@@ -5633,6 +5083,22 @@ export const DeleteFriendsRequest = {
     }
     return message;
   },
+
+  toJSON(message: DeleteFriendsRequest): unknown {
+    const obj: any = {};
+    if (message.ids) {
+      obj.ids = message.ids.map((e) => e);
+    } else {
+      obj.ids = [];
+    }
+    if (message.usernames) {
+      obj.usernames = message.usernames.map((e) => e);
+    } else {
+      obj.usernames = [];
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<DeleteFriendsRequest>): DeleteFriendsRequest {
     const message = { ...baseDeleteFriendsRequest } as DeleteFriendsRequest;
     message.ids = [];
@@ -5649,29 +5115,23 @@ export const DeleteFriendsRequest = {
     }
     return message;
   },
-  toJSON(message: DeleteFriendsRequest): unknown {
-    const obj: any = {};
-    if (message.ids) {
-      obj.ids = message.ids.map(e => e);
-    } else {
-      obj.ids = [];
-    }
-    if (message.usernames) {
-      obj.usernames = message.usernames.map(e => e);
-    } else {
-      obj.usernames = [];
-    }
-    return obj;
-  },
 };
 
+const baseDeleteGroupRequest: object = { group_id: "" };
+
 export const DeleteGroupRequest = {
-  encode(message: DeleteGroupRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.group_id);
+  encode(
+    message: DeleteGroupRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.group_id !== "") {
+      writer.uint32(10).string(message.group_id);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): DeleteGroupRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): DeleteGroupRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseDeleteGroupRequest } as DeleteGroupRequest;
     while (reader.pos < end) {
@@ -5687,6 +5147,7 @@ export const DeleteGroupRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): DeleteGroupRequest {
     const message = { ...baseDeleteGroupRequest } as DeleteGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
@@ -5694,6 +5155,13 @@ export const DeleteGroupRequest = {
     }
     return message;
   },
+
+  toJSON(message: DeleteGroupRequest): unknown {
+    const obj: any = {};
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<DeleteGroupRequest>): DeleteGroupRequest {
     const message = { ...baseDeleteGroupRequest } as DeleteGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
@@ -5701,22 +5169,30 @@ export const DeleteGroupRequest = {
     }
     return message;
   },
-  toJSON(message: DeleteGroupRequest): unknown {
-    const obj: any = {};
-    message.group_id !== undefined && (obj.group_id = message.group_id);
-    return obj;
-  },
 };
 
+const baseDeleteLeaderboardRecordRequest: object = { leaderboard_id: "" };
+
 export const DeleteLeaderboardRecordRequest = {
-  encode(message: DeleteLeaderboardRecordRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.leaderboard_id);
+  encode(
+    message: DeleteLeaderboardRecordRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.leaderboard_id !== "") {
+      writer.uint32(10).string(message.leaderboard_id);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): DeleteLeaderboardRecordRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): DeleteLeaderboardRecordRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseDeleteLeaderboardRecordRequest } as DeleteLeaderboardRecordRequest;
+    const message = {
+      ...baseDeleteLeaderboardRecordRequest,
+    } as DeleteLeaderboardRecordRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -5730,38 +5206,59 @@ export const DeleteLeaderboardRecordRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): DeleteLeaderboardRecordRequest {
-    const message = { ...baseDeleteLeaderboardRecordRequest } as DeleteLeaderboardRecordRequest;
+    const message = {
+      ...baseDeleteLeaderboardRecordRequest,
+    } as DeleteLeaderboardRecordRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = String(object.leaderboard_id);
     }
     return message;
   },
-  fromPartial(object: DeepPartial<DeleteLeaderboardRecordRequest>): DeleteLeaderboardRecordRequest {
-    const message = { ...baseDeleteLeaderboardRecordRequest } as DeleteLeaderboardRecordRequest;
+
+  toJSON(message: DeleteLeaderboardRecordRequest): unknown {
+    const obj: any = {};
+    message.leaderboard_id !== undefined &&
+      (obj.leaderboard_id = message.leaderboard_id);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<DeleteLeaderboardRecordRequest>
+  ): DeleteLeaderboardRecordRequest {
+    const message = {
+      ...baseDeleteLeaderboardRecordRequest,
+    } as DeleteLeaderboardRecordRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = object.leaderboard_id;
     }
     return message;
   },
-  toJSON(message: DeleteLeaderboardRecordRequest): unknown {
-    const obj: any = {};
-    message.leaderboard_id !== undefined && (obj.leaderboard_id = message.leaderboard_id);
-    return obj;
-  },
 };
 
+const baseDeleteNotificationsRequest: object = { ids: "" };
+
 export const DeleteNotificationsRequest = {
-  encode(message: DeleteNotificationsRequest, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: DeleteNotificationsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
     for (const v of message.ids) {
       writer.uint32(10).string(v!);
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): DeleteNotificationsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): DeleteNotificationsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseDeleteNotificationsRequest } as DeleteNotificationsRequest;
+    const message = {
+      ...baseDeleteNotificationsRequest,
+    } as DeleteNotificationsRequest;
     message.ids = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -5776,8 +5273,11 @@ export const DeleteNotificationsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): DeleteNotificationsRequest {
-    const message = { ...baseDeleteNotificationsRequest } as DeleteNotificationsRequest;
+    const message = {
+      ...baseDeleteNotificationsRequest,
+    } as DeleteNotificationsRequest;
     message.ids = [];
     if (object.ids !== undefined && object.ids !== null) {
       for (const e of object.ids) {
@@ -5786,8 +5286,23 @@ export const DeleteNotificationsRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<DeleteNotificationsRequest>): DeleteNotificationsRequest {
-    const message = { ...baseDeleteNotificationsRequest } as DeleteNotificationsRequest;
+
+  toJSON(message: DeleteNotificationsRequest): unknown {
+    const obj: any = {};
+    if (message.ids) {
+      obj.ids = message.ids.map((e) => e);
+    } else {
+      obj.ids = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<DeleteNotificationsRequest>
+  ): DeleteNotificationsRequest {
+    const message = {
+      ...baseDeleteNotificationsRequest,
+    } as DeleteNotificationsRequest;
     message.ids = [];
     if (object.ids !== undefined && object.ids !== null) {
       for (const e of object.ids) {
@@ -5796,26 +5311,33 @@ export const DeleteNotificationsRequest = {
     }
     return message;
   },
-  toJSON(message: DeleteNotificationsRequest): unknown {
-    const obj: any = {};
-    if (message.ids) {
-      obj.ids = message.ids.map(e => e);
-    } else {
-      obj.ids = [];
-    }
-    return obj;
-  },
+};
+
+const baseDeleteStorageObjectId: object = {
+  collection: "",
+  key: "",
+  version: "",
 };
 
 export const DeleteStorageObjectId = {
-  encode(message: DeleteStorageObjectId, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.collection);
-    writer.uint32(18).string(message.key);
-    writer.uint32(26).string(message.version);
+  encode(
+    message: DeleteStorageObjectId,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.collection !== "") {
+      writer.uint32(10).string(message.collection);
+    }
+    if (message.key !== "") {
+      writer.uint32(18).string(message.key);
+    }
+    if (message.version !== "") {
+      writer.uint32(26).string(message.version);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): DeleteStorageObjectId {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): DeleteStorageObjectId {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseDeleteStorageObjectId } as DeleteStorageObjectId;
     while (reader.pos < end) {
@@ -5837,6 +5359,7 @@ export const DeleteStorageObjectId = {
     }
     return message;
   },
+
   fromJSON(object: any): DeleteStorageObjectId {
     const message = { ...baseDeleteStorageObjectId } as DeleteStorageObjectId;
     if (object.collection !== undefined && object.collection !== null) {
@@ -5850,7 +5373,18 @@ export const DeleteStorageObjectId = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<DeleteStorageObjectId>): DeleteStorageObjectId {
+
+  toJSON(message: DeleteStorageObjectId): unknown {
+    const obj: any = {};
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.key !== undefined && (obj.key = message.key);
+    message.version !== undefined && (obj.version = message.version);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<DeleteStorageObjectId>
+  ): DeleteStorageObjectId {
     const message = { ...baseDeleteStorageObjectId } as DeleteStorageObjectId;
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = object.collection;
@@ -5863,32 +5397,38 @@ export const DeleteStorageObjectId = {
     }
     return message;
   },
-  toJSON(message: DeleteStorageObjectId): unknown {
-    const obj: any = {};
-    message.collection !== undefined && (obj.collection = message.collection);
-    message.key !== undefined && (obj.key = message.key);
-    message.version !== undefined && (obj.version = message.version);
-    return obj;
-  },
 };
 
+const baseDeleteStorageObjectsRequest: object = {};
+
 export const DeleteStorageObjectsRequest = {
-  encode(message: DeleteStorageObjectsRequest, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: DeleteStorageObjectsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
     for (const v of message.object_ids) {
       DeleteStorageObjectId.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): DeleteStorageObjectsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): DeleteStorageObjectsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseDeleteStorageObjectsRequest } as DeleteStorageObjectsRequest;
+    const message = {
+      ...baseDeleteStorageObjectsRequest,
+    } as DeleteStorageObjectsRequest;
     message.object_ids = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.object_ids.push(DeleteStorageObjectId.decode(reader, reader.uint32()));
+          message.object_ids.push(
+            DeleteStorageObjectId.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -5897,8 +5437,11 @@ export const DeleteStorageObjectsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): DeleteStorageObjectsRequest {
-    const message = { ...baseDeleteStorageObjectsRequest } as DeleteStorageObjectsRequest;
+    const message = {
+      ...baseDeleteStorageObjectsRequest,
+    } as DeleteStorageObjectsRequest;
     message.object_ids = [];
     if (object.object_ids !== undefined && object.object_ids !== null) {
       for (const e of object.object_ids) {
@@ -5907,8 +5450,25 @@ export const DeleteStorageObjectsRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<DeleteStorageObjectsRequest>): DeleteStorageObjectsRequest {
-    const message = { ...baseDeleteStorageObjectsRequest } as DeleteStorageObjectsRequest;
+
+  toJSON(message: DeleteStorageObjectsRequest): unknown {
+    const obj: any = {};
+    if (message.object_ids) {
+      obj.object_ids = message.object_ids.map((e) =>
+        e ? DeleteStorageObjectId.toJSON(e) : undefined
+      );
+    } else {
+      obj.object_ids = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<DeleteStorageObjectsRequest>
+  ): DeleteStorageObjectsRequest {
+    const message = {
+      ...baseDeleteStorageObjectsRequest,
+    } as DeleteStorageObjectsRequest;
     message.object_ids = [];
     if (object.object_ids !== undefined && object.object_ids !== null) {
       for (const e of object.object_ids) {
@@ -5917,31 +5477,35 @@ export const DeleteStorageObjectsRequest = {
     }
     return message;
   },
-  toJSON(message: DeleteStorageObjectsRequest): unknown {
-    const obj: any = {};
-    if (message.object_ids) {
-      obj.object_ids = message.object_ids.map(e => e ? DeleteStorageObjectId.toJSON(e) : undefined);
-    } else {
-      obj.object_ids = [];
-    }
-    return obj;
-  },
 };
+
+const baseEvent: object = { name: "", external: false };
 
 export const Event = {
   encode(message: Event, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.name);
-    Object.entries(message.properties).forEach(([key, value]) => {
-      Event_PropertiesEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
-    })
-    if (message.timestamp !== undefined && message.timestamp !== undefined) {
-      Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(26).fork()).ldelim();
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
     }
-    writer.uint32(32).bool(message.external);
+    Object.entries(message.properties).forEach(([key, value]) => {
+      Event_PropertiesEntry.encode(
+        { key: key as any, value },
+        writer.uint32(18).fork()
+      ).ldelim();
+    });
+    if (message.timestamp !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.timestamp),
+        writer.uint32(26).fork()
+      ).ldelim();
+    }
+    if (message.external === true) {
+      writer.uint32(32).bool(message.external);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): Event {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): Event {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseEvent } as Event;
     message.properties = {};
@@ -5958,7 +5522,9 @@ export const Event = {
           }
           break;
         case 3:
-          message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.timestamp = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 4:
           message.external = reader.bool();
@@ -5970,6 +5536,7 @@ export const Event = {
     }
     return message;
   },
+
   fromJSON(object: any): Event {
     const message = { ...baseEvent } as Event;
     message.properties = {};
@@ -5979,7 +5546,7 @@ export const Event = {
     if (object.properties !== undefined && object.properties !== null) {
       Object.entries(object.properties).forEach(([key, value]) => {
         message.properties[key] = String(value);
-      })
+      });
     }
     if (object.timestamp !== undefined && object.timestamp !== null) {
       message.timestamp = fromJsonTimestamp(object.timestamp);
@@ -5989,6 +5556,22 @@ export const Event = {
     }
     return message;
   },
+
+  toJSON(message: Event): unknown {
+    const obj: any = {};
+    message.name !== undefined && (obj.name = message.name);
+    obj.properties = {};
+    if (message.properties) {
+      Object.entries(message.properties).forEach(([k, v]) => {
+        obj.properties[k] = v;
+      });
+    }
+    message.timestamp !== undefined &&
+      (obj.timestamp = message.timestamp.toISOString());
+    message.external !== undefined && (obj.external = message.external);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<Event>): Event {
     const message = { ...baseEvent } as Event;
     message.properties = {};
@@ -6000,7 +5583,7 @@ export const Event = {
         if (value !== undefined) {
           message.properties[key] = String(value);
         }
-      })
+      });
     }
     if (object.timestamp !== undefined && object.timestamp !== null) {
       message.timestamp = object.timestamp;
@@ -6010,29 +5593,26 @@ export const Event = {
     }
     return message;
   },
-  toJSON(message: Event): unknown {
-    const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    obj.properties = {};
-    if (message.properties) {
-      Object.entries(message.properties).forEach(([k, v]) => {
-        obj.properties[k] = v;
-      })
-    }
-    message.timestamp !== undefined && (obj.timestamp = message.timestamp !== undefined ? message.timestamp.toISOString() : null);
-    message.external !== undefined && (obj.external = message.external);
-    return obj;
-  },
 };
 
+const baseEvent_PropertiesEntry: object = { key: "", value: "" };
+
 export const Event_PropertiesEntry = {
-  encode(message: Event_PropertiesEntry, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.key);
-    writer.uint32(18).string(message.value);
+  encode(
+    message: Event_PropertiesEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): Event_PropertiesEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): Event_PropertiesEntry {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseEvent_PropertiesEntry } as Event_PropertiesEntry;
     while (reader.pos < end) {
@@ -6051,6 +5631,7 @@ export const Event_PropertiesEntry = {
     }
     return message;
   },
+
   fromJSON(object: any): Event_PropertiesEntry {
     const message = { ...baseEvent_PropertiesEntry } as Event_PropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
@@ -6061,7 +5642,17 @@ export const Event_PropertiesEntry = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<Event_PropertiesEntry>): Event_PropertiesEntry {
+
+  toJSON(message: Event_PropertiesEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<Event_PropertiesEntry>
+  ): Event_PropertiesEntry {
     const message = { ...baseEvent_PropertiesEntry } as Event_PropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
@@ -6071,29 +5662,32 @@ export const Event_PropertiesEntry = {
     }
     return message;
   },
-  toJSON(message: Event_PropertiesEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    return obj;
-  },
 };
+
+const baseFriend: object = {};
 
 export const Friend = {
   encode(message: Friend, writer: Writer = Writer.create()): Writer {
-    if (message.user !== undefined && message.user !== undefined) {
+    if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(10).fork()).ldelim();
     }
-    if (message.state !== undefined && message.state !== undefined) {
-      Int32Value.encode({ value: message.state! }, writer.uint32(18).fork()).ldelim();
+    if (message.state !== undefined) {
+      Int32Value.encode(
+        { value: message.state! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    if (message.update_time !== undefined && message.update_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.update_time), writer.uint32(26).fork()).ldelim();
+    if (message.update_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.update_time),
+        writer.uint32(26).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): Friend {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): Friend {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseFriend } as Friend;
     while (reader.pos < end) {
@@ -6106,7 +5700,9 @@ export const Friend = {
           message.state = Int32Value.decode(reader, reader.uint32()).value;
           break;
         case 3:
-          message.update_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.update_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -6115,6 +5711,7 @@ export const Friend = {
     }
     return message;
   },
+
   fromJSON(object: any): Friend {
     const message = { ...baseFriend } as Friend;
     if (object.user !== undefined && object.user !== null) {
@@ -6128,6 +5725,17 @@ export const Friend = {
     }
     return message;
   },
+
+  toJSON(message: Friend): unknown {
+    const obj: any = {};
+    message.user !== undefined &&
+      (obj.user = message.user ? User.toJSON(message.user) : undefined);
+    message.state !== undefined && (obj.state = message.state);
+    message.update_time !== undefined &&
+      (obj.update_time = message.update_time.toISOString());
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<Friend>): Friend {
     const message = { ...baseFriend } as Friend;
     if (object.user !== undefined && object.user !== null) {
@@ -6141,25 +5749,23 @@ export const Friend = {
     }
     return message;
   },
-  toJSON(message: Friend): unknown {
-    const obj: any = {};
-    message.user !== undefined && (obj.user = message.user ? User.toJSON(message.user) : undefined);
-    message.state !== undefined && (obj.state = message.state);
-    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
-    return obj;
-  },
 };
+
+const baseFriendList: object = { cursor: "" };
 
 export const FriendList = {
   encode(message: FriendList, writer: Writer = Writer.create()): Writer {
     for (const v of message.friends) {
       Friend.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    writer.uint32(18).string(message.cursor);
+    if (message.cursor !== "") {
+      writer.uint32(18).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): FriendList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): FriendList {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseFriendList } as FriendList;
     message.friends = [];
@@ -6179,6 +5785,7 @@ export const FriendList = {
     }
     return message;
   },
+
   fromJSON(object: any): FriendList {
     const message = { ...baseFriendList } as FriendList;
     message.friends = [];
@@ -6192,6 +5799,20 @@ export const FriendList = {
     }
     return message;
   },
+
+  toJSON(message: FriendList): unknown {
+    const obj: any = {};
+    if (message.friends) {
+      obj.friends = message.friends.map((e) =>
+        e ? Friend.toJSON(e) : undefined
+      );
+    } else {
+      obj.friends = [];
+    }
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<FriendList>): FriendList {
     const message = { ...baseFriendList } as FriendList;
     message.friends = [];
@@ -6205,16 +5826,12 @@ export const FriendList = {
     }
     return message;
   },
-  toJSON(message: FriendList): unknown {
-    const obj: any = {};
-    if (message.friends) {
-      obj.friends = message.friends.map(e => e ? Friend.toJSON(e) : undefined);
-    } else {
-      obj.friends = [];
-    }
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
+};
+
+const baseGetUsersRequest: object = {
+  ids: "",
+  usernames: "",
+  facebook_ids: "",
 };
 
 export const GetUsersRequest = {
@@ -6230,8 +5847,9 @@ export const GetUsersRequest = {
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): GetUsersRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): GetUsersRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGetUsersRequest } as GetUsersRequest;
     message.ids = [];
@@ -6256,6 +5874,7 @@ export const GetUsersRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): GetUsersRequest {
     const message = { ...baseGetUsersRequest } as GetUsersRequest;
     message.ids = [];
@@ -6278,6 +5897,27 @@ export const GetUsersRequest = {
     }
     return message;
   },
+
+  toJSON(message: GetUsersRequest): unknown {
+    const obj: any = {};
+    if (message.ids) {
+      obj.ids = message.ids.map((e) => e);
+    } else {
+      obj.ids = [];
+    }
+    if (message.usernames) {
+      obj.usernames = message.usernames.map((e) => e);
+    } else {
+      obj.usernames = [];
+    }
+    if (message.facebook_ids) {
+      obj.facebook_ids = message.facebook_ids.map((e) => e);
+    } else {
+      obj.facebook_ids = [];
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<GetUsersRequest>): GetUsersRequest {
     const message = { ...baseGetUsersRequest } as GetUsersRequest;
     message.ids = [];
@@ -6300,51 +5940,72 @@ export const GetUsersRequest = {
     }
     return message;
   },
-  toJSON(message: GetUsersRequest): unknown {
-    const obj: any = {};
-    if (message.ids) {
-      obj.ids = message.ids.map(e => e);
-    } else {
-      obj.ids = [];
-    }
-    if (message.usernames) {
-      obj.usernames = message.usernames.map(e => e);
-    } else {
-      obj.usernames = [];
-    }
-    if (message.facebook_ids) {
-      obj.facebook_ids = message.facebook_ids.map(e => e);
-    } else {
-      obj.facebook_ids = [];
-    }
-    return obj;
-  },
+};
+
+const baseGroup: object = {
+  id: "",
+  creator_id: "",
+  name: "",
+  description: "",
+  lang_tag: "",
+  metadata: "",
+  avatar_url: "",
+  edge_count: 0,
+  max_count: 0,
 };
 
 export const Group = {
   encode(message: Group, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.id);
-    writer.uint32(18).string(message.creator_id);
-    writer.uint32(26).string(message.name);
-    writer.uint32(34).string(message.description);
-    writer.uint32(42).string(message.lang_tag);
-    writer.uint32(50).string(message.metadata);
-    writer.uint32(58).string(message.avatar_url);
-    if (message.open !== undefined && message.open !== undefined) {
-      BoolValue.encode({ value: message.open! }, writer.uint32(66).fork()).ldelim();
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
-    writer.uint32(72).int32(message.edge_count);
-    writer.uint32(80).int32(message.max_count);
-    if (message.create_time !== undefined && message.create_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.create_time), writer.uint32(90).fork()).ldelim();
+    if (message.creator_id !== "") {
+      writer.uint32(18).string(message.creator_id);
     }
-    if (message.update_time !== undefined && message.update_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.update_time), writer.uint32(98).fork()).ldelim();
+    if (message.name !== "") {
+      writer.uint32(26).string(message.name);
+    }
+    if (message.description !== "") {
+      writer.uint32(34).string(message.description);
+    }
+    if (message.lang_tag !== "") {
+      writer.uint32(42).string(message.lang_tag);
+    }
+    if (message.metadata !== "") {
+      writer.uint32(50).string(message.metadata);
+    }
+    if (message.avatar_url !== "") {
+      writer.uint32(58).string(message.avatar_url);
+    }
+    if (message.open !== undefined) {
+      BoolValue.encode(
+        { value: message.open! },
+        writer.uint32(66).fork()
+      ).ldelim();
+    }
+    if (message.edge_count !== 0) {
+      writer.uint32(72).int32(message.edge_count);
+    }
+    if (message.max_count !== 0) {
+      writer.uint32(80).int32(message.max_count);
+    }
+    if (message.create_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.create_time),
+        writer.uint32(90).fork()
+      ).ldelim();
+    }
+    if (message.update_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.update_time),
+        writer.uint32(98).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): Group {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): Group {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGroup } as Group;
     while (reader.pos < end) {
@@ -6381,10 +6042,14 @@ export const Group = {
           message.max_count = reader.int32();
           break;
         case 11:
-          message.create_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.create_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 12:
-          message.update_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.update_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -6393,6 +6058,7 @@ export const Group = {
     }
     return message;
   },
+
   fromJSON(object: any): Group {
     const message = { ...baseGroup } as Group;
     if (object.id !== undefined && object.id !== null) {
@@ -6433,6 +6099,27 @@ export const Group = {
     }
     return message;
   },
+
+  toJSON(message: Group): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    message.creator_id !== undefined && (obj.creator_id = message.creator_id);
+    message.name !== undefined && (obj.name = message.name);
+    message.description !== undefined &&
+      (obj.description = message.description);
+    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
+    message.open !== undefined && (obj.open = message.open);
+    message.edge_count !== undefined && (obj.edge_count = message.edge_count);
+    message.max_count !== undefined && (obj.max_count = message.max_count);
+    message.create_time !== undefined &&
+      (obj.create_time = message.create_time.toISOString());
+    message.update_time !== undefined &&
+      (obj.update_time = message.update_time.toISOString());
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<Group>): Group {
     const message = { ...baseGroup } as Group;
     if (object.id !== undefined && object.id !== null) {
@@ -6473,34 +6160,23 @@ export const Group = {
     }
     return message;
   },
-  toJSON(message: Group): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    message.creator_id !== undefined && (obj.creator_id = message.creator_id);
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
-    message.open !== undefined && (obj.open = message.open);
-    message.edge_count !== undefined && (obj.edge_count = message.edge_count);
-    message.max_count !== undefined && (obj.max_count = message.max_count);
-    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
-    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
-    return obj;
-  },
 };
+
+const baseGroupList: object = { cursor: "" };
 
 export const GroupList = {
   encode(message: GroupList, writer: Writer = Writer.create()): Writer {
     for (const v of message.groups) {
       Group.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    writer.uint32(18).string(message.cursor);
+    if (message.cursor !== "") {
+      writer.uint32(18).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): GroupList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): GroupList {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGroupList } as GroupList;
     message.groups = [];
@@ -6520,6 +6196,7 @@ export const GroupList = {
     }
     return message;
   },
+
   fromJSON(object: any): GroupList {
     const message = { ...baseGroupList } as GroupList;
     message.groups = [];
@@ -6533,6 +6210,18 @@ export const GroupList = {
     }
     return message;
   },
+
+  toJSON(message: GroupList): unknown {
+    const obj: any = {};
+    if (message.groups) {
+      obj.groups = message.groups.map((e) => (e ? Group.toJSON(e) : undefined));
+    } else {
+      obj.groups = [];
+    }
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<GroupList>): GroupList {
     const message = { ...baseGroupList } as GroupList;
     message.groups = [];
@@ -6546,28 +6235,23 @@ export const GroupList = {
     }
     return message;
   },
-  toJSON(message: GroupList): unknown {
-    const obj: any = {};
-    if (message.groups) {
-      obj.groups = message.groups.map(e => e ? Group.toJSON(e) : undefined);
-    } else {
-      obj.groups = [];
-    }
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
 };
+
+const baseGroupUserList: object = { cursor: "" };
 
 export const GroupUserList = {
   encode(message: GroupUserList, writer: Writer = Writer.create()): Writer {
     for (const v of message.group_users) {
       GroupUserList_GroupUser.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    writer.uint32(18).string(message.cursor);
+    if (message.cursor !== "") {
+      writer.uint32(18).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): GroupUserList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): GroupUserList {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGroupUserList } as GroupUserList;
     message.group_users = [];
@@ -6575,7 +6259,9 @@ export const GroupUserList = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.group_users.push(GroupUserList_GroupUser.decode(reader, reader.uint32()));
+          message.group_users.push(
+            GroupUserList_GroupUser.decode(reader, reader.uint32())
+          );
           break;
         case 2:
           message.cursor = reader.string();
@@ -6587,6 +6273,7 @@ export const GroupUserList = {
     }
     return message;
   },
+
   fromJSON(object: any): GroupUserList {
     const message = { ...baseGroupUserList } as GroupUserList;
     message.group_users = [];
@@ -6600,6 +6287,20 @@ export const GroupUserList = {
     }
     return message;
   },
+
+  toJSON(message: GroupUserList): unknown {
+    const obj: any = {};
+    if (message.group_users) {
+      obj.group_users = message.group_users.map((e) =>
+        e ? GroupUserList_GroupUser.toJSON(e) : undefined
+      );
+    } else {
+      obj.group_users = [];
+    }
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<GroupUserList>): GroupUserList {
     const message = { ...baseGroupUserList } as GroupUserList;
     message.group_users = [];
@@ -6613,32 +6314,33 @@ export const GroupUserList = {
     }
     return message;
   },
-  toJSON(message: GroupUserList): unknown {
-    const obj: any = {};
-    if (message.group_users) {
-      obj.group_users = message.group_users.map(e => e ? GroupUserList_GroupUser.toJSON(e) : undefined);
-    } else {
-      obj.group_users = [];
-    }
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
 };
 
+const baseGroupUserList_GroupUser: object = {};
+
 export const GroupUserList_GroupUser = {
-  encode(message: GroupUserList_GroupUser, writer: Writer = Writer.create()): Writer {
-    if (message.user !== undefined && message.user !== undefined) {
+  encode(
+    message: GroupUserList_GroupUser,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(10).fork()).ldelim();
     }
-    if (message.state !== undefined && message.state !== undefined) {
-      Int32Value.encode({ value: message.state! }, writer.uint32(18).fork()).ldelim();
+    if (message.state !== undefined) {
+      Int32Value.encode(
+        { value: message.state! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): GroupUserList_GroupUser {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): GroupUserList_GroupUser {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseGroupUserList_GroupUser } as GroupUserList_GroupUser;
+    const message = {
+      ...baseGroupUserList_GroupUser,
+    } as GroupUserList_GroupUser;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -6655,8 +6357,11 @@ export const GroupUserList_GroupUser = {
     }
     return message;
   },
+
   fromJSON(object: any): GroupUserList_GroupUser {
-    const message = { ...baseGroupUserList_GroupUser } as GroupUserList_GroupUser;
+    const message = {
+      ...baseGroupUserList_GroupUser,
+    } as GroupUserList_GroupUser;
     if (object.user !== undefined && object.user !== null) {
       message.user = User.fromJSON(object.user);
     }
@@ -6665,8 +6370,21 @@ export const GroupUserList_GroupUser = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<GroupUserList_GroupUser>): GroupUserList_GroupUser {
-    const message = { ...baseGroupUserList_GroupUser } as GroupUserList_GroupUser;
+
+  toJSON(message: GroupUserList_GroupUser): unknown {
+    const obj: any = {};
+    message.user !== undefined &&
+      (obj.user = message.user ? User.toJSON(message.user) : undefined);
+    message.state !== undefined && (obj.state = message.state);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<GroupUserList_GroupUser>
+  ): GroupUserList_GroupUser {
+    const message = {
+      ...baseGroupUserList_GroupUser,
+    } as GroupUserList_GroupUser;
     if (object.user !== undefined && object.user !== null) {
       message.user = User.fromPartial(object.user);
     }
@@ -6675,28 +6393,39 @@ export const GroupUserList_GroupUser = {
     }
     return message;
   },
-  toJSON(message: GroupUserList_GroupUser): unknown {
-    const obj: any = {};
-    message.user !== undefined && (obj.user = message.user ? User.toJSON(message.user) : undefined);
-    message.state !== undefined && (obj.state = message.state);
-    return obj;
-  },
 };
 
+const baseImportFacebookFriendsRequest: object = {};
+
 export const ImportFacebookFriendsRequest = {
-  encode(message: ImportFacebookFriendsRequest, writer: Writer = Writer.create()): Writer {
-    if (message.account !== undefined && message.account !== undefined) {
-      AccountFacebook.encode(message.account, writer.uint32(10).fork()).ldelim();
+  encode(
+    message: ImportFacebookFriendsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
+      AccountFacebook.encode(
+        message.account,
+        writer.uint32(10).fork()
+      ).ldelim();
     }
-    if (message.reset !== undefined && message.reset !== undefined) {
-      BoolValue.encode({ value: message.reset! }, writer.uint32(18).fork()).ldelim();
+    if (message.reset !== undefined) {
+      BoolValue.encode(
+        { value: message.reset! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ImportFacebookFriendsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ImportFacebookFriendsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseImportFacebookFriendsRequest } as ImportFacebookFriendsRequest;
+    const message = {
+      ...baseImportFacebookFriendsRequest,
+    } as ImportFacebookFriendsRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -6713,8 +6442,11 @@ export const ImportFacebookFriendsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ImportFacebookFriendsRequest {
-    const message = { ...baseImportFacebookFriendsRequest } as ImportFacebookFriendsRequest;
+    const message = {
+      ...baseImportFacebookFriendsRequest,
+    } as ImportFacebookFriendsRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebook.fromJSON(object.account);
     }
@@ -6723,8 +6455,23 @@ export const ImportFacebookFriendsRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ImportFacebookFriendsRequest>): ImportFacebookFriendsRequest {
-    const message = { ...baseImportFacebookFriendsRequest } as ImportFacebookFriendsRequest;
+
+  toJSON(message: ImportFacebookFriendsRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountFacebook.toJSON(message.account)
+        : undefined);
+    message.reset !== undefined && (obj.reset = message.reset);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ImportFacebookFriendsRequest>
+  ): ImportFacebookFriendsRequest {
+    const message = {
+      ...baseImportFacebookFriendsRequest,
+    } as ImportFacebookFriendsRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebook.fromPartial(object.account);
     }
@@ -6733,21 +6480,20 @@ export const ImportFacebookFriendsRequest = {
     }
     return message;
   },
-  toJSON(message: ImportFacebookFriendsRequest): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? AccountFacebook.toJSON(message.account) : undefined);
-    message.reset !== undefined && (obj.reset = message.reset);
-    return obj;
-  },
 };
+
+const baseJoinGroupRequest: object = { group_id: "" };
 
 export const JoinGroupRequest = {
   encode(message: JoinGroupRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.group_id);
+    if (message.group_id !== "") {
+      writer.uint32(10).string(message.group_id);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): JoinGroupRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): JoinGroupRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseJoinGroupRequest } as JoinGroupRequest;
     while (reader.pos < end) {
@@ -6763,6 +6509,7 @@ export const JoinGroupRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): JoinGroupRequest {
     const message = { ...baseJoinGroupRequest } as JoinGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
@@ -6770,6 +6517,13 @@ export const JoinGroupRequest = {
     }
     return message;
   },
+
+  toJSON(message: JoinGroupRequest): unknown {
+    const obj: any = {};
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<JoinGroupRequest>): JoinGroupRequest {
     const message = { ...baseJoinGroupRequest } as JoinGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
@@ -6777,20 +6531,23 @@ export const JoinGroupRequest = {
     }
     return message;
   },
-  toJSON(message: JoinGroupRequest): unknown {
-    const obj: any = {};
-    message.group_id !== undefined && (obj.group_id = message.group_id);
-    return obj;
-  },
 };
 
+const baseJoinTournamentRequest: object = { tournament_id: "" };
+
 export const JoinTournamentRequest = {
-  encode(message: JoinTournamentRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.tournament_id);
+  encode(
+    message: JoinTournamentRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.tournament_id !== "") {
+      writer.uint32(10).string(message.tournament_id);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): JoinTournamentRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): JoinTournamentRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseJoinTournamentRequest } as JoinTournamentRequest;
     while (reader.pos < end) {
@@ -6806,6 +6563,7 @@ export const JoinTournamentRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): JoinTournamentRequest {
     const message = { ...baseJoinTournamentRequest } as JoinTournamentRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
@@ -6813,30 +6571,43 @@ export const JoinTournamentRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<JoinTournamentRequest>): JoinTournamentRequest {
+
+  toJSON(message: JoinTournamentRequest): unknown {
+    const obj: any = {};
+    message.tournament_id !== undefined &&
+      (obj.tournament_id = message.tournament_id);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<JoinTournamentRequest>
+  ): JoinTournamentRequest {
     const message = { ...baseJoinTournamentRequest } as JoinTournamentRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = object.tournament_id;
     }
     return message;
   },
-  toJSON(message: JoinTournamentRequest): unknown {
-    const obj: any = {};
-    message.tournament_id !== undefined && (obj.tournament_id = message.tournament_id);
-    return obj;
-  },
 };
 
+const baseKickGroupUsersRequest: object = { group_id: "", user_ids: "" };
+
 export const KickGroupUsersRequest = {
-  encode(message: KickGroupUsersRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.group_id);
+  encode(
+    message: KickGroupUsersRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.group_id !== "") {
+      writer.uint32(10).string(message.group_id);
+    }
     for (const v of message.user_ids) {
       writer.uint32(18).string(v!);
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): KickGroupUsersRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): KickGroupUsersRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseKickGroupUsersRequest } as KickGroupUsersRequest;
     message.user_ids = [];
@@ -6856,6 +6627,7 @@ export const KickGroupUsersRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): KickGroupUsersRequest {
     const message = { ...baseKickGroupUsersRequest } as KickGroupUsersRequest;
     message.user_ids = [];
@@ -6869,7 +6641,21 @@ export const KickGroupUsersRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<KickGroupUsersRequest>): KickGroupUsersRequest {
+
+  toJSON(message: KickGroupUsersRequest): unknown {
+    const obj: any = {};
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    if (message.user_ids) {
+      obj.user_ids = message.user_ids.map((e) => e);
+    } else {
+      obj.user_ids = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<KickGroupUsersRequest>
+  ): KickGroupUsersRequest {
     const message = { ...baseKickGroupUsersRequest } as KickGroupUsersRequest;
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
@@ -6882,44 +6668,74 @@ export const KickGroupUsersRequest = {
     }
     return message;
   },
-  toJSON(message: KickGroupUsersRequest): unknown {
-    const obj: any = {};
-    message.group_id !== undefined && (obj.group_id = message.group_id);
-    if (message.user_ids) {
-      obj.user_ids = message.user_ids.map(e => e);
-    } else {
-      obj.user_ids = [];
-    }
-    return obj;
-  },
+};
+
+const baseLeaderboardRecord: object = {
+  leaderboard_id: "",
+  owner_id: "",
+  score: 0,
+  subscore: 0,
+  num_score: 0,
+  metadata: "",
+  rank: 0,
+  max_num_score: 0,
 };
 
 export const LeaderboardRecord = {
   encode(message: LeaderboardRecord, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.leaderboard_id);
-    writer.uint32(18).string(message.owner_id);
-    if (message.username !== undefined && message.username !== undefined) {
-      StringValue.encode({ value: message.username! }, writer.uint32(26).fork()).ldelim();
+    if (message.leaderboard_id !== "") {
+      writer.uint32(10).string(message.leaderboard_id);
     }
-    writer.uint32(32).int64(message.score);
-    writer.uint32(40).int64(message.subscore);
-    writer.uint32(48).int32(message.num_score);
-    writer.uint32(58).string(message.metadata);
-    if (message.create_time !== undefined && message.create_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.create_time), writer.uint32(66).fork()).ldelim();
+    if (message.owner_id !== "") {
+      writer.uint32(18).string(message.owner_id);
     }
-    if (message.update_time !== undefined && message.update_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.update_time), writer.uint32(74).fork()).ldelim();
+    if (message.username !== undefined) {
+      StringValue.encode(
+        { value: message.username! },
+        writer.uint32(26).fork()
+      ).ldelim();
     }
-    if (message.expiry_time !== undefined && message.expiry_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.expiry_time), writer.uint32(82).fork()).ldelim();
+    if (message.score !== 0) {
+      writer.uint32(32).int64(message.score);
     }
-    writer.uint32(88).int64(message.rank);
-    writer.uint32(96).uint32(message.max_num_score);
+    if (message.subscore !== 0) {
+      writer.uint32(40).int64(message.subscore);
+    }
+    if (message.num_score !== 0) {
+      writer.uint32(48).int32(message.num_score);
+    }
+    if (message.metadata !== "") {
+      writer.uint32(58).string(message.metadata);
+    }
+    if (message.create_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.create_time),
+        writer.uint32(66).fork()
+      ).ldelim();
+    }
+    if (message.update_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.update_time),
+        writer.uint32(74).fork()
+      ).ldelim();
+    }
+    if (message.expiry_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.expiry_time),
+        writer.uint32(82).fork()
+      ).ldelim();
+    }
+    if (message.rank !== 0) {
+      writer.uint32(88).int64(message.rank);
+    }
+    if (message.max_num_score !== 0) {
+      writer.uint32(96).uint32(message.max_num_score);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): LeaderboardRecord {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): LeaderboardRecord {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseLeaderboardRecord } as LeaderboardRecord;
     while (reader.pos < end) {
@@ -6947,13 +6763,19 @@ export const LeaderboardRecord = {
           message.metadata = reader.string();
           break;
         case 8:
-          message.create_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.create_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 9:
-          message.update_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.update_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 10:
-          message.expiry_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.expiry_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 11:
           message.rank = longToNumber(reader.int64() as Long);
@@ -6968,6 +6790,7 @@ export const LeaderboardRecord = {
     }
     return message;
   },
+
   fromJSON(object: any): LeaderboardRecord {
     const message = { ...baseLeaderboardRecord } as LeaderboardRecord;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
@@ -7008,6 +6831,29 @@ export const LeaderboardRecord = {
     }
     return message;
   },
+
+  toJSON(message: LeaderboardRecord): unknown {
+    const obj: any = {};
+    message.leaderboard_id !== undefined &&
+      (obj.leaderboard_id = message.leaderboard_id);
+    message.owner_id !== undefined && (obj.owner_id = message.owner_id);
+    message.username !== undefined && (obj.username = message.username);
+    message.score !== undefined && (obj.score = message.score);
+    message.subscore !== undefined && (obj.subscore = message.subscore);
+    message.num_score !== undefined && (obj.num_score = message.num_score);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.create_time !== undefined &&
+      (obj.create_time = message.create_time.toISOString());
+    message.update_time !== undefined &&
+      (obj.update_time = message.update_time.toISOString());
+    message.expiry_time !== undefined &&
+      (obj.expiry_time = message.expiry_time.toISOString());
+    message.rank !== undefined && (obj.rank = message.rank);
+    message.max_num_score !== undefined &&
+      (obj.max_num_score = message.max_num_score);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<LeaderboardRecord>): LeaderboardRecord {
     const message = { ...baseLeaderboardRecord } as LeaderboardRecord;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
@@ -7048,38 +6894,32 @@ export const LeaderboardRecord = {
     }
     return message;
   },
-  toJSON(message: LeaderboardRecord): unknown {
-    const obj: any = {};
-    message.leaderboard_id !== undefined && (obj.leaderboard_id = message.leaderboard_id);
-    message.owner_id !== undefined && (obj.owner_id = message.owner_id);
-    message.username !== undefined && (obj.username = message.username);
-    message.score !== undefined && (obj.score = message.score);
-    message.subscore !== undefined && (obj.subscore = message.subscore);
-    message.num_score !== undefined && (obj.num_score = message.num_score);
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
-    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
-    message.expiry_time !== undefined && (obj.expiry_time = message.expiry_time !== undefined ? message.expiry_time.toISOString() : null);
-    message.rank !== undefined && (obj.rank = message.rank);
-    message.max_num_score !== undefined && (obj.max_num_score = message.max_num_score);
-    return obj;
-  },
 };
 
+const baseLeaderboardRecordList: object = { next_cursor: "", prev_cursor: "" };
+
 export const LeaderboardRecordList = {
-  encode(message: LeaderboardRecordList, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: LeaderboardRecordList,
+    writer: Writer = Writer.create()
+  ): Writer {
     for (const v of message.records) {
       LeaderboardRecord.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     for (const v of message.owner_records) {
       LeaderboardRecord.encode(v!, writer.uint32(18).fork()).ldelim();
     }
-    writer.uint32(26).string(message.next_cursor);
-    writer.uint32(34).string(message.prev_cursor);
+    if (message.next_cursor !== "") {
+      writer.uint32(26).string(message.next_cursor);
+    }
+    if (message.prev_cursor !== "") {
+      writer.uint32(34).string(message.prev_cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): LeaderboardRecordList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): LeaderboardRecordList {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseLeaderboardRecordList } as LeaderboardRecordList;
     message.records = [];
@@ -7088,10 +6928,14 @@ export const LeaderboardRecordList = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.records.push(LeaderboardRecord.decode(reader, reader.uint32()));
+          message.records.push(
+            LeaderboardRecord.decode(reader, reader.uint32())
+          );
           break;
         case 2:
-          message.owner_records.push(LeaderboardRecord.decode(reader, reader.uint32()));
+          message.owner_records.push(
+            LeaderboardRecord.decode(reader, reader.uint32())
+          );
           break;
         case 3:
           message.next_cursor = reader.string();
@@ -7106,6 +6950,7 @@ export const LeaderboardRecordList = {
     }
     return message;
   },
+
   fromJSON(object: any): LeaderboardRecordList {
     const message = { ...baseLeaderboardRecordList } as LeaderboardRecordList;
     message.records = [];
@@ -7128,7 +6973,33 @@ export const LeaderboardRecordList = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<LeaderboardRecordList>): LeaderboardRecordList {
+
+  toJSON(message: LeaderboardRecordList): unknown {
+    const obj: any = {};
+    if (message.records) {
+      obj.records = message.records.map((e) =>
+        e ? LeaderboardRecord.toJSON(e) : undefined
+      );
+    } else {
+      obj.records = [];
+    }
+    if (message.owner_records) {
+      obj.owner_records = message.owner_records.map((e) =>
+        e ? LeaderboardRecord.toJSON(e) : undefined
+      );
+    } else {
+      obj.owner_records = [];
+    }
+    message.next_cursor !== undefined &&
+      (obj.next_cursor = message.next_cursor);
+    message.prev_cursor !== undefined &&
+      (obj.prev_cursor = message.prev_cursor);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<LeaderboardRecordList>
+  ): LeaderboardRecordList {
     const message = { ...baseLeaderboardRecordList } as LeaderboardRecordList;
     message.records = [];
     message.owner_records = [];
@@ -7150,31 +7021,20 @@ export const LeaderboardRecordList = {
     }
     return message;
   },
-  toJSON(message: LeaderboardRecordList): unknown {
-    const obj: any = {};
-    if (message.records) {
-      obj.records = message.records.map(e => e ? LeaderboardRecord.toJSON(e) : undefined);
-    } else {
-      obj.records = [];
-    }
-    if (message.owner_records) {
-      obj.owner_records = message.owner_records.map(e => e ? LeaderboardRecord.toJSON(e) : undefined);
-    } else {
-      obj.owner_records = [];
-    }
-    message.next_cursor !== undefined && (obj.next_cursor = message.next_cursor);
-    message.prev_cursor !== undefined && (obj.prev_cursor = message.prev_cursor);
-    return obj;
-  },
 };
+
+const baseLeaveGroupRequest: object = { group_id: "" };
 
 export const LeaveGroupRequest = {
   encode(message: LeaveGroupRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.group_id);
+    if (message.group_id !== "") {
+      writer.uint32(10).string(message.group_id);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): LeaveGroupRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): LeaveGroupRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseLeaveGroupRequest } as LeaveGroupRequest;
     while (reader.pos < end) {
@@ -7190,6 +7050,7 @@ export const LeaveGroupRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): LeaveGroupRequest {
     const message = { ...baseLeaveGroupRequest } as LeaveGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
@@ -7197,6 +7058,13 @@ export const LeaveGroupRequest = {
     }
     return message;
   },
+
+  toJSON(message: LeaveGroupRequest): unknown {
+    const obj: any = {};
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<LeaveGroupRequest>): LeaveGroupRequest {
     const message = { ...baseLeaveGroupRequest } as LeaveGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
@@ -7204,25 +7072,32 @@ export const LeaveGroupRequest = {
     }
     return message;
   },
-  toJSON(message: LeaveGroupRequest): unknown {
-    const obj: any = {};
-    message.group_id !== undefined && (obj.group_id = message.group_id);
-    return obj;
-  },
 };
 
+const baseLinkFacebookRequest: object = {};
+
 export const LinkFacebookRequest = {
-  encode(message: LinkFacebookRequest, writer: Writer = Writer.create()): Writer {
-    if (message.account !== undefined && message.account !== undefined) {
-      AccountFacebook.encode(message.account, writer.uint32(10).fork()).ldelim();
+  encode(
+    message: LinkFacebookRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
+      AccountFacebook.encode(
+        message.account,
+        writer.uint32(10).fork()
+      ).ldelim();
     }
-    if (message.sync !== undefined && message.sync !== undefined) {
-      BoolValue.encode({ value: message.sync! }, writer.uint32(34).fork()).ldelim();
+    if (message.sync !== undefined) {
+      BoolValue.encode(
+        { value: message.sync! },
+        writer.uint32(34).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): LinkFacebookRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): LinkFacebookRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseLinkFacebookRequest } as LinkFacebookRequest;
     while (reader.pos < end) {
@@ -7241,6 +7116,7 @@ export const LinkFacebookRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): LinkFacebookRequest {
     const message = { ...baseLinkFacebookRequest } as LinkFacebookRequest;
     if (object.account !== undefined && object.account !== null) {
@@ -7251,6 +7127,17 @@ export const LinkFacebookRequest = {
     }
     return message;
   },
+
+  toJSON(message: LinkFacebookRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountFacebook.toJSON(message.account)
+        : undefined);
+    message.sync !== undefined && (obj.sync = message.sync);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<LinkFacebookRequest>): LinkFacebookRequest {
     const message = { ...baseLinkFacebookRequest } as LinkFacebookRequest;
     if (object.account !== undefined && object.account !== null) {
@@ -7261,30 +7148,45 @@ export const LinkFacebookRequest = {
     }
     return message;
   },
-  toJSON(message: LinkFacebookRequest): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? AccountFacebook.toJSON(message.account) : undefined);
-    message.sync !== undefined && (obj.sync = message.sync);
-    return obj;
-  },
 };
 
+const baseListChannelMessagesRequest: object = { channel_id: "", cursor: "" };
+
 export const ListChannelMessagesRequest = {
-  encode(message: ListChannelMessagesRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.channel_id);
-    if (message.limit !== undefined && message.limit !== undefined) {
-      Int32Value.encode({ value: message.limit! }, writer.uint32(18).fork()).ldelim();
+  encode(
+    message: ListChannelMessagesRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.channel_id !== "") {
+      writer.uint32(10).string(message.channel_id);
     }
-    if (message.forward !== undefined && message.forward !== undefined) {
-      BoolValue.encode({ value: message.forward! }, writer.uint32(26).fork()).ldelim();
+    if (message.limit !== undefined) {
+      Int32Value.encode(
+        { value: message.limit! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(34).string(message.cursor);
+    if (message.forward !== undefined) {
+      BoolValue.encode(
+        { value: message.forward! },
+        writer.uint32(26).fork()
+      ).ldelim();
+    }
+    if (message.cursor !== "") {
+      writer.uint32(34).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListChannelMessagesRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ListChannelMessagesRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseListChannelMessagesRequest } as ListChannelMessagesRequest;
+    const message = {
+      ...baseListChannelMessagesRequest,
+    } as ListChannelMessagesRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -7307,8 +7209,11 @@ export const ListChannelMessagesRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListChannelMessagesRequest {
-    const message = { ...baseListChannelMessagesRequest } as ListChannelMessagesRequest;
+    const message = {
+      ...baseListChannelMessagesRequest,
+    } as ListChannelMessagesRequest;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = String(object.channel_id);
     }
@@ -7323,8 +7228,22 @@ export const ListChannelMessagesRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ListChannelMessagesRequest>): ListChannelMessagesRequest {
-    const message = { ...baseListChannelMessagesRequest } as ListChannelMessagesRequest;
+
+  toJSON(message: ListChannelMessagesRequest): unknown {
+    const obj: any = {};
+    message.channel_id !== undefined && (obj.channel_id = message.channel_id);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.forward !== undefined && (obj.forward = message.forward);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListChannelMessagesRequest>
+  ): ListChannelMessagesRequest {
+    const message = {
+      ...baseListChannelMessagesRequest,
+    } as ListChannelMessagesRequest;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = object.channel_id;
     }
@@ -7339,29 +7258,35 @@ export const ListChannelMessagesRequest = {
     }
     return message;
   },
-  toJSON(message: ListChannelMessagesRequest): unknown {
-    const obj: any = {};
-    message.channel_id !== undefined && (obj.channel_id = message.channel_id);
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.forward !== undefined && (obj.forward = message.forward);
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
 };
 
+const baseListFriendsRequest: object = { cursor: "" };
+
 export const ListFriendsRequest = {
-  encode(message: ListFriendsRequest, writer: Writer = Writer.create()): Writer {
-    if (message.limit !== undefined && message.limit !== undefined) {
-      Int32Value.encode({ value: message.limit! }, writer.uint32(10).fork()).ldelim();
+  encode(
+    message: ListFriendsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.limit !== undefined) {
+      Int32Value.encode(
+        { value: message.limit! },
+        writer.uint32(10).fork()
+      ).ldelim();
     }
-    if (message.state !== undefined && message.state !== undefined) {
-      Int32Value.encode({ value: message.state! }, writer.uint32(18).fork()).ldelim();
+    if (message.state !== undefined) {
+      Int32Value.encode(
+        { value: message.state! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(26).string(message.cursor);
+    if (message.cursor !== "") {
+      writer.uint32(26).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListFriendsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): ListFriendsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListFriendsRequest } as ListFriendsRequest;
     while (reader.pos < end) {
@@ -7383,6 +7308,7 @@ export const ListFriendsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListFriendsRequest {
     const message = { ...baseListFriendsRequest } as ListFriendsRequest;
     if (object.limit !== undefined && object.limit !== null) {
@@ -7396,6 +7322,15 @@ export const ListFriendsRequest = {
     }
     return message;
   },
+
+  toJSON(message: ListFriendsRequest): unknown {
+    const obj: any = {};
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.state !== undefined && (obj.state = message.state);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<ListFriendsRequest>): ListFriendsRequest {
     const message = { ...baseListFriendsRequest } as ListFriendsRequest;
     if (object.limit !== undefined && object.limit !== null) {
@@ -7409,26 +7344,29 @@ export const ListFriendsRequest = {
     }
     return message;
   },
-  toJSON(message: ListFriendsRequest): unknown {
-    const obj: any = {};
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.state !== undefined && (obj.state = message.state);
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
 };
+
+const baseListGroupsRequest: object = { name: "", cursor: "" };
 
 export const ListGroupsRequest = {
   encode(message: ListGroupsRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.name);
-    writer.uint32(18).string(message.cursor);
-    if (message.limit !== undefined && message.limit !== undefined) {
-      Int32Value.encode({ value: message.limit! }, writer.uint32(26).fork()).ldelim();
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.cursor !== "") {
+      writer.uint32(18).string(message.cursor);
+    }
+    if (message.limit !== undefined) {
+      Int32Value.encode(
+        { value: message.limit! },
+        writer.uint32(26).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListGroupsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): ListGroupsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListGroupsRequest } as ListGroupsRequest;
     while (reader.pos < end) {
@@ -7450,6 +7388,7 @@ export const ListGroupsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListGroupsRequest {
     const message = { ...baseListGroupsRequest } as ListGroupsRequest;
     if (object.name !== undefined && object.name !== null) {
@@ -7463,6 +7402,15 @@ export const ListGroupsRequest = {
     }
     return message;
   },
+
+  toJSON(message: ListGroupsRequest): unknown {
+    const obj: any = {};
+    message.name !== undefined && (obj.name = message.name);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    message.limit !== undefined && (obj.limit = message.limit);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<ListGroupsRequest>): ListGroupsRequest {
     const message = { ...baseListGroupsRequest } as ListGroupsRequest;
     if (object.name !== undefined && object.name !== null) {
@@ -7476,29 +7424,38 @@ export const ListGroupsRequest = {
     }
     return message;
   },
-  toJSON(message: ListGroupsRequest): unknown {
-    const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    message.limit !== undefined && (obj.limit = message.limit);
-    return obj;
-  },
 };
 
+const baseListGroupUsersRequest: object = { group_id: "", cursor: "" };
+
 export const ListGroupUsersRequest = {
-  encode(message: ListGroupUsersRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.group_id);
-    if (message.limit !== undefined && message.limit !== undefined) {
-      Int32Value.encode({ value: message.limit! }, writer.uint32(18).fork()).ldelim();
+  encode(
+    message: ListGroupUsersRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.group_id !== "") {
+      writer.uint32(10).string(message.group_id);
     }
-    if (message.state !== undefined && message.state !== undefined) {
-      Int32Value.encode({ value: message.state! }, writer.uint32(26).fork()).ldelim();
+    if (message.limit !== undefined) {
+      Int32Value.encode(
+        { value: message.limit! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(34).string(message.cursor);
+    if (message.state !== undefined) {
+      Int32Value.encode(
+        { value: message.state! },
+        writer.uint32(26).fork()
+      ).ldelim();
+    }
+    if (message.cursor !== "") {
+      writer.uint32(34).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListGroupUsersRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): ListGroupUsersRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListGroupUsersRequest } as ListGroupUsersRequest;
     while (reader.pos < end) {
@@ -7523,6 +7480,7 @@ export const ListGroupUsersRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListGroupUsersRequest {
     const message = { ...baseListGroupUsersRequest } as ListGroupUsersRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
@@ -7539,7 +7497,19 @@ export const ListGroupUsersRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ListGroupUsersRequest>): ListGroupUsersRequest {
+
+  toJSON(message: ListGroupUsersRequest): unknown {
+    const obj: any = {};
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.state !== undefined && (obj.state = message.state);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListGroupUsersRequest>
+  ): ListGroupUsersRequest {
     const message = { ...baseListGroupUsersRequest } as ListGroupUsersRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
@@ -7555,32 +7525,48 @@ export const ListGroupUsersRequest = {
     }
     return message;
   },
-  toJSON(message: ListGroupUsersRequest): unknown {
-    const obj: any = {};
-    message.group_id !== undefined && (obj.group_id = message.group_id);
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.state !== undefined && (obj.state = message.state);
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
+};
+
+const baseListLeaderboardRecordsAroundOwnerRequest: object = {
+  leaderboard_id: "",
+  owner_id: "",
 };
 
 export const ListLeaderboardRecordsAroundOwnerRequest = {
-  encode(message: ListLeaderboardRecordsAroundOwnerRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.leaderboard_id);
-    if (message.limit !== undefined && message.limit !== undefined) {
-      UInt32Value.encode({ value: message.limit! }, writer.uint32(18).fork()).ldelim();
+  encode(
+    message: ListLeaderboardRecordsAroundOwnerRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.leaderboard_id !== "") {
+      writer.uint32(10).string(message.leaderboard_id);
     }
-    writer.uint32(26).string(message.owner_id);
-    if (message.expiry !== undefined && message.expiry !== undefined) {
-      Int64Value.encode({ value: message.expiry! }, writer.uint32(34).fork()).ldelim();
+    if (message.limit !== undefined) {
+      UInt32Value.encode(
+        { value: message.limit! },
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    if (message.owner_id !== "") {
+      writer.uint32(26).string(message.owner_id);
+    }
+    if (message.expiry !== undefined) {
+      Int64Value.encode(
+        { value: message.expiry! },
+        writer.uint32(34).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListLeaderboardRecordsAroundOwnerRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ListLeaderboardRecordsAroundOwnerRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseListLeaderboardRecordsAroundOwnerRequest } as ListLeaderboardRecordsAroundOwnerRequest;
+    const message = {
+      ...baseListLeaderboardRecordsAroundOwnerRequest,
+    } as ListLeaderboardRecordsAroundOwnerRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -7603,8 +7589,11 @@ export const ListLeaderboardRecordsAroundOwnerRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListLeaderboardRecordsAroundOwnerRequest {
-    const message = { ...baseListLeaderboardRecordsAroundOwnerRequest } as ListLeaderboardRecordsAroundOwnerRequest;
+    const message = {
+      ...baseListLeaderboardRecordsAroundOwnerRequest,
+    } as ListLeaderboardRecordsAroundOwnerRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = String(object.leaderboard_id);
     }
@@ -7615,12 +7604,27 @@ export const ListLeaderboardRecordsAroundOwnerRequest = {
       message.owner_id = String(object.owner_id);
     }
     if (object.expiry !== undefined && object.expiry !== null) {
-      message.expiry = Number.fromValue(object.expiry);
+      message.expiry = Number(object.expiry);
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ListLeaderboardRecordsAroundOwnerRequest>): ListLeaderboardRecordsAroundOwnerRequest {
-    const message = { ...baseListLeaderboardRecordsAroundOwnerRequest } as ListLeaderboardRecordsAroundOwnerRequest;
+
+  toJSON(message: ListLeaderboardRecordsAroundOwnerRequest): unknown {
+    const obj: any = {};
+    message.leaderboard_id !== undefined &&
+      (obj.leaderboard_id = message.leaderboard_id);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.owner_id !== undefined && (obj.owner_id = message.owner_id);
+    message.expiry !== undefined && (obj.expiry = message.expiry);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListLeaderboardRecordsAroundOwnerRequest>
+  ): ListLeaderboardRecordsAroundOwnerRequest {
+    const message = {
+      ...baseListLeaderboardRecordsAroundOwnerRequest,
+    } as ListLeaderboardRecordsAroundOwnerRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = object.leaderboard_id;
     }
@@ -7635,35 +7639,52 @@ export const ListLeaderboardRecordsAroundOwnerRequest = {
     }
     return message;
   },
-  toJSON(message: ListLeaderboardRecordsAroundOwnerRequest): unknown {
-    const obj: any = {};
-    message.leaderboard_id !== undefined && (obj.leaderboard_id = message.leaderboard_id);
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.owner_id !== undefined && (obj.owner_id = message.owner_id);
-    message.expiry !== undefined && (obj.expiry = message.expiry);
-    return obj;
-  },
+};
+
+const baseListLeaderboardRecordsRequest: object = {
+  leaderboard_id: "",
+  owner_ids: "",
+  cursor: "",
 };
 
 export const ListLeaderboardRecordsRequest = {
-  encode(message: ListLeaderboardRecordsRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.leaderboard_id);
+  encode(
+    message: ListLeaderboardRecordsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.leaderboard_id !== "") {
+      writer.uint32(10).string(message.leaderboard_id);
+    }
     for (const v of message.owner_ids) {
       writer.uint32(18).string(v!);
     }
-    if (message.limit !== undefined && message.limit !== undefined) {
-      Int32Value.encode({ value: message.limit! }, writer.uint32(26).fork()).ldelim();
+    if (message.limit !== undefined) {
+      Int32Value.encode(
+        { value: message.limit! },
+        writer.uint32(26).fork()
+      ).ldelim();
     }
-    writer.uint32(34).string(message.cursor);
-    if (message.expiry !== undefined && message.expiry !== undefined) {
-      Int64Value.encode({ value: message.expiry! }, writer.uint32(42).fork()).ldelim();
+    if (message.cursor !== "") {
+      writer.uint32(34).string(message.cursor);
+    }
+    if (message.expiry !== undefined) {
+      Int64Value.encode(
+        { value: message.expiry! },
+        writer.uint32(42).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListLeaderboardRecordsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ListLeaderboardRecordsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseListLeaderboardRecordsRequest } as ListLeaderboardRecordsRequest;
+    const message = {
+      ...baseListLeaderboardRecordsRequest,
+    } as ListLeaderboardRecordsRequest;
     message.owner_ids = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -7690,8 +7711,11 @@ export const ListLeaderboardRecordsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListLeaderboardRecordsRequest {
-    const message = { ...baseListLeaderboardRecordsRequest } as ListLeaderboardRecordsRequest;
+    const message = {
+      ...baseListLeaderboardRecordsRequest,
+    } as ListLeaderboardRecordsRequest;
     message.owner_ids = [];
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = String(object.leaderboard_id);
@@ -7708,12 +7732,32 @@ export const ListLeaderboardRecordsRequest = {
       message.cursor = String(object.cursor);
     }
     if (object.expiry !== undefined && object.expiry !== null) {
-      message.expiry = Number.fromValue(object.expiry);
+      message.expiry = Number(object.expiry);
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ListLeaderboardRecordsRequest>): ListLeaderboardRecordsRequest {
-    const message = { ...baseListLeaderboardRecordsRequest } as ListLeaderboardRecordsRequest;
+
+  toJSON(message: ListLeaderboardRecordsRequest): unknown {
+    const obj: any = {};
+    message.leaderboard_id !== undefined &&
+      (obj.leaderboard_id = message.leaderboard_id);
+    if (message.owner_ids) {
+      obj.owner_ids = message.owner_ids.map((e) => e);
+    } else {
+      obj.owner_ids = [];
+    }
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    message.expiry !== undefined && (obj.expiry = message.expiry);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListLeaderboardRecordsRequest>
+  ): ListLeaderboardRecordsRequest {
+    const message = {
+      ...baseListLeaderboardRecordsRequest,
+    } as ListLeaderboardRecordsRequest;
     message.owner_ids = [];
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = object.leaderboard_id;
@@ -7734,45 +7778,56 @@ export const ListLeaderboardRecordsRequest = {
     }
     return message;
   },
-  toJSON(message: ListLeaderboardRecordsRequest): unknown {
-    const obj: any = {};
-    message.leaderboard_id !== undefined && (obj.leaderboard_id = message.leaderboard_id);
-    if (message.owner_ids) {
-      obj.owner_ids = message.owner_ids.map(e => e);
-    } else {
-      obj.owner_ids = [];
-    }
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    message.expiry !== undefined && (obj.expiry = message.expiry);
-    return obj;
-  },
 };
 
+const baseListMatchesRequest: object = {};
+
 export const ListMatchesRequest = {
-  encode(message: ListMatchesRequest, writer: Writer = Writer.create()): Writer {
-    if (message.limit !== undefined && message.limit !== undefined) {
-      Int32Value.encode({ value: message.limit! }, writer.uint32(10).fork()).ldelim();
+  encode(
+    message: ListMatchesRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.limit !== undefined) {
+      Int32Value.encode(
+        { value: message.limit! },
+        writer.uint32(10).fork()
+      ).ldelim();
     }
-    if (message.authoritative !== undefined && message.authoritative !== undefined) {
-      BoolValue.encode({ value: message.authoritative! }, writer.uint32(18).fork()).ldelim();
+    if (message.authoritative !== undefined) {
+      BoolValue.encode(
+        { value: message.authoritative! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    if (message.label !== undefined && message.label !== undefined) {
-      StringValue.encode({ value: message.label! }, writer.uint32(26).fork()).ldelim();
+    if (message.label !== undefined) {
+      StringValue.encode(
+        { value: message.label! },
+        writer.uint32(26).fork()
+      ).ldelim();
     }
-    if (message.min_size !== undefined && message.min_size !== undefined) {
-      Int32Value.encode({ value: message.min_size! }, writer.uint32(34).fork()).ldelim();
+    if (message.min_size !== undefined) {
+      Int32Value.encode(
+        { value: message.min_size! },
+        writer.uint32(34).fork()
+      ).ldelim();
     }
-    if (message.max_size !== undefined && message.max_size !== undefined) {
-      Int32Value.encode({ value: message.max_size! }, writer.uint32(42).fork()).ldelim();
+    if (message.max_size !== undefined) {
+      Int32Value.encode(
+        { value: message.max_size! },
+        writer.uint32(42).fork()
+      ).ldelim();
     }
-    if (message.query !== undefined && message.query !== undefined) {
-      StringValue.encode({ value: message.query! }, writer.uint32(50).fork()).ldelim();
+    if (message.query !== undefined) {
+      StringValue.encode(
+        { value: message.query! },
+        writer.uint32(50).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListMatchesRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): ListMatchesRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListMatchesRequest } as ListMatchesRequest;
     while (reader.pos < end) {
@@ -7782,7 +7837,10 @@ export const ListMatchesRequest = {
           message.limit = Int32Value.decode(reader, reader.uint32()).value;
           break;
         case 2:
-          message.authoritative = BoolValue.decode(reader, reader.uint32()).value;
+          message.authoritative = BoolValue.decode(
+            reader,
+            reader.uint32()
+          ).value;
           break;
         case 3:
           message.label = StringValue.decode(reader, reader.uint32()).value;
@@ -7803,6 +7861,7 @@ export const ListMatchesRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListMatchesRequest {
     const message = { ...baseListMatchesRequest } as ListMatchesRequest;
     if (object.limit !== undefined && object.limit !== null) {
@@ -7825,6 +7884,19 @@ export const ListMatchesRequest = {
     }
     return message;
   },
+
+  toJSON(message: ListMatchesRequest): unknown {
+    const obj: any = {};
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.authoritative !== undefined &&
+      (obj.authoritative = message.authoritative);
+    message.label !== undefined && (obj.label = message.label);
+    message.min_size !== undefined && (obj.min_size = message.min_size);
+    message.max_size !== undefined && (obj.max_size = message.max_size);
+    message.query !== undefined && (obj.query = message.query);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<ListMatchesRequest>): ListMatchesRequest {
     const message = { ...baseListMatchesRequest } as ListMatchesRequest;
     if (object.limit !== undefined && object.limit !== null) {
@@ -7847,30 +7919,36 @@ export const ListMatchesRequest = {
     }
     return message;
   },
-  toJSON(message: ListMatchesRequest): unknown {
-    const obj: any = {};
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.authoritative !== undefined && (obj.authoritative = message.authoritative);
-    message.label !== undefined && (obj.label = message.label);
-    message.min_size !== undefined && (obj.min_size = message.min_size);
-    message.max_size !== undefined && (obj.max_size = message.max_size);
-    message.query !== undefined && (obj.query = message.query);
-    return obj;
-  },
 };
 
+const baseListNotificationsRequest: object = { cacheable_cursor: "" };
+
 export const ListNotificationsRequest = {
-  encode(message: ListNotificationsRequest, writer: Writer = Writer.create()): Writer {
-    if (message.limit !== undefined && message.limit !== undefined) {
-      Int32Value.encode({ value: message.limit! }, writer.uint32(10).fork()).ldelim();
+  encode(
+    message: ListNotificationsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.limit !== undefined) {
+      Int32Value.encode(
+        { value: message.limit! },
+        writer.uint32(10).fork()
+      ).ldelim();
     }
-    writer.uint32(18).string(message.cacheable_cursor);
+    if (message.cacheable_cursor !== "") {
+      writer.uint32(18).string(message.cacheable_cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListNotificationsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ListNotificationsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseListNotificationsRequest } as ListNotificationsRequest;
+    const message = {
+      ...baseListNotificationsRequest,
+    } as ListNotificationsRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -7887,48 +7965,88 @@ export const ListNotificationsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListNotificationsRequest {
-    const message = { ...baseListNotificationsRequest } as ListNotificationsRequest;
+    const message = {
+      ...baseListNotificationsRequest,
+    } as ListNotificationsRequest;
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
     }
-    if (object.cacheable_cursor !== undefined && object.cacheable_cursor !== null) {
+    if (
+      object.cacheable_cursor !== undefined &&
+      object.cacheable_cursor !== null
+    ) {
       message.cacheable_cursor = String(object.cacheable_cursor);
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ListNotificationsRequest>): ListNotificationsRequest {
-    const message = { ...baseListNotificationsRequest } as ListNotificationsRequest;
+
+  toJSON(message: ListNotificationsRequest): unknown {
+    const obj: any = {};
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.cacheable_cursor !== undefined &&
+      (obj.cacheable_cursor = message.cacheable_cursor);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListNotificationsRequest>
+  ): ListNotificationsRequest {
+    const message = {
+      ...baseListNotificationsRequest,
+    } as ListNotificationsRequest;
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
     }
-    if (object.cacheable_cursor !== undefined && object.cacheable_cursor !== null) {
+    if (
+      object.cacheable_cursor !== undefined &&
+      object.cacheable_cursor !== null
+    ) {
       message.cacheable_cursor = object.cacheable_cursor;
     }
     return message;
   },
-  toJSON(message: ListNotificationsRequest): unknown {
-    const obj: any = {};
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.cacheable_cursor !== undefined && (obj.cacheable_cursor = message.cacheable_cursor);
-    return obj;
-  },
+};
+
+const baseListStorageObjectsRequest: object = {
+  user_id: "",
+  collection: "",
+  cursor: "",
 };
 
 export const ListStorageObjectsRequest = {
-  encode(message: ListStorageObjectsRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.user_id);
-    writer.uint32(18).string(message.collection);
-    if (message.limit !== undefined && message.limit !== undefined) {
-      Int32Value.encode({ value: message.limit! }, writer.uint32(26).fork()).ldelim();
+  encode(
+    message: ListStorageObjectsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
-    writer.uint32(34).string(message.cursor);
+    if (message.collection !== "") {
+      writer.uint32(18).string(message.collection);
+    }
+    if (message.limit !== undefined) {
+      Int32Value.encode(
+        { value: message.limit! },
+        writer.uint32(26).fork()
+      ).ldelim();
+    }
+    if (message.cursor !== "") {
+      writer.uint32(34).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListStorageObjectsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ListStorageObjectsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseListStorageObjectsRequest } as ListStorageObjectsRequest;
+    const message = {
+      ...baseListStorageObjectsRequest,
+    } as ListStorageObjectsRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -7951,8 +8069,11 @@ export const ListStorageObjectsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListStorageObjectsRequest {
-    const message = { ...baseListStorageObjectsRequest } as ListStorageObjectsRequest;
+    const message = {
+      ...baseListStorageObjectsRequest,
+    } as ListStorageObjectsRequest;
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = String(object.user_id);
     }
@@ -7967,8 +8088,22 @@ export const ListStorageObjectsRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ListStorageObjectsRequest>): ListStorageObjectsRequest {
-    const message = { ...baseListStorageObjectsRequest } as ListStorageObjectsRequest;
+
+  toJSON(message: ListStorageObjectsRequest): unknown {
+    const obj: any = {};
+    message.user_id !== undefined && (obj.user_id = message.user_id);
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListStorageObjectsRequest>
+  ): ListStorageObjectsRequest {
+    const message = {
+      ...baseListStorageObjectsRequest,
+    } as ListStorageObjectsRequest;
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = object.user_id;
     }
@@ -7983,32 +8118,48 @@ export const ListStorageObjectsRequest = {
     }
     return message;
   },
-  toJSON(message: ListStorageObjectsRequest): unknown {
-    const obj: any = {};
-    message.user_id !== undefined && (obj.user_id = message.user_id);
-    message.collection !== undefined && (obj.collection = message.collection);
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
+};
+
+const baseListTournamentRecordsAroundOwnerRequest: object = {
+  tournament_id: "",
+  owner_id: "",
 };
 
 export const ListTournamentRecordsAroundOwnerRequest = {
-  encode(message: ListTournamentRecordsAroundOwnerRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.tournament_id);
-    if (message.limit !== undefined && message.limit !== undefined) {
-      UInt32Value.encode({ value: message.limit! }, writer.uint32(18).fork()).ldelim();
+  encode(
+    message: ListTournamentRecordsAroundOwnerRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.tournament_id !== "") {
+      writer.uint32(10).string(message.tournament_id);
     }
-    writer.uint32(26).string(message.owner_id);
-    if (message.expiry !== undefined && message.expiry !== undefined) {
-      Int64Value.encode({ value: message.expiry! }, writer.uint32(34).fork()).ldelim();
+    if (message.limit !== undefined) {
+      UInt32Value.encode(
+        { value: message.limit! },
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    if (message.owner_id !== "") {
+      writer.uint32(26).string(message.owner_id);
+    }
+    if (message.expiry !== undefined) {
+      Int64Value.encode(
+        { value: message.expiry! },
+        writer.uint32(34).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListTournamentRecordsAroundOwnerRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ListTournamentRecordsAroundOwnerRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseListTournamentRecordsAroundOwnerRequest } as ListTournamentRecordsAroundOwnerRequest;
+    const message = {
+      ...baseListTournamentRecordsAroundOwnerRequest,
+    } as ListTournamentRecordsAroundOwnerRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -8031,8 +8182,11 @@ export const ListTournamentRecordsAroundOwnerRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListTournamentRecordsAroundOwnerRequest {
-    const message = { ...baseListTournamentRecordsAroundOwnerRequest } as ListTournamentRecordsAroundOwnerRequest;
+    const message = {
+      ...baseListTournamentRecordsAroundOwnerRequest,
+    } as ListTournamentRecordsAroundOwnerRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = String(object.tournament_id);
     }
@@ -8043,12 +8197,27 @@ export const ListTournamentRecordsAroundOwnerRequest = {
       message.owner_id = String(object.owner_id);
     }
     if (object.expiry !== undefined && object.expiry !== null) {
-      message.expiry = Number.fromValue(object.expiry);
+      message.expiry = Number(object.expiry);
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ListTournamentRecordsAroundOwnerRequest>): ListTournamentRecordsAroundOwnerRequest {
-    const message = { ...baseListTournamentRecordsAroundOwnerRequest } as ListTournamentRecordsAroundOwnerRequest;
+
+  toJSON(message: ListTournamentRecordsAroundOwnerRequest): unknown {
+    const obj: any = {};
+    message.tournament_id !== undefined &&
+      (obj.tournament_id = message.tournament_id);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.owner_id !== undefined && (obj.owner_id = message.owner_id);
+    message.expiry !== undefined && (obj.expiry = message.expiry);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListTournamentRecordsAroundOwnerRequest>
+  ): ListTournamentRecordsAroundOwnerRequest {
+    const message = {
+      ...baseListTournamentRecordsAroundOwnerRequest,
+    } as ListTournamentRecordsAroundOwnerRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = object.tournament_id;
     }
@@ -8063,35 +8232,52 @@ export const ListTournamentRecordsAroundOwnerRequest = {
     }
     return message;
   },
-  toJSON(message: ListTournamentRecordsAroundOwnerRequest): unknown {
-    const obj: any = {};
-    message.tournament_id !== undefined && (obj.tournament_id = message.tournament_id);
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.owner_id !== undefined && (obj.owner_id = message.owner_id);
-    message.expiry !== undefined && (obj.expiry = message.expiry);
-    return obj;
-  },
+};
+
+const baseListTournamentRecordsRequest: object = {
+  tournament_id: "",
+  owner_ids: "",
+  cursor: "",
 };
 
 export const ListTournamentRecordsRequest = {
-  encode(message: ListTournamentRecordsRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.tournament_id);
+  encode(
+    message: ListTournamentRecordsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.tournament_id !== "") {
+      writer.uint32(10).string(message.tournament_id);
+    }
     for (const v of message.owner_ids) {
       writer.uint32(18).string(v!);
     }
-    if (message.limit !== undefined && message.limit !== undefined) {
-      Int32Value.encode({ value: message.limit! }, writer.uint32(26).fork()).ldelim();
+    if (message.limit !== undefined) {
+      Int32Value.encode(
+        { value: message.limit! },
+        writer.uint32(26).fork()
+      ).ldelim();
     }
-    writer.uint32(34).string(message.cursor);
-    if (message.expiry !== undefined && message.expiry !== undefined) {
-      Int64Value.encode({ value: message.expiry! }, writer.uint32(42).fork()).ldelim();
+    if (message.cursor !== "") {
+      writer.uint32(34).string(message.cursor);
+    }
+    if (message.expiry !== undefined) {
+      Int64Value.encode(
+        { value: message.expiry! },
+        writer.uint32(42).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListTournamentRecordsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ListTournamentRecordsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseListTournamentRecordsRequest } as ListTournamentRecordsRequest;
+    const message = {
+      ...baseListTournamentRecordsRequest,
+    } as ListTournamentRecordsRequest;
     message.owner_ids = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -8118,8 +8304,11 @@ export const ListTournamentRecordsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListTournamentRecordsRequest {
-    const message = { ...baseListTournamentRecordsRequest } as ListTournamentRecordsRequest;
+    const message = {
+      ...baseListTournamentRecordsRequest,
+    } as ListTournamentRecordsRequest;
     message.owner_ids = [];
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = String(object.tournament_id);
@@ -8136,12 +8325,32 @@ export const ListTournamentRecordsRequest = {
       message.cursor = String(object.cursor);
     }
     if (object.expiry !== undefined && object.expiry !== null) {
-      message.expiry = Number.fromValue(object.expiry);
+      message.expiry = Number(object.expiry);
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ListTournamentRecordsRequest>): ListTournamentRecordsRequest {
-    const message = { ...baseListTournamentRecordsRequest } as ListTournamentRecordsRequest;
+
+  toJSON(message: ListTournamentRecordsRequest): unknown {
+    const obj: any = {};
+    message.tournament_id !== undefined &&
+      (obj.tournament_id = message.tournament_id);
+    if (message.owner_ids) {
+      obj.owner_ids = message.owner_ids.map((e) => e);
+    } else {
+      obj.owner_ids = [];
+    }
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    message.expiry !== undefined && (obj.expiry = message.expiry);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListTournamentRecordsRequest>
+  ): ListTournamentRecordsRequest {
+    const message = {
+      ...baseListTournamentRecordsRequest,
+    } as ListTournamentRecordsRequest;
     message.owner_ids = [];
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = object.tournament_id;
@@ -8162,56 +8371,75 @@ export const ListTournamentRecordsRequest = {
     }
     return message;
   },
-  toJSON(message: ListTournamentRecordsRequest): unknown {
-    const obj: any = {};
-    message.tournament_id !== undefined && (obj.tournament_id = message.tournament_id);
-    if (message.owner_ids) {
-      obj.owner_ids = message.owner_ids.map(e => e);
-    } else {
-      obj.owner_ids = [];
-    }
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    message.expiry !== undefined && (obj.expiry = message.expiry);
-    return obj;
-  },
 };
 
+const baseListTournamentsRequest: object = { cursor: "" };
+
 export const ListTournamentsRequest = {
-  encode(message: ListTournamentsRequest, writer: Writer = Writer.create()): Writer {
-    if (message.category_start !== undefined && message.category_start !== undefined) {
-      UInt32Value.encode({ value: message.category_start! }, writer.uint32(10).fork()).ldelim();
+  encode(
+    message: ListTournamentsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.category_start !== undefined) {
+      UInt32Value.encode(
+        { value: message.category_start! },
+        writer.uint32(10).fork()
+      ).ldelim();
     }
-    if (message.category_end !== undefined && message.category_end !== undefined) {
-      UInt32Value.encode({ value: message.category_end! }, writer.uint32(18).fork()).ldelim();
+    if (message.category_end !== undefined) {
+      UInt32Value.encode(
+        { value: message.category_end! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    if (message.start_time !== undefined && message.start_time !== undefined) {
-      UInt32Value.encode({ value: message.start_time! }, writer.uint32(26).fork()).ldelim();
+    if (message.start_time !== undefined) {
+      UInt32Value.encode(
+        { value: message.start_time! },
+        writer.uint32(26).fork()
+      ).ldelim();
     }
-    if (message.end_time !== undefined && message.end_time !== undefined) {
-      UInt32Value.encode({ value: message.end_time! }, writer.uint32(34).fork()).ldelim();
+    if (message.end_time !== undefined) {
+      UInt32Value.encode(
+        { value: message.end_time! },
+        writer.uint32(34).fork()
+      ).ldelim();
     }
-    if (message.limit !== undefined && message.limit !== undefined) {
-      Int32Value.encode({ value: message.limit! }, writer.uint32(50).fork()).ldelim();
+    if (message.limit !== undefined) {
+      Int32Value.encode(
+        { value: message.limit! },
+        writer.uint32(50).fork()
+      ).ldelim();
     }
-    writer.uint32(66).string(message.cursor);
+    if (message.cursor !== "") {
+      writer.uint32(66).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListTournamentsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): ListTournamentsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListTournamentsRequest } as ListTournamentsRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.category_start = UInt32Value.decode(reader, reader.uint32()).value;
+          message.category_start = UInt32Value.decode(
+            reader,
+            reader.uint32()
+          ).value;
           break;
         case 2:
-          message.category_end = UInt32Value.decode(reader, reader.uint32()).value;
+          message.category_end = UInt32Value.decode(
+            reader,
+            reader.uint32()
+          ).value;
           break;
         case 3:
-          message.start_time = UInt32Value.decode(reader, reader.uint32()).value;
+          message.start_time = UInt32Value.decode(
+            reader,
+            reader.uint32()
+          ).value;
           break;
         case 4:
           message.end_time = UInt32Value.decode(reader, reader.uint32()).value;
@@ -8229,6 +8457,7 @@ export const ListTournamentsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListTournamentsRequest {
     const message = { ...baseListTournamentsRequest } as ListTournamentsRequest;
     if (object.category_start !== undefined && object.category_start !== null) {
@@ -8251,7 +8480,23 @@ export const ListTournamentsRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ListTournamentsRequest>): ListTournamentsRequest {
+
+  toJSON(message: ListTournamentsRequest): unknown {
+    const obj: any = {};
+    message.category_start !== undefined &&
+      (obj.category_start = message.category_start);
+    message.category_end !== undefined &&
+      (obj.category_end = message.category_end);
+    message.start_time !== undefined && (obj.start_time = message.start_time);
+    message.end_time !== undefined && (obj.end_time = message.end_time);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListTournamentsRequest>
+  ): ListTournamentsRequest {
     const message = { ...baseListTournamentsRequest } as ListTournamentsRequest;
     if (object.category_start !== undefined && object.category_start !== null) {
       message.category_start = object.category_start;
@@ -8273,32 +8518,38 @@ export const ListTournamentsRequest = {
     }
     return message;
   },
-  toJSON(message: ListTournamentsRequest): unknown {
-    const obj: any = {};
-    message.category_start !== undefined && (obj.category_start = message.category_start);
-    message.category_end !== undefined && (obj.category_end = message.category_end);
-    message.start_time !== undefined && (obj.start_time = message.start_time);
-    message.end_time !== undefined && (obj.end_time = message.end_time);
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
 };
 
+const baseListUserGroupsRequest: object = { user_id: "", cursor: "" };
+
 export const ListUserGroupsRequest = {
-  encode(message: ListUserGroupsRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.user_id);
-    if (message.limit !== undefined && message.limit !== undefined) {
-      Int32Value.encode({ value: message.limit! }, writer.uint32(18).fork()).ldelim();
+  encode(
+    message: ListUserGroupsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
     }
-    if (message.state !== undefined && message.state !== undefined) {
-      Int32Value.encode({ value: message.state! }, writer.uint32(26).fork()).ldelim();
+    if (message.limit !== undefined) {
+      Int32Value.encode(
+        { value: message.limit! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    writer.uint32(34).string(message.cursor);
+    if (message.state !== undefined) {
+      Int32Value.encode(
+        { value: message.state! },
+        writer.uint32(26).fork()
+      ).ldelim();
+    }
+    if (message.cursor !== "") {
+      writer.uint32(34).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ListUserGroupsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): ListUserGroupsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListUserGroupsRequest } as ListUserGroupsRequest;
     while (reader.pos < end) {
@@ -8323,6 +8574,7 @@ export const ListUserGroupsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ListUserGroupsRequest {
     const message = { ...baseListUserGroupsRequest } as ListUserGroupsRequest;
     if (object.user_id !== undefined && object.user_id !== null) {
@@ -8339,7 +8591,19 @@ export const ListUserGroupsRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ListUserGroupsRequest>): ListUserGroupsRequest {
+
+  toJSON(message: ListUserGroupsRequest): unknown {
+    const obj: any = {};
+    message.user_id !== undefined && (obj.user_id = message.user_id);
+    message.limit !== undefined && (obj.limit = message.limit);
+    message.state !== undefined && (obj.state = message.state);
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListUserGroupsRequest>
+  ): ListUserGroupsRequest {
     const message = { ...baseListUserGroupsRequest } as ListUserGroupsRequest;
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = object.user_id;
@@ -8355,30 +8619,44 @@ export const ListUserGroupsRequest = {
     }
     return message;
   },
-  toJSON(message: ListUserGroupsRequest): unknown {
-    const obj: any = {};
-    message.user_id !== undefined && (obj.user_id = message.user_id);
-    message.limit !== undefined && (obj.limit = message.limit);
-    message.state !== undefined && (obj.state = message.state);
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
+};
+
+const baseMatch: object = {
+  match_id: "",
+  authoritative: false,
+  size: 0,
+  tick_rate: 0,
+  handler_name: "",
 };
 
 export const Match = {
   encode(message: Match, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.match_id);
-    writer.uint32(16).bool(message.authoritative);
-    if (message.label !== undefined && message.label !== undefined) {
-      StringValue.encode({ value: message.label! }, writer.uint32(26).fork()).ldelim();
+    if (message.match_id !== "") {
+      writer.uint32(10).string(message.match_id);
     }
-    writer.uint32(32).int32(message.size);
-    writer.uint32(40).int32(message.tick_rate);
-    writer.uint32(50).string(message.handler_name);
+    if (message.authoritative === true) {
+      writer.uint32(16).bool(message.authoritative);
+    }
+    if (message.label !== undefined) {
+      StringValue.encode(
+        { value: message.label! },
+        writer.uint32(26).fork()
+      ).ldelim();
+    }
+    if (message.size !== 0) {
+      writer.uint32(32).int32(message.size);
+    }
+    if (message.tick_rate !== 0) {
+      writer.uint32(40).int32(message.tick_rate);
+    }
+    if (message.handler_name !== "") {
+      writer.uint32(50).string(message.handler_name);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): Match {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): Match {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseMatch } as Match;
     while (reader.pos < end) {
@@ -8409,6 +8687,7 @@ export const Match = {
     }
     return message;
   },
+
   fromJSON(object: any): Match {
     const message = { ...baseMatch } as Match;
     if (object.match_id !== undefined && object.match_id !== null) {
@@ -8431,6 +8710,20 @@ export const Match = {
     }
     return message;
   },
+
+  toJSON(message: Match): unknown {
+    const obj: any = {};
+    message.match_id !== undefined && (obj.match_id = message.match_id);
+    message.authoritative !== undefined &&
+      (obj.authoritative = message.authoritative);
+    message.label !== undefined && (obj.label = message.label);
+    message.size !== undefined && (obj.size = message.size);
+    message.tick_rate !== undefined && (obj.tick_rate = message.tick_rate);
+    message.handler_name !== undefined &&
+      (obj.handler_name = message.handler_name);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<Match>): Match {
     const message = { ...baseMatch } as Match;
     if (object.match_id !== undefined && object.match_id !== null) {
@@ -8453,17 +8746,9 @@ export const Match = {
     }
     return message;
   },
-  toJSON(message: Match): unknown {
-    const obj: any = {};
-    message.match_id !== undefined && (obj.match_id = message.match_id);
-    message.authoritative !== undefined && (obj.authoritative = message.authoritative);
-    message.label !== undefined && (obj.label = message.label);
-    message.size !== undefined && (obj.size = message.size);
-    message.tick_rate !== undefined && (obj.tick_rate = message.tick_rate);
-    message.handler_name !== undefined && (obj.handler_name = message.handler_name);
-    return obj;
-  },
 };
+
+const baseMatchList: object = {};
 
 export const MatchList = {
   encode(message: MatchList, writer: Writer = Writer.create()): Writer {
@@ -8472,8 +8757,9 @@ export const MatchList = {
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): MatchList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): MatchList {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseMatchList } as MatchList;
     message.matches = [];
@@ -8490,6 +8776,7 @@ export const MatchList = {
     }
     return message;
   },
+
   fromJSON(object: any): MatchList {
     const message = { ...baseMatchList } as MatchList;
     message.matches = [];
@@ -8500,6 +8787,19 @@ export const MatchList = {
     }
     return message;
   },
+
+  toJSON(message: MatchList): unknown {
+    const obj: any = {};
+    if (message.matches) {
+      obj.matches = message.matches.map((e) =>
+        e ? Match.toJSON(e) : undefined
+      );
+    } else {
+      obj.matches = [];
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<MatchList>): MatchList {
     const message = { ...baseMatchList } as MatchList;
     message.matches = [];
@@ -8510,32 +8810,48 @@ export const MatchList = {
     }
     return message;
   },
-  toJSON(message: MatchList): unknown {
-    const obj: any = {};
-    if (message.matches) {
-      obj.matches = message.matches.map(e => e ? Match.toJSON(e) : undefined);
-    } else {
-      obj.matches = [];
-    }
-    return obj;
-  },
+};
+
+const baseNotification: object = {
+  id: "",
+  subject: "",
+  content: "",
+  code: 0,
+  sender_id: "",
+  persistent: false,
 };
 
 export const Notification = {
   encode(message: Notification, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.id);
-    writer.uint32(18).string(message.subject);
-    writer.uint32(26).string(message.content);
-    writer.uint32(32).int32(message.code);
-    writer.uint32(42).string(message.sender_id);
-    if (message.create_time !== undefined && message.create_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.create_time), writer.uint32(50).fork()).ldelim();
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
-    writer.uint32(56).bool(message.persistent);
+    if (message.subject !== "") {
+      writer.uint32(18).string(message.subject);
+    }
+    if (message.content !== "") {
+      writer.uint32(26).string(message.content);
+    }
+    if (message.code !== 0) {
+      writer.uint32(32).int32(message.code);
+    }
+    if (message.sender_id !== "") {
+      writer.uint32(42).string(message.sender_id);
+    }
+    if (message.create_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.create_time),
+        writer.uint32(50).fork()
+      ).ldelim();
+    }
+    if (message.persistent === true) {
+      writer.uint32(56).bool(message.persistent);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): Notification {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): Notification {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseNotification } as Notification;
     while (reader.pos < end) {
@@ -8557,7 +8873,9 @@ export const Notification = {
           message.sender_id = reader.string();
           break;
         case 6:
-          message.create_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.create_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 7:
           message.persistent = reader.bool();
@@ -8569,6 +8887,7 @@ export const Notification = {
     }
     return message;
   },
+
   fromJSON(object: any): Notification {
     const message = { ...baseNotification } as Notification;
     if (object.id !== undefined && object.id !== null) {
@@ -8594,6 +8913,20 @@ export const Notification = {
     }
     return message;
   },
+
+  toJSON(message: Notification): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    message.subject !== undefined && (obj.subject = message.subject);
+    message.content !== undefined && (obj.content = message.content);
+    message.code !== undefined && (obj.code = message.code);
+    message.sender_id !== undefined && (obj.sender_id = message.sender_id);
+    message.create_time !== undefined &&
+      (obj.create_time = message.create_time.toISOString());
+    message.persistent !== undefined && (obj.persistent = message.persistent);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<Notification>): Notification {
     const message = { ...baseNotification } as Notification;
     if (object.id !== undefined && object.id !== null) {
@@ -8619,29 +8952,23 @@ export const Notification = {
     }
     return message;
   },
-  toJSON(message: Notification): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    message.subject !== undefined && (obj.subject = message.subject);
-    message.content !== undefined && (obj.content = message.content);
-    message.code !== undefined && (obj.code = message.code);
-    message.sender_id !== undefined && (obj.sender_id = message.sender_id);
-    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
-    message.persistent !== undefined && (obj.persistent = message.persistent);
-    return obj;
-  },
 };
+
+const baseNotificationList: object = { cacheable_cursor: "" };
 
 export const NotificationList = {
   encode(message: NotificationList, writer: Writer = Writer.create()): Writer {
     for (const v of message.notifications) {
       Notification.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    writer.uint32(18).string(message.cacheable_cursor);
+    if (message.cacheable_cursor !== "") {
+      writer.uint32(18).string(message.cacheable_cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): NotificationList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): NotificationList {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseNotificationList } as NotificationList;
     message.notifications = [];
@@ -8649,7 +8976,9 @@ export const NotificationList = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.notifications.push(Notification.decode(reader, reader.uint32()));
+          message.notifications.push(
+            Notification.decode(reader, reader.uint32())
+          );
           break;
         case 2:
           message.cacheable_cursor = reader.string();
@@ -8661,6 +8990,7 @@ export const NotificationList = {
     }
     return message;
   },
+
   fromJSON(object: any): NotificationList {
     const message = { ...baseNotificationList } as NotificationList;
     message.notifications = [];
@@ -8669,11 +8999,29 @@ export const NotificationList = {
         message.notifications.push(Notification.fromJSON(e));
       }
     }
-    if (object.cacheable_cursor !== undefined && object.cacheable_cursor !== null) {
+    if (
+      object.cacheable_cursor !== undefined &&
+      object.cacheable_cursor !== null
+    ) {
       message.cacheable_cursor = String(object.cacheable_cursor);
     }
     return message;
   },
+
+  toJSON(message: NotificationList): unknown {
+    const obj: any = {};
+    if (message.notifications) {
+      obj.notifications = message.notifications.map((e) =>
+        e ? Notification.toJSON(e) : undefined
+      );
+    } else {
+      obj.notifications = [];
+    }
+    message.cacheable_cursor !== undefined &&
+      (obj.cacheable_cursor = message.cacheable_cursor);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<NotificationList>): NotificationList {
     const message = { ...baseNotificationList } as NotificationList;
     message.notifications = [];
@@ -8682,35 +9030,41 @@ export const NotificationList = {
         message.notifications.push(Notification.fromPartial(e));
       }
     }
-    if (object.cacheable_cursor !== undefined && object.cacheable_cursor !== null) {
+    if (
+      object.cacheable_cursor !== undefined &&
+      object.cacheable_cursor !== null
+    ) {
       message.cacheable_cursor = object.cacheable_cursor;
     }
     return message;
   },
-  toJSON(message: NotificationList): unknown {
-    const obj: any = {};
-    if (message.notifications) {
-      obj.notifications = message.notifications.map(e => e ? Notification.toJSON(e) : undefined);
-    } else {
-      obj.notifications = [];
-    }
-    message.cacheable_cursor !== undefined && (obj.cacheable_cursor = message.cacheable_cursor);
-    return obj;
-  },
 };
 
+const basePromoteGroupUsersRequest: object = { group_id: "", user_ids: "" };
+
 export const PromoteGroupUsersRequest = {
-  encode(message: PromoteGroupUsersRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.group_id);
+  encode(
+    message: PromoteGroupUsersRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.group_id !== "") {
+      writer.uint32(10).string(message.group_id);
+    }
     for (const v of message.user_ids) {
       writer.uint32(18).string(v!);
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): PromoteGroupUsersRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): PromoteGroupUsersRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...basePromoteGroupUsersRequest } as PromoteGroupUsersRequest;
+    const message = {
+      ...basePromoteGroupUsersRequest,
+    } as PromoteGroupUsersRequest;
     message.user_ids = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -8728,8 +9082,11 @@ export const PromoteGroupUsersRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): PromoteGroupUsersRequest {
-    const message = { ...basePromoteGroupUsersRequest } as PromoteGroupUsersRequest;
+    const message = {
+      ...basePromoteGroupUsersRequest,
+    } as PromoteGroupUsersRequest;
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
@@ -8741,43 +9098,59 @@ export const PromoteGroupUsersRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<PromoteGroupUsersRequest>): PromoteGroupUsersRequest {
-    const message = { ...basePromoteGroupUsersRequest } as PromoteGroupUsersRequest;
-    message.user_ids = [];
-    if (object.group_id !== undefined && object.group_id !== null) {
-      message.group_id = object.group_id;
-    }
-    if (object.user_ids !== undefined && object.user_ids !== null) {
-      for (const e of object.user_ids) {
-        message.user_ids.push(e);
-      }
-    }
-    return message;
-  },
+
   toJSON(message: PromoteGroupUsersRequest): unknown {
     const obj: any = {};
     message.group_id !== undefined && (obj.group_id = message.group_id);
     if (message.user_ids) {
-      obj.user_ids = message.user_ids.map(e => e);
+      obj.user_ids = message.user_ids.map((e) => e);
     } else {
       obj.user_ids = [];
     }
     return obj;
   },
+
+  fromPartial(
+    object: DeepPartial<PromoteGroupUsersRequest>
+  ): PromoteGroupUsersRequest {
+    const message = {
+      ...basePromoteGroupUsersRequest,
+    } as PromoteGroupUsersRequest;
+    message.user_ids = [];
+    if (object.group_id !== undefined && object.group_id !== null) {
+      message.group_id = object.group_id;
+    }
+    if (object.user_ids !== undefined && object.user_ids !== null) {
+      for (const e of object.user_ids) {
+        message.user_ids.push(e);
+      }
+    }
+    return message;
+  },
 };
 
+const baseDemoteGroupUsersRequest: object = { group_id: "", user_ids: "" };
+
 export const DemoteGroupUsersRequest = {
-  encode(message: DemoteGroupUsersRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.group_id);
+  encode(
+    message: DemoteGroupUsersRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.group_id !== "") {
+      writer.uint32(10).string(message.group_id);
+    }
     for (const v of message.user_ids) {
       writer.uint32(18).string(v!);
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): DemoteGroupUsersRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): DemoteGroupUsersRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseDemoteGroupUsersRequest } as DemoteGroupUsersRequest;
+    const message = {
+      ...baseDemoteGroupUsersRequest,
+    } as DemoteGroupUsersRequest;
     message.user_ids = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -8795,8 +9168,11 @@ export const DemoteGroupUsersRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): DemoteGroupUsersRequest {
-    const message = { ...baseDemoteGroupUsersRequest } as DemoteGroupUsersRequest;
+    const message = {
+      ...baseDemoteGroupUsersRequest,
+    } as DemoteGroupUsersRequest;
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
@@ -8808,8 +9184,24 @@ export const DemoteGroupUsersRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<DemoteGroupUsersRequest>): DemoteGroupUsersRequest {
-    const message = { ...baseDemoteGroupUsersRequest } as DemoteGroupUsersRequest;
+
+  toJSON(message: DemoteGroupUsersRequest): unknown {
+    const obj: any = {};
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    if (message.user_ids) {
+      obj.user_ids = message.user_ids.map((e) => e);
+    } else {
+      obj.user_ids = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<DemoteGroupUsersRequest>
+  ): DemoteGroupUsersRequest {
+    const message = {
+      ...baseDemoteGroupUsersRequest,
+    } as DemoteGroupUsersRequest;
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
@@ -8821,27 +9213,33 @@ export const DemoteGroupUsersRequest = {
     }
     return message;
   },
-  toJSON(message: DemoteGroupUsersRequest): unknown {
-    const obj: any = {};
-    message.group_id !== undefined && (obj.group_id = message.group_id);
-    if (message.user_ids) {
-      obj.user_ids = message.user_ids.map(e => e);
-    } else {
-      obj.user_ids = [];
-    }
-    return obj;
-  },
+};
+
+const baseReadStorageObjectId: object = {
+  collection: "",
+  key: "",
+  user_id: "",
 };
 
 export const ReadStorageObjectId = {
-  encode(message: ReadStorageObjectId, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.collection);
-    writer.uint32(18).string(message.key);
-    writer.uint32(26).string(message.user_id);
+  encode(
+    message: ReadStorageObjectId,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.collection !== "") {
+      writer.uint32(10).string(message.collection);
+    }
+    if (message.key !== "") {
+      writer.uint32(18).string(message.key);
+    }
+    if (message.user_id !== "") {
+      writer.uint32(26).string(message.user_id);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ReadStorageObjectId {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): ReadStorageObjectId {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseReadStorageObjectId } as ReadStorageObjectId;
     while (reader.pos < end) {
@@ -8863,6 +9261,7 @@ export const ReadStorageObjectId = {
     }
     return message;
   },
+
   fromJSON(object: any): ReadStorageObjectId {
     const message = { ...baseReadStorageObjectId } as ReadStorageObjectId;
     if (object.collection !== undefined && object.collection !== null) {
@@ -8876,6 +9275,15 @@ export const ReadStorageObjectId = {
     }
     return message;
   },
+
+  toJSON(message: ReadStorageObjectId): unknown {
+    const obj: any = {};
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.key !== undefined && (obj.key = message.key);
+    message.user_id !== undefined && (obj.user_id = message.user_id);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<ReadStorageObjectId>): ReadStorageObjectId {
     const message = { ...baseReadStorageObjectId } as ReadStorageObjectId;
     if (object.collection !== undefined && object.collection !== null) {
@@ -8889,32 +9297,38 @@ export const ReadStorageObjectId = {
     }
     return message;
   },
-  toJSON(message: ReadStorageObjectId): unknown {
-    const obj: any = {};
-    message.collection !== undefined && (obj.collection = message.collection);
-    message.key !== undefined && (obj.key = message.key);
-    message.user_id !== undefined && (obj.user_id = message.user_id);
-    return obj;
-  },
 };
 
+const baseReadStorageObjectsRequest: object = {};
+
 export const ReadStorageObjectsRequest = {
-  encode(message: ReadStorageObjectsRequest, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: ReadStorageObjectsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
     for (const v of message.object_ids) {
       ReadStorageObjectId.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): ReadStorageObjectsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ReadStorageObjectsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseReadStorageObjectsRequest } as ReadStorageObjectsRequest;
+    const message = {
+      ...baseReadStorageObjectsRequest,
+    } as ReadStorageObjectsRequest;
     message.object_ids = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.object_ids.push(ReadStorageObjectId.decode(reader, reader.uint32()));
+          message.object_ids.push(
+            ReadStorageObjectId.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -8923,8 +9337,11 @@ export const ReadStorageObjectsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): ReadStorageObjectsRequest {
-    const message = { ...baseReadStorageObjectsRequest } as ReadStorageObjectsRequest;
+    const message = {
+      ...baseReadStorageObjectsRequest,
+    } as ReadStorageObjectsRequest;
     message.object_ids = [];
     if (object.object_ids !== undefined && object.object_ids !== null) {
       for (const e of object.object_ids) {
@@ -8933,8 +9350,25 @@ export const ReadStorageObjectsRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<ReadStorageObjectsRequest>): ReadStorageObjectsRequest {
-    const message = { ...baseReadStorageObjectsRequest } as ReadStorageObjectsRequest;
+
+  toJSON(message: ReadStorageObjectsRequest): unknown {
+    const obj: any = {};
+    if (message.object_ids) {
+      obj.object_ids = message.object_ids.map((e) =>
+        e ? ReadStorageObjectId.toJSON(e) : undefined
+      );
+    } else {
+      obj.object_ids = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ReadStorageObjectsRequest>
+  ): ReadStorageObjectsRequest {
+    const message = {
+      ...baseReadStorageObjectsRequest,
+    } as ReadStorageObjectsRequest;
     message.object_ids = [];
     if (object.object_ids !== undefined && object.object_ids !== null) {
       for (const e of object.object_ids) {
@@ -8943,26 +9377,26 @@ export const ReadStorageObjectsRequest = {
     }
     return message;
   },
-  toJSON(message: ReadStorageObjectsRequest): unknown {
-    const obj: any = {};
-    if (message.object_ids) {
-      obj.object_ids = message.object_ids.map(e => e ? ReadStorageObjectId.toJSON(e) : undefined);
-    } else {
-      obj.object_ids = [];
-    }
-    return obj;
-  },
 };
+
+const baseRpc: object = { id: "", payload: "", http_key: "" };
 
 export const Rpc = {
   encode(message: Rpc, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.id);
-    writer.uint32(18).string(message.payload);
-    writer.uint32(26).string(message.http_key);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.payload !== "") {
+      writer.uint32(18).string(message.payload);
+    }
+    if (message.http_key !== "") {
+      writer.uint32(26).string(message.http_key);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): Rpc {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): Rpc {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseRpc } as Rpc;
     while (reader.pos < end) {
@@ -8984,6 +9418,7 @@ export const Rpc = {
     }
     return message;
   },
+
   fromJSON(object: any): Rpc {
     const message = { ...baseRpc } as Rpc;
     if (object.id !== undefined && object.id !== null) {
@@ -8997,6 +9432,15 @@ export const Rpc = {
     }
     return message;
   },
+
+  toJSON(message: Rpc): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    message.payload !== undefined && (obj.payload = message.payload);
+    message.http_key !== undefined && (obj.http_key = message.http_key);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<Rpc>): Rpc {
     const message = { ...baseRpc } as Rpc;
     if (object.id !== undefined && object.id !== null) {
@@ -9010,24 +9454,26 @@ export const Rpc = {
     }
     return message;
   },
-  toJSON(message: Rpc): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    message.payload !== undefined && (obj.payload = message.payload);
-    message.http_key !== undefined && (obj.http_key = message.http_key);
-    return obj;
-  },
 };
+
+const baseSession: object = { created: false, token: "", refresh_token: "" };
 
 export const Session = {
   encode(message: Session, writer: Writer = Writer.create()): Writer {
-    writer.uint32(8).bool(message.created);
-    writer.uint32(18).string(message.token);
-    writer.uint32(26).string(message.refresh_token);
+    if (message.created === true) {
+      writer.uint32(8).bool(message.created);
+    }
+    if (message.token !== "") {
+      writer.uint32(18).string(message.token);
+    }
+    if (message.refresh_token !== "") {
+      writer.uint32(26).string(message.refresh_token);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): Session {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): Session {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseSession } as Session;
     while (reader.pos < end) {
@@ -9049,6 +9495,7 @@ export const Session = {
     }
     return message;
   },
+
   fromJSON(object: any): Session {
     const message = { ...baseSession } as Session;
     if (object.created !== undefined && object.created !== null) {
@@ -9062,6 +9509,16 @@ export const Session = {
     }
     return message;
   },
+
+  toJSON(message: Session): unknown {
+    const obj: any = {};
+    message.created !== undefined && (obj.created = message.created);
+    message.token !== undefined && (obj.token = message.token);
+    message.refresh_token !== undefined &&
+      (obj.refresh_token = message.refresh_token);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<Session>): Session {
     const message = { ...baseSession } as Session;
     if (object.created !== undefined && object.created !== null) {
@@ -9075,34 +9532,58 @@ export const Session = {
     }
     return message;
   },
-  toJSON(message: Session): unknown {
-    const obj: any = {};
-    message.created !== undefined && (obj.created = message.created);
-    message.token !== undefined && (obj.token = message.token);
-    message.refresh_token !== undefined && (obj.refresh_token = message.refresh_token);
-    return obj;
-  },
+};
+
+const baseStorageObject: object = {
+  collection: "",
+  key: "",
+  user_id: "",
+  value: "",
+  version: "",
+  permission_read: 0,
+  permission_write: 0,
 };
 
 export const StorageObject = {
   encode(message: StorageObject, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.collection);
-    writer.uint32(18).string(message.key);
-    writer.uint32(26).string(message.user_id);
-    writer.uint32(34).string(message.value);
-    writer.uint32(42).string(message.version);
-    writer.uint32(48).int32(message.permission_read);
-    writer.uint32(56).int32(message.permission_write);
-    if (message.create_time !== undefined && message.create_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.create_time), writer.uint32(66).fork()).ldelim();
+    if (message.collection !== "") {
+      writer.uint32(10).string(message.collection);
     }
-    if (message.update_time !== undefined && message.update_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.update_time), writer.uint32(74).fork()).ldelim();
+    if (message.key !== "") {
+      writer.uint32(18).string(message.key);
+    }
+    if (message.user_id !== "") {
+      writer.uint32(26).string(message.user_id);
+    }
+    if (message.value !== "") {
+      writer.uint32(34).string(message.value);
+    }
+    if (message.version !== "") {
+      writer.uint32(42).string(message.version);
+    }
+    if (message.permission_read !== 0) {
+      writer.uint32(48).int32(message.permission_read);
+    }
+    if (message.permission_write !== 0) {
+      writer.uint32(56).int32(message.permission_write);
+    }
+    if (message.create_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.create_time),
+        writer.uint32(66).fork()
+      ).ldelim();
+    }
+    if (message.update_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.update_time),
+        writer.uint32(74).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): StorageObject {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): StorageObject {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseStorageObject } as StorageObject;
     while (reader.pos < end) {
@@ -9130,10 +9611,14 @@ export const StorageObject = {
           message.permission_write = reader.int32();
           break;
         case 8:
-          message.create_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.create_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 9:
-          message.update_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.update_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -9142,6 +9627,7 @@ export const StorageObject = {
     }
     return message;
   },
+
   fromJSON(object: any): StorageObject {
     const message = { ...baseStorageObject } as StorageObject;
     if (object.collection !== undefined && object.collection !== null) {
@@ -9159,10 +9645,16 @@ export const StorageObject = {
     if (object.version !== undefined && object.version !== null) {
       message.version = String(object.version);
     }
-    if (object.permission_read !== undefined && object.permission_read !== null) {
+    if (
+      object.permission_read !== undefined &&
+      object.permission_read !== null
+    ) {
       message.permission_read = Number(object.permission_read);
     }
-    if (object.permission_write !== undefined && object.permission_write !== null) {
+    if (
+      object.permission_write !== undefined &&
+      object.permission_write !== null
+    ) {
       message.permission_write = Number(object.permission_write);
     }
     if (object.create_time !== undefined && object.create_time !== null) {
@@ -9173,6 +9665,25 @@ export const StorageObject = {
     }
     return message;
   },
+
+  toJSON(message: StorageObject): unknown {
+    const obj: any = {};
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.key !== undefined && (obj.key = message.key);
+    message.user_id !== undefined && (obj.user_id = message.user_id);
+    message.value !== undefined && (obj.value = message.value);
+    message.version !== undefined && (obj.version = message.version);
+    message.permission_read !== undefined &&
+      (obj.permission_read = message.permission_read);
+    message.permission_write !== undefined &&
+      (obj.permission_write = message.permission_write);
+    message.create_time !== undefined &&
+      (obj.create_time = message.create_time.toISOString());
+    message.update_time !== undefined &&
+      (obj.update_time = message.update_time.toISOString());
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<StorageObject>): StorageObject {
     const message = { ...baseStorageObject } as StorageObject;
     if (object.collection !== undefined && object.collection !== null) {
@@ -9190,10 +9701,16 @@ export const StorageObject = {
     if (object.version !== undefined && object.version !== null) {
       message.version = object.version;
     }
-    if (object.permission_read !== undefined && object.permission_read !== null) {
+    if (
+      object.permission_read !== undefined &&
+      object.permission_read !== null
+    ) {
       message.permission_read = object.permission_read;
     }
-    if (object.permission_write !== undefined && object.permission_write !== null) {
+    if (
+      object.permission_write !== undefined &&
+      object.permission_write !== null
+    ) {
       message.permission_write = object.permission_write;
     }
     if (object.create_time !== undefined && object.create_time !== null) {
@@ -9204,31 +9721,34 @@ export const StorageObject = {
     }
     return message;
   },
-  toJSON(message: StorageObject): unknown {
-    const obj: any = {};
-    message.collection !== undefined && (obj.collection = message.collection);
-    message.key !== undefined && (obj.key = message.key);
-    message.user_id !== undefined && (obj.user_id = message.user_id);
-    message.value !== undefined && (obj.value = message.value);
-    message.version !== undefined && (obj.version = message.version);
-    message.permission_read !== undefined && (obj.permission_read = message.permission_read);
-    message.permission_write !== undefined && (obj.permission_write = message.permission_write);
-    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
-    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
-    return obj;
-  },
+};
+
+const baseStorageObjectAck: object = {
+  collection: "",
+  key: "",
+  version: "",
+  user_id: "",
 };
 
 export const StorageObjectAck = {
   encode(message: StorageObjectAck, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.collection);
-    writer.uint32(18).string(message.key);
-    writer.uint32(26).string(message.version);
-    writer.uint32(34).string(message.user_id);
+    if (message.collection !== "") {
+      writer.uint32(10).string(message.collection);
+    }
+    if (message.key !== "") {
+      writer.uint32(18).string(message.key);
+    }
+    if (message.version !== "") {
+      writer.uint32(26).string(message.version);
+    }
+    if (message.user_id !== "") {
+      writer.uint32(34).string(message.user_id);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): StorageObjectAck {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): StorageObjectAck {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseStorageObjectAck } as StorageObjectAck;
     while (reader.pos < end) {
@@ -9253,6 +9773,7 @@ export const StorageObjectAck = {
     }
     return message;
   },
+
   fromJSON(object: any): StorageObjectAck {
     const message = { ...baseStorageObjectAck } as StorageObjectAck;
     if (object.collection !== undefined && object.collection !== null) {
@@ -9269,6 +9790,16 @@ export const StorageObjectAck = {
     }
     return message;
   },
+
+  toJSON(message: StorageObjectAck): unknown {
+    const obj: any = {};
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.key !== undefined && (obj.key = message.key);
+    message.version !== undefined && (obj.version = message.version);
+    message.user_id !== undefined && (obj.user_id = message.user_id);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<StorageObjectAck>): StorageObjectAck {
     const message = { ...baseStorageObjectAck } as StorageObjectAck;
     if (object.collection !== undefined && object.collection !== null) {
@@ -9285,15 +9816,9 @@ export const StorageObjectAck = {
     }
     return message;
   },
-  toJSON(message: StorageObjectAck): unknown {
-    const obj: any = {};
-    message.collection !== undefined && (obj.collection = message.collection);
-    message.key !== undefined && (obj.key = message.key);
-    message.version !== undefined && (obj.version = message.version);
-    message.user_id !== undefined && (obj.user_id = message.user_id);
-    return obj;
-  },
 };
+
+const baseStorageObjectAcks: object = {};
 
 export const StorageObjectAcks = {
   encode(message: StorageObjectAcks, writer: Writer = Writer.create()): Writer {
@@ -9302,8 +9827,9 @@ export const StorageObjectAcks = {
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): StorageObjectAcks {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): StorageObjectAcks {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseStorageObjectAcks } as StorageObjectAcks;
     message.acks = [];
@@ -9320,6 +9846,7 @@ export const StorageObjectAcks = {
     }
     return message;
   },
+
   fromJSON(object: any): StorageObjectAcks {
     const message = { ...baseStorageObjectAcks } as StorageObjectAcks;
     message.acks = [];
@@ -9330,6 +9857,19 @@ export const StorageObjectAcks = {
     }
     return message;
   },
+
+  toJSON(message: StorageObjectAcks): unknown {
+    const obj: any = {};
+    if (message.acks) {
+      obj.acks = message.acks.map((e) =>
+        e ? StorageObjectAck.toJSON(e) : undefined
+      );
+    } else {
+      obj.acks = [];
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<StorageObjectAcks>): StorageObjectAcks {
     const message = { ...baseStorageObjectAcks } as StorageObjectAcks;
     message.acks = [];
@@ -9340,16 +9880,9 @@ export const StorageObjectAcks = {
     }
     return message;
   },
-  toJSON(message: StorageObjectAcks): unknown {
-    const obj: any = {};
-    if (message.acks) {
-      obj.acks = message.acks.map(e => e ? StorageObjectAck.toJSON(e) : undefined);
-    } else {
-      obj.acks = [];
-    }
-    return obj;
-  },
 };
+
+const baseStorageObjects: object = {};
 
 export const StorageObjects = {
   encode(message: StorageObjects, writer: Writer = Writer.create()): Writer {
@@ -9358,8 +9891,9 @@ export const StorageObjects = {
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): StorageObjects {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): StorageObjects {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseStorageObjects } as StorageObjects;
     message.objects = [];
@@ -9376,6 +9910,7 @@ export const StorageObjects = {
     }
     return message;
   },
+
   fromJSON(object: any): StorageObjects {
     const message = { ...baseStorageObjects } as StorageObjects;
     message.objects = [];
@@ -9386,6 +9921,19 @@ export const StorageObjects = {
     }
     return message;
   },
+
+  toJSON(message: StorageObjects): unknown {
+    const obj: any = {};
+    if (message.objects) {
+      obj.objects = message.objects.map((e) =>
+        e ? StorageObject.toJSON(e) : undefined
+      );
+    } else {
+      obj.objects = [];
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<StorageObjects>): StorageObjects {
     const message = { ...baseStorageObjects } as StorageObjects;
     message.objects = [];
@@ -9396,27 +9944,23 @@ export const StorageObjects = {
     }
     return message;
   },
-  toJSON(message: StorageObjects): unknown {
-    const obj: any = {};
-    if (message.objects) {
-      obj.objects = message.objects.map(e => e ? StorageObject.toJSON(e) : undefined);
-    } else {
-      obj.objects = [];
-    }
-    return obj;
-  },
 };
+
+const baseStorageObjectList: object = { cursor: "" };
 
 export const StorageObjectList = {
   encode(message: StorageObjectList, writer: Writer = Writer.create()): Writer {
     for (const v of message.objects) {
       StorageObject.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    writer.uint32(18).string(message.cursor);
+    if (message.cursor !== "") {
+      writer.uint32(18).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): StorageObjectList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): StorageObjectList {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseStorageObjectList } as StorageObjectList;
     message.objects = [];
@@ -9436,6 +9980,7 @@ export const StorageObjectList = {
     }
     return message;
   },
+
   fromJSON(object: any): StorageObjectList {
     const message = { ...baseStorageObjectList } as StorageObjectList;
     message.objects = [];
@@ -9449,6 +9994,20 @@ export const StorageObjectList = {
     }
     return message;
   },
+
+  toJSON(message: StorageObjectList): unknown {
+    const obj: any = {};
+    if (message.objects) {
+      obj.objects = message.objects.map((e) =>
+        e ? StorageObject.toJSON(e) : undefined
+      );
+    } else {
+      obj.objects = [];
+    }
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<StorageObjectList>): StorageObjectList {
     const message = { ...baseStorageObjectList } as StorageObjectList;
     message.objects = [];
@@ -9462,47 +10021,92 @@ export const StorageObjectList = {
     }
     return message;
   },
-  toJSON(message: StorageObjectList): unknown {
-    const obj: any = {};
-    if (message.objects) {
-      obj.objects = message.objects.map(e => e ? StorageObject.toJSON(e) : undefined);
-    } else {
-      obj.objects = [];
-    }
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
+};
+
+const baseTournament: object = {
+  id: "",
+  title: "",
+  description: "",
+  category: 0,
+  sort_order: 0,
+  size: 0,
+  max_size: 0,
+  max_num_score: 0,
+  can_enter: false,
+  end_active: 0,
+  next_reset: 0,
+  metadata: "",
+  duration: 0,
+  start_active: 0,
 };
 
 export const Tournament = {
   encode(message: Tournament, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.id);
-    writer.uint32(18).string(message.title);
-    writer.uint32(26).string(message.description);
-    writer.uint32(32).uint32(message.category);
-    writer.uint32(40).uint32(message.sort_order);
-    writer.uint32(48).uint32(message.size);
-    writer.uint32(56).uint32(message.max_size);
-    writer.uint32(64).uint32(message.max_num_score);
-    writer.uint32(72).bool(message.can_enter);
-    writer.uint32(80).uint32(message.end_active);
-    writer.uint32(88).uint32(message.next_reset);
-    writer.uint32(98).string(message.metadata);
-    if (message.create_time !== undefined && message.create_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.create_time), writer.uint32(106).fork()).ldelim();
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
-    if (message.start_time !== undefined && message.start_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.start_time), writer.uint32(114).fork()).ldelim();
+    if (message.title !== "") {
+      writer.uint32(18).string(message.title);
     }
-    if (message.end_time !== undefined && message.end_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.end_time), writer.uint32(122).fork()).ldelim();
+    if (message.description !== "") {
+      writer.uint32(26).string(message.description);
     }
-    writer.uint32(128).uint32(message.duration);
-    writer.uint32(136).uint32(message.start_active);
+    if (message.category !== 0) {
+      writer.uint32(32).uint32(message.category);
+    }
+    if (message.sort_order !== 0) {
+      writer.uint32(40).uint32(message.sort_order);
+    }
+    if (message.size !== 0) {
+      writer.uint32(48).uint32(message.size);
+    }
+    if (message.max_size !== 0) {
+      writer.uint32(56).uint32(message.max_size);
+    }
+    if (message.max_num_score !== 0) {
+      writer.uint32(64).uint32(message.max_num_score);
+    }
+    if (message.can_enter === true) {
+      writer.uint32(72).bool(message.can_enter);
+    }
+    if (message.end_active !== 0) {
+      writer.uint32(80).uint32(message.end_active);
+    }
+    if (message.next_reset !== 0) {
+      writer.uint32(88).uint32(message.next_reset);
+    }
+    if (message.metadata !== "") {
+      writer.uint32(98).string(message.metadata);
+    }
+    if (message.create_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.create_time),
+        writer.uint32(106).fork()
+      ).ldelim();
+    }
+    if (message.start_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.start_time),
+        writer.uint32(114).fork()
+      ).ldelim();
+    }
+    if (message.end_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.end_time),
+        writer.uint32(122).fork()
+      ).ldelim();
+    }
+    if (message.duration !== 0) {
+      writer.uint32(128).uint32(message.duration);
+    }
+    if (message.start_active !== 0) {
+      writer.uint32(136).uint32(message.start_active);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): Tournament {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): Tournament {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseTournament } as Tournament;
     while (reader.pos < end) {
@@ -9545,13 +10149,19 @@ export const Tournament = {
           message.metadata = reader.string();
           break;
         case 13:
-          message.create_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.create_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 14:
-          message.start_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.start_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 15:
-          message.end_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.end_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 16:
           message.duration = reader.uint32();
@@ -9566,6 +10176,7 @@ export const Tournament = {
     }
     return message;
   },
+
   fromJSON(object: any): Tournament {
     const message = { ...baseTournament } as Tournament;
     if (object.id !== undefined && object.id !== null) {
@@ -9621,6 +10232,35 @@ export const Tournament = {
     }
     return message;
   },
+
+  toJSON(message: Tournament): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    message.title !== undefined && (obj.title = message.title);
+    message.description !== undefined &&
+      (obj.description = message.description);
+    message.category !== undefined && (obj.category = message.category);
+    message.sort_order !== undefined && (obj.sort_order = message.sort_order);
+    message.size !== undefined && (obj.size = message.size);
+    message.max_size !== undefined && (obj.max_size = message.max_size);
+    message.max_num_score !== undefined &&
+      (obj.max_num_score = message.max_num_score);
+    message.can_enter !== undefined && (obj.can_enter = message.can_enter);
+    message.end_active !== undefined && (obj.end_active = message.end_active);
+    message.next_reset !== undefined && (obj.next_reset = message.next_reset);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.create_time !== undefined &&
+      (obj.create_time = message.create_time.toISOString());
+    message.start_time !== undefined &&
+      (obj.start_time = message.start_time.toISOString());
+    message.end_time !== undefined &&
+      (obj.end_time = message.end_time.toISOString());
+    message.duration !== undefined && (obj.duration = message.duration);
+    message.start_active !== undefined &&
+      (obj.start_active = message.start_active);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<Tournament>): Tournament {
     const message = { ...baseTournament } as Tournament;
     if (object.id !== undefined && object.id !== null) {
@@ -9676,39 +10316,23 @@ export const Tournament = {
     }
     return message;
   },
-  toJSON(message: Tournament): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    message.title !== undefined && (obj.title = message.title);
-    message.description !== undefined && (obj.description = message.description);
-    message.category !== undefined && (obj.category = message.category);
-    message.sort_order !== undefined && (obj.sort_order = message.sort_order);
-    message.size !== undefined && (obj.size = message.size);
-    message.max_size !== undefined && (obj.max_size = message.max_size);
-    message.max_num_score !== undefined && (obj.max_num_score = message.max_num_score);
-    message.can_enter !== undefined && (obj.can_enter = message.can_enter);
-    message.end_active !== undefined && (obj.end_active = message.end_active);
-    message.next_reset !== undefined && (obj.next_reset = message.next_reset);
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
-    message.start_time !== undefined && (obj.start_time = message.start_time !== undefined ? message.start_time.toISOString() : null);
-    message.end_time !== undefined && (obj.end_time = message.end_time !== undefined ? message.end_time.toISOString() : null);
-    message.duration !== undefined && (obj.duration = message.duration);
-    message.start_active !== undefined && (obj.start_active = message.start_active);
-    return obj;
-  },
 };
+
+const baseTournamentList: object = { cursor: "" };
 
 export const TournamentList = {
   encode(message: TournamentList, writer: Writer = Writer.create()): Writer {
     for (const v of message.tournaments) {
       Tournament.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    writer.uint32(18).string(message.cursor);
+    if (message.cursor !== "") {
+      writer.uint32(18).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): TournamentList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): TournamentList {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseTournamentList } as TournamentList;
     message.tournaments = [];
@@ -9728,6 +10352,7 @@ export const TournamentList = {
     }
     return message;
   },
+
   fromJSON(object: any): TournamentList {
     const message = { ...baseTournamentList } as TournamentList;
     message.tournaments = [];
@@ -9741,6 +10366,20 @@ export const TournamentList = {
     }
     return message;
   },
+
+  toJSON(message: TournamentList): unknown {
+    const obj: any = {};
+    if (message.tournaments) {
+      obj.tournaments = message.tournaments.map((e) =>
+        e ? Tournament.toJSON(e) : undefined
+      );
+    } else {
+      obj.tournaments = [];
+    }
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<TournamentList>): TournamentList {
     const message = { ...baseTournamentList } as TournamentList;
     message.tournaments = [];
@@ -9754,32 +10393,32 @@ export const TournamentList = {
     }
     return message;
   },
-  toJSON(message: TournamentList): unknown {
-    const obj: any = {};
-    if (message.tournaments) {
-      obj.tournaments = message.tournaments.map(e => e ? Tournament.toJSON(e) : undefined);
-    } else {
-      obj.tournaments = [];
-    }
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
 };
 
+const baseTournamentRecordList: object = { next_cursor: "", prev_cursor: "" };
+
 export const TournamentRecordList = {
-  encode(message: TournamentRecordList, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: TournamentRecordList,
+    writer: Writer = Writer.create()
+  ): Writer {
     for (const v of message.records) {
       LeaderboardRecord.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     for (const v of message.owner_records) {
       LeaderboardRecord.encode(v!, writer.uint32(18).fork()).ldelim();
     }
-    writer.uint32(26).string(message.next_cursor);
-    writer.uint32(34).string(message.prev_cursor);
+    if (message.next_cursor !== "") {
+      writer.uint32(26).string(message.next_cursor);
+    }
+    if (message.prev_cursor !== "") {
+      writer.uint32(34).string(message.prev_cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): TournamentRecordList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): TournamentRecordList {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseTournamentRecordList } as TournamentRecordList;
     message.records = [];
@@ -9788,10 +10427,14 @@ export const TournamentRecordList = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.records.push(LeaderboardRecord.decode(reader, reader.uint32()));
+          message.records.push(
+            LeaderboardRecord.decode(reader, reader.uint32())
+          );
           break;
         case 2:
-          message.owner_records.push(LeaderboardRecord.decode(reader, reader.uint32()));
+          message.owner_records.push(
+            LeaderboardRecord.decode(reader, reader.uint32())
+          );
           break;
         case 3:
           message.next_cursor = reader.string();
@@ -9806,6 +10449,7 @@ export const TournamentRecordList = {
     }
     return message;
   },
+
   fromJSON(object: any): TournamentRecordList {
     const message = { ...baseTournamentRecordList } as TournamentRecordList;
     message.records = [];
@@ -9828,6 +10472,30 @@ export const TournamentRecordList = {
     }
     return message;
   },
+
+  toJSON(message: TournamentRecordList): unknown {
+    const obj: any = {};
+    if (message.records) {
+      obj.records = message.records.map((e) =>
+        e ? LeaderboardRecord.toJSON(e) : undefined
+      );
+    } else {
+      obj.records = [];
+    }
+    if (message.owner_records) {
+      obj.owner_records = message.owner_records.map((e) =>
+        e ? LeaderboardRecord.toJSON(e) : undefined
+      );
+    } else {
+      obj.owner_records = [];
+    }
+    message.next_cursor !== undefined &&
+      (obj.next_cursor = message.next_cursor);
+    message.prev_cursor !== undefined &&
+      (obj.prev_cursor = message.prev_cursor);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<TournamentRecordList>): TournamentRecordList {
     const message = { ...baseTournamentRecordList } as TournamentRecordList;
     message.records = [];
@@ -9850,48 +10518,56 @@ export const TournamentRecordList = {
     }
     return message;
   },
-  toJSON(message: TournamentRecordList): unknown {
-    const obj: any = {};
-    if (message.records) {
-      obj.records = message.records.map(e => e ? LeaderboardRecord.toJSON(e) : undefined);
-    } else {
-      obj.records = [];
-    }
-    if (message.owner_records) {
-      obj.owner_records = message.owner_records.map(e => e ? LeaderboardRecord.toJSON(e) : undefined);
-    } else {
-      obj.owner_records = [];
-    }
-    message.next_cursor !== undefined && (obj.next_cursor = message.next_cursor);
-    message.prev_cursor !== undefined && (obj.prev_cursor = message.prev_cursor);
-    return obj;
-  },
 };
 
+const baseUpdateAccountRequest: object = {};
+
 export const UpdateAccountRequest = {
-  encode(message: UpdateAccountRequest, writer: Writer = Writer.create()): Writer {
-    if (message.username !== undefined && message.username !== undefined) {
-      StringValue.encode({ value: message.username! }, writer.uint32(10).fork()).ldelim();
+  encode(
+    message: UpdateAccountRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.username !== undefined) {
+      StringValue.encode(
+        { value: message.username! },
+        writer.uint32(10).fork()
+      ).ldelim();
     }
-    if (message.display_name !== undefined && message.display_name !== undefined) {
-      StringValue.encode({ value: message.display_name! }, writer.uint32(18).fork()).ldelim();
+    if (message.display_name !== undefined) {
+      StringValue.encode(
+        { value: message.display_name! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    if (message.avatar_url !== undefined && message.avatar_url !== undefined) {
-      StringValue.encode({ value: message.avatar_url! }, writer.uint32(26).fork()).ldelim();
+    if (message.avatar_url !== undefined) {
+      StringValue.encode(
+        { value: message.avatar_url! },
+        writer.uint32(26).fork()
+      ).ldelim();
     }
-    if (message.lang_tag !== undefined && message.lang_tag !== undefined) {
-      StringValue.encode({ value: message.lang_tag! }, writer.uint32(34).fork()).ldelim();
+    if (message.lang_tag !== undefined) {
+      StringValue.encode(
+        { value: message.lang_tag! },
+        writer.uint32(34).fork()
+      ).ldelim();
     }
-    if (message.location !== undefined && message.location !== undefined) {
-      StringValue.encode({ value: message.location! }, writer.uint32(42).fork()).ldelim();
+    if (message.location !== undefined) {
+      StringValue.encode(
+        { value: message.location! },
+        writer.uint32(42).fork()
+      ).ldelim();
     }
-    if (message.timezone !== undefined && message.timezone !== undefined) {
-      StringValue.encode({ value: message.timezone! }, writer.uint32(50).fork()).ldelim();
+    if (message.timezone !== undefined) {
+      StringValue.encode(
+        { value: message.timezone! },
+        writer.uint32(50).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): UpdateAccountRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): UpdateAccountRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseUpdateAccountRequest } as UpdateAccountRequest;
     while (reader.pos < end) {
@@ -9901,10 +10577,16 @@ export const UpdateAccountRequest = {
           message.username = StringValue.decode(reader, reader.uint32()).value;
           break;
         case 2:
-          message.display_name = StringValue.decode(reader, reader.uint32()).value;
+          message.display_name = StringValue.decode(
+            reader,
+            reader.uint32()
+          ).value;
           break;
         case 3:
-          message.avatar_url = StringValue.decode(reader, reader.uint32()).value;
+          message.avatar_url = StringValue.decode(
+            reader,
+            reader.uint32()
+          ).value;
           break;
         case 4:
           message.lang_tag = StringValue.decode(reader, reader.uint32()).value;
@@ -9922,6 +10604,7 @@ export const UpdateAccountRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): UpdateAccountRequest {
     const message = { ...baseUpdateAccountRequest } as UpdateAccountRequest;
     if (object.username !== undefined && object.username !== null) {
@@ -9944,6 +10627,19 @@ export const UpdateAccountRequest = {
     }
     return message;
   },
+
+  toJSON(message: UpdateAccountRequest): unknown {
+    const obj: any = {};
+    message.username !== undefined && (obj.username = message.username);
+    message.display_name !== undefined &&
+      (obj.display_name = message.display_name);
+    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
+    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
+    message.location !== undefined && (obj.location = message.location);
+    message.timezone !== undefined && (obj.timezone = message.timezone);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<UpdateAccountRequest>): UpdateAccountRequest {
     const message = { ...baseUpdateAccountRequest } as UpdateAccountRequest;
     if (object.username !== undefined && object.username !== null) {
@@ -9966,40 +10662,53 @@ export const UpdateAccountRequest = {
     }
     return message;
   },
-  toJSON(message: UpdateAccountRequest): unknown {
-    const obj: any = {};
-    message.username !== undefined && (obj.username = message.username);
-    message.display_name !== undefined && (obj.display_name = message.display_name);
-    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
-    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
-    message.location !== undefined && (obj.location = message.location);
-    message.timezone !== undefined && (obj.timezone = message.timezone);
-    return obj;
-  },
 };
 
+const baseUpdateGroupRequest: object = { group_id: "" };
+
 export const UpdateGroupRequest = {
-  encode(message: UpdateGroupRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.group_id);
-    if (message.name !== undefined && message.name !== undefined) {
-      StringValue.encode({ value: message.name! }, writer.uint32(18).fork()).ldelim();
+  encode(
+    message: UpdateGroupRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.group_id !== "") {
+      writer.uint32(10).string(message.group_id);
     }
-    if (message.description !== undefined && message.description !== undefined) {
-      StringValue.encode({ value: message.description! }, writer.uint32(26).fork()).ldelim();
+    if (message.name !== undefined) {
+      StringValue.encode(
+        { value: message.name! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
-    if (message.lang_tag !== undefined && message.lang_tag !== undefined) {
-      StringValue.encode({ value: message.lang_tag! }, writer.uint32(34).fork()).ldelim();
+    if (message.description !== undefined) {
+      StringValue.encode(
+        { value: message.description! },
+        writer.uint32(26).fork()
+      ).ldelim();
     }
-    if (message.avatar_url !== undefined && message.avatar_url !== undefined) {
-      StringValue.encode({ value: message.avatar_url! }, writer.uint32(42).fork()).ldelim();
+    if (message.lang_tag !== undefined) {
+      StringValue.encode(
+        { value: message.lang_tag! },
+        writer.uint32(34).fork()
+      ).ldelim();
     }
-    if (message.open !== undefined && message.open !== undefined) {
-      BoolValue.encode({ value: message.open! }, writer.uint32(50).fork()).ldelim();
+    if (message.avatar_url !== undefined) {
+      StringValue.encode(
+        { value: message.avatar_url! },
+        writer.uint32(42).fork()
+      ).ldelim();
+    }
+    if (message.open !== undefined) {
+      BoolValue.encode(
+        { value: message.open! },
+        writer.uint32(50).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): UpdateGroupRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): UpdateGroupRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseUpdateGroupRequest } as UpdateGroupRequest;
     while (reader.pos < end) {
@@ -10012,13 +10721,19 @@ export const UpdateGroupRequest = {
           message.name = StringValue.decode(reader, reader.uint32()).value;
           break;
         case 3:
-          message.description = StringValue.decode(reader, reader.uint32()).value;
+          message.description = StringValue.decode(
+            reader,
+            reader.uint32()
+          ).value;
           break;
         case 4:
           message.lang_tag = StringValue.decode(reader, reader.uint32()).value;
           break;
         case 5:
-          message.avatar_url = StringValue.decode(reader, reader.uint32()).value;
+          message.avatar_url = StringValue.decode(
+            reader,
+            reader.uint32()
+          ).value;
           break;
         case 6:
           message.open = BoolValue.decode(reader, reader.uint32()).value;
@@ -10030,6 +10745,7 @@ export const UpdateGroupRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): UpdateGroupRequest {
     const message = { ...baseUpdateGroupRequest } as UpdateGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
@@ -10052,6 +10768,19 @@ export const UpdateGroupRequest = {
     }
     return message;
   },
+
+  toJSON(message: UpdateGroupRequest): unknown {
+    const obj: any = {};
+    message.group_id !== undefined && (obj.group_id = message.group_id);
+    message.name !== undefined && (obj.name = message.name);
+    message.description !== undefined &&
+      (obj.description = message.description);
+    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
+    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
+    message.open !== undefined && (obj.open = message.open);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<UpdateGroupRequest>): UpdateGroupRequest {
     const message = { ...baseUpdateGroupRequest } as UpdateGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
@@ -10074,46 +10803,94 @@ export const UpdateGroupRequest = {
     }
     return message;
   },
-  toJSON(message: UpdateGroupRequest): unknown {
-    const obj: any = {};
-    message.group_id !== undefined && (obj.group_id = message.group_id);
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
-    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
-    message.open !== undefined && (obj.open = message.open);
-    return obj;
-  },
+};
+
+const baseUser: object = {
+  id: "",
+  username: "",
+  display_name: "",
+  avatar_url: "",
+  lang_tag: "",
+  location: "",
+  timezone: "",
+  metadata: "",
+  facebook_id: "",
+  google_id: "",
+  gamecenter_id: "",
+  steam_id: "",
+  online: false,
+  edge_count: 0,
+  facebook_instant_game_id: "",
+  apple_id: "",
 };
 
 export const User = {
   encode(message: User, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.id);
-    writer.uint32(18).string(message.username);
-    writer.uint32(26).string(message.display_name);
-    writer.uint32(34).string(message.avatar_url);
-    writer.uint32(42).string(message.lang_tag);
-    writer.uint32(50).string(message.location);
-    writer.uint32(58).string(message.timezone);
-    writer.uint32(66).string(message.metadata);
-    writer.uint32(74).string(message.facebook_id);
-    writer.uint32(82).string(message.google_id);
-    writer.uint32(90).string(message.gamecenter_id);
-    writer.uint32(98).string(message.steam_id);
-    writer.uint32(104).bool(message.online);
-    writer.uint32(112).int32(message.edge_count);
-    if (message.create_time !== undefined && message.create_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.create_time), writer.uint32(122).fork()).ldelim();
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
-    if (message.update_time !== undefined && message.update_time !== undefined) {
-      Timestamp.encode(toTimestamp(message.update_time), writer.uint32(130).fork()).ldelim();
+    if (message.username !== "") {
+      writer.uint32(18).string(message.username);
     }
-    writer.uint32(138).string(message.facebook_instant_game_id);
-    writer.uint32(146).string(message.apple_id);
+    if (message.display_name !== "") {
+      writer.uint32(26).string(message.display_name);
+    }
+    if (message.avatar_url !== "") {
+      writer.uint32(34).string(message.avatar_url);
+    }
+    if (message.lang_tag !== "") {
+      writer.uint32(42).string(message.lang_tag);
+    }
+    if (message.location !== "") {
+      writer.uint32(50).string(message.location);
+    }
+    if (message.timezone !== "") {
+      writer.uint32(58).string(message.timezone);
+    }
+    if (message.metadata !== "") {
+      writer.uint32(66).string(message.metadata);
+    }
+    if (message.facebook_id !== "") {
+      writer.uint32(74).string(message.facebook_id);
+    }
+    if (message.google_id !== "") {
+      writer.uint32(82).string(message.google_id);
+    }
+    if (message.gamecenter_id !== "") {
+      writer.uint32(90).string(message.gamecenter_id);
+    }
+    if (message.steam_id !== "") {
+      writer.uint32(98).string(message.steam_id);
+    }
+    if (message.online === true) {
+      writer.uint32(104).bool(message.online);
+    }
+    if (message.edge_count !== 0) {
+      writer.uint32(112).int32(message.edge_count);
+    }
+    if (message.create_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.create_time),
+        writer.uint32(122).fork()
+      ).ldelim();
+    }
+    if (message.update_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.update_time),
+        writer.uint32(130).fork()
+      ).ldelim();
+    }
+    if (message.facebook_instant_game_id !== "") {
+      writer.uint32(138).string(message.facebook_instant_game_id);
+    }
+    if (message.apple_id !== "") {
+      writer.uint32(146).string(message.apple_id);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): User {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): User {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseUser } as User;
     while (reader.pos < end) {
@@ -10162,10 +10939,14 @@ export const User = {
           message.edge_count = reader.int32();
           break;
         case 15:
-          message.create_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.create_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 16:
-          message.update_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.update_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 17:
           message.facebook_instant_game_id = reader.string();
@@ -10180,6 +10961,7 @@ export const User = {
     }
     return message;
   },
+
   fromJSON(object: any): User {
     const message = { ...baseUser } as User;
     if (object.id !== undefined && object.id !== null) {
@@ -10230,14 +11012,49 @@ export const User = {
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = fromJsonTimestamp(object.update_time);
     }
-    if (object.facebook_instant_game_id !== undefined && object.facebook_instant_game_id !== null) {
-      message.facebook_instant_game_id = String(object.facebook_instant_game_id);
+    if (
+      object.facebook_instant_game_id !== undefined &&
+      object.facebook_instant_game_id !== null
+    ) {
+      message.facebook_instant_game_id = String(
+        object.facebook_instant_game_id
+      );
     }
     if (object.apple_id !== undefined && object.apple_id !== null) {
       message.apple_id = String(object.apple_id);
     }
     return message;
   },
+
+  toJSON(message: User): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    message.username !== undefined && (obj.username = message.username);
+    message.display_name !== undefined &&
+      (obj.display_name = message.display_name);
+    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
+    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
+    message.location !== undefined && (obj.location = message.location);
+    message.timezone !== undefined && (obj.timezone = message.timezone);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.facebook_id !== undefined &&
+      (obj.facebook_id = message.facebook_id);
+    message.google_id !== undefined && (obj.google_id = message.google_id);
+    message.gamecenter_id !== undefined &&
+      (obj.gamecenter_id = message.gamecenter_id);
+    message.steam_id !== undefined && (obj.steam_id = message.steam_id);
+    message.online !== undefined && (obj.online = message.online);
+    message.edge_count !== undefined && (obj.edge_count = message.edge_count);
+    message.create_time !== undefined &&
+      (obj.create_time = message.create_time.toISOString());
+    message.update_time !== undefined &&
+      (obj.update_time = message.update_time.toISOString());
+    message.facebook_instant_game_id !== undefined &&
+      (obj.facebook_instant_game_id = message.facebook_instant_game_id);
+    message.apple_id !== undefined && (obj.apple_id = message.apple_id);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<User>): User {
     const message = { ...baseUser } as User;
     if (object.id !== undefined && object.id !== null) {
@@ -10288,7 +11105,10 @@ export const User = {
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = object.update_time;
     }
-    if (object.facebook_instant_game_id !== undefined && object.facebook_instant_game_id !== null) {
+    if (
+      object.facebook_instant_game_id !== undefined &&
+      object.facebook_instant_game_id !== null
+    ) {
       message.facebook_instant_game_id = object.facebook_instant_game_id;
     }
     if (object.apple_id !== undefined && object.apple_id !== null) {
@@ -10296,40 +11116,23 @@ export const User = {
     }
     return message;
   },
-  toJSON(message: User): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    message.username !== undefined && (obj.username = message.username);
-    message.display_name !== undefined && (obj.display_name = message.display_name);
-    message.avatar_url !== undefined && (obj.avatar_url = message.avatar_url);
-    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
-    message.location !== undefined && (obj.location = message.location);
-    message.timezone !== undefined && (obj.timezone = message.timezone);
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    message.facebook_id !== undefined && (obj.facebook_id = message.facebook_id);
-    message.google_id !== undefined && (obj.google_id = message.google_id);
-    message.gamecenter_id !== undefined && (obj.gamecenter_id = message.gamecenter_id);
-    message.steam_id !== undefined && (obj.steam_id = message.steam_id);
-    message.online !== undefined && (obj.online = message.online);
-    message.edge_count !== undefined && (obj.edge_count = message.edge_count);
-    message.create_time !== undefined && (obj.create_time = message.create_time !== undefined ? message.create_time.toISOString() : null);
-    message.update_time !== undefined && (obj.update_time = message.update_time !== undefined ? message.update_time.toISOString() : null);
-    message.facebook_instant_game_id !== undefined && (obj.facebook_instant_game_id = message.facebook_instant_game_id);
-    message.apple_id !== undefined && (obj.apple_id = message.apple_id);
-    return obj;
-  },
 };
+
+const baseUserGroupList: object = { cursor: "" };
 
 export const UserGroupList = {
   encode(message: UserGroupList, writer: Writer = Writer.create()): Writer {
     for (const v of message.user_groups) {
       UserGroupList_UserGroup.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    writer.uint32(18).string(message.cursor);
+    if (message.cursor !== "") {
+      writer.uint32(18).string(message.cursor);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): UserGroupList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): UserGroupList {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseUserGroupList } as UserGroupList;
     message.user_groups = [];
@@ -10337,7 +11140,9 @@ export const UserGroupList = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.user_groups.push(UserGroupList_UserGroup.decode(reader, reader.uint32()));
+          message.user_groups.push(
+            UserGroupList_UserGroup.decode(reader, reader.uint32())
+          );
           break;
         case 2:
           message.cursor = reader.string();
@@ -10349,6 +11154,7 @@ export const UserGroupList = {
     }
     return message;
   },
+
   fromJSON(object: any): UserGroupList {
     const message = { ...baseUserGroupList } as UserGroupList;
     message.user_groups = [];
@@ -10362,6 +11168,20 @@ export const UserGroupList = {
     }
     return message;
   },
+
+  toJSON(message: UserGroupList): unknown {
+    const obj: any = {};
+    if (message.user_groups) {
+      obj.user_groups = message.user_groups.map((e) =>
+        e ? UserGroupList_UserGroup.toJSON(e) : undefined
+      );
+    } else {
+      obj.user_groups = [];
+    }
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<UserGroupList>): UserGroupList {
     const message = { ...baseUserGroupList } as UserGroupList;
     message.user_groups = [];
@@ -10375,32 +11195,33 @@ export const UserGroupList = {
     }
     return message;
   },
-  toJSON(message: UserGroupList): unknown {
-    const obj: any = {};
-    if (message.user_groups) {
-      obj.user_groups = message.user_groups.map(e => e ? UserGroupList_UserGroup.toJSON(e) : undefined);
-    } else {
-      obj.user_groups = [];
-    }
-    message.cursor !== undefined && (obj.cursor = message.cursor);
-    return obj;
-  },
 };
 
+const baseUserGroupList_UserGroup: object = {};
+
 export const UserGroupList_UserGroup = {
-  encode(message: UserGroupList_UserGroup, writer: Writer = Writer.create()): Writer {
-    if (message.group !== undefined && message.group !== undefined) {
+  encode(
+    message: UserGroupList_UserGroup,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.group !== undefined) {
       Group.encode(message.group, writer.uint32(10).fork()).ldelim();
     }
-    if (message.state !== undefined && message.state !== undefined) {
-      Int32Value.encode({ value: message.state! }, writer.uint32(18).fork()).ldelim();
+    if (message.state !== undefined) {
+      Int32Value.encode(
+        { value: message.state! },
+        writer.uint32(18).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): UserGroupList_UserGroup {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): UserGroupList_UserGroup {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseUserGroupList_UserGroup } as UserGroupList_UserGroup;
+    const message = {
+      ...baseUserGroupList_UserGroup,
+    } as UserGroupList_UserGroup;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -10417,8 +11238,11 @@ export const UserGroupList_UserGroup = {
     }
     return message;
   },
+
   fromJSON(object: any): UserGroupList_UserGroup {
-    const message = { ...baseUserGroupList_UserGroup } as UserGroupList_UserGroup;
+    const message = {
+      ...baseUserGroupList_UserGroup,
+    } as UserGroupList_UserGroup;
     if (object.group !== undefined && object.group !== null) {
       message.group = Group.fromJSON(object.group);
     }
@@ -10427,8 +11251,21 @@ export const UserGroupList_UserGroup = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<UserGroupList_UserGroup>): UserGroupList_UserGroup {
-    const message = { ...baseUserGroupList_UserGroup } as UserGroupList_UserGroup;
+
+  toJSON(message: UserGroupList_UserGroup): unknown {
+    const obj: any = {};
+    message.group !== undefined &&
+      (obj.group = message.group ? Group.toJSON(message.group) : undefined);
+    message.state !== undefined && (obj.state = message.state);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<UserGroupList_UserGroup>
+  ): UserGroupList_UserGroup {
+    const message = {
+      ...baseUserGroupList_UserGroup,
+    } as UserGroupList_UserGroup;
     if (object.group !== undefined && object.group !== null) {
       message.group = Group.fromPartial(object.group);
     }
@@ -10437,13 +11274,9 @@ export const UserGroupList_UserGroup = {
     }
     return message;
   },
-  toJSON(message: UserGroupList_UserGroup): unknown {
-    const obj: any = {};
-    message.group !== undefined && (obj.group = message.group ? Group.toJSON(message.group) : undefined);
-    message.state !== undefined && (obj.state = message.state);
-    return obj;
-  },
 };
+
+const baseUsers: object = {};
 
 export const Users = {
   encode(message: Users, writer: Writer = Writer.create()): Writer {
@@ -10452,8 +11285,9 @@ export const Users = {
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): Users {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): Users {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseUsers } as Users;
     message.users = [];
@@ -10470,6 +11304,7 @@ export const Users = {
     }
     return message;
   },
+
   fromJSON(object: any): Users {
     const message = { ...baseUsers } as Users;
     message.users = [];
@@ -10480,6 +11315,17 @@ export const Users = {
     }
     return message;
   },
+
+  toJSON(message: Users): unknown {
+    const obj: any = {};
+    if (message.users) {
+      obj.users = message.users.map((e) => (e ? User.toJSON(e) : undefined));
+    } else {
+      obj.users = [];
+    }
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<Users>): Users {
     const message = { ...baseUsers } as Users;
     message.users = [];
@@ -10490,29 +11336,36 @@ export const Users = {
     }
     return message;
   },
-  toJSON(message: Users): unknown {
-    const obj: any = {};
-    if (message.users) {
-      obj.users = message.users.map(e => e ? User.toJSON(e) : undefined);
-    } else {
-      obj.users = [];
-    }
-    return obj;
-  },
 };
 
+const baseWriteLeaderboardRecordRequest: object = { leaderboard_id: "" };
+
 export const WriteLeaderboardRecordRequest = {
-  encode(message: WriteLeaderboardRecordRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.leaderboard_id);
-    if (message.record !== undefined && message.record !== undefined) {
-      WriteLeaderboardRecordRequest_LeaderboardRecordWrite.encode(message.record, writer.uint32(18).fork()).ldelim();
+  encode(
+    message: WriteLeaderboardRecordRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.leaderboard_id !== "") {
+      writer.uint32(10).string(message.leaderboard_id);
+    }
+    if (message.record !== undefined) {
+      WriteLeaderboardRecordRequest_LeaderboardRecordWrite.encode(
+        message.record,
+        writer.uint32(18).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): WriteLeaderboardRecordRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): WriteLeaderboardRecordRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseWriteLeaderboardRecordRequest } as WriteLeaderboardRecordRequest;
+    const message = {
+      ...baseWriteLeaderboardRecordRequest,
+    } as WriteLeaderboardRecordRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -10520,7 +11373,10 @@ export const WriteLeaderboardRecordRequest = {
           message.leaderboard_id = reader.string();
           break;
         case 2:
-          message.record = WriteLeaderboardRecordRequest_LeaderboardRecordWrite.decode(reader, reader.uint32());
+          message.record = WriteLeaderboardRecordRequest_LeaderboardRecordWrite.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -10529,45 +11385,85 @@ export const WriteLeaderboardRecordRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): WriteLeaderboardRecordRequest {
-    const message = { ...baseWriteLeaderboardRecordRequest } as WriteLeaderboardRecordRequest;
+    const message = {
+      ...baseWriteLeaderboardRecordRequest,
+    } as WriteLeaderboardRecordRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = String(object.leaderboard_id);
     }
     if (object.record !== undefined && object.record !== null) {
-      message.record = WriteLeaderboardRecordRequest_LeaderboardRecordWrite.fromJSON(object.record);
+      message.record = WriteLeaderboardRecordRequest_LeaderboardRecordWrite.fromJSON(
+        object.record
+      );
     }
     return message;
   },
-  fromPartial(object: DeepPartial<WriteLeaderboardRecordRequest>): WriteLeaderboardRecordRequest {
-    const message = { ...baseWriteLeaderboardRecordRequest } as WriteLeaderboardRecordRequest;
+
+  toJSON(message: WriteLeaderboardRecordRequest): unknown {
+    const obj: any = {};
+    message.leaderboard_id !== undefined &&
+      (obj.leaderboard_id = message.leaderboard_id);
+    message.record !== undefined &&
+      (obj.record = message.record
+        ? WriteLeaderboardRecordRequest_LeaderboardRecordWrite.toJSON(
+            message.record
+          )
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<WriteLeaderboardRecordRequest>
+  ): WriteLeaderboardRecordRequest {
+    const message = {
+      ...baseWriteLeaderboardRecordRequest,
+    } as WriteLeaderboardRecordRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = object.leaderboard_id;
     }
     if (object.record !== undefined && object.record !== null) {
-      message.record = WriteLeaderboardRecordRequest_LeaderboardRecordWrite.fromPartial(object.record);
+      message.record = WriteLeaderboardRecordRequest_LeaderboardRecordWrite.fromPartial(
+        object.record
+      );
     }
     return message;
   },
-  toJSON(message: WriteLeaderboardRecordRequest): unknown {
-    const obj: any = {};
-    message.leaderboard_id !== undefined && (obj.leaderboard_id = message.leaderboard_id);
-    message.record !== undefined && (obj.record = message.record ? WriteLeaderboardRecordRequest_LeaderboardRecordWrite.toJSON(message.record) : undefined);
-    return obj;
-  },
+};
+
+const baseWriteLeaderboardRecordRequest_LeaderboardRecordWrite: object = {
+  score: 0,
+  subscore: 0,
+  metadata: "",
 };
 
 export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
-  encode(message: WriteLeaderboardRecordRequest_LeaderboardRecordWrite, writer: Writer = Writer.create()): Writer {
-    writer.uint32(8).int64(message.score);
-    writer.uint32(16).int64(message.subscore);
-    writer.uint32(26).string(message.metadata);
+  encode(
+    message: WriteLeaderboardRecordRequest_LeaderboardRecordWrite,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.score !== 0) {
+      writer.uint32(8).int64(message.score);
+    }
+    if (message.subscore !== 0) {
+      writer.uint32(16).int64(message.subscore);
+    }
+    if (message.metadata !== "") {
+      writer.uint32(26).string(message.metadata);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseWriteLeaderboardRecordRequest_LeaderboardRecordWrite } as WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
+    const message = {
+      ...baseWriteLeaderboardRecordRequest_LeaderboardRecordWrite,
+    } as WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -10587,8 +11483,11 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
     }
     return message;
   },
+
   fromJSON(object: any): WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
-    const message = { ...baseWriteLeaderboardRecordRequest_LeaderboardRecordWrite } as WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
+    const message = {
+      ...baseWriteLeaderboardRecordRequest_LeaderboardRecordWrite,
+    } as WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
     if (object.score !== undefined && object.score !== null) {
       message.score = Number(object.score);
     }
@@ -10600,8 +11499,23 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<WriteLeaderboardRecordRequest_LeaderboardRecordWrite>): WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
-    const message = { ...baseWriteLeaderboardRecordRequest_LeaderboardRecordWrite } as WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
+
+  toJSON(
+    message: WriteLeaderboardRecordRequest_LeaderboardRecordWrite
+  ): unknown {
+    const obj: any = {};
+    message.score !== undefined && (obj.score = message.score);
+    message.subscore !== undefined && (obj.subscore = message.subscore);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<WriteLeaderboardRecordRequest_LeaderboardRecordWrite>
+  ): WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
+    const message = {
+      ...baseWriteLeaderboardRecordRequest_LeaderboardRecordWrite,
+    } as WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
     if (object.score !== undefined && object.score !== null) {
       message.score = object.score;
     }
@@ -10613,31 +11527,49 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
     }
     return message;
   },
-  toJSON(message: WriteLeaderboardRecordRequest_LeaderboardRecordWrite): unknown {
-    const obj: any = {};
-    message.score !== undefined && (obj.score = message.score);
-    message.subscore !== undefined && (obj.subscore = message.subscore);
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    return obj;
-  },
+};
+
+const baseWriteStorageObject: object = {
+  collection: "",
+  key: "",
+  value: "",
+  version: "",
 };
 
 export const WriteStorageObject = {
-  encode(message: WriteStorageObject, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.collection);
-    writer.uint32(18).string(message.key);
-    writer.uint32(26).string(message.value);
-    writer.uint32(34).string(message.version);
-    if (message.permission_read !== undefined && message.permission_read !== undefined) {
-      Int32Value.encode({ value: message.permission_read! }, writer.uint32(42).fork()).ldelim();
+  encode(
+    message: WriteStorageObject,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.collection !== "") {
+      writer.uint32(10).string(message.collection);
     }
-    if (message.permission_write !== undefined && message.permission_write !== undefined) {
-      Int32Value.encode({ value: message.permission_write! }, writer.uint32(50).fork()).ldelim();
+    if (message.key !== "") {
+      writer.uint32(18).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(26).string(message.value);
+    }
+    if (message.version !== "") {
+      writer.uint32(34).string(message.version);
+    }
+    if (message.permission_read !== undefined) {
+      Int32Value.encode(
+        { value: message.permission_read! },
+        writer.uint32(42).fork()
+      ).ldelim();
+    }
+    if (message.permission_write !== undefined) {
+      Int32Value.encode(
+        { value: message.permission_write! },
+        writer.uint32(50).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): WriteStorageObject {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(input: Reader | Uint8Array, length?: number): WriteStorageObject {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseWriteStorageObject } as WriteStorageObject;
     while (reader.pos < end) {
@@ -10656,10 +11588,16 @@ export const WriteStorageObject = {
           message.version = reader.string();
           break;
         case 5:
-          message.permission_read = Int32Value.decode(reader, reader.uint32()).value;
+          message.permission_read = Int32Value.decode(
+            reader,
+            reader.uint32()
+          ).value;
           break;
         case 6:
-          message.permission_write = Int32Value.decode(reader, reader.uint32()).value;
+          message.permission_write = Int32Value.decode(
+            reader,
+            reader.uint32()
+          ).value;
           break;
         default:
           reader.skipType(tag & 7);
@@ -10668,6 +11606,7 @@ export const WriteStorageObject = {
     }
     return message;
   },
+
   fromJSON(object: any): WriteStorageObject {
     const message = { ...baseWriteStorageObject } as WriteStorageObject;
     if (object.collection !== undefined && object.collection !== null) {
@@ -10682,14 +11621,34 @@ export const WriteStorageObject = {
     if (object.version !== undefined && object.version !== null) {
       message.version = String(object.version);
     }
-    if (object.permission_read !== undefined && object.permission_read !== null) {
+    if (
+      object.permission_read !== undefined &&
+      object.permission_read !== null
+    ) {
       message.permission_read = Number(object.permission_read);
     }
-    if (object.permission_write !== undefined && object.permission_write !== null) {
+    if (
+      object.permission_write !== undefined &&
+      object.permission_write !== null
+    ) {
       message.permission_write = Number(object.permission_write);
     }
     return message;
   },
+
+  toJSON(message: WriteStorageObject): unknown {
+    const obj: any = {};
+    message.collection !== undefined && (obj.collection = message.collection);
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    message.version !== undefined && (obj.version = message.version);
+    message.permission_read !== undefined &&
+      (obj.permission_read = message.permission_read);
+    message.permission_write !== undefined &&
+      (obj.permission_write = message.permission_write);
+    return obj;
+  },
+
   fromPartial(object: DeepPartial<WriteStorageObject>): WriteStorageObject {
     const message = { ...baseWriteStorageObject } as WriteStorageObject;
     if (object.collection !== undefined && object.collection !== null) {
@@ -10704,43 +11663,52 @@ export const WriteStorageObject = {
     if (object.version !== undefined && object.version !== null) {
       message.version = object.version;
     }
-    if (object.permission_read !== undefined && object.permission_read !== null) {
+    if (
+      object.permission_read !== undefined &&
+      object.permission_read !== null
+    ) {
       message.permission_read = object.permission_read;
     }
-    if (object.permission_write !== undefined && object.permission_write !== null) {
+    if (
+      object.permission_write !== undefined &&
+      object.permission_write !== null
+    ) {
       message.permission_write = object.permission_write;
     }
     return message;
   },
-  toJSON(message: WriteStorageObject): unknown {
-    const obj: any = {};
-    message.collection !== undefined && (obj.collection = message.collection);
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
-    message.version !== undefined && (obj.version = message.version);
-    message.permission_read !== undefined && (obj.permission_read = message.permission_read);
-    message.permission_write !== undefined && (obj.permission_write = message.permission_write);
-    return obj;
-  },
 };
 
+const baseWriteStorageObjectsRequest: object = {};
+
 export const WriteStorageObjectsRequest = {
-  encode(message: WriteStorageObjectsRequest, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: WriteStorageObjectsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
     for (const v of message.objects) {
       WriteStorageObject.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): WriteStorageObjectsRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): WriteStorageObjectsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseWriteStorageObjectsRequest } as WriteStorageObjectsRequest;
+    const message = {
+      ...baseWriteStorageObjectsRequest,
+    } as WriteStorageObjectsRequest;
     message.objects = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.objects.push(WriteStorageObject.decode(reader, reader.uint32()));
+          message.objects.push(
+            WriteStorageObject.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -10749,8 +11717,11 @@ export const WriteStorageObjectsRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): WriteStorageObjectsRequest {
-    const message = { ...baseWriteStorageObjectsRequest } as WriteStorageObjectsRequest;
+    const message = {
+      ...baseWriteStorageObjectsRequest,
+    } as WriteStorageObjectsRequest;
     message.objects = [];
     if (object.objects !== undefined && object.objects !== null) {
       for (const e of object.objects) {
@@ -10759,8 +11730,25 @@ export const WriteStorageObjectsRequest = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<WriteStorageObjectsRequest>): WriteStorageObjectsRequest {
-    const message = { ...baseWriteStorageObjectsRequest } as WriteStorageObjectsRequest;
+
+  toJSON(message: WriteStorageObjectsRequest): unknown {
+    const obj: any = {};
+    if (message.objects) {
+      obj.objects = message.objects.map((e) =>
+        e ? WriteStorageObject.toJSON(e) : undefined
+      );
+    } else {
+      obj.objects = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<WriteStorageObjectsRequest>
+  ): WriteStorageObjectsRequest {
+    const message = {
+      ...baseWriteStorageObjectsRequest,
+    } as WriteStorageObjectsRequest;
     message.objects = [];
     if (object.objects !== undefined && object.objects !== null) {
       for (const e of object.objects) {
@@ -10769,29 +11757,36 @@ export const WriteStorageObjectsRequest = {
     }
     return message;
   },
-  toJSON(message: WriteStorageObjectsRequest): unknown {
-    const obj: any = {};
-    if (message.objects) {
-      obj.objects = message.objects.map(e => e ? WriteStorageObject.toJSON(e) : undefined);
-    } else {
-      obj.objects = [];
-    }
-    return obj;
-  },
 };
 
+const baseWriteTournamentRecordRequest: object = { tournament_id: "" };
+
 export const WriteTournamentRecordRequest = {
-  encode(message: WriteTournamentRecordRequest, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.tournament_id);
-    if (message.record !== undefined && message.record !== undefined) {
-      WriteTournamentRecordRequest_TournamentRecordWrite.encode(message.record, writer.uint32(18).fork()).ldelim();
+  encode(
+    message: WriteTournamentRecordRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.tournament_id !== "") {
+      writer.uint32(10).string(message.tournament_id);
+    }
+    if (message.record !== undefined) {
+      WriteTournamentRecordRequest_TournamentRecordWrite.encode(
+        message.record,
+        writer.uint32(18).fork()
+      ).ldelim();
     }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): WriteTournamentRecordRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): WriteTournamentRecordRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseWriteTournamentRecordRequest } as WriteTournamentRecordRequest;
+    const message = {
+      ...baseWriteTournamentRecordRequest,
+    } as WriteTournamentRecordRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -10799,7 +11794,10 @@ export const WriteTournamentRecordRequest = {
           message.tournament_id = reader.string();
           break;
         case 2:
-          message.record = WriteTournamentRecordRequest_TournamentRecordWrite.decode(reader, reader.uint32());
+          message.record = WriteTournamentRecordRequest_TournamentRecordWrite.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -10808,45 +11806,85 @@ export const WriteTournamentRecordRequest = {
     }
     return message;
   },
+
   fromJSON(object: any): WriteTournamentRecordRequest {
-    const message = { ...baseWriteTournamentRecordRequest } as WriteTournamentRecordRequest;
+    const message = {
+      ...baseWriteTournamentRecordRequest,
+    } as WriteTournamentRecordRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = String(object.tournament_id);
     }
     if (object.record !== undefined && object.record !== null) {
-      message.record = WriteTournamentRecordRequest_TournamentRecordWrite.fromJSON(object.record);
+      message.record = WriteTournamentRecordRequest_TournamentRecordWrite.fromJSON(
+        object.record
+      );
     }
     return message;
   },
-  fromPartial(object: DeepPartial<WriteTournamentRecordRequest>): WriteTournamentRecordRequest {
-    const message = { ...baseWriteTournamentRecordRequest } as WriteTournamentRecordRequest;
+
+  toJSON(message: WriteTournamentRecordRequest): unknown {
+    const obj: any = {};
+    message.tournament_id !== undefined &&
+      (obj.tournament_id = message.tournament_id);
+    message.record !== undefined &&
+      (obj.record = message.record
+        ? WriteTournamentRecordRequest_TournamentRecordWrite.toJSON(
+            message.record
+          )
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<WriteTournamentRecordRequest>
+  ): WriteTournamentRecordRequest {
+    const message = {
+      ...baseWriteTournamentRecordRequest,
+    } as WriteTournamentRecordRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = object.tournament_id;
     }
     if (object.record !== undefined && object.record !== null) {
-      message.record = WriteTournamentRecordRequest_TournamentRecordWrite.fromPartial(object.record);
+      message.record = WriteTournamentRecordRequest_TournamentRecordWrite.fromPartial(
+        object.record
+      );
     }
     return message;
   },
-  toJSON(message: WriteTournamentRecordRequest): unknown {
-    const obj: any = {};
-    message.tournament_id !== undefined && (obj.tournament_id = message.tournament_id);
-    message.record !== undefined && (obj.record = message.record ? WriteTournamentRecordRequest_TournamentRecordWrite.toJSON(message.record) : undefined);
-    return obj;
-  },
+};
+
+const baseWriteTournamentRecordRequest_TournamentRecordWrite: object = {
+  score: 0,
+  subscore: 0,
+  metadata: "",
 };
 
 export const WriteTournamentRecordRequest_TournamentRecordWrite = {
-  encode(message: WriteTournamentRecordRequest_TournamentRecordWrite, writer: Writer = Writer.create()): Writer {
-    writer.uint32(8).int64(message.score);
-    writer.uint32(16).int64(message.subscore);
-    writer.uint32(26).string(message.metadata);
+  encode(
+    message: WriteTournamentRecordRequest_TournamentRecordWrite,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.score !== 0) {
+      writer.uint32(8).int64(message.score);
+    }
+    if (message.subscore !== 0) {
+      writer.uint32(16).int64(message.subscore);
+    }
+    if (message.metadata !== "") {
+      writer.uint32(26).string(message.metadata);
+    }
     return writer;
   },
-  decode(input: Uint8Array | Reader, length?: number): WriteTournamentRecordRequest_TournamentRecordWrite {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): WriteTournamentRecordRequest_TournamentRecordWrite {
+    const reader = input instanceof Reader ? input : new Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseWriteTournamentRecordRequest_TournamentRecordWrite } as WriteTournamentRecordRequest_TournamentRecordWrite;
+    const message = {
+      ...baseWriteTournamentRecordRequest_TournamentRecordWrite,
+    } as WriteTournamentRecordRequest_TournamentRecordWrite;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -10866,8 +11904,11 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
     }
     return message;
   },
+
   fromJSON(object: any): WriteTournamentRecordRequest_TournamentRecordWrite {
-    const message = { ...baseWriteTournamentRecordRequest_TournamentRecordWrite } as WriteTournamentRecordRequest_TournamentRecordWrite;
+    const message = {
+      ...baseWriteTournamentRecordRequest_TournamentRecordWrite,
+    } as WriteTournamentRecordRequest_TournamentRecordWrite;
     if (object.score !== undefined && object.score !== null) {
       message.score = Number(object.score);
     }
@@ -10879,8 +11920,21 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<WriteTournamentRecordRequest_TournamentRecordWrite>): WriteTournamentRecordRequest_TournamentRecordWrite {
-    const message = { ...baseWriteTournamentRecordRequest_TournamentRecordWrite } as WriteTournamentRecordRequest_TournamentRecordWrite;
+
+  toJSON(message: WriteTournamentRecordRequest_TournamentRecordWrite): unknown {
+    const obj: any = {};
+    message.score !== undefined && (obj.score = message.score);
+    message.subscore !== undefined && (obj.subscore = message.subscore);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<WriteTournamentRecordRequest_TournamentRecordWrite>
+  ): WriteTournamentRecordRequest_TournamentRecordWrite {
+    const message = {
+      ...baseWriteTournamentRecordRequest_TournamentRecordWrite,
+    } as WriteTournamentRecordRequest_TournamentRecordWrite;
     if (object.score !== undefined && object.score !== null) {
       message.score = object.score;
     }
@@ -10892,21 +11946,26 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
     }
     return message;
   },
-  toJSON(message: WriteTournamentRecordRequest_TournamentRecordWrite): unknown {
-    const obj: any = {};
-    message.score !== undefined && (obj.score = message.score);
-    message.subscore !== undefined && (obj.subscore = message.subscore);
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    return obj;
-  },
 };
 
-if (util.Long !== Long as any) {
-  util.Long = Long as any;
-  configure();
-}
+declare var self: any | undefined;
+declare var window: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
 
-type Builtin = Date | Function | Uint8Array | string | number | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 export type DeepPartial<T> = T extends Builtin
   ? T
   : T extends Array<infer U>
@@ -10914,7 +11973,45 @@ export type DeepPartial<T> = T extends Builtin
   : T extends ReadonlyArray<infer U>
   ? ReadonlyArray<DeepPartial<U>>
   : T extends { $case: string }
-  ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+  ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & {
+      $case: T["$case"];
+    }
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = date.getTime() / 1_000;
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = t.seconds * 1_000;
+  millis += t.nanos / 1_000_000;
+  return new Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+// If you get a compile-error about 'Constructor<Long> and ... have no overlap',
+// add '--ts_proto_opt=esModuleInterop=true' as a flag when calling 'protoc'.
+if (util.Long !== Long) {
+  util.Long = Long as any;
+  configure();
+}

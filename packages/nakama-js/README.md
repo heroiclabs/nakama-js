@@ -183,8 +183,8 @@ npx protoc \
 --ts_proto_opt=snakeToCamel=false \
 --ts_proto_opt=useOptionals=true \
 --ts_proto_opt=oneof=unions \
-$GOPATH/src/github.com/heroiclabs/nakama-common/api/api.proto \
-$GOPATH/src/github.com/heroiclabs/nakama-common/rtapi/realtime.proto
+$GOPATH/src/github.com/heroiclabs/nakama-common/rtapi/realtime.proto \
+$GOPATH/src/github.com/heroiclabs/nakama-common/api/api.proto
 ```
 
 ### Release Process

@@ -1757,7 +1757,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js-protobuf@workspace:packages/nakama-js-protobuf"
   dependencies:
-    ts-proto: ^1.27.1
+    ts-proto: ^1.80.1
+    ts-proto-descriptors: 1.2.1
   languageName: unknown
   linkType: soft
 
@@ -19110,13 +19111,6 @@ resolve@^1.19.0:
   languageName: node
   linkType: hard
 
-"ts-imm@npm:0.4.0":
-  version: 0.4.0
-  resolution: "ts-imm@npm:0.4.0"
-  checksum: d41b6d545be7de63bf4e662abc03e81a2d8f6f0db39888e77c1ca88304c7a608d3219050d3c64cce045d2a2407a2bf8d440f26891c611284ce98cbedd19dced7
-  languageName: node
-  linkType: hard
-
 "ts-jest@npm:26.4.4":
   version: 26.4.4
   resolution: "ts-jest@npm:26.4.4"
@@ -19167,28 +19161,40 @@ resolve@^1.19.0:
   languageName: node
   linkType: hard
 
-"ts-poet@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "ts-poet@npm:1.0.1"
+"ts-poet@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "ts-poet@npm:4.5.0"
   dependencies:
+    "@types/prettier": ^1.19.0
     lodash: ^4.17.15
-    ts-imm: 0.4.0
-  checksum: 61f8e2628f98a57f5130679d44a5e802f8e4cf5f635a90fc6bc0445d8e75b6937ac7bde02df5741ffca658771d01c75308a6dafee087b05eac0161ef65e6a5ad
+    prettier: ^2.0.2
+  checksum: 8d8e59a29d8ff3d693cb970df1bd294946ee560ee19ed7eb405cf4b2871c51a4de861988be1b65fc03dc2fb4b60f7d41917dd05cfad79cb48a18c137336a297c
   languageName: node
   linkType: hard
 
-"ts-proto@npm:^1.27.1":
-  version: 1.41.1
-  resolution: "ts-proto@npm:1.41.1"
+"ts-proto-descriptors@npm:1.2.1, ts-proto-descriptors@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "ts-proto-descriptors@npm:1.2.1"
+  dependencies:
+    long: ^4.0.0
+    protobufjs: ^6.8.8
+  checksum: ad62bdf0a3b86a71e6e76d12f89601b9e037df7430225181dfd4546cd62740a9284ba0f94a4bec69fed6a4c938e35ba52089c85edfeebb119d568193d90ba8f5
+  languageName: node
+  linkType: hard
+
+"ts-proto@npm:^1.80.1":
+  version: 1.80.1
+  resolution: "ts-proto@npm:1.80.1"
   dependencies:
     "@types/object-hash": ^1.3.0
     dataloader: ^1.4.0
     object-hash: ^1.3.1
     protobufjs: ^6.8.8
-    ts-poet: ^1.0.1
+    ts-poet: ^4.5.0
+    ts-proto-descriptors: ^1.2.1
   bin:
     protoc-gen-ts_proto: protoc-gen-ts_proto
-  checksum: 352f01662460bcb90d65d5e87f3e9b5ad78f18838f9d4d00bc4f19b1404a5fcabf4cbfe0b8dfb7e5161abdee4e808ece5ff94a59ed6887f90e46822797b55a1d
+  checksum: 530103b09ffdac79cfa4f4382e4424127b6c9c73f3d4243007b663dbbc35a26302ab7fda6b4cb6cabd39e59dde793d3803c888394a7cc3a0b9869ceef40c5ee6
   languageName: node
   linkType: hard
 

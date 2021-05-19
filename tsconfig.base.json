@@ -26,7 +26,6 @@
     "strictFunctionTypes": true,
     "alwaysStrict": true,
   },
-
   "exclude": [
     "node_modules"
   ]
