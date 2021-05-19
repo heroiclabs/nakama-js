@@ -16,11 +16,13 @@
 
 import * as nakamajs from "@heroiclabs/nakama-js";
 import {MatchmakerMatched} from "@heroiclabs/nakama-js/socket";
+import {describe, expect, it} from '@jest/globals'
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType} from "./utils"
-import {describe, expect, it} from '@jest/globals'
 
 describe('Matchmaker Tests', () => {
+
+  const matchmakerTimeout = 20000;
 
   it.each(adapters)('should only add to matchmaker', async (adapter) => {
     const page = await createPage();
@@ -84,12 +86,9 @@ describe('Matchmaker Tests', () => {
       const session2 = await client2.authenticateCustom(customid2);
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("properties.a3:baz", 2, 2, {"a3": "bar"});
-      var promise2 = new Promise<null>((resolve, reject) => {
-        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
-      });
 
-      return Promise.race([promise1, promise2]);
-    }, customid1, customid2, adapter);
+      return promise1;
+    }, customid1, customid2, adapter, matchmakerTimeout);
 
 
     expect(responseTicket).not.toBeNull();
@@ -100,7 +99,7 @@ describe('Matchmaker Tests', () => {
     expect(responseTicket.self.presence.session_id).not.toBeNull();
     expect(responseTicket.self.presence.user_id).not.toBeNull();
     expect(responseTicket.self.presence.username).not.toBeNull();
-  });
+  }, 20000);
 
   it.each(adapters)('should add to matchmaker and match on range', async (adapter) => {
     const page = await createPage();
@@ -127,12 +126,9 @@ describe('Matchmaker Tests', () => {
       const session2 = await client2.authenticateCustom(customid2);
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("+properties.b1:>=10 +properties.b1:<=20", 2, 2, {}, {"b1": 15});
-      var promise2 = new Promise<null>((resolve, reject) => {
-        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
-      });
 
-      return Promise.race([promise1, promise2]);
-    }, customid1, customid2, adapter);
+      return promise1;
+    }, customid1, customid2, adapter, matchmakerTimeout);
 
     expect(response).not.toBeNull();
     expect(response.ticket).not.toBeNull();
@@ -171,11 +167,8 @@ describe('Matchmaker Tests', () => {
       const session2 = await client2.authenticateCustom(customid2);
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("+properties.c1:>=10 +properties.c1:<=20 +properties.c2:foo", 2, 2, {"c2": "foo"}, {"c1": 15});
-      var promise2 = new Promise<null>((resolve, reject) => {
-        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
-      });
-      return Promise.race([promise1, promise2]);
-    }, customid1, customid2, adapter);
+      return promise1;
+    }, customid1, customid2, adapter, matchmakerTimeout);
 
     expect(response).not.toBeNull();
     expect(response.ticket).not.toBeNull();
@@ -416,11 +409,9 @@ describe('Matchmaker Tests', () => {
       const session2 = await client2.authenticateCustom(customid2);
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("properties.d1:foo", 2, 2, {"d1": "foo", "mode": "authoritative"});
-      var promise2 = new Promise<null>((resolve, reject) => {
-        setTimeout(reject, 5000, "did not receive matchmaker matched - timed out.")
-      });
-      return Promise.race([promise1, promise2]);
-    }, customid1, customid2, adapter);
+
+      return promise1;
+    }, customid1, customid2, adapter, matchmakerTimeout);
 
     expect(response).not.toBeNull();
     expect(response.ticket).not.toBeNull();
