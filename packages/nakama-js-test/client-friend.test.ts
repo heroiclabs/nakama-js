@@ -127,7 +127,7 @@ describe('Friend Tests', () => {
     expect(result.friends!.length).toBe(0);
   });
 
-  it('should add friend authenticated via facebook instant, then list', async () => {
+  it.skip('should add friend authenticated via facebook instant, then list', async () => {
     const page : Page = await createPage();
 
     const customid1 = generateid();
