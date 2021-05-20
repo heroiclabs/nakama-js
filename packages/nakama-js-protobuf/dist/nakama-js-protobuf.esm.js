@@ -526,7 +526,7 @@ var require_longbits = __commonJS({
   "node_modules/protobufjs/src/util/longbits.js"(exports2, module2) {
     "use strict";
     module2.exports = LongBits;
-    var util5 = require_minimal();
+    var util6 = require_minimal();
     function LongBits(lo, hi) {
       this.lo = lo >>> 0;
       this.hi = hi >>> 0;
@@ -563,9 +563,9 @@ var require_longbits = __commonJS({
     LongBits.from = function from(value) {
       if (typeof value === "number")
         return LongBits.fromNumber(value);
-      if (util5.isString(value)) {
-        if (util5.Long)
-          value = util5.Long.fromString(value);
+      if (util6.isString(value)) {
+        if (util6.Long)
+          value = util6.Long.fromString(value);
         else
           return LongBits.fromNumber(parseInt(value, 10));
       }
@@ -581,7 +581,7 @@ var require_longbits = __commonJS({
       return this.lo + this.hi * 4294967296;
     };
     LongBits.prototype.toLong = function toLong(unsigned) {
-      return util5.Long ? new util5.Long(this.lo | 0, this.hi | 0, Boolean(unsigned)) : { low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned) };
+      return util6.Long ? new util6.Long(this.lo | 0, this.hi | 0, Boolean(unsigned)) : { low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned) };
     };
     var charCodeAt = String.prototype.charCodeAt;
     LongBits.fromHash = function fromHash(hash) {
@@ -615,59 +615,59 @@ var require_longbits = __commonJS({
 var require_minimal = __commonJS({
   "node_modules/protobufjs/src/util/minimal.js"(exports2) {
     "use strict";
-    var util5 = exports2;
-    util5.asPromise = require_aspromise();
-    util5.base64 = require_base64();
-    util5.EventEmitter = require_eventemitter();
-    util5.float = require_float();
-    util5.inquire = require_inquire();
-    util5.utf8 = require_utf8();
-    util5.pool = require_pool();
-    util5.LongBits = require_longbits();
-    util5.isNode = Boolean(typeof global !== "undefined" && global && global.process && global.process.versions && global.process.versions.node);
-    util5.global = util5.isNode && global || typeof window !== "undefined" && window || typeof self !== "undefined" && self || exports2;
-    util5.emptyArray = Object.freeze ? Object.freeze([]) : [];
-    util5.emptyObject = Object.freeze ? Object.freeze({}) : {};
-    util5.isInteger = Number.isInteger || function isInteger(value) {
+    var util6 = exports2;
+    util6.asPromise = require_aspromise();
+    util6.base64 = require_base64();
+    util6.EventEmitter = require_eventemitter();
+    util6.float = require_float();
+    util6.inquire = require_inquire();
+    util6.utf8 = require_utf8();
+    util6.pool = require_pool();
+    util6.LongBits = require_longbits();
+    util6.isNode = Boolean(typeof global !== "undefined" && global && global.process && global.process.versions && global.process.versions.node);
+    util6.global = util6.isNode && global || typeof window !== "undefined" && window || typeof self !== "undefined" && self || exports2;
+    util6.emptyArray = Object.freeze ? Object.freeze([]) : [];
+    util6.emptyObject = Object.freeze ? Object.freeze({}) : {};
+    util6.isInteger = Number.isInteger || function isInteger(value) {
       return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
     };
-    util5.isString = function isString(value) {
+    util6.isString = function isString(value) {
       return typeof value === "string" || value instanceof String;
     };
-    util5.isObject = function isObject(value) {
+    util6.isObject = function isObject(value) {
       return value && typeof value === "object";
     };
-    util5.isset = util5.isSet = function isSet(obj, prop) {
+    util6.isset = util6.isSet = function isSet(obj, prop) {
       var value = obj[prop];
       if (value != null && obj.hasOwnProperty(prop))
         return typeof value !== "object" || (Array.isArray(value) ? value.length : Object.keys(value).length) > 0;
       return false;
     };
-    util5.Buffer = function() {
+    util6.Buffer = function() {
       try {
-        var Buffer2 = util5.inquire("buffer").Buffer;
+        var Buffer2 = util6.inquire("buffer").Buffer;
         return Buffer2.prototype.utf8Write ? Buffer2 : null;
       } catch (e) {
         return null;
       }
     }();
-    util5._Buffer_from = null;
-    util5._Buffer_allocUnsafe = null;
-    util5.newBuffer = function newBuffer(sizeOrArray) {
-      return typeof sizeOrArray === "number" ? util5.Buffer ? util5._Buffer_allocUnsafe(sizeOrArray) : new util5.Array(sizeOrArray) : util5.Buffer ? util5._Buffer_from(sizeOrArray) : typeof Uint8Array === "undefined" ? sizeOrArray : new Uint8Array(sizeOrArray);
+    util6._Buffer_from = null;
+    util6._Buffer_allocUnsafe = null;
+    util6.newBuffer = function newBuffer(sizeOrArray) {
+      return typeof sizeOrArray === "number" ? util6.Buffer ? util6._Buffer_allocUnsafe(sizeOrArray) : new util6.Array(sizeOrArray) : util6.Buffer ? util6._Buffer_from(sizeOrArray) : typeof Uint8Array === "undefined" ? sizeOrArray : new Uint8Array(sizeOrArray);
     };
-    util5.Array = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
-    util5.Long = util5.global.dcodeIO && util5.global.dcodeIO.Long || util5.global.Long || util5.inquire("long");
-    util5.key2Re = /^true|false|0|1$/;
-    util5.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
-    util5.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
-    util5.longToHash = function longToHash(value) {
-      return value ? util5.LongBits.from(value).toHash() : util5.LongBits.zeroHash;
+    util6.Array = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
+    util6.Long = util6.global.dcodeIO && util6.global.dcodeIO.Long || util6.global.Long || util6.inquire("long");
+    util6.key2Re = /^true|false|0|1$/;
+    util6.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
+    util6.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
+    util6.longToHash = function longToHash(value) {
+      return value ? util6.LongBits.from(value).toHash() : util6.LongBits.zeroHash;
     };
-    util5.longFromHash = function longFromHash(hash, unsigned) {
-      var bits = util5.LongBits.fromHash(hash);
-      if (util5.Long)
-        return util5.Long.fromBits(bits.lo, bits.hi, unsigned);
+    util6.longFromHash = function longFromHash(hash, unsigned) {
+      var bits = util6.LongBits.fromHash(hash);
+      if (util6.Long)
+        return util6.Long.fromBits(bits.lo, bits.hi, unsigned);
       return bits.toNumber(Boolean(unsigned));
     };
     function merge(dst, src, ifNotSet) {
@@ -676,8 +676,8 @@ var require_minimal = __commonJS({
           dst[keys[i]] = src[keys[i]];
       return dst;
     }
-    util5.merge = merge;
-    util5.lcFirst = function lcFirst(str) {
+    util6.merge = merge;
+    util6.lcFirst = function lcFirst(str) {
       return str.charAt(0).toLowerCase() + str.substring(1);
     };
     function newError(name) {
@@ -703,9 +703,9 @@ var require_minimal = __commonJS({
       };
       return CustomError;
     }
-    util5.newError = newError;
-    util5.ProtocolError = newError("ProtocolError");
-    util5.oneOfGetter = function getOneOf(fieldNames) {
+    util6.newError = newError;
+    util6.ProtocolError = newError("ProtocolError");
+    util6.oneOfGetter = function getOneOf(fieldNames) {
       var fieldMap = {};
       for (var i = 0; i < fieldNames.length; ++i)
         fieldMap[fieldNames[i]] = 1;
@@ -715,29 +715,29 @@ var require_minimal = __commonJS({
             return keys[i2];
       };
     };
-    util5.oneOfSetter = function setOneOf(fieldNames) {
+    util6.oneOfSetter = function setOneOf(fieldNames) {
       return function(name) {
         for (var i = 0; i < fieldNames.length; ++i)
           if (fieldNames[i] !== name)
             delete this[fieldNames[i]];
       };
     };
-    util5.toJSONOptions = {
+    util6.toJSONOptions = {
       longs: String,
       enums: String,
       bytes: String,
       json: true
     };
-    util5._configure = function() {
-      var Buffer2 = util5.Buffer;
+    util6._configure = function() {
+      var Buffer2 = util6.Buffer;
       if (!Buffer2) {
-        util5._Buffer_from = util5._Buffer_allocUnsafe = null;
+        util6._Buffer_from = util6._Buffer_allocUnsafe = null;
         return;
       }
-      util5._Buffer_from = Buffer2.from !== Uint8Array.from && Buffer2.from || function Buffer_from(value, encoding) {
+      util6._Buffer_from = Buffer2.from !== Uint8Array.from && Buffer2.from || function Buffer_from(value, encoding) {
         return new Buffer2(value, encoding);
       };
-      util5._Buffer_allocUnsafe = Buffer2.allocUnsafe || function Buffer_allocUnsafe(size) {
+      util6._Buffer_allocUnsafe = Buffer2.allocUnsafe || function Buffer_allocUnsafe(size) {
         return new Buffer2(size);
       };
     };
@@ -749,11 +749,11 @@ var require_writer = __commonJS({
   "node_modules/protobufjs/src/writer.js"(exports2, module2) {
     "use strict";
     module2.exports = Writer5;
-    var util5 = require_minimal();
+    var util6 = require_minimal();
     var BufferWriter;
-    var LongBits = util5.LongBits;
-    var base64 = util5.base64;
-    var utf8 = util5.utf8;
+    var LongBits = util6.LongBits;
+    var base64 = util6.base64;
+    var utf8 = util6.utf8;
     function Op(fn, len, val) {
       this.fn = fn;
       this.len = len;
@@ -775,7 +775,7 @@ var require_writer = __commonJS({
       this.states = null;
     }
     var create = function create2() {
-      return util5.Buffer ? function create_buffer_setup() {
+      return util6.Buffer ? function create_buffer_setup() {
         return (Writer5.create = function create_buffer() {
           return new BufferWriter();
         })();
@@ -785,10 +785,10 @@ var require_writer = __commonJS({
     };
     Writer5.create = create();
     Writer5.alloc = function alloc(size) {
-      return new util5.Array(size);
+      return new util6.Array(size);
     };
-    if (util5.Array !== Array)
-      Writer5.alloc = util5.pool(Writer5.alloc, util5.Array.prototype.subarray);
+    if (util6.Array !== Array)
+      Writer5.alloc = util6.pool(Writer5.alloc, util6.Array.prototype.subarray);
     Writer5.prototype._push = function push(fn, len, val) {
       this.tail = this.tail.next = new Op(fn, len, val);
       this.len += len;
@@ -861,12 +861,12 @@ var require_writer = __commonJS({
     };
     Writer5.prototype.sfixed64 = Writer5.prototype.fixed64;
     Writer5.prototype.float = function write_float(value) {
-      return this._push(util5.float.writeFloatLE, 4, value);
+      return this._push(util6.float.writeFloatLE, 4, value);
     };
     Writer5.prototype.double = function write_double(value) {
-      return this._push(util5.float.writeDoubleLE, 8, value);
+      return this._push(util6.float.writeDoubleLE, 8, value);
     };
-    var writeBytes = util5.Array.prototype.set ? function writeBytes_set(val, buf, pos) {
+    var writeBytes = util6.Array.prototype.set ? function writeBytes_set(val, buf, pos) {
       buf.set(val, pos);
     } : function writeBytes_for(val, buf, pos) {
       for (var i = 0; i < val.length; ++i)
@@ -876,7 +876,7 @@ var require_writer = __commonJS({
       var len = value.length >>> 0;
       if (!len)
         return this._push(writeByte, 1, 0);
-      if (util5.isString(value)) {
+      if (util6.isString(value)) {
         var buf = Writer5.alloc(len = base64.length(value));
         base64.decode(value, buf, 0);
         value = buf;
@@ -939,13 +939,13 @@ var require_writer_buffer = __commonJS({
     module2.exports = BufferWriter;
     var Writer5 = require_writer();
     (BufferWriter.prototype = Object.create(Writer5.prototype)).constructor = BufferWriter;
-    var util5 = require_minimal();
+    var util6 = require_minimal();
     function BufferWriter() {
       Writer5.call(this);
     }
     BufferWriter._configure = function() {
-      BufferWriter.alloc = util5._Buffer_allocUnsafe;
-      BufferWriter.writeBytesBuffer = util5.Buffer && util5.Buffer.prototype instanceof Uint8Array && util5.Buffer.prototype.set.name === "set" ? function writeBytesBuffer_set(val, buf, pos) {
+      BufferWriter.alloc = util6._Buffer_allocUnsafe;
+      BufferWriter.writeBytesBuffer = util6.Buffer && util6.Buffer.prototype instanceof Uint8Array && util6.Buffer.prototype.set.name === "set" ? function writeBytesBuffer_set(val, buf, pos) {
         buf.set(val, pos);
       } : function writeBytesBuffer_copy(val, buf, pos) {
         if (val.copy)
@@ -956,8 +956,8 @@ var require_writer_buffer = __commonJS({
       };
     };
     BufferWriter.prototype.bytes = function write_bytes_buffer(value) {
-      if (util5.isString(value))
-        value = util5._Buffer_from(value, "base64");
+      if (util6.isString(value))
+        value = util6._Buffer_from(value, "base64");
       var len = value.length >>> 0;
       this.uint32(len);
       if (len)
@@ -966,14 +966,14 @@ var require_writer_buffer = __commonJS({
     };
     function writeStringBuffer(val, buf, pos) {
       if (val.length < 40)
-        util5.utf8.write(val, buf, pos);
+        util6.utf8.write(val, buf, pos);
       else if (buf.utf8Write)
         buf.utf8Write(val, pos);
       else
         buf.write(val, pos);
     }
     BufferWriter.prototype.string = function write_string_buffer(value) {
-      var len = util5.Buffer.byteLength(value);
+      var len = util6.Buffer.byteLength(value);
       this.uint32(len);
       if (len)
         this._push(writeStringBuffer, len, value);
@@ -988,10 +988,10 @@ var require_reader = __commonJS({
   "node_modules/protobufjs/src/reader.js"(exports2, module2) {
     "use strict";
     module2.exports = Reader5;
-    var util5 = require_minimal();
+    var util6 = require_minimal();
     var BufferReader;
-    var LongBits = util5.LongBits;
-    var utf8 = util5.utf8;
+    var LongBits = util6.LongBits;
+    var utf8 = util6.utf8;
     function indexOutOfRange(reader, writeLength) {
       return RangeError("index out of range: " + reader.pos + " + " + (writeLength || 1) + " > " + reader.len);
     }
@@ -1010,14 +1010,14 @@ var require_reader = __commonJS({
       throw Error("illegal buffer");
     };
     var create = function create2() {
-      return util5.Buffer ? function create_buffer_setup(buffer) {
+      return util6.Buffer ? function create_buffer_setup(buffer) {
         return (Reader5.create = function create_buffer(buffer2) {
-          return util5.Buffer.isBuffer(buffer2) ? new BufferReader(buffer2) : create_array(buffer2);
+          return util6.Buffer.isBuffer(buffer2) ? new BufferReader(buffer2) : create_array(buffer2);
         })(buffer);
       } : create_array;
     };
     Reader5.create = create();
-    Reader5.prototype._slice = util5.Array.prototype.subarray || util5.Array.prototype.slice;
+    Reader5.prototype._slice = util6.Array.prototype.subarray || util6.Array.prototype.slice;
     Reader5.prototype.uint32 = function read_uint32_setup() {
       var value = 4294967295;
       return function read_uint32() {
@@ -1116,14 +1116,14 @@ var require_reader = __commonJS({
     Reader5.prototype.float = function read_float() {
       if (this.pos + 4 > this.len)
         throw indexOutOfRange(this, 4);
-      var value = util5.float.readFloatLE(this.buf, this.pos);
+      var value = util6.float.readFloatLE(this.buf, this.pos);
       this.pos += 4;
       return value;
     };
     Reader5.prototype.double = function read_double() {
       if (this.pos + 8 > this.len)
         throw indexOutOfRange(this, 4);
-      var value = util5.float.readDoubleLE(this.buf, this.pos);
+      var value = util6.float.readDoubleLE(this.buf, this.pos);
       this.pos += 8;
       return value;
     };
@@ -1181,8 +1181,8 @@ var require_reader = __commonJS({
       BufferReader = BufferReader_;
       Reader5.create = create();
       BufferReader._configure();
-      var fn = util5.Long ? "toLong" : "toNumber";
-      util5.merge(Reader5.prototype, {
+      var fn = util6.Long ? "toLong" : "toNumber";
+      util6.merge(Reader5.prototype, {
         int64: function read_int64() {
           return readLongVarint.call(this)[fn](false);
         },
@@ -1210,13 +1210,13 @@ var require_reader_buffer = __commonJS({
     module2.exports = BufferReader;
     var Reader5 = require_reader();
     (BufferReader.prototype = Object.create(Reader5.prototype)).constructor = BufferReader;
-    var util5 = require_minimal();
+    var util6 = require_minimal();
     function BufferReader(buffer) {
       Reader5.call(this, buffer);
     }
     BufferReader._configure = function() {
-      if (util5.Buffer)
-        BufferReader.prototype._slice = util5.Buffer.prototype.slice;
+      if (util6.Buffer)
+        BufferReader.prototype._slice = util6.Buffer.prototype.slice;
     };
     BufferReader.prototype.string = function read_string_buffer() {
       var len = this.uint32();
@@ -1231,12 +1231,12 @@ var require_service = __commonJS({
   "node_modules/protobufjs/src/rpc/service.js"(exports2, module2) {
     "use strict";
     module2.exports = Service;
-    var util5 = require_minimal();
-    (Service.prototype = Object.create(util5.EventEmitter.prototype)).constructor = Service;
+    var util6 = require_minimal();
+    (Service.prototype = Object.create(util6.EventEmitter.prototype)).constructor = Service;
     function Service(rpcImpl, requestDelimited, responseDelimited) {
       if (typeof rpcImpl !== "function")
         throw TypeError("rpcImpl must be a function");
-      util5.EventEmitter.call(this);
+      util6.EventEmitter.call(this);
       this.rpcImpl = rpcImpl;
       this.requestDelimited = Boolean(requestDelimited);
       this.responseDelimited = Boolean(responseDelimited);
@@ -1246,7 +1246,7 @@ var require_service = __commonJS({
         throw TypeError("request must be specified");
       var self2 = this;
       if (!callback)
-        return util5.asPromise(rpcCall, self2, method, requestCtor, responseCtor, request);
+        return util6.asPromise(rpcCall, self2, method, requestCtor, responseCtor, request);
       if (!self2.rpcImpl) {
         setTimeout(function() {
           callback(Error("already ended"));
@@ -1315,22 +1315,22 @@ var require_roots = __commonJS({
 var require_index_minimal = __commonJS({
   "node_modules/protobufjs/src/index-minimal.js"(exports2) {
     "use strict";
-    var protobuf = exports2;
-    protobuf.build = "minimal";
-    protobuf.Writer = require_writer();
-    protobuf.BufferWriter = require_writer_buffer();
-    protobuf.Reader = require_reader();
-    protobuf.BufferReader = require_reader_buffer();
-    protobuf.util = require_minimal();
-    protobuf.rpc = require_rpc();
-    protobuf.roots = require_roots();
-    protobuf.configure = configure5;
-    function configure5() {
-      protobuf.util._configure();
-      protobuf.Writer._configure(protobuf.BufferWriter);
-      protobuf.Reader._configure(protobuf.BufferReader);
+    var protobuf2 = exports2;
+    protobuf2.build = "minimal";
+    protobuf2.Writer = require_writer();
+    protobuf2.BufferWriter = require_writer_buffer();
+    protobuf2.Reader = require_reader();
+    protobuf2.BufferReader = require_reader_buffer();
+    protobuf2.util = require_minimal();
+    protobuf2.rpc = require_rpc();
+    protobuf2.roots = require_roots();
+    protobuf2.configure = configure6;
+    function configure6() {
+      protobuf2.util._configure();
+      protobuf2.Writer._configure(protobuf2.BufferWriter);
+      protobuf2.Reader._configure(protobuf2.BufferReader);
     }
-    configure5();
+    configure6();
   }
 });
 
@@ -1345,7 +1345,7 @@ var require_minimal2 = __commonJS({
 // node_modules/long/src/long.js
 var require_long = __commonJS({
   "node_modules/long/src/long.js"(exports2, module2) {
-    module2.exports = Long5;
+    module2.exports = Long6;
     var wasm = null;
     try {
       wasm = new WebAssembly.Instance(new WebAssembly.Module(new Uint8Array([
@@ -1638,17 +1638,17 @@ var require_long = __commonJS({
       ])), {}).exports;
     } catch (e) {
     }
-    function Long5(low, high, unsigned) {
+    function Long6(low, high, unsigned) {
       this.low = low | 0;
       this.high = high | 0;
       this.unsigned = !!unsigned;
     }
-    Long5.prototype.__isLong__;
-    Object.defineProperty(Long5.prototype, "__isLong__", { value: true });
+    Long6.prototype.__isLong__;
+    Object.defineProperty(Long6.prototype, "__isLong__", { value: true });
     function isLong(obj) {
       return (obj && obj["__isLong__"]) === true;
     }
-    Long5.isLong = isLong;
+    Long6.isLong = isLong;
     var INT_CACHE = {};
     var UINT_CACHE = {};
     function fromInt(value, unsigned) {
@@ -1677,7 +1677,7 @@ var require_long = __commonJS({
         return obj;
       }
     }
-    Long5.fromInt = fromInt;
+    Long6.fromInt = fromInt;
     function fromNumber(value, unsigned) {
       if (isNaN(value))
         return unsigned ? UZERO : ZERO;
@@ -1696,11 +1696,11 @@ var require_long = __commonJS({
         return fromNumber(-value, unsigned).neg();
       return fromBits(value % TWO_PWR_32_DBL | 0, value / TWO_PWR_32_DBL | 0, unsigned);
     }
-    Long5.fromNumber = fromNumber;
+    Long6.fromNumber = fromNumber;
     function fromBits(lowBits, highBits, unsigned) {
-      return new Long5(lowBits, highBits, unsigned);
+      return new Long6(lowBits, highBits, unsigned);
     }
-    Long5.fromBits = fromBits;
+    Long6.fromBits = fromBits;
     var pow_dbl = Math.pow;
     function fromString(str, unsigned, radix) {
       if (str.length === 0)
@@ -1736,7 +1736,7 @@ var require_long = __commonJS({
       result.unsigned = unsigned;
       return result;
     }
-    Long5.fromString = fromString;
+    Long6.fromString = fromString;
     function fromValue(val, unsigned) {
       if (typeof val === "number")
         return fromNumber(val, unsigned);
@@ -1744,7 +1744,7 @@ var require_long = __commonJS({
         return fromString(val, unsigned);
       return fromBits(val.low, val.high, typeof unsigned === "boolean" ? unsigned : val.unsigned);
     }
-    Long5.fromValue = fromValue;
+    Long6.fromValue = fromValue;
     var TWO_PWR_16_DBL = 1 << 16;
     var TWO_PWR_24_DBL = 1 << 24;
     var TWO_PWR_32_DBL = TWO_PWR_16_DBL * TWO_PWR_16_DBL;
@@ -1752,22 +1752,22 @@ var require_long = __commonJS({
     var TWO_PWR_63_DBL = TWO_PWR_64_DBL / 2;
     var TWO_PWR_24 = fromInt(TWO_PWR_24_DBL);
     var ZERO = fromInt(0);
-    Long5.ZERO = ZERO;
+    Long6.ZERO = ZERO;
     var UZERO = fromInt(0, true);
-    Long5.UZERO = UZERO;
+    Long6.UZERO = UZERO;
     var ONE = fromInt(1);
-    Long5.ONE = ONE;
+    Long6.ONE = ONE;
     var UONE = fromInt(1, true);
-    Long5.UONE = UONE;
+    Long6.UONE = UONE;
     var NEG_ONE = fromInt(-1);
-    Long5.NEG_ONE = NEG_ONE;
+    Long6.NEG_ONE = NEG_ONE;
     var MAX_VALUE = fromBits(4294967295 | 0, 2147483647 | 0, false);
-    Long5.MAX_VALUE = MAX_VALUE;
+    Long6.MAX_VALUE = MAX_VALUE;
     var MAX_UNSIGNED_VALUE = fromBits(4294967295 | 0, 4294967295 | 0, true);
-    Long5.MAX_UNSIGNED_VALUE = MAX_UNSIGNED_VALUE;
+    Long6.MAX_UNSIGNED_VALUE = MAX_UNSIGNED_VALUE;
     var MIN_VALUE = fromBits(0, 2147483648 | 0, false);
-    Long5.MIN_VALUE = MIN_VALUE;
-    var LongPrototype = Long5.prototype;
+    Long6.MIN_VALUE = MIN_VALUE;
+    var LongPrototype = Long6.prototype;
     LongPrototype.toInt = function toInt() {
       return this.unsigned ? this.low >>> 0 : this.low;
     };
@@ -2155,17 +2155,21 @@ var require_long = __commonJS({
         lo & 255
       ];
     };
-    Long5.fromBytes = function fromBytes(bytes, unsigned, le) {
-      return le ? Long5.fromBytesLE(bytes, unsigned) : Long5.fromBytesBE(bytes, unsigned);
+    Long6.fromBytes = function fromBytes(bytes, unsigned, le) {
+      return le ? Long6.fromBytesLE(bytes, unsigned) : Long6.fromBytesBE(bytes, unsigned);
     };
-    Long5.fromBytesLE = function fromBytesLE(bytes, unsigned) {
-      return new Long5(bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24, bytes[4] | bytes[5] << 8 | bytes[6] << 16 | bytes[7] << 24, unsigned);
+    Long6.fromBytesLE = function fromBytesLE(bytes, unsigned) {
+      return new Long6(bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24, bytes[4] | bytes[5] << 8 | bytes[6] << 16 | bytes[7] << 24, unsigned);
     };
-    Long5.fromBytesBE = function fromBytesBE(bytes, unsigned) {
-      return new Long5(bytes[4] << 24 | bytes[5] << 16 | bytes[6] << 8 | bytes[7], bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], unsigned);
+    Long6.fromBytesBE = function fromBytesBE(bytes, unsigned) {
+      return new Long6(bytes[4] << 24 | bytes[5] << 16 | bytes[6] << 8 | bytes[7], bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], unsigned);
     };
   }
 });
+
+// index.ts
+var protobuf = __toModule(require_minimal2());
+var import_long = __toModule(require_long());
 
 // github.com/heroiclabs/nakama-common/rtapi/realtime.ts
 var import_minimal4 = __toModule(require_minimal2());
@@ -8498,6 +8502,10 @@ var WebSocketAdapterPb = class {
     this._socket.send(encodedMsg);
   }
 };
+
+// index.ts
+protobuf.util.Long = import_long.default;
+protobuf.configure();
 export {
   WebSocketAdapterPb
 };

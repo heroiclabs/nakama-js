@@ -40,7 +40,7 @@ describe('Matchmaker Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response.ticket).not.toBeNull();
-  });
+  }, matchmakerTimeout);
 
   it.each(adapters)('should add and remove from matchmaker', async (adapter) => {
     const page = await createPage();
@@ -58,7 +58,7 @@ describe('Matchmaker Tests', () => {
     }, customid, adapter);
 
     expect(response).not.toBeNull();
-  });
+  }, matchmakerTimeout);
 
   it.each(adapters)('should add to matchmaker and do basic match', async (adapter) => {
     const page = await createPage();
@@ -88,7 +88,7 @@ describe('Matchmaker Tests', () => {
       const ticket2 = await socket2.addMatchmaker("properties.a3:baz", 2, 2, {"a3": "bar"});
 
       return promise1;
-    }, customid1, customid2, adapter, matchmakerTimeout);
+    }, customid1, customid2, adapter);
 
 
     expect(responseTicket).not.toBeNull();
@@ -99,7 +99,7 @@ describe('Matchmaker Tests', () => {
     expect(responseTicket.self.presence.session_id).not.toBeNull();
     expect(responseTicket.self.presence.user_id).not.toBeNull();
     expect(responseTicket.self.presence.username).not.toBeNull();
-  }, 20000);
+  }, matchmakerTimeout);
 
   it.each(adapters)('should add to matchmaker and match on range', async (adapter) => {
     const page = await createPage();
@@ -128,7 +128,7 @@ describe('Matchmaker Tests', () => {
       const ticket2 = await socket2.addMatchmaker("+properties.b1:>=10 +properties.b1:<=20", 2, 2, {}, {"b1": 15});
 
       return promise1;
-    }, customid1, customid2, adapter, matchmakerTimeout);
+    }, customid1, customid2, adapter);
 
     expect(response).not.toBeNull();
     expect(response.ticket).not.toBeNull();
@@ -139,7 +139,7 @@ describe('Matchmaker Tests', () => {
     expect(response.self.presence.session_id).not.toBeNull();
     expect(response.self.presence.user_id).not.toBeNull();
     expect(response.self.presence.username).not.toBeNull();
-  });
+  }, matchmakerTimeout);
 
   it.each(adapters)('should add to matchmaker and match on range and value', async (adapter) => {
     const page = await createPage();
@@ -168,7 +168,7 @@ describe('Matchmaker Tests', () => {
       await socket2.connect(session2, false);
       const ticket2 = await socket2.addMatchmaker("+properties.c1:>=10 +properties.c1:<=20 +properties.c2:foo", 2, 2, {"c2": "foo"}, {"c1": 15});
       return promise1;
-    }, customid1, customid2, adapter, matchmakerTimeout);
+    }, customid1, customid2, adapter);
 
     expect(response).not.toBeNull();
     expect(response.ticket).not.toBeNull();
@@ -179,7 +179,7 @@ describe('Matchmaker Tests', () => {
     expect(response.self.presence.session_id).not.toBeNull();
     expect(response.self.presence.user_id).not.toBeNull();
     expect(response.self.presence.username).not.toBeNull();
-  });
+  }, matchmakerTimeout);
 
   it.each(adapters)('should add to matchmaker then remove and not match', async (adapter) => {
     const page = await createPage();
@@ -218,7 +218,7 @@ describe('Matchmaker Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response).toBe("did not match.");
-  });
+  }, matchmakerTimeout);
 
   it.each(adapters)('should add to matchmaker but not match', async (adapter) => {
     const page = await createPage();
@@ -254,7 +254,7 @@ describe('Matchmaker Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response).toBe("did not match.");
-  });
+  }, matchmakerTimeout);
 
   it.each(adapters)('should add to matchmaker but not match on range', async (adapter) => {
     const page = await createPage();
@@ -281,12 +281,16 @@ describe('Matchmaker Tests', () => {
 
       const session1 = await client1.authenticateCustom(customid1);
       await socket1.connect(session1, false);
-      await socket1.addMatchmaker("+properties.b2:>=10 +properties.b2:<=20 +properties.id:" + testId, 2, 2, {"id": testId}, {"b2": 25});
+      const ticket1 = await socket1.addMatchmaker("+properties.b2:>=10 +properties.b2:<=20 +properties.id:" + testId, 2, 2, {"id": testId}, {"b2": 25});
       const session2 = await client2.authenticateCustom(customid2);
       await socket2.connect(session2, false);
-      await socket2.addMatchmaker("+properties.b2:>=10 +properties.b2:<=20 +properties.id:" + testId, 2, 2, {"id": testId}, {"b2": 15});
+      const ticket2 = await socket2.addMatchmaker("+properties.b2:>=10 +properties.b2:<=20 +properties.id:" + testId, 2, 2, {"id": testId}, {"b2": 15});
       var promise2 = new Promise<string>((resolve, reject) => {
-        setTimeout(resolve, 5000, "did not match.")
+        setTimeout((msg) => {
+            socket1.removeMatchmaker(ticket1.ticket);
+            socket2.removeMatchmaker(ticket2.ticket);
+            resolve(msg);
+        }, 5000, "did not match.")
       });
 
       return Promise.race([promise1, promise2]);
@@ -294,7 +298,7 @@ describe('Matchmaker Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response).toBe("did not match.");
-  });
+  }, matchmakerTimeout);
 
   it.each(adapters)('should add to matchmaker but not match on range and value', async (adapter) => {
     const page = await createPage();
@@ -331,7 +335,7 @@ describe('Matchmaker Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response).toBe("did not match.");
-  });
+  }, matchmakerTimeout);
 
   it.each(adapters)('should add multiple to matchmaker and not match', async (adapter) => {
     const page = await createPage();
@@ -379,7 +383,7 @@ describe('Matchmaker Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response).toBe("did not match.");
-  });
+  }, matchmakerTimeout);
 
   it.each(adapters)('should add to matchmaker and match authoritative', async (adapter) => {
     const page = await createPage();
@@ -411,7 +415,7 @@ describe('Matchmaker Tests', () => {
       const ticket2 = await socket2.addMatchmaker("properties.d1:foo", 2, 2, {"d1": "foo", "mode": "authoritative"});
 
       return promise1;
-    }, customid1, customid2, adapter, matchmakerTimeout);
+    }, customid1, customid2, adapter);
 
     expect(response).not.toBeNull();
     expect(response.ticket).not.toBeNull();
@@ -422,5 +426,5 @@ describe('Matchmaker Tests', () => {
     expect(response.self.presence.session_id).not.toBeNull();
     expect(response.self.presence.user_id).not.toBeNull();
     expect(response.self.presence.username).not.toBeNull();
-  });
+  }, matchmakerTimeout);
 });

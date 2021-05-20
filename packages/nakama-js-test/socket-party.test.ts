@@ -18,7 +18,7 @@ import * as nakamajs from "@heroiclabs/nakama-js";
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType} from "./utils";
 import {describe, expect, it} from '@jest/globals'
-import {MatchmakerMatched, PartyPresenceEvent, PartyData, PartyJoinRequest, PartyLeader, WebSocketAdapterText, PartyMatchmakerTicket} from "@heroiclabs/nakama-js";
+import {MatchmakerMatched, PartyPresenceEvent, PartyData, PartyJoinRequest, PartyLeader} from "@heroiclabs/nakama-js";
 
 describe('Party Tests', () => {
 
@@ -233,10 +233,10 @@ describe('Party Tests', () => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
 
-      const socket1 = client1.createSocket(false, true,
+      const socket1 = client1.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const socket2 = client2.createSocket(false, true,
+      const socket2 = client2.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session1 = await client1.authenticateCustom(customid1);
@@ -271,7 +271,7 @@ describe('Party Tests', () => {
       const id2PresenceRemovedPromise = new Promise<PartyPresenceEvent>((resolve, reject) => {
 
       socket1.onpartypresence = (presence) => {
-          if (presence.leaves.length > 0) {
+          if (presence.leaves?.length > 0) {
             resolve(presence);
           }
         }
@@ -295,10 +295,10 @@ describe('Party Tests', () => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
 
-      const socket1 = client1.createSocket(false, true,
+      const socket1 = client1.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const socket2 = client2.createSocket(false, true,
+      const socket2 = client2.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session1 = await client1.authenticateCustom(customid1);
@@ -356,13 +356,13 @@ describe('Party Tests', () => {
       const client2 = new nakamajs.Client();
       const client3 = new nakamajs.Client();
 
-      const socket1 = client1.createSocket(false, true,
+      const socket1 = client1.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const socket2 = client2.createSocket(false, true,
+      const socket2 = client2.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      const socket3 = client3.createSocket(false, true,
+      const socket3 = client3.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
 

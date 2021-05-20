@@ -113,7 +113,7 @@ describe('Authenticate Tests', () => {
     expect(result).not.toBeNull();
   });
 
-  it('should authenticate with facebook instant games', async () => {
+  it.skip('should authenticate with facebook instant games', async () => {
     let token : string = createFacebookInstantGameAuthToken("a_player_id");
     const page : Page = await createPage();
 
