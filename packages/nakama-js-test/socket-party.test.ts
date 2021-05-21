@@ -16,9 +16,10 @@
 
 import * as nakamajs from "@heroiclabs/nakama-js";
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
-import {generateid, createPage, adapters, AdapterType} from "./utils";
+import {generateid, createPage, adapters, AdapterType, matchmakerTimeout} from "./utils";
 import {describe, expect, it} from '@jest/globals'
-import {MatchmakerMatched, PartyPresenceEvent, PartyData, PartyJoinRequest, PartyLeader} from "@heroiclabs/nakama-js";
+import {MatchmakerMatched, PartyPresenceEvent, PartyData, PartyJoinRequest, PartyLeader, PartyMatchmakerTicket} from "@heroiclabs/nakama-js";
+import { assert } from "console";
 
 describe('Party Tests', () => {
 
@@ -411,5 +412,53 @@ describe('Party Tests', () => {
     expect(response.token).toBeDefined();
     expect(response.users.length).toEqual(3);
     expect(response.self.party_id).toBeDefined();
-  }, 100000);
+  }, matchmakerTimeout);
+
+  it.each(adapters)('should create party and add matchmaker and leave matchmaker', async (adapter) => {
+    const page = await createPage();
+
+    const customid1 = generateid();
+    const customid2 = generateid();
+
+    const response = await page.evaluate(async (customid1, customid2, adapter) => {
+
+      const client1 = new nakamajs.Client();
+      const client2 = new nakamajs.Client();
+
+      const socket1 = client1.createSocket(false, false,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const socket2 = client2.createSocket(false, false,
+        adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
+
+      const session1 = await client1.authenticateCustom(customid1);
+      const session2 = await client2.authenticateCustom(customid2);
+
+      await socket1.connect(session1, false);
+      await socket2.connect(session2, false);
+
+      const party = await socket1.createParty(true, 1);
+
+      await socket2.joinParty(party.party_id);
+
+      const memberTicketPromise = new Promise<PartyMatchmakerTicket>((resolve, reject) => {
+        socket2.onpartymatchmakerticket = (ticket) => {
+          resolve(ticket);
+        }
+      });
+
+      const leaderTicketPromise = socket1.addMatchmakerParty(party.party_id, "*", 3, 3);
+
+      const allTickets = await Promise.all([leaderTicketPromise, memberTicketPromise]);
+
+      await socket1.removeMatchmakerParty(allTickets[0].party_id, allTickets[0].ticket);
+
+      return leaderTicketPromise;
+    }, customid1, customid2, adapter);
+
+    expect(response).toBeDefined();
+    expect(response.party_id).toBeDefined();
+    expect(response.ticket).toBeDefined();
+
+  });
 });

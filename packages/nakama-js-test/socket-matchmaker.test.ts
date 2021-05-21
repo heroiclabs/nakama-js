@@ -18,11 +18,9 @@ import * as nakamajs from "@heroiclabs/nakama-js";
 import {MatchmakerMatched} from "@heroiclabs/nakama-js/socket";
 import {describe, expect, it} from '@jest/globals'
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
-import {generateid, createPage, adapters, AdapterType} from "./utils"
+import {generateid, createPage, adapters, AdapterType, matchmakerTimeout} from "./utils"
 
 describe('Matchmaker Tests', () => {
-
-  const matchmakerTimeout = 20000;
 
   it.each(adapters)('should only add to matchmaker', async (adapter) => {
     const page = await createPage();

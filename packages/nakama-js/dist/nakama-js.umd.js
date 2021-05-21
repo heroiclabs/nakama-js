@@ -2089,17 +2089,23 @@
       };
       DefaultSocket.prototype.addMatchmakerParty = function (party_id, query, min_count, max_count, string_properties, numeric_properties) {
           return __awaiter(this, void 0, void 0, function () {
+              var response;
               return __generator(this, function (_a) {
-                  return [2, this.send({
-                          party_matchmaker_add: {
-                              party_id: party_id,
-                              min_count: min_count,
-                              max_count: max_count,
-                              query: query,
-                              string_properties: string_properties,
-                              numeric_properties: numeric_properties
-                          }
-                      })];
+                  switch (_a.label) {
+                      case 0: return [4, this.send({
+                              party_matchmaker_add: {
+                                  party_id: party_id,
+                                  min_count: min_count,
+                                  max_count: max_count,
+                                  query: query,
+                                  string_properties: string_properties,
+                                  numeric_properties: numeric_properties
+                              }
+                          })];
+                      case 1:
+                          response = _a.sent();
+                          return [2, response.party_matchmaker_ticket];
+                  }
               });
           });
       };
@@ -2134,7 +2140,7 @@
                       case 0: return [4, this.send({ party_create: { open: open, max_size: max_size } })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.party_create];
+                          return [2, response.party];
                   }
               });
           });

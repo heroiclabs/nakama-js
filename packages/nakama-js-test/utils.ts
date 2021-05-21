@@ -89,3 +89,5 @@ export function createFacebookInstantGameAuthToken(id : string) : string {
     const token = encodedSignature + "." + encodedPayload;
     return token;
   }
+
+export const matchmakerTimeout = 20000;

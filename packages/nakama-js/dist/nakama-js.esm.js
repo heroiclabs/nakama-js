@@ -1745,7 +1745,7 @@ var DefaultSocket = class {
   }
   addMatchmakerParty(party_id, query, min_count, max_count, string_properties, numeric_properties) {
     return __async(this, null, function* () {
-      return this.send({
+      const response = yield this.send({
         party_matchmaker_add: {
           party_id,
           min_count,
@@ -1755,6 +1755,7 @@ var DefaultSocket = class {
           numeric_properties
         }
       });
+      return response.party_matchmaker_ticket;
     });
   }
   closeParty(party_id) {
@@ -1771,7 +1772,7 @@ var DefaultSocket = class {
   createParty(open, max_size) {
     return __async(this, null, function* () {
       const response = yield this.send({ party_create: { open, max_size } });
-      return response.party_create;
+      return response.party;
     });
   }
   followUsers(userIds) {
