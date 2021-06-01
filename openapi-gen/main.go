@@ -260,6 +260,17 @@ func iscamelToSnake(input string) (output bool) {
 	return
 }
 
+// camelToPascal converts a string from camel case to Pascal case.
+func camelToPascal(camelCase string) (pascalCase string) {
+
+	if len(camelCase) <= 0 {
+		return ""
+	}
+
+	pascalCase = strings.ToUpper(string(camelCase[0])) + camelCase[1:]
+	return
+}
+
 func camelToSnake(input string) (output string) {
 	output = ""
 
@@ -280,6 +291,17 @@ func camelToSnake(input string) (output string) {
 	return
 }
 
+// pascalToCamel converts a Pascal case string to a camel case string.
+func pascalToCamel(input string) (camelCase string) {
+	if input == "" {
+		return ""
+	}
+
+	camelCase = strings.ToLower(string(input[0]))
+	camelCase += string(input[1:])
+	return camelCase
+}
+
 func main() {
 	// Argument flags
 	var output = flag.String("output", "", "The output for generated code.")
@@ -289,22 +311,6 @@ func main() {
 	if len(inputs) < 1 {
 		fmt.Printf("No input file found: %s\n", inputs)
 		flag.PrintDefaults()
-		return
-	}
-
-	fmap := template.FuncMap{
-		"snakeToCamel":         snakeToCamel,
-		"cleanRef":             convertRefToClassName,
-		"title":                strings.Title,
-		"camelToSnake":         camelToSnake,
-		"uppercase":            strings.ToUpper,
-		"stripOperationPrefix": stripOperationPrefix,
-	}
-
-	input := inputs[0]
-	content, err := ioutil.ReadFile(input)
-	if err != nil {
-		fmt.Printf("Unable to read file: %s\n", err)
 		return
 	}
 
@@ -347,8 +353,48 @@ func main() {
 				Format      string // used with type "boolean"
 				Description string
 			}
+			Enum        []string
 			Description string
 		}
+	}
+
+	fmap := template.FuncMap{
+		"snakeToCamel": snakeToCamel,
+		"cleanRef":     convertRefToClassName,
+		"isRefToEnum": func(ref string) bool {
+			// swagger schema definition keys have inconsistent casing
+			var camelOk bool
+			var pascalOk bool
+			var enums []string
+
+			asCamel := pascalToCamel(ref)
+			if _, camelOk = schema.Definitions[asCamel]; camelOk {
+				enums = schema.Definitions[asCamel].Enum
+			}
+
+			asPascal := camelToPascal(ref)
+			if _, pascalOk = schema.Definitions[asPascal]; pascalOk {
+				enums = schema.Definitions[asPascal].Enum
+			}
+
+			if !pascalOk && !camelOk {
+				fmt.Printf("no definition found: %v", ref)
+				return false
+			}
+
+			return len(enums) > 0
+		},
+		"title":                strings.Title,
+		"camelToSnake":         camelToSnake,
+		"uppercase":            strings.ToUpper,
+		"stripOperationPrefix": stripOperationPrefix,
+	}
+
+	input := inputs[0]
+	content, err := ioutil.ReadFile(input)
+	if err != nil {
+		fmt.Printf("Unable to read file: %s\n", err)
+		return
 	}
 
 	if err := json.Unmarshal(content, &schema); err != nil {
