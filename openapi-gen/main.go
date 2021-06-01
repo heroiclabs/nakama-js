@@ -42,7 +42,7 @@ export interface ConfigurationParameters {
 /** {{$definition.Description}} */
 export interface {{$classname | title}} {
   {{- range $key, $property := $definition.Properties}}
-  {{- $fieldname := snakeCase $key }}
+  {{- $fieldname := camelToSnake $key }}
   // {{$property.Description}}
   {{- if eq $property.Type "integer"}}
   {{$fieldname}}?: number;
@@ -151,58 +151,58 @@ export class NakamaApi {
   {{- range $method, $operation := $path}}
   /** {{$operation.Summary}} */
 
-  {{$operation.OperationId | stripOperationPrefix | camelCase }}(
+  {{$operation.OperationId | stripOperationPrefix | snakeToCamel }}(
   {{- range $parameter := $operation.Parameters}}
-  {{- $camelcase := $parameter.Name | camelCase}}
+  {{- $snakeToCamel := $parameter.Name | snakeToCamel}}
   {{- if eq $parameter.In "path"}}
-  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Type}},
+  {{- $snakeToCamel}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Type}},
   {{- else if eq $parameter.In "body"}}
     {{- if eq $parameter.Schema.Type "string"}}
-  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Schema.Type}},
+  {{- $snakeToCamel}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Schema.Type}},
     {{- else}}
-  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Schema.Ref | cleanRef}},
+  {{- $snakeToCamel}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Schema.Ref | cleanRef}},
     {{- end}}
   {{- else if eq $parameter.Type "array"}}
-  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: Array<{{$parameter.Items.Type}}>,
+  {{- $snakeToCamel}}{{- if not $parameter.Required }}?{{- end}}: Array<{{$parameter.Items.Type}}>,
   {{- else if eq $parameter.Type "object"}}
-  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: Map<{{$parameter.AdditionalProperties.Type}}>,
+  {{- $snakeToCamel}}{{- if not $parameter.Required }}?{{- end}}: Map<{{$parameter.AdditionalProperties.Type}}>,
   {{- else if eq $parameter.Type "integer"}}
-  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: number,
+  {{- $snakeToCamel}}{{- if not $parameter.Required }}?{{- end}}: number,
   {{- else}}
-  {{- $camelcase}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Type}},
+  {{- $snakeToCamel}}{{- if not $parameter.Required }}?{{- end}}: {{$parameter.Type}},
   {{- end}}
   {{- " "}}
   {{- end}}options: any = {}): Promise<{{- if $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- else -}} any {{- end}}> {
     {{- range $parameter := $operation.Parameters}}
-    {{- $camelcase := $parameter.Name | camelCase}}
+    {{- $snakeToCamel := $parameter.Name | snakeToCamel}}
     {{- if $parameter.Required }}
-    if ({{$camelcase}} === null || {{$camelcase}} === undefined) {
-      throw new Error("'{{$camelcase}}' is a required parameter but is null or undefined.");
+    if ({{$snakeToCamel}} === null || {{$snakeToCamel}} === undefined) {
+      throw new Error("'{{$snakeToCamel}}' is a required parameter but is null or undefined.");
     }
     {{- end}}
     {{- end}}
     const urlPath = "{{- $url}}"
     {{- range $parameter := $operation.Parameters}}
-    {{- $camelcase := $parameter.Name | camelCase}}
+    {{- $snakeToCamel := $parameter.Name | snakeToCamel}}
     {{- if eq $parameter.In "path"}}
-        .replace("{{- print "{" $parameter.Name "}"}}", encodeURIComponent(String({{- $camelcase}})))
+        .replace("{{- print "{" $parameter.Name "}"}}", encodeURIComponent(String({{- $snakeToCamel}})))
     {{- end}}
     {{- end}};
 
     const queryParams = {
     {{- range $parameter := $operation.Parameters}}
-    {{- $snakeCase := $parameter.Name | snakeCase}}
+    {{- $camelToSnake := $parameter.Name | camelToSnake}}
     {{- if eq $parameter.In "query"}}
-      {{$parameter.Name}}: {{$parameter.Name | camelCase}},
+      {{$parameter.Name}}: {{$parameter.Name | snakeToCamel}},
     {{- end}}
     {{- end}}
     } as any;
 
     let _body = null;
     {{- range $parameter := $operation.Parameters}}
-    {{- $camelcase := $parameter.Name | camelCase}}
+    {{- $snakeToCamel := $parameter.Name | snakeToCamel}}
     {{- if eq $parameter.In "body"}}
-    _body = JSON.stringify({{$camelcase}} || {});
+    _body = JSON.stringify({{$snakeToCamel}} || {});
     {{- end}}
     {{- end}}
 
@@ -214,20 +214,20 @@ export class NakamaApi {
 };
 `
 
-func snakeCaseToCamelCase(input string) (camelCase string) {
+func snakeToCamel(input string) (snakeToCamel string) {
 	isToUpper := false
 	for k, v := range input {
 		if k == 0 {
-			camelCase = strings.ToLower(string(input[0]))
+			snakeToCamel = strings.ToLower(string(input[0]))
 		} else {
 			if isToUpper {
-				camelCase += strings.ToUpper(string(v))
+				snakeToCamel += strings.ToUpper(string(v))
 				isToUpper = false
 			} else {
 				if v == '_' {
 					isToUpper = true
 				} else {
-					camelCase += string(v)
+					snakeToCamel += string(v)
 				}
 			}
 		}
@@ -246,7 +246,7 @@ func convertRefToClassName(input string) (className string) {
 	return
 }
 
-func isSnakeCase(input string) (output bool) {
+func iscamelToSnake(input string) (output bool) {
 
 	output = true
 
@@ -260,10 +260,10 @@ func isSnakeCase(input string) (output bool) {
 	return
 }
 
-func camelCaseToSnakeCase(input string) (output string) {
+func camelToSnake(input string) (output string) {
 	output = ""
 
-	if isSnakeCase(input) {
+	if iscamelToSnake(input) {
 		output = input
 		return
 	}
@@ -293,10 +293,10 @@ func main() {
 	}
 
 	fmap := template.FuncMap{
-		"camelCase":            snakeCaseToCamelCase,
+		"snakeToCamel":         snakeToCamel,
 		"cleanRef":             convertRefToClassName,
 		"title":                strings.Title,
-		"snakeCase":            camelCaseToSnakeCase,
+		"camelToSnake":         camelToSnake,
 		"uppercase":            strings.ToUpper,
 		"stripOperationPrefix": stripOperationPrefix,
 	}
