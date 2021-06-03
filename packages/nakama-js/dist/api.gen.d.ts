@@ -13,13 +13,25 @@ export interface UserGroupListUserGroup {
     group?: ApiGroup;
     state?: number;
 }
+export declare enum ValidatedPurchaseEnvironment {
+    UNKNOWN = 0,
+    SANDBOX = 1,
+    PRODUCTION = 2
+}
+export declare enum ValidatedPurchaseStore {
+    APPLE_APP_STORE = 0,
+    GOOGLE_PLAY_STORE = 1,
+    HUAWEI_APP_GALLERY = 2
+}
 export interface WriteLeaderboardRecordRequestLeaderboardRecordWrite {
     metadata?: string;
+    operator?: ApiOverrideOperator;
     score?: string;
     subscore?: string;
 }
 export interface WriteTournamentRecordRequestTournamentRecordWrite {
     metadata?: string;
+    operator?: ApiOverrideOperator;
     score?: string;
     subscore?: string;
 }
@@ -168,6 +180,10 @@ export interface ApiLeaderboardRecordList {
     prev_cursor?: string;
     records?: Array<ApiLeaderboardRecord>;
 }
+export interface ApiLinkSteamRequest {
+    account?: ApiAccountSteam;
+    sync?: boolean;
+}
 export interface ApiMatch {
     authoritative?: boolean;
     handler_name?: string;
@@ -192,6 +208,13 @@ export interface ApiNotificationList {
     cacheable_cursor?: string;
     notifications?: Array<ApiNotification>;
 }
+export declare enum ApiOverrideOperator {
+    NO_OVERRIDE = 0,
+    BEST = 1,
+    SET = 2,
+    INCREMENT = 3,
+    DECREMENT = 4
+}
 export interface ApiReadStorageObjectId {
     collection?: string;
     key?: string;
@@ -207,6 +230,10 @@ export interface ApiRpc {
 }
 export interface ApiSession {
     created?: boolean;
+    refresh_token?: string;
+    token?: string;
+}
+export interface ApiSessionLogoutRequest {
     refresh_token?: string;
     token?: string;
 }
@@ -313,6 +340,29 @@ export interface ApiUserGroupList {
 export interface ApiUsers {
     users?: Array<ApiUser>;
 }
+export interface ApiValidatePurchaseAppleRequest {
+    receipt?: string;
+}
+export interface ApiValidatePurchaseGoogleRequest {
+    purchase?: string;
+}
+export interface ApiValidatePurchaseHuaweiRequest {
+    purchase?: string;
+    signature?: string;
+}
+export interface ApiValidatePurchaseResponse {
+    validated_purchases?: Array<ApiValidatedPurchase>;
+}
+export interface ApiValidatedPurchase {
+    create_time?: string;
+    environment?: ValidatedPurchaseEnvironment;
+    product_id?: string;
+    provider_response?: string;
+    purchase_time?: string;
+    store?: ValidatedPurchaseStore;
+    transaction_id?: string;
+    update_time?: string;
+}
 export interface ApiWriteStorageObject {
     collection?: string;
     key?: string;
@@ -348,7 +398,7 @@ export declare class NakamaApi {
     authenticateFacebookInstantGame(body: ApiAccountFacebookInstantGame, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     authenticateGameCenter(body: ApiAccountGameCenter, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     authenticateGoogle(body: ApiAccountGoogle, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
-    authenticateSteam(body: ApiAccountSteam, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
+    authenticateSteam(body: ApiAccountSteam, create?: boolean, username?: string, sync?: boolean, options?: any): Promise<ApiSession>;
     linkApple(body: ApiAccountApple, options?: any): Promise<any>;
     linkCustom(body: ApiAccountCustom, options?: any): Promise<any>;
     linkDevice(body: ApiAccountDevice, options?: any): Promise<any>;
@@ -357,7 +407,7 @@ export declare class NakamaApi {
     linkFacebookInstantGame(body: ApiAccountFacebookInstantGame, options?: any): Promise<any>;
     linkGameCenter(body: ApiAccountGameCenter, options?: any): Promise<any>;
     linkGoogle(body: ApiAccountGoogle, options?: any): Promise<any>;
-    linkSteam(body: ApiAccountSteam, options?: any): Promise<any>;
+    linkSteam(body: ApiLinkSteamRequest, options?: any): Promise<any>;
     sessionRefresh(body: ApiSessionRefreshRequest, options?: any): Promise<ApiSession>;
     unlinkApple(body: ApiAccountApple, options?: any): Promise<any>;
     unlinkCustom(body: ApiAccountCustom, options?: any): Promise<any>;
@@ -375,6 +425,7 @@ export declare class NakamaApi {
     addFriends(ids?: Array<string>, usernames?: Array<string>, options?: any): Promise<any>;
     blockFriends(ids?: Array<string>, usernames?: Array<string>, options?: any): Promise<any>;
     importFacebookFriends(body: ApiAccountFacebook, reset?: boolean, options?: any): Promise<any>;
+    importSteamFriends(body: ApiAccountSteam, reset?: boolean, options?: any): Promise<any>;
     listGroups(name?: string, cursor?: string, limit?: number, options?: any): Promise<ApiGroupList>;
     createGroup(body: ApiCreateGroupRequest, options?: any): Promise<ApiGroup>;
     deleteGroup(groupId: string, options?: any): Promise<any>;
@@ -387,6 +438,9 @@ export declare class NakamaApi {
     leaveGroup(groupId: string, options?: any): Promise<any>;
     promoteGroupUsers(groupId: string, userIds?: Array<string>, options?: any): Promise<any>;
     listGroupUsers(groupId: string, limit?: number, state?: number, cursor?: string, options?: any): Promise<ApiGroupUserList>;
+    validatePurchaseApple(body: ApiValidatePurchaseAppleRequest, options?: any): Promise<ApiValidatePurchaseResponse>;
+    validatePurchaseGoogle(body: ApiValidatePurchaseGoogleRequest, options?: any): Promise<ApiValidatePurchaseResponse>;
+    validatePurchaseHuawei(body: ApiValidatePurchaseHuaweiRequest, options?: any): Promise<ApiValidatePurchaseResponse>;
     deleteLeaderboardRecord(leaderboardId: string, options?: any): Promise<any>;
     listLeaderboardRecords(leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string, options?: any): Promise<ApiLeaderboardRecordList>;
     writeLeaderboardRecord(leaderboardId: string, body: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
@@ -396,6 +450,7 @@ export declare class NakamaApi {
     listNotifications(limit?: number, cacheableCursor?: string, options?: any): Promise<ApiNotificationList>;
     rpcFunc2(id: string, payload?: string, httpKey?: string, options?: any): Promise<ApiRpc>;
     rpcFunc(id: string, body: string, httpKey?: string, options?: any): Promise<ApiRpc>;
+    sessionLogout(body: ApiSessionLogoutRequest, options?: any): Promise<any>;
     readStorageObjects(body: ApiReadStorageObjectsRequest, options?: any): Promise<ApiStorageObjects>;
     writeStorageObjects(body: ApiWriteStorageObjectsRequest, options?: any): Promise<ApiStorageObjectAcks>;
     deleteStorageObjects(body: ApiDeleteStorageObjectsRequest, options?: any): Promise<any>;
@@ -403,6 +458,7 @@ export declare class NakamaApi {
     listStorageObjects2(collection: string, userId: string, limit?: number, cursor?: string, options?: any): Promise<ApiStorageObjectList>;
     listTournaments(categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string, options?: any): Promise<ApiTournamentList>;
     listTournamentRecords(tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string, options?: any): Promise<ApiTournamentRecordList>;
+    writeTournamentRecord2(tournamentId: string, body: WriteTournamentRecordRequestTournamentRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
     writeTournamentRecord(tournamentId: string, body: WriteTournamentRecordRequestTournamentRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
     joinTournament(tournamentId: string, options?: any): Promise<any>;
     listTournamentRecordsAroundOwner(tournamentId: string, ownerId: string, limit?: number, expiry?: string, options?: any): Promise<ApiTournamentRecordList>;

@@ -52,6 +52,7 @@ import {
   NakamaApi,
   ApiSession,
   ApiAccountApple,
+  ApiLinkSteamRequest,
 } from "./api.gen";
 
 import { Session } from "./session";
@@ -964,7 +965,7 @@ export class Client {
   }
 
   /** Add Steam to the social profiles on the current user's account. */
-  linkSteam(session: Session, request: ApiAccountSteam): Promise<boolean> {
+  linkSteam(session: Session, request: ApiLinkSteamRequest): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.linkSteam(request).then((response: any) => {
       return response !== undefined;

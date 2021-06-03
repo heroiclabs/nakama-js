@@ -9,7 +9,8 @@ such as `socket.addMatchmaker` for better type checking.
 - Added realtime party support
 - Upgraded ts-proto dependency and shipped type definitions with the protobuf adapter.
 - Changed the return type from `socket.addMatchmaker` to a `MatchmakerTicket` rather than a `MatchmakerMatched`.
-
+- Changed signature of `linkSteam` to allow for a `sync` option.
+-
 ### [2.1.5]
 ### Fixed
 - Fixed issue where rollup.js was not bundling in js-base64 library to UMD distribution.

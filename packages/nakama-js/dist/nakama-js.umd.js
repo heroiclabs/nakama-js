@@ -724,6 +724,26 @@
    */
   const decode = (src) => _decode(_unURI(src));
 
+  var ValidatedPurchaseEnvironment;
+  (function (ValidatedPurchaseEnvironment) {
+      ValidatedPurchaseEnvironment[ValidatedPurchaseEnvironment["UNKNOWN"] = 0] = "UNKNOWN";
+      ValidatedPurchaseEnvironment[ValidatedPurchaseEnvironment["SANDBOX"] = 1] = "SANDBOX";
+      ValidatedPurchaseEnvironment[ValidatedPurchaseEnvironment["PRODUCTION"] = 2] = "PRODUCTION";
+  })(ValidatedPurchaseEnvironment || (ValidatedPurchaseEnvironment = {}));
+  var ValidatedPurchaseStore;
+  (function (ValidatedPurchaseStore) {
+      ValidatedPurchaseStore[ValidatedPurchaseStore["APPLE_APP_STORE"] = 0] = "APPLE_APP_STORE";
+      ValidatedPurchaseStore[ValidatedPurchaseStore["GOOGLE_PLAY_STORE"] = 1] = "GOOGLE_PLAY_STORE";
+      ValidatedPurchaseStore[ValidatedPurchaseStore["HUAWEI_APP_GALLERY"] = 2] = "HUAWEI_APP_GALLERY";
+  })(ValidatedPurchaseStore || (ValidatedPurchaseStore = {}));
+  var ApiOverrideOperator;
+  (function (ApiOverrideOperator) {
+      ApiOverrideOperator[ApiOverrideOperator["NO_OVERRIDE"] = 0] = "NO_OVERRIDE";
+      ApiOverrideOperator[ApiOverrideOperator["BEST"] = 1] = "BEST";
+      ApiOverrideOperator[ApiOverrideOperator["SET"] = 2] = "SET";
+      ApiOverrideOperator[ApiOverrideOperator["INCREMENT"] = 3] = "INCREMENT";
+      ApiOverrideOperator[ApiOverrideOperator["DECREMENT"] = 4] = "DECREMENT";
+  })(ApiOverrideOperator || (ApiOverrideOperator = {}));
   var NakamaApi = (function () {
       function NakamaApi(configuration) {
           this.configuration = configuration;
@@ -923,7 +943,7 @@
           _body = JSON.stringify(body || {});
           return this.doFetch(urlPath, "POST", queryParams, _body, options);
       };
-      NakamaApi.prototype.authenticateSteam = function (body, create, username, options) {
+      NakamaApi.prototype.authenticateSteam = function (body, create, username, sync, options) {
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
@@ -932,6 +952,7 @@
           var queryParams = {
               create: create,
               username: username,
+              sync: sync,
           };
           var _body = null;
           _body = JSON.stringify(body || {});
@@ -1228,6 +1249,19 @@
           _body = JSON.stringify(body || {});
           return this.doFetch(urlPath, "POST", queryParams, _body, options);
       };
+      NakamaApi.prototype.importSteamFriends = function (body, reset, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/friend/steam";
+          var queryParams = {
+              reset: reset,
+          };
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
       NakamaApi.prototype.listGroups = function (name, cursor, limit, options) {
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/group";
@@ -1381,6 +1415,39 @@
           var _body = null;
           return this.doFetch(urlPath, "GET", queryParams, _body, options);
       };
+      NakamaApi.prototype.validatePurchaseApple = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/iap/purchase/apple";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.validatePurchaseGoogle = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/iap/purchase/google";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
+      NakamaApi.prototype.validatePurchaseHuawei = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/iap/purchase/huawei";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
       NakamaApi.prototype.deleteLeaderboardRecord = function (leaderboardId, options) {
           if (options === void 0) { options = {}; }
           if (leaderboardId === null || leaderboardId === undefined) {
@@ -1505,6 +1572,17 @@
           _body = JSON.stringify(body || {});
           return this.doFetch(urlPath, "POST", queryParams, _body, options);
       };
+      NakamaApi.prototype.sessionLogout = function (body, options) {
+          if (options === void 0) { options = {}; }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/session/logout";
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+      };
       NakamaApi.prototype.readStorageObjects = function (body, options) {
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
@@ -1600,6 +1678,21 @@
           };
           var _body = null;
           return this.doFetch(urlPath, "GET", queryParams, _body, options);
+      };
+      NakamaApi.prototype.writeTournamentRecord2 = function (tournamentId, body, options) {
+          if (options === void 0) { options = {}; }
+          if (tournamentId === null || tournamentId === undefined) {
+              throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+          }
+          if (body === null || body === undefined) {
+              throw new Error("'body' is a required parameter but is null or undefined.");
+          }
+          var urlPath = "/v2/tournament/{tournamentId}"
+              .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
+          var queryParams = {};
+          var _body = null;
+          _body = JSON.stringify(body || {});
+          return this.doFetch(urlPath, "POST", queryParams, _body, options);
       };
       NakamaApi.prototype.writeTournamentRecord = function (tournamentId, body, options) {
           if (options === void 0) { options = {}; }

@@ -557,6 +557,26 @@ var nakamajs = (() => {
   var decode = (src) => _decode(_unURI(src));
 
   // api.gen.ts
+  var ValidatedPurchaseEnvironment;
+  (function(ValidatedPurchaseEnvironment2) {
+    ValidatedPurchaseEnvironment2[ValidatedPurchaseEnvironment2["UNKNOWN"] = 0] = "UNKNOWN";
+    ValidatedPurchaseEnvironment2[ValidatedPurchaseEnvironment2["SANDBOX"] = 1] = "SANDBOX";
+    ValidatedPurchaseEnvironment2[ValidatedPurchaseEnvironment2["PRODUCTION"] = 2] = "PRODUCTION";
+  })(ValidatedPurchaseEnvironment || (ValidatedPurchaseEnvironment = {}));
+  var ValidatedPurchaseStore;
+  (function(ValidatedPurchaseStore2) {
+    ValidatedPurchaseStore2[ValidatedPurchaseStore2["APPLE_APP_STORE"] = 0] = "APPLE_APP_STORE";
+    ValidatedPurchaseStore2[ValidatedPurchaseStore2["GOOGLE_PLAY_STORE"] = 1] = "GOOGLE_PLAY_STORE";
+    ValidatedPurchaseStore2[ValidatedPurchaseStore2["HUAWEI_APP_GALLERY"] = 2] = "HUAWEI_APP_GALLERY";
+  })(ValidatedPurchaseStore || (ValidatedPurchaseStore = {}));
+  var ApiOverrideOperator;
+  (function(ApiOverrideOperator2) {
+    ApiOverrideOperator2[ApiOverrideOperator2["NO_OVERRIDE"] = 0] = "NO_OVERRIDE";
+    ApiOverrideOperator2[ApiOverrideOperator2["BEST"] = 1] = "BEST";
+    ApiOverrideOperator2[ApiOverrideOperator2["SET"] = 2] = "SET";
+    ApiOverrideOperator2[ApiOverrideOperator2["INCREMENT"] = 3] = "INCREMENT";
+    ApiOverrideOperator2[ApiOverrideOperator2["DECREMENT"] = 4] = "DECREMENT";
+  })(ApiOverrideOperator || (ApiOverrideOperator = {}));
   var NakamaApi = class {
     constructor(configuration) {
       this.configuration = configuration;
@@ -736,14 +756,15 @@ var nakamajs = (() => {
       _body = JSON.stringify(body || {});
       return this.doFetch(urlPath, "POST", queryParams, _body, options);
     }
-    authenticateSteam(body, create, username, options = {}) {
+    authenticateSteam(body, create, username, sync, options = {}) {
       if (body === null || body === void 0) {
         throw new Error("'body' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/steam";
       const queryParams = {
         create,
-        username
+        username,
+        sync
       };
       let _body = null;
       _body = JSON.stringify(body || {});
@@ -1013,6 +1034,18 @@ var nakamajs = (() => {
       _body = JSON.stringify(body || {});
       return this.doFetch(urlPath, "POST", queryParams, _body, options);
     }
+    importSteamFriends(body, reset, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/friend/steam";
+      const queryParams = {
+        reset
+      };
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
     listGroups(name, cursor, limit, options = {}) {
       const urlPath = "/v2/group";
       const queryParams = {
@@ -1144,6 +1177,36 @@ var nakamajs = (() => {
       let _body = null;
       return this.doFetch(urlPath, "GET", queryParams, _body, options);
     }
+    validatePurchaseApple(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/iap/purchase/apple";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    validatePurchaseGoogle(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/iap/purchase/google";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
+    validatePurchaseHuawei(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/iap/purchase/huawei";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
     deleteLeaderboardRecord(leaderboardId, options = {}) {
       if (leaderboardId === null || leaderboardId === void 0) {
         throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
@@ -1252,6 +1315,16 @@ var nakamajs = (() => {
       _body = JSON.stringify(body || {});
       return this.doFetch(urlPath, "POST", queryParams, _body, options);
     }
+    sessionLogout(body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/session/logout";
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    }
     readStorageObjects(body, options = {}) {
       if (body === null || body === void 0) {
         throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1336,6 +1409,19 @@ var nakamajs = (() => {
       };
       let _body = null;
       return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    }
+    writeTournamentRecord2(tournamentId, body, options = {}) {
+      if (tournamentId === null || tournamentId === void 0) {
+        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+      }
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
+      const queryParams = {};
+      let _body = null;
+      _body = JSON.stringify(body || {});
+      return this.doFetch(urlPath, "POST", queryParams, _body, options);
     }
     writeTournamentRecord(tournamentId, body, options = {}) {
       if (tournamentId === null || tournamentId === void 0) {
