@@ -12,6 +12,7 @@ such as `socket.addMatchmaker` for better type checking.
 - Changed signature of `authenticateSteam` and `linkSteam` to allow for a `sync` option.
 - Allowed for importing of steam friends through `importSteamFriends`.
 - Added purchase validation for Apple, Google and Huawei.
+- Added an `ApiOverrideOperator` to leaderboard writes.
 
 ### [2.1.5]
 ### Fixed
