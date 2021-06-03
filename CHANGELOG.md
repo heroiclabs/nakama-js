@@ -10,7 +10,7 @@ such as `socket.addMatchmaker` for better type checking.
 - Upgraded ts-proto dependency and shipped type definitions with the protobuf adapter.
 - Changed the return type from `socket.addMatchmaker` to a `MatchmakerTicket` rather than a `MatchmakerMatched`.
 - Changed signature of `authenticateSteam` and `linkSteam` to allow for a `sync` option.
--
+- Allowed for importing of steam friends through `importSteamFriends`.
 
 ### [2.1.5]
 ### Fixed

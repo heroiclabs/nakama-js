@@ -690,6 +690,14 @@ export class Client {
     });
   }
 
+    /** Import Steam friends and add them to a user's account. */
+  importSteamFriends(session: Session, request: ApiAccountSteam, reset: boolean): Promise<boolean> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.importSteamFriends(request, reset).then((response: any) => {
+        return response !== undefined;
+    });
+}
+
   /** Fetch zero or more users by ID and/or username. */
   getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<Users> {
     this.configuration.bearerToken = (session && session.token);
