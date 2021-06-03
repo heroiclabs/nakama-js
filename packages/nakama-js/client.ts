@@ -53,6 +53,7 @@ import {
   ApiSession,
   ApiAccountApple,
   ApiLinkSteamRequest,
+  ApiValidatePurchaseResponse,
 } from "./api.gen";
 
 import { Session } from "./session";
@@ -1480,6 +1481,24 @@ export class Client {
     return this.apiClient.updateGroup(groupId, request).then((response: any) => {
       return response !== undefined;
     });
+  }
+
+  /** Validate an Apple IAP receipt. */
+  validatePurchaseApple(session: Session, receipt?: string)  : Promise<ApiValidatePurchaseResponse> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.validatePurchaseApple({receipt: receipt})
+  }
+
+  /** Validate a Google IAP receipt. */
+  validatePurchaseGoogle(session: Session, purchase?: string)  : Promise<ApiValidatePurchaseResponse> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.validatePurchaseGoogle({purchase: purchase})
+  }
+
+  /** Validate a Huawei IAP receipt. */
+  validatePurchaseHuawei(session: Session, purchase?: string, signature?: string) : Promise<ApiValidatePurchaseResponse> {
+    this.configuration.bearerToken = (session && session.token);
+    return this.apiClient.validatePurchaseHuawei({purchase: purchase, signature: signature})
   }
 
   /** Write a record to a leaderboard. */

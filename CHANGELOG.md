@@ -11,6 +11,7 @@ such as `socket.addMatchmaker` for better type checking.
 - Changed the return type from `socket.addMatchmaker` to a `MatchmakerTicket` rather than a `MatchmakerMatched`.
 - Changed signature of `authenticateSteam` and `linkSteam` to allow for a `sync` option.
 - Allowed for importing of steam friends through `importSteamFriends`.
+- Added purchase validation for Apple, Google and Huawei.
 
 ### [2.1.5]
 ### Fixed
