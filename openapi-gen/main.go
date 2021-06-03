@@ -39,45 +39,60 @@ export interface ConfigurationParameters {
 }
 
 {{- range $classname, $definition := .Definitions}}
+	{{- if isRefToEnum $classname }}
+
+/**
+* {{ enumSummary $definition }}
+*/
+export enum {{ $classname | title }}
+{
+		{{- range $idx, $enum := $definition.Enum }}
+	/* {{ (index (enumDescriptions $definition) $idx) }} */
+	{{ $enum }} = {{ $idx }},
+		{{- end }}
+}
+	{{- else }}
+
 /** {{$definition.Description}} */
 export interface {{$classname | title}} {
-  {{- range $key, $property := $definition.Properties}}
-  {{- $fieldname := camelToSnake $key }}
+  		{{- range $key, $property := $definition.Properties}}
+  			{{- $fieldname := camelToSnake $key }}
   // {{$property.Description}}
-  {{- if eq $property.Type "integer"}}
+  			{{- if eq $property.Type "integer"}}
   {{$fieldname}}?: number;
-  {{- else if eq $property.Type "number" }}
+  			{{- else if eq $property.Type "number" }}
   {{$fieldname}}?: number;
-  {{- else if eq $property.Type "boolean"}}
+  			{{- else if eq $property.Type "boolean"}}
   {{$fieldname}}?: boolean;
-  {{- else if eq $property.Type "array"}}
-    {{- if eq $property.Items.Type "string"}}
+  			{{- else if eq $property.Type "array"}}
+    			{{- if eq $property.Items.Type "string"}}
   {{$fieldname}}?: Array<string>;
-    {{- else if eq $property.Items.Type "integer"}}
+    			{{- else if eq $property.Items.Type "integer"}}
   {{$fieldname}}?: Array<number>;
-    {{- else if eq $property.Items.Type "boolean"}}
+    			{{- else if eq $property.Items.Type "boolean"}}
   {{$fieldname}}?: Array<boolean>;
-    {{- else}}
+    			{{- else}}
   {{$fieldname}}?: Array<{{$property.Items.Ref | cleanRef}}>;
-    {{- end}}
-  {{- else if eq $property.Type "object"}}
-    {{- if eq $property.AdditionalProperties.Type "string"}}
+    			{{- end}}
+  			{{- else if eq $property.Type "object"}}
+    			{{- if eq $property.AdditionalProperties.Type "string"}}
   {{$fieldname}}?: Map<string, string>;
-    {{- else if eq $property.AdditionalProperties.Type "integer"}}
+    			{{- else if eq $property.AdditionalPrgioperties.Type "integer"}}
   {{$fieldname}}?: Map<string, integer>;
-    {{- else if eq $property.AdditionalProperties.Type "boolean"}}
+    			{{- else if eq $property.AdditionalProperties.Type "boolean"}}
   {{$fieldname}}?: Map<string, boolean>;
-    {{- else}}
+    			{{- else}}
   {{$fieldname}}?: Map<{{$property.AdditionalProperties | cleanRef}}>;
-    {{- end}}
-  {{- else if eq $property.Type "string"}}
+    			{{- end}}
+  			{{- else if eq $property.Type "string"}}
   {{$fieldname}}?: string;
-  {{- else}}
+  			{{- else}}
   {{$fieldname}}?: {{$property.Ref | cleanRef}};
-  {{- end}}
-  {{- end}}
+  			{{- end}}
+  		{{- end}}
 }
-{{- end}}
+	{{- end}}
+{{- end }}
 
 export class NakamaApi {
 
@@ -214,6 +229,26 @@ export class NakamaApi {
 };
 `
 
+type Definition struct {
+	Properties map[string]struct {
+		Type  string
+		Ref   string   `json:"$ref"` // used with object
+		Items struct { // used with type "array"
+			Type string
+			Ref  string `json:"$ref"`
+		}
+		AdditionalProperties struct {
+			Type string // used with type "map"
+		}
+		Format      string // used with type "boolean"
+		Description string
+	}
+	Enum        []string
+	Description string
+	// used only by enums
+	Title string
+}
+
 func snakeToCamel(input string) (snakeToCamel string) {
 	isToUpper := false
 	for k, v := range input {
@@ -231,9 +266,42 @@ func snakeToCamel(input string) (snakeToCamel string) {
 				}
 			}
 		}
-
 	}
 	return
+}
+
+func enumSummary(def Definition) string {
+	// quirk of swagger generation: if enum doesn't have a title
+	// then the title can be found as the first entry in the split description.
+	if def.Title != "" {
+		return def.Title
+	}
+
+	split := strings.Split(def.Description, "\n")
+
+	if len(split) <= 0 {
+		panic("No newlines in enum description found.")
+	}
+
+	return split[0]
+}
+
+func enumDescriptions(def Definition) (output []string) {
+
+	split := strings.Split(def.Description, "\n")
+
+	if len(split) <= 0 {
+		panic("No newlines in enum description found.")
+	}
+
+	if def.Title != "" {
+		return split
+	}
+
+	// quirk of swagger generation: if enum doesn't have a title
+	// then the title can be found as the first entry in the split description.
+	// so ignore for individual enum descriptions.
+	return split[2:]
 }
 
 func stripOperationPrefix(input string) string {
@@ -339,28 +407,14 @@ func main() {
 				}
 			}
 		}
-		Definitions map[string]struct {
-			Properties map[string]struct {
-				Type  string
-				Ref   string   `json:"$ref"` // used with object
-				Items struct { // used with type "array"
-					Type string
-					Ref  string `json:"$ref"`
-				}
-				AdditionalProperties struct {
-					Type string // used with type "map"
-				}
-				Format      string // used with type "boolean"
-				Description string
-			}
-			Enum        []string
-			Description string
-		}
+		Definitions map[string]Definition
 	}
 
 	fmap := template.FuncMap{
-		"snakeToCamel": snakeToCamel,
-		"cleanRef":     convertRefToClassName,
+		"enumDescriptions": enumDescriptions,
+		"enumSummary":      enumSummary,
+		"snakeToCamel":     snakeToCamel,
+		"cleanRef":         convertRefToClassName,
 		"isRefToEnum": func(ref string) bool {
 			// swagger schema definition keys have inconsistent casing
 			var camelOk bool
