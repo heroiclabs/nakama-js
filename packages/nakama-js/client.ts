@@ -1394,6 +1394,13 @@ export class Client {
       });
   }
 
+  /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
+  sessionLogout(session: Session, refreshToken: string, token: string)
+  {
+      this.configuration.bearerToken = (session && session.token);
+      return this.apiClient.sessionLogout({refresh_token: refreshToken, token: token})
+  }
+
   /** Remove the Apple ID from the social profiles on the current user's account. */
   unlinkApple(session: Session, request: ApiAccountApple): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
