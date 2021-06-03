@@ -576,10 +576,11 @@ export class Client {
   }
 
   /** Authenticate a user with Steam against the server. */
-  authenticateSteam(token : string, create?: boolean, username?: string, vars? : Map<string, string>) : Promise<Session> {
+  authenticateSteam(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Map<string, string>) : Promise<Session> {
     const request = {
       "token": token,
-      "vars": vars
+      "vars": vars,
+      "sync": sync
     };
 
     return this.apiClient.authenticateSteam(request, create, username).then((apiSession : ApiSession) => {
