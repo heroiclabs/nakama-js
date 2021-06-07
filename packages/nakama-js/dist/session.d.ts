@@ -1,20 +1,29 @@
 export interface ISession {
-    readonly token: string;
+    token: string;
+    created: boolean;
     readonly created_at: number;
-    readonly expires_at: number;
-    readonly username: string;
-    readonly user_id: string;
-    readonly vars: object;
+    expires_at?: number;
+    refresh_expires_at?: number;
+    refresh_token: string;
+    username?: string;
+    user_id?: string;
+    vars?: object;
     isexpired(currenttime: number): boolean;
+    isrefreshexpired(currenttime: number): boolean;
 }
-export declare class Session {
-    readonly token: string;
+export declare class Session implements ISession {
+    readonly created: boolean;
+    token: string;
     readonly created_at: number;
-    readonly expires_at: number;
-    readonly username: string;
-    readonly user_id: string;
-    readonly vars: object;
-    constructor(token: string, created_at: number, expires_at: number, username: string, user_id: string, vars: object);
+    expires_at?: number;
+    refresh_expires_at?: number;
+    refresh_token: string;
+    username?: string;
+    user_id?: string;
+    vars?: object;
+    constructor(token: string, refresh_token: string, created: boolean);
     isexpired(currenttime: number): boolean;
-    static restore(jwt: string): Session;
+    isrefreshexpired(currenttime: number): boolean;
+    update(token: string, refreshToken: string): void;
+    static restore(token: string, refreshToken: string): Session;
 }

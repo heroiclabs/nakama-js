@@ -21,6 +21,6 @@
         "ts-jest": "26.4.4"
     },
     "scripts": {
-        "test": "jest --runInBand"
+        "test": "npx typescript --project tsconfig.test.json && jest --runInBand"
     }
 }

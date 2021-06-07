@@ -17,39 +17,83 @@
  /** A nakama session. */
 export interface ISession {
   // Claims
-  readonly token: string;
+  token: string;
+  created: boolean
   readonly created_at: number;
-  readonly expires_at: number;
-  readonly username: string;
-  readonly user_id: string;
-  readonly vars: object;
+  expires_at?: number;
+  refresh_expires_at?: number;
+  refresh_token: string;
+  username?: string;
+  user_id?: string;
+  vars?: object;
+
   // Validate token
   isexpired(currenttime: number): boolean;
+  isrefreshexpired(currenttime: number): boolean;
 }
 
-export class Session {
-  public constructor(
-    readonly token: string,
-    readonly created_at: number,
-    readonly expires_at: number,
-    readonly username: string,
-    readonly user_id: string,
-    readonly vars: object) {
+export class Session implements ISession {
+
+  token : string;
+  readonly created_at: number;
+  expires_at?: number;
+  refresh_expires_at?: number;
+  refresh_token: string;
+  username?: string;
+  user_id?: string;
+  vars?: object;
+
+  constructor(
+    token: string,
+    refresh_token: string,
+    readonly created: boolean) {
+    this.token = token;
+    this.refresh_token = refresh_token;
+    this.created_at = Math.floor(new Date().getTime() / 1000);
+    this.update(token, refresh_token);
   }
 
   isexpired(currenttime: number): boolean {
-    return (this.expires_at - currenttime) < 0;
+    return (this.expires_at! - currenttime) < 0;
   }
 
-  static restore(jwt: string): Session {
-    const createdAt = Math.floor(new Date().getTime() / 1000);
-    const parts = jwt.split('.');
-    if (parts.length != 3) {
+  isrefreshexpired(currenttime: number): boolean {
+      return (this.refresh_expires_at! - currenttime) < 0;
+  }
+
+  update(token: string, refreshToken: string) {
+
+    const tokenParts = token.split('.');
+    if (tokenParts.length != 3) {
       throw 'jwt is not valid.';
     }
-    const decoded = JSON.parse(atob(parts[1])); // FIXME: use base64 polyfill for React Native.
-    const expiresAt = Math.floor(parseInt(decoded['exp']));
 
-    return new Session(jwt, createdAt, expiresAt, decoded['usn'], decoded['uid'], decoded['vrs']);
+    const tokenDecoded = JSON.parse(atob(tokenParts[1])); // FIXME: use base64 polyfill for React Native.
+    const tokenExpiresAt = Math.floor(parseInt(tokenDecoded['exp']));
+
+    // clients that have updated will not have a cached refresh token
+    if (refreshToken) {
+
+        const refreshTokenParts = refreshToken.split('.');
+
+        if (refreshTokenParts.length != 3) {
+            throw 'refresh jwt is not valid.';
+        }
+
+        const refreshTokenDecoded = JSON.parse(atob(refreshTokenParts[1])); // FIXME: use base64 polyfill for React Native.
+        const refreshTokenExpiresAt = Math.floor(parseInt(refreshTokenDecoded['exp']));
+        this.refresh_expires_at = refreshTokenExpiresAt;
+        this.refresh_token = refreshToken;
+    }
+
+    this.token = token;
+    this.expires_at = tokenExpiresAt;
+    this.username = tokenDecoded['usn'];
+    this.user_id = tokenDecoded['uid'];
+    this.vars = tokenDecoded['vrs'];
+  }
+
+  static restore(token: string, refreshToken: string): Session {
+    return new Session(token, refreshToken, false);
   }
 }

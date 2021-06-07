@@ -1487,26 +1487,44 @@ var nakamajs = (() => {
 
   // session.ts
   var Session = class {
-    constructor(token, created_at, expires_at, username, user_id, vars) {
+    constructor(token, refresh_token, created) {
+      this.created = created;
       this.token = token;
-      this.created_at = created_at;
-      this.expires_at = expires_at;
-      this.username = username;
-      this.user_id = user_id;
-      this.vars = vars;
+      this.refresh_token = refresh_token;
+      this.created_at = Math.floor(new Date().getTime() / 1e3);
+      this.update(token, refresh_token);
     }
     isexpired(currenttime) {
       return this.expires_at - currenttime < 0;
     }
-    static restore(jwt) {
-      const createdAt = Math.floor(new Date().getTime() / 1e3);
-      const parts = jwt.split(".");
-      if (parts.length != 3) {
+    isrefreshexpired(currenttime) {
+      return this.refresh_expires_at - currenttime < 0;
+    }
+    update(token, refreshToken) {
+      const tokenParts = token.split(".");
+      if (tokenParts.length != 3) {
         throw "jwt is not valid.";
       }
-      const decoded = JSON.parse(atob(parts[1]));
-      const expiresAt = Math.floor(parseInt(decoded["exp"]));
-      return new Session(jwt, createdAt, expiresAt, decoded["usn"], decoded["uid"], decoded["vrs"]);
+      const tokenDecoded = JSON.parse(atob(tokenParts[1]));
+      const tokenExpiresAt = Math.floor(parseInt(tokenDecoded["exp"]));
+      if (refreshToken) {
+        const refreshTokenParts = refreshToken.split(".");
+        if (refreshTokenParts.length != 3) {
+          throw "refresh jwt is not valid.";
+        }
+        const refreshTokenDecoded = JSON.parse(atob(refreshTokenParts[1]));
+        const refreshTokenExpiresAt = Math.floor(parseInt(refreshTokenDecoded["exp"]));
+        this.refresh_expires_at = refreshTokenExpiresAt;
+        this.refresh_token = refreshToken;
+      }
+      this.token = token;
+      this.expires_at = tokenExpiresAt;
+      this.username = tokenDecoded["usn"];
+      this.user_id = tokenDecoded["uid"];
+      this.vars = tokenDecoded["vrs"];
+    }
+    static restore(token, refreshToken) {
+      return new Session(token, refreshToken, false);
     }
   };
 
@@ -2012,13 +2030,16 @@ var nakamajs = (() => {
   var DEFAULT_PORT = "7350";
   var DEFAULT_SERVER_KEY = "defaultkey";
   var DEFAULT_TIMEOUT_MS = 7e3;
+  var DEFAULT_EXPIRED_TIMESPAN_MS = 5 * 60 * 1e3;
   var Client = class {
-    constructor(serverkey = DEFAULT_SERVER_KEY, host = DEFAULT_HOST, port = DEFAULT_PORT, useSSL = false, timeout = DEFAULT_TIMEOUT_MS) {
+    constructor(serverkey = DEFAULT_SERVER_KEY, host = DEFAULT_HOST, port = DEFAULT_PORT, useSSL = false, timeout = DEFAULT_TIMEOUT_MS, autoRefreshSession = true) {
       this.serverkey = serverkey;
       this.host = host;
       this.port = port;
       this.useSSL = useSSL;
       this.timeout = timeout;
+      this.autoRefreshSession = autoRefreshSession;
+      this.expiredTimespanMs = DEFAULT_EXPIRED_TIMESPAN_MS;
       const scheme = useSSL ? "https://" : "http://";
       const basePath = `${scheme}${host}:${port}`;
       this.configuration = {
@@ -2030,24 +2051,36 @@ var nakamajs = (() => {
       this.apiClient = new NakamaApi(this.configuration);
     }
     addGroupUsers(session, groupId, ids) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.addGroupUsers(groupId, ids).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.addGroupUsers(groupId, ids).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     addFriends(session, ids, usernames) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.addFriends(ids, usernames).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.addFriends(ids, usernames).then((response) => {
+          return response !== void 0;
+        });
       });
     }
-    authenticateApple(token, create, username, vars = new Map(), options = {}) {
-      const request = {
-        "token": token,
-        "vars": vars
-      };
-      return this.apiClient.authenticateApple(request, create, username, options).then((apiSession) => {
-        return Session.restore(apiSession.token || "");
+    authenticateApple(_0, _1, _2) {
+      return __async(this, arguments, function* (token, create, username, vars = new Map(), options = {}) {
+        const request = {
+          "token": token,
+          "vars": vars
+        };
+        return this.apiClient.authenticateApple(request, create, username, options).then((apiSession) => {
+          return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
+        });
       });
     }
     authenticateCustom(id, create, username, vars = new Map(), options = {}) {
@@ -2056,7 +2089,7 @@ var nakamajs = (() => {
         "vars": vars
       };
       return this.apiClient.authenticateCustom(request, create, username, options).then((apiSession) => {
-        return Session.restore(apiSession.token || "");
+        return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
       });
     }
     authenticateDevice(id, create, username, vars) {
@@ -2065,7 +2098,7 @@ var nakamajs = (() => {
         "vars": vars
       };
       return this.apiClient.authenticateDevice(request, create, username).then((apiSession) => {
-        return Session.restore(apiSession.token || "");
+        return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
       });
     }
     authenticateEmail(email, password, create, username, vars) {
@@ -2075,7 +2108,7 @@ var nakamajs = (() => {
         "vars": vars
       };
       return this.apiClient.authenticateEmail(request, create, username).then((apiSession) => {
-        return Session.restore(apiSession.token || "");
+        return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
       });
     }
     authenticateFacebookInstantGame(signedPlayerInfo, create, username, vars, options = {}) {
@@ -2084,7 +2117,7 @@ var nakamajs = (() => {
         "vars": vars
       };
       return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then((apiSession) => {
-        return Session.restore(apiSession.token || "");
+        return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
       });
     }
     authenticateFacebook(token, create, username, sync, vars, options = {}) {
@@ -2093,7 +2126,7 @@ var nakamajs = (() => {
         "vars": vars
       };
       return this.apiClient.authenticateFacebook(request, create, username, sync, options).then((apiSession) => {
-        return Session.restore(apiSession.token || "");
+        return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
       });
     }
     authenticateGoogle(token, create, username, vars, options = {}) {
@@ -2102,7 +2135,7 @@ var nakamajs = (() => {
         "vars": vars
       };
       return this.apiClient.authenticateGoogle(request, create, username, options).then((apiSession) => {
-        return Session.restore(apiSession.token || "");
+        return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
       });
     }
     authenticateGameCenter(token, create, username, vars) {
@@ -2111,46 +2144,64 @@ var nakamajs = (() => {
         "vars": vars
       };
       return this.apiClient.authenticateGameCenter(request, create, username).then((apiSession) => {
-        return Session.restore(apiSession.token || "");
+        return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
       });
     }
-    authenticateSteam(token, create, username, vars) {
-      const request = {
-        "token": token,
-        "vars": vars
-      };
-      return this.apiClient.authenticateSteam(request, create, username).then((apiSession) => {
-        return Session.restore(apiSession.token || "");
+    authenticateSteam(token, create, username, sync, vars) {
+      return __async(this, null, function* () {
+        const request = {
+          "token": token,
+          "vars": vars,
+          "sync": sync
+        };
+        return this.apiClient.authenticateSteam(request, create, username).then((apiSession) => {
+          return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
+        });
       });
     }
     banGroupUsers(session, groupId, ids) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.banGroupUsers(groupId, ids).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.banGroupUsers(groupId, ids).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     blockFriends(session, ids, usernames) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.blockFriends(ids, usernames).then((response) => {
-        return Promise.resolve(response != void 0);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.blockFriends(ids, usernames).then((response) => {
+          return Promise.resolve(response != void 0);
+        });
       });
     }
     createGroup(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.createGroup(request).then((response) => {
-        return Promise.resolve({
-          avatar_url: response.avatar_url,
-          create_time: response.create_time,
-          creator_id: response.creator_id,
-          description: response.description,
-          edge_count: response.edge_count ? Number(response.edge_count) : 0,
-          id: response.id,
-          lang_tag: response.lang_tag,
-          max_count: response.max_count ? Number(response.max_count) : 0,
-          metadata: response.metadata ? JSON.parse(response.metadata) : void 0,
-          name: response.name,
-          open: response.open,
-          update_time: response.update_time
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.createGroup(request).then((response) => {
+          return Promise.resolve({
+            avatar_url: response.avatar_url,
+            create_time: response.create_time,
+            creator_id: response.creator_id,
+            description: response.description,
+            edge_count: response.edge_count ? Number(response.edge_count) : 0,
+            id: response.id,
+            lang_tag: response.lang_tag,
+            max_count: response.max_count ? Number(response.max_count) : 0,
+            metadata: response.metadata ? JSON.parse(response.metadata) : void 0,
+            name: response.name,
+            open: response.open,
+            update_time: response.update_time
+          });
         });
       });
     }
@@ -2158,771 +2209,1101 @@ var nakamajs = (() => {
       return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter);
     }
     deleteFriends(session, ids, usernames) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.deleteFriends(ids, usernames).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.deleteFriends(ids, usernames).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     deleteGroup(session, groupId) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.deleteGroup(groupId).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.deleteGroup(groupId).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     deleteNotifications(session, ids) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.deleteNotifications(ids).then((response) => {
-        return Promise.resolve(response != void 0);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.deleteNotifications(ids).then((response) => {
+          return Promise.resolve(response != void 0);
+        });
       });
     }
     deleteStorageObjects(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.deleteStorageObjects(request).then((response) => {
-        return Promise.resolve(response != void 0);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.deleteStorageObjects(request).then((response) => {
+          return Promise.resolve(response != void 0);
+        });
       });
     }
     demoteGroupUsers(session, groupId, ids) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.demoteGroupUsers(groupId, ids);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.demoteGroupUsers(groupId, ids).then((response) => {
+          return Promise.resolve(response != void 0);
+        });
+      });
     }
     emitEvent(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.event(request).then((response) => {
-        return Promise.resolve(response != void 0);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.event(request).then((response) => {
+          return Promise.resolve(response != void 0);
+        });
       });
     }
     getAccount(session) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.getAccount();
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.getAccount();
+      });
     }
     importFacebookFriends(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.importFacebookFriends(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.importFacebookFriends(request).then((response) => {
+          return response !== void 0;
+        });
+      });
+    }
+    importSteamFriends(session, request, reset) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.importSteamFriends(request, reset).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     getUsers(session, ids, usernames, facebookIds) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.getUsers(ids, usernames, facebookIds).then((response) => {
-        var result = {
-          users: []
-        };
-        if (response.users == null) {
-          return Promise.resolve(result);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        response.users.forEach((u) => {
-          result.users.push({
-            avatar_url: u.avatar_url,
-            create_time: u.create_time,
-            display_name: u.display_name,
-            edge_count: u.edge_count ? Number(u.edge_count) : 0,
-            facebook_id: u.facebook_id,
-            gamecenter_id: u.gamecenter_id,
-            google_id: u.google_id,
-            id: u.id,
-            lang_tag: u.lang_tag,
-            location: u.location,
-            online: u.online,
-            steam_id: u.steam_id,
-            timezone: u.timezone,
-            update_time: u.update_time,
-            username: u.username,
-            metadata: u.metadata ? JSON.parse(u.metadata) : void 0
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.getUsers(ids, usernames, facebookIds).then((response) => {
+          var result = {
+            users: []
+          };
+          if (response.users == null) {
+            return Promise.resolve(result);
+          }
+          response.users.forEach((u) => {
+            result.users.push({
+              avatar_url: u.avatar_url,
+              create_time: u.create_time,
+              display_name: u.display_name,
+              edge_count: u.edge_count ? Number(u.edge_count) : 0,
+              facebook_id: u.facebook_id,
+              gamecenter_id: u.gamecenter_id,
+              google_id: u.google_id,
+              id: u.id,
+              lang_tag: u.lang_tag,
+              location: u.location,
+              online: u.online,
+              steam_id: u.steam_id,
+              timezone: u.timezone,
+              update_time: u.update_time,
+              username: u.username,
+              metadata: u.metadata ? JSON.parse(u.metadata) : void 0
+            });
           });
+          return Promise.resolve(result);
         });
-        return Promise.resolve(result);
       });
     }
     joinGroup(session, groupId) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.joinGroup(groupId, {}).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.joinGroup(groupId, {}).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     joinTournament(session, tournamentId) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.joinTournament(tournamentId, {}).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.joinTournament(tournamentId, {}).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     kickGroupUsers(session, groupId, ids) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.kickGroupUsers(groupId, ids).then((response) => {
-        return Promise.resolve(response != void 0);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.kickGroupUsers(groupId, ids).then((response) => {
+          return Promise.resolve(response != void 0);
+        });
       });
     }
     leaveGroup(session, groupId) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.leaveGroup(groupId, {}).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.leaveGroup(groupId, {}).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     listChannelMessages(session, channelId, limit, forward, cursor) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then((response) => {
-        var result = {
-          messages: [],
-          next_cursor: response.next_cursor,
-          prev_cursor: response.prev_cursor
-        };
-        if (response.messages == null) {
-          return Promise.resolve(result);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        response.messages.forEach((m) => {
-          result.messages.push({
-            channel_id: m.channel_id,
-            code: m.code ? Number(m.code) : 0,
-            create_time: m.create_time,
-            message_id: m.message_id,
-            persistent: m.persistent,
-            sender_id: m.sender_id,
-            update_time: m.update_time,
-            username: m.username,
-            content: m.content ? JSON.parse(m.content) : void 0,
-            group_id: m.group_id,
-            room_name: m.room_name,
-            user_id_one: m.user_id_one,
-            user_id_two: m.user_id_two
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then((response) => {
+          var result = {
+            messages: [],
+            next_cursor: response.next_cursor,
+            prev_cursor: response.prev_cursor
+          };
+          if (response.messages == null) {
+            return Promise.resolve(result);
+          }
+          response.messages.forEach((m) => {
+            result.messages.push({
+              channel_id: m.channel_id,
+              code: m.code ? Number(m.code) : 0,
+              create_time: m.create_time,
+              message_id: m.message_id,
+              persistent: m.persistent,
+              sender_id: m.sender_id,
+              update_time: m.update_time,
+              username: m.username,
+              content: m.content ? JSON.parse(m.content) : void 0,
+              group_id: m.group_id,
+              room_name: m.room_name,
+              user_id_one: m.user_id_one,
+              user_id_two: m.user_id_two
+            });
           });
+          return Promise.resolve(result);
         });
-        return Promise.resolve(result);
       });
     }
     listGroupUsers(session, groupId, state, limit, cursor) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listGroupUsers(groupId, limit, state, cursor).then((response) => {
-        var result = {
-          group_users: [],
-          cursor: response.cursor
-        };
-        if (response.group_users == null) {
-          return Promise.resolve(result);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        response.group_users.forEach((gu) => {
-          result.group_users.push({
-            user: {
-              avatar_url: gu.user.avatar_url,
-              create_time: gu.user.create_time,
-              display_name: gu.user.display_name,
-              edge_count: gu.user.edge_count ? Number(gu.user.edge_count) : 0,
-              facebook_id: gu.user.facebook_id,
-              gamecenter_id: gu.user.gamecenter_id,
-              google_id: gu.user.google_id,
-              id: gu.user.id,
-              lang_tag: gu.user.lang_tag,
-              location: gu.user.location,
-              online: gu.user.online,
-              steam_id: gu.user.steam_id,
-              timezone: gu.user.timezone,
-              update_time: gu.user.update_time,
-              username: gu.user.username,
-              metadata: gu.user.metadata ? JSON.parse(gu.user.metadata) : void 0
-            },
-            state: gu.state ? Number(gu.state) : 0
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listGroupUsers(groupId, limit, state, cursor).then((response) => {
+          var result = {
+            group_users: [],
+            cursor: response.cursor
+          };
+          if (response.group_users == null) {
+            return Promise.resolve(result);
+          }
+          response.group_users.forEach((gu) => {
+            result.group_users.push({
+              user: {
+                avatar_url: gu.user.avatar_url,
+                create_time: gu.user.create_time,
+                display_name: gu.user.display_name,
+                edge_count: gu.user.edge_count ? Number(gu.user.edge_count) : 0,
+                facebook_id: gu.user.facebook_id,
+                gamecenter_id: gu.user.gamecenter_id,
+                google_id: gu.user.google_id,
+                id: gu.user.id,
+                lang_tag: gu.user.lang_tag,
+                location: gu.user.location,
+                online: gu.user.online,
+                steam_id: gu.user.steam_id,
+                timezone: gu.user.timezone,
+                update_time: gu.user.update_time,
+                username: gu.user.username,
+                metadata: gu.user.metadata ? JSON.parse(gu.user.metadata) : void 0
+              },
+              state: gu.state ? Number(gu.state) : 0
+            });
           });
+          return Promise.resolve(result);
         });
-        return Promise.resolve(result);
       });
     }
     listUserGroups(session, userId, state, limit, cursor) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listUserGroups(userId, state, limit, cursor).then((response) => {
-        var result = {
-          user_groups: [],
-          cursor: response.cursor
-        };
-        if (response.user_groups == null) {
-          return Promise.resolve(result);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        response.user_groups.forEach((ug) => {
-          result.user_groups.push({
-            group: {
-              avatar_url: ug.group.avatar_url,
-              create_time: ug.group.create_time,
-              creator_id: ug.group.creator_id,
-              description: ug.group.description,
-              edge_count: ug.group.edge_count ? Number(ug.group.edge_count) : 0,
-              id: ug.group.id,
-              lang_tag: ug.group.lang_tag,
-              max_count: ug.group.max_count,
-              metadata: ug.group.metadata ? JSON.parse(ug.group.metadata) : void 0,
-              name: ug.group.name,
-              open: ug.group.open,
-              update_time: ug.group.update_time
-            },
-            state: ug.state ? Number(ug.state) : 0
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listUserGroups(userId, state, limit, cursor).then((response) => {
+          var result = {
+            user_groups: [],
+            cursor: response.cursor
+          };
+          if (response.user_groups == null) {
+            return Promise.resolve(result);
+          }
+          response.user_groups.forEach((ug) => {
+            result.user_groups.push({
+              group: {
+                avatar_url: ug.group.avatar_url,
+                create_time: ug.group.create_time,
+                creator_id: ug.group.creator_id,
+                description: ug.group.description,
+                edge_count: ug.group.edge_count ? Number(ug.group.edge_count) : 0,
+                id: ug.group.id,
+                lang_tag: ug.group.lang_tag,
+                max_count: ug.group.max_count,
+                metadata: ug.group.metadata ? JSON.parse(ug.group.metadata) : void 0,
+                name: ug.group.name,
+                open: ug.group.open,
+                update_time: ug.group.update_time
+              },
+              state: ug.state ? Number(ug.state) : 0
+            });
           });
+          return Promise.resolve(result);
         });
-        return Promise.resolve(result);
       });
     }
     listGroups(session, name, cursor, limit) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listGroups(name, cursor, limit).then((response) => {
-        var result = {
-          groups: []
-        };
-        if (response.groups == null) {
-          return Promise.resolve(result);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        result.cursor = response.cursor;
-        response.groups.forEach((ug) => {
-          result.groups.push({
-            avatar_url: ug.avatar_url,
-            create_time: ug.create_time,
-            creator_id: ug.creator_id,
-            description: ug.description,
-            edge_count: ug.edge_count ? Number(ug.edge_count) : 0,
-            id: ug.id,
-            lang_tag: ug.lang_tag,
-            max_count: ug.max_count,
-            metadata: ug.metadata ? JSON.parse(ug.metadata) : void 0,
-            name: ug.name,
-            open: ug.open,
-            update_time: ug.update_time
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listGroups(name, cursor, limit).then((response) => {
+          var result = {
+            groups: []
+          };
+          if (response.groups == null) {
+            return Promise.resolve(result);
+          }
+          result.cursor = response.cursor;
+          response.groups.forEach((ug) => {
+            result.groups.push({
+              avatar_url: ug.avatar_url,
+              create_time: ug.create_time,
+              creator_id: ug.creator_id,
+              description: ug.description,
+              edge_count: ug.edge_count ? Number(ug.edge_count) : 0,
+              id: ug.id,
+              lang_tag: ug.lang_tag,
+              max_count: ug.max_count,
+              metadata: ug.metadata ? JSON.parse(ug.metadata) : void 0,
+              name: ug.name,
+              open: ug.open,
+              update_time: ug.update_time
+            });
           });
+          return Promise.resolve(result);
         });
-        return Promise.resolve(result);
       });
     }
     linkApple(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkApple(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.linkApple(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     linkCustom(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkCustom(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.linkCustom(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     linkDevice(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkDevice(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.linkDevice(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     linkEmail(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkEmail(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.linkEmail(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     linkFacebook(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkFacebook(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.linkFacebook(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     linkFacebookInstantGame(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkFacebookInstantGame(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.linkFacebookInstantGame(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     linkGoogle(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkGoogle(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.linkGoogle(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     linkGameCenter(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkGameCenter(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.linkGameCenter(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     linkSteam(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkSteam(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.linkSteam(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     listFriends(session, state, limit, cursor) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listFriends(limit, state, cursor).then((response) => {
-        var result = {
-          friends: [],
-          cursor: response.cursor
-        };
-        if (response.friends == null) {
-          return Promise.resolve(result);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        response.friends.forEach((f) => {
-          result.friends.push({
-            user: {
-              avatar_url: f.user.avatar_url,
-              create_time: f.user.create_time,
-              display_name: f.user.display_name,
-              edge_count: f.user.edge_count ? Number(f.user.edge_count) : 0,
-              facebook_id: f.user.facebook_id,
-              gamecenter_id: f.user.gamecenter_id,
-              google_id: f.user.google_id,
-              id: f.user.id,
-              lang_tag: f.user.lang_tag,
-              location: f.user.location,
-              online: f.user.online,
-              steam_id: f.user.steam_id,
-              timezone: f.user.timezone,
-              update_time: f.user.update_time,
-              username: f.user.username,
-              metadata: f.user.metadata ? JSON.parse(f.user.metadata) : void 0,
-              facebook_instant_game_id: f.user.facebook_instant_game_id
-            },
-            state: f.state
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listFriends(limit, state, cursor).then((response) => {
+          var result = {
+            friends: [],
+            cursor: response.cursor
+          };
+          if (response.friends == null) {
+            return Promise.resolve(result);
+          }
+          response.friends.forEach((f) => {
+            result.friends.push({
+              user: {
+                avatar_url: f.user.avatar_url,
+                create_time: f.user.create_time,
+                display_name: f.user.display_name,
+                edge_count: f.user.edge_count ? Number(f.user.edge_count) : 0,
+                facebook_id: f.user.facebook_id,
+                gamecenter_id: f.user.gamecenter_id,
+                google_id: f.user.google_id,
+                id: f.user.id,
+                lang_tag: f.user.lang_tag,
+                location: f.user.location,
+                online: f.user.online,
+                steam_id: f.user.steam_id,
+                timezone: f.user.timezone,
+                update_time: f.user.update_time,
+                username: f.user.username,
+                metadata: f.user.metadata ? JSON.parse(f.user.metadata) : void 0,
+                facebook_instant_game_id: f.user.facebook_instant_game_id
+              },
+              state: f.state
+            });
           });
+          return Promise.resolve(result);
         });
-        return Promise.resolve(result);
       });
     }
     listLeaderboardRecords(session, leaderboardId, ownerIds, limit, cursor, expiry) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry).then((response) => {
-        var list = {
-          next_cursor: response.next_cursor,
-          prev_cursor: response.prev_cursor,
-          owner_records: [],
-          records: []
-        };
-        if (response.owner_records != null) {
-          response.owner_records.forEach((o) => {
-            list.owner_records.push({
-              expiry_time: o.expiry_time,
-              leaderboard_id: o.leaderboard_id,
-              metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
-              num_score: o.num_score ? Number(o.num_score) : 0,
-              owner_id: o.owner_id,
-              rank: o.rank ? Number(o.rank) : 0,
-              score: o.score ? Number(o.score) : 0,
-              subscore: o.subscore ? Number(o.subscore) : 0,
-              update_time: o.update_time,
-              username: o.username,
-              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
-            });
-          });
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        if (response.records != null) {
-          response.records.forEach((o) => {
-            list.records.push({
-              expiry_time: o.expiry_time,
-              leaderboard_id: o.leaderboard_id,
-              metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
-              num_score: o.num_score ? Number(o.num_score) : 0,
-              owner_id: o.owner_id,
-              rank: o.rank ? Number(o.rank) : 0,
-              score: o.score ? Number(o.score) : 0,
-              subscore: o.subscore ? Number(o.subscore) : 0,
-              update_time: o.update_time,
-              username: o.username,
-              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry).then((response) => {
+          var list = {
+            next_cursor: response.next_cursor,
+            prev_cursor: response.prev_cursor,
+            owner_records: [],
+            records: []
+          };
+          if (response.owner_records != null) {
+            response.owner_records.forEach((o) => {
+              list.owner_records.push({
+                expiry_time: o.expiry_time,
+                leaderboard_id: o.leaderboard_id,
+                metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
+                num_score: o.num_score ? Number(o.num_score) : 0,
+                owner_id: o.owner_id,
+                rank: o.rank ? Number(o.rank) : 0,
+                score: o.score ? Number(o.score) : 0,
+                subscore: o.subscore ? Number(o.subscore) : 0,
+                update_time: o.update_time,
+                username: o.username,
+                max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+              });
             });
-          });
-        }
-        return Promise.resolve(list);
+          }
+          if (response.records != null) {
+            response.records.forEach((o) => {
+              list.records.push({
+                expiry_time: o.expiry_time,
+                leaderboard_id: o.leaderboard_id,
+                metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
+                num_score: o.num_score ? Number(o.num_score) : 0,
+                owner_id: o.owner_id,
+                rank: o.rank ? Number(o.rank) : 0,
+                score: o.score ? Number(o.score) : 0,
+                subscore: o.subscore ? Number(o.subscore) : 0,
+                update_time: o.update_time,
+                username: o.username,
+                max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+              });
+            });
+          }
+          return Promise.resolve(list);
+        });
       });
     }
     listLeaderboardRecordsAroundOwner(session, leaderboardId, ownerId, limit, expiry) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry).then((response) => {
-        var list = {
-          next_cursor: response.next_cursor,
-          prev_cursor: response.prev_cursor,
-          owner_records: [],
-          records: []
-        };
-        if (response.owner_records != null) {
-          response.owner_records.forEach((o) => {
-            list.owner_records.push({
-              expiry_time: o.expiry_time,
-              leaderboard_id: o.leaderboard_id,
-              metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
-              num_score: o.num_score ? Number(o.num_score) : 0,
-              owner_id: o.owner_id,
-              rank: o.rank ? Number(o.rank) : 0,
-              score: o.score ? Number(o.score) : 0,
-              subscore: o.subscore ? Number(o.subscore) : 0,
-              update_time: o.update_time,
-              username: o.username,
-              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
-            });
-          });
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        if (response.records != null) {
-          response.records.forEach((o) => {
-            list.records.push({
-              expiry_time: o.expiry_time,
-              leaderboard_id: o.leaderboard_id,
-              metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
-              num_score: o.num_score ? Number(o.num_score) : 0,
-              owner_id: o.owner_id,
-              rank: o.rank ? Number(o.rank) : 0,
-              score: o.score ? Number(o.score) : 0,
-              subscore: o.subscore ? Number(o.subscore) : 0,
-              update_time: o.update_time,
-              username: o.username,
-              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry).then((response) => {
+          var list = {
+            next_cursor: response.next_cursor,
+            prev_cursor: response.prev_cursor,
+            owner_records: [],
+            records: []
+          };
+          if (response.owner_records != null) {
+            response.owner_records.forEach((o) => {
+              list.owner_records.push({
+                expiry_time: o.expiry_time,
+                leaderboard_id: o.leaderboard_id,
+                metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
+                num_score: o.num_score ? Number(o.num_score) : 0,
+                owner_id: o.owner_id,
+                rank: o.rank ? Number(o.rank) : 0,
+                score: o.score ? Number(o.score) : 0,
+                subscore: o.subscore ? Number(o.subscore) : 0,
+                update_time: o.update_time,
+                username: o.username,
+                max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+              });
             });
-          });
-        }
-        return Promise.resolve(list);
+          }
+          if (response.records != null) {
+            response.records.forEach((o) => {
+              list.records.push({
+                expiry_time: o.expiry_time,
+                leaderboard_id: o.leaderboard_id,
+                metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
+                num_score: o.num_score ? Number(o.num_score) : 0,
+                owner_id: o.owner_id,
+                rank: o.rank ? Number(o.rank) : 0,
+                score: o.score ? Number(o.score) : 0,
+                subscore: o.subscore ? Number(o.subscore) : 0,
+                update_time: o.update_time,
+                username: o.username,
+                max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+              });
+            });
+          }
+          return Promise.resolve(list);
+        });
       });
     }
     listMatches(session, limit, authoritative, label, minSize, maxSize, query) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize, query);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize, query);
+      });
     }
     listNotifications(session, limit, cacheableCursor) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listNotifications(limit, cacheableCursor).then((response) => {
-        var result = {
-          cacheable_cursor: response.cacheable_cursor,
-          notifications: []
-        };
-        if (response.notifications == null) {
-          return Promise.resolve(result);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        response.notifications.forEach((n) => {
-          result.notifications.push({
-            code: n.code ? Number(n.code) : 0,
-            create_time: n.create_time,
-            id: n.id,
-            persistent: n.persistent,
-            sender_id: n.sender_id,
-            subject: n.subject,
-            content: n.content ? JSON.parse(n.content) : void 0
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listNotifications(limit, cacheableCursor).then((response) => {
+          var result = {
+            cacheable_cursor: response.cacheable_cursor,
+            notifications: []
+          };
+          if (response.notifications == null) {
+            return Promise.resolve(result);
+          }
+          response.notifications.forEach((n) => {
+            result.notifications.push({
+              code: n.code ? Number(n.code) : 0,
+              create_time: n.create_time,
+              id: n.id,
+              persistent: n.persistent,
+              sender_id: n.sender_id,
+              subject: n.subject,
+              content: n.content ? JSON.parse(n.content) : void 0
+            });
           });
+          return Promise.resolve(result);
         });
-        return Promise.resolve(result);
       });
     }
     listStorageObjects(session, collection, userId, limit, cursor) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listStorageObjects(collection, userId, limit, cursor).then((response) => {
-        var result = {
-          objects: [],
-          cursor: response.cursor
-        };
-        if (response.objects == null) {
-          return Promise.resolve(result);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        response.objects.forEach((o) => {
-          result.objects.push({
-            collection: o.collection,
-            key: o.key,
-            permission_read: o.permission_read ? Number(o.permission_read) : 0,
-            permission_write: o.permission_write ? Number(o.permission_write) : 0,
-            value: o.value ? JSON.parse(o.value) : void 0,
-            version: o.version,
-            user_id: o.user_id,
-            create_time: o.create_time,
-            update_time: o.update_time
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listStorageObjects(collection, userId, limit, cursor).then((response) => {
+          var result = {
+            objects: [],
+            cursor: response.cursor
+          };
+          if (response.objects == null) {
+            return Promise.resolve(result);
+          }
+          response.objects.forEach((o) => {
+            result.objects.push({
+              collection: o.collection,
+              key: o.key,
+              permission_read: o.permission_read ? Number(o.permission_read) : 0,
+              permission_write: o.permission_write ? Number(o.permission_write) : 0,
+              value: o.value ? JSON.parse(o.value) : void 0,
+              version: o.version,
+              user_id: o.user_id,
+              create_time: o.create_time,
+              update_time: o.update_time
+            });
           });
+          return Promise.resolve(result);
         });
-        return Promise.resolve(result);
       });
     }
     listTournaments(session, categoryStart, categoryEnd, startTime, endTime, limit, cursor) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor).then((response) => {
-        var list = {
-          cursor: response.cursor,
-          tournaments: []
-        };
-        if (response.tournaments != null) {
-          response.tournaments.forEach((o) => {
-            list.tournaments.push({
-              id: o.id,
-              title: o.title,
-              description: o.description,
-              duration: o.duration ? Number(o.duration) : 0,
-              category: o.category ? Number(o.category) : 0,
-              sort_order: o.sort_order ? Number(o.sort_order) : 0,
-              size: o.size ? Number(o.size) : 0,
-              max_size: o.max_size ? Number(o.max_size) : 0,
-              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
-              can_enter: o.can_enter,
-              end_active: o.end_active ? Number(o.end_active) : 0,
-              next_reset: o.next_reset ? Number(o.next_reset) : 0,
-              metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
-              create_time: o.create_time,
-              start_time: o.start_time,
-              end_time: o.end_time,
-              start_active: o.start_active
-            });
-          });
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        return Promise.resolve(list);
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor).then((response) => {
+          var list = {
+            cursor: response.cursor,
+            tournaments: []
+          };
+          if (response.tournaments != null) {
+            response.tournaments.forEach((o) => {
+              list.tournaments.push({
+                id: o.id,
+                title: o.title,
+                description: o.description,
+                duration: o.duration ? Number(o.duration) : 0,
+                category: o.category ? Number(o.category) : 0,
+                sort_order: o.sort_order ? Number(o.sort_order) : 0,
+                size: o.size ? Number(o.size) : 0,
+                max_size: o.max_size ? Number(o.max_size) : 0,
+                max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
+                can_enter: o.can_enter,
+                end_active: o.end_active ? Number(o.end_active) : 0,
+                next_reset: o.next_reset ? Number(o.next_reset) : 0,
+                metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
+                create_time: o.create_time,
+                start_time: o.start_time,
+                end_time: o.end_time,
+                start_active: o.start_active
+              });
+            });
+          }
+          return Promise.resolve(list);
+        });
       });
     }
     listTournamentRecords(session, tournamentId, ownerIds, limit, cursor, expiry) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry).then((response) => {
-        var list = {
-          next_cursor: response.next_cursor,
-          prev_cursor: response.prev_cursor,
-          owner_records: [],
-          records: []
-        };
-        if (response.owner_records != null) {
-          response.owner_records.forEach((o) => {
-            list.owner_records.push({
-              expiry_time: o.expiry_time,
-              leaderboard_id: o.leaderboard_id,
-              metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
-              num_score: o.num_score ? Number(o.num_score) : 0,
-              owner_id: o.owner_id,
-              rank: o.rank ? Number(o.rank) : 0,
-              score: o.score ? Number(o.score) : 0,
-              subscore: o.subscore ? Number(o.subscore) : 0,
-              update_time: o.update_time,
-              username: o.username,
-              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
-            });
-          });
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        if (response.records != null) {
-          response.records.forEach((o) => {
-            list.records.push({
-              expiry_time: o.expiry_time,
-              leaderboard_id: o.leaderboard_id,
-              metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
-              num_score: o.num_score ? Number(o.num_score) : 0,
-              owner_id: o.owner_id,
-              rank: o.rank ? Number(o.rank) : 0,
-              score: o.score ? Number(o.score) : 0,
-              subscore: o.subscore ? Number(o.subscore) : 0,
-              update_time: o.update_time,
-              username: o.username,
-              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry).then((response) => {
+          var list = {
+            next_cursor: response.next_cursor,
+            prev_cursor: response.prev_cursor,
+            owner_records: [],
+            records: []
+          };
+          if (response.owner_records != null) {
+            response.owner_records.forEach((o) => {
+              list.owner_records.push({
+                expiry_time: o.expiry_time,
+                leaderboard_id: o.leaderboard_id,
+                metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
+                num_score: o.num_score ? Number(o.num_score) : 0,
+                owner_id: o.owner_id,
+                rank: o.rank ? Number(o.rank) : 0,
+                score: o.score ? Number(o.score) : 0,
+                subscore: o.subscore ? Number(o.subscore) : 0,
+                update_time: o.update_time,
+                username: o.username,
+                max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+              });
             });
-          });
-        }
-        return Promise.resolve(list);
+          }
+          if (response.records != null) {
+            response.records.forEach((o) => {
+              list.records.push({
+                expiry_time: o.expiry_time,
+                leaderboard_id: o.leaderboard_id,
+                metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
+                num_score: o.num_score ? Number(o.num_score) : 0,
+                owner_id: o.owner_id,
+                rank: o.rank ? Number(o.rank) : 0,
+                score: o.score ? Number(o.score) : 0,
+                subscore: o.subscore ? Number(o.subscore) : 0,
+                update_time: o.update_time,
+                username: o.username,
+                max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+              });
+            });
+          }
+          return Promise.resolve(list);
+        });
       });
     }
     listTournamentRecordsAroundOwner(session, tournamentId, ownerId, limit, expiry) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry).then((response) => {
-        var list = {
-          next_cursor: response.next_cursor,
-          prev_cursor: response.prev_cursor,
-          owner_records: [],
-          records: []
-        };
-        if (response.owner_records != null) {
-          response.owner_records.forEach((o) => {
-            list.owner_records.push({
-              expiry_time: o.expiry_time,
-              leaderboard_id: o.leaderboard_id,
-              metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
-              num_score: o.num_score ? Number(o.num_score) : 0,
-              owner_id: o.owner_id,
-              rank: o.rank ? Number(o.rank) : 0,
-              score: o.score ? Number(o.score) : 0,
-              subscore: o.subscore ? Number(o.subscore) : 0,
-              update_time: o.update_time,
-              username: o.username,
-              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
-            });
-          });
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        if (response.records != null) {
-          response.records.forEach((o) => {
-            list.records.push({
-              expiry_time: o.expiry_time,
-              leaderboard_id: o.leaderboard_id,
-              metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
-              num_score: o.num_score ? Number(o.num_score) : 0,
-              owner_id: o.owner_id,
-              rank: o.rank ? Number(o.rank) : 0,
-              score: o.score ? Number(o.score) : 0,
-              subscore: o.subscore ? Number(o.subscore) : 0,
-              update_time: o.update_time,
-              username: o.username,
-              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry).then((response) => {
+          var list = {
+            next_cursor: response.next_cursor,
+            prev_cursor: response.prev_cursor,
+            owner_records: [],
+            records: []
+          };
+          if (response.owner_records != null) {
+            response.owner_records.forEach((o) => {
+              list.owner_records.push({
+                expiry_time: o.expiry_time,
+                leaderboard_id: o.leaderboard_id,
+                metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
+                num_score: o.num_score ? Number(o.num_score) : 0,
+                owner_id: o.owner_id,
+                rank: o.rank ? Number(o.rank) : 0,
+                score: o.score ? Number(o.score) : 0,
+                subscore: o.subscore ? Number(o.subscore) : 0,
+                update_time: o.update_time,
+                username: o.username,
+                max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+              });
             });
-          });
-        }
-        return Promise.resolve(list);
+          }
+          if (response.records != null) {
+            response.records.forEach((o) => {
+              list.records.push({
+                expiry_time: o.expiry_time,
+                leaderboard_id: o.leaderboard_id,
+                metadata: o.metadata ? JSON.parse(o.metadata) : void 0,
+                num_score: o.num_score ? Number(o.num_score) : 0,
+                owner_id: o.owner_id,
+                rank: o.rank ? Number(o.rank) : 0,
+                score: o.score ? Number(o.score) : 0,
+                subscore: o.subscore ? Number(o.subscore) : 0,
+                update_time: o.update_time,
+                username: o.username,
+                max_num_score: o.max_num_score ? Number(o.max_num_score) : 0
+              });
+            });
+          }
+          return Promise.resolve(list);
+        });
       });
     }
     promoteGroupUsers(session, groupId, ids) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.promoteGroupUsers(groupId, ids);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.promoteGroupUsers(groupId, ids);
+      });
     }
     readStorageObjects(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.readStorageObjects(request).then((response) => {
-        var result = { objects: [] };
-        if (response.objects == null) {
-          return Promise.resolve(result);
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
         }
-        response.objects.forEach((o) => {
-          result.objects.push({
-            collection: o.collection,
-            key: o.key,
-            permission_read: o.permission_read ? Number(o.permission_read) : 0,
-            permission_write: o.permission_write ? Number(o.permission_write) : 0,
-            value: o.value ? JSON.parse(o.value) : void 0,
-            version: o.version,
-            user_id: o.user_id,
-            create_time: o.create_time,
-            update_time: o.update_time
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.readStorageObjects(request).then((response) => {
+          var result = { objects: [] };
+          if (response.objects == null) {
+            return Promise.resolve(result);
+          }
+          response.objects.forEach((o) => {
+            result.objects.push({
+              collection: o.collection,
+              key: o.key,
+              permission_read: o.permission_read ? Number(o.permission_read) : 0,
+              permission_write: o.permission_write ? Number(o.permission_write) : 0,
+              value: o.value ? JSON.parse(o.value) : void 0,
+              version: o.version,
+              user_id: o.user_id,
+              create_time: o.create_time,
+              update_time: o.update_time
+            });
           });
+          return Promise.resolve(result);
         });
-        return Promise.resolve(result);
       });
     }
     rpc(session, id, input) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.rpcFunc(id, JSON.stringify(input)).then((response) => {
-        return Promise.resolve({
-          id: response.id,
-          payload: !response.payload ? void 0 : JSON.parse(response.payload)
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.rpcFunc(id, JSON.stringify(input)).then((response) => {
+          return Promise.resolve({
+            id: response.id,
+            payload: !response.payload ? void 0 : JSON.parse(response.payload)
+          });
         });
       });
     }
     rpcGet(id, session, httpKey, input) {
-      if (!httpKey || httpKey == "") {
-        this.configuration.bearerToken = session && session.token;
-      } else {
-        this.configuration.username = void 0;
-        this.configuration.bearerToken = void 0;
-      }
-      return this.apiClient.rpcFunc2(id, input && JSON.stringify(input) || "", httpKey).then((response) => {
-        this.configuration.username = this.serverkey;
-        return Promise.resolve({
-          id: response.id,
-          payload: !response.payload ? void 0 : JSON.parse(response.payload)
+      return __async(this, null, function* () {
+        if (session && this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        if (!httpKey || httpKey == "") {
+          this.configuration.bearerToken = session && session.token;
+        } else {
+          this.configuration.username = void 0;
+          this.configuration.bearerToken = void 0;
+        }
+        return this.apiClient.rpcFunc2(id, input && JSON.stringify(input) || "", httpKey).then((response) => {
+          this.configuration.username = this.serverkey;
+          return Promise.resolve({
+            id: response.id,
+            payload: !response.payload ? void 0 : JSON.parse(response.payload)
+          });
+        }).catch((err) => {
+          this.configuration.username = this.serverkey;
+          throw err;
         });
-      }).catch((err) => {
-        this.configuration.username = this.serverkey;
-        throw err;
+      });
+    }
+    sessionLogout(session, token, refreshToken) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.sessionLogout({ refresh_token: refreshToken, token }).then((response) => {
+          return response !== void 0;
+        });
+      });
+    }
+    sessionRefresh(_0) {
+      return __async(this, arguments, function* (session, vars = new Map()) {
+        if (!session) {
+          console.error("Cannot refresh a null session.");
+          return session;
+        }
+        if (session.created && session.expires_at - session.created_at < 70) {
+          console.warn("Session lifetime too short, please set '--session.token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+        }
+        if (session.created && session.refresh_expires_at - session.created_at < 3700) {
+          console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+        }
+        const apiSession = yield this.apiClient.sessionRefresh({ token: session.refresh_token, vars });
+        session.update(apiSession.token, apiSession.refresh_token);
+        return session;
       });
     }
     unlinkApple(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkApple(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.unlinkApple(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     unlinkCustom(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkCustom(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.unlinkCustom(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     unlinkDevice(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkDevice(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.unlinkDevice(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     unlinkEmail(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkEmail(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.unlinkEmail(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     unlinkFacebook(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkFacebook(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.unlinkFacebook(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     unlinkFacebookInstantGame(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkFacebookInstantGame(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.unlinkFacebookInstantGame(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     unlinkGoogle(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkGoogle(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.unlinkGoogle(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     unlinkGameCenter(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkGameCenter(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.unlinkGameCenter(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     unlinkSteam(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkSteam(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.unlinkSteam(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     updateAccount(session, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.updateAccount(request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.updateAccount(request).then((response) => {
+          return response !== void 0;
+        });
       });
     }
     updateGroup(session, groupId, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.updateGroup(groupId, request).then((response) => {
-        return response !== void 0;
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.updateGroup(groupId, request).then((response) => {
+          return response !== void 0;
+        });
+      });
+    }
+    validatePurchaseApple(session, receipt) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.validatePurchaseApple({ receipt });
+      });
+    }
+    validatePurchaseGoogle(session, purchase) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.validatePurchaseGoogle({ purchase });
+      });
+    }
+    validatePurchaseHuawei(session, purchase, signature) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.validatePurchaseHuawei({ purchase, signature });
       });
     }
     writeLeaderboardRecord(session, leaderboardId, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.writeLeaderboardRecord(leaderboardId, {
-        metadata: request.metadata ? JSON.stringify(request.metadata) : void 0,
-        score: request.score,
-        subscore: request.subscore
-      }).then((response) => {
-        return Promise.resolve({
-          expiry_time: response.expiry_time,
-          leaderboard_id: response.leaderboard_id,
-          metadata: response.metadata ? JSON.parse(response.metadata) : void 0,
-          num_score: response.num_score ? Number(response.num_score) : 0,
-          owner_id: response.owner_id,
-          score: response.score ? Number(response.score) : 0,
-          subscore: response.subscore ? Number(response.subscore) : 0,
-          update_time: response.update_time,
-          username: response.username,
-          max_num_score: response.max_num_score ? Number(response.max_num_score) : 0,
-          rank: response.rank ? Number(response.rank) : 0
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.writeLeaderboardRecord(leaderboardId, {
+          metadata: request.metadata ? JSON.stringify(request.metadata) : void 0,
+          score: request.score,
+          subscore: request.subscore
+        }).then((response) => {
+          return Promise.resolve({
+            expiry_time: response.expiry_time,
+            leaderboard_id: response.leaderboard_id,
+            metadata: response.metadata ? JSON.parse(response.metadata) : void 0,
+            num_score: response.num_score ? Number(response.num_score) : 0,
+            owner_id: response.owner_id,
+            score: response.score ? Number(response.score) : 0,
+            subscore: response.subscore ? Number(response.subscore) : 0,
+            update_time: response.update_time,
+            username: response.username,
+            max_num_score: response.max_num_score ? Number(response.max_num_score) : 0,
+            rank: response.rank ? Number(response.rank) : 0
+          });
         });
       });
     }
     writeStorageObjects(session, objects) {
-      this.configuration.bearerToken = session && session.token;
-      var request = { objects: [] };
-      objects.forEach((o) => {
-        request.objects.push({
-          collection: o.collection,
-          key: o.key,
-          permission_read: o.permission_read,
-          permission_write: o.permission_write,
-          value: JSON.stringify(o.value),
-          version: o.version
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        this.configuration.bearerToken = session && session.token;
+        var request = { objects: [] };
+        objects.forEach((o) => {
+          request.objects.push({
+            collection: o.collection,
+            key: o.key,
+            permission_read: o.permission_read,
+            permission_write: o.permission_write,
+            value: JSON.stringify(o.value),
+            version: o.version
+          });
         });
+        return this.apiClient.writeStorageObjects(request);
       });
-      return this.apiClient.writeStorageObjects(request);
     }
     writeTournamentRecord(session, tournamentId, request) {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.writeTournamentRecord(tournamentId, {
-        metadata: request.metadata ? JSON.stringify(request.metadata) : void 0,
-        score: request.score,
-        subscore: request.subscore
-      }).then((response) => {
-        return Promise.resolve({
-          expiry_time: response.expiry_time,
-          leaderboard_id: response.leaderboard_id,
-          metadata: response.metadata ? JSON.parse(response.metadata) : void 0,
-          num_score: response.num_score ? Number(response.num_score) : 0,
-          owner_id: response.owner_id,
-          score: response.score ? Number(response.score) : 0,
-          subscore: response.subscore ? Number(response.subscore) : 0,
-          update_time: response.update_time,
-          username: response.username,
-          max_num_score: response.max_num_score ? Number(response.max_num_score) : 0,
-          rank: response.rank ? Number(response.rank) : 0
+      return __async(this, null, function* () {
+        this.configuration.bearerToken = session && session.token;
+        return this.apiClient.writeTournamentRecord(tournamentId, {
+          metadata: request.metadata ? JSON.stringify(request.metadata) : void 0,
+          score: request.score,
+          subscore: request.subscore
+        }).then((response) => {
+          return Promise.resolve({
+            expiry_time: response.expiry_time,
+            leaderboard_id: response.leaderboard_id,
+            metadata: response.metadata ? JSON.parse(response.metadata) : void 0,
+            num_score: response.num_score ? Number(response.num_score) : 0,
+            owner_id: response.owner_id,
+            score: response.score ? Number(response.score) : 0,
+            subscore: response.subscore ? Number(response.subscore) : 0,
+            update_time: response.update_time,
+            username: response.username,
+            max_num_score: response.max_num_score ? Number(response.max_num_score) : 0,
+            rank: response.rank ? Number(response.rank) : 0
+          });
         });
       });
     }

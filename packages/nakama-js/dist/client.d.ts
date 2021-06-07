@@ -1,4 +1,4 @@
-import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountFacebookInstantGame, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest, ApiAccountApple, ApiLinkSteamRequest } from "./api.gen";
+import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountFacebookInstantGame, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest, ApiAccountApple, ApiLinkSteamRequest, ApiValidatePurchaseResponse } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
 import { WebSocketAdapter } from "./web_socket_adapter";
@@ -195,9 +195,11 @@ export declare class Client {
     readonly port: string;
     readonly useSSL: boolean;
     readonly timeout: number;
+    readonly autoRefreshSession: boolean;
+    expiredTimespanMs: number;
     private readonly apiClient;
     private readonly configuration;
-    constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number);
+    constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number, autoRefreshSession?: boolean);
     addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     authenticateApple(token: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
@@ -208,7 +210,7 @@ export declare class Client {
     authenticateFacebook(token: string, create?: boolean, username?: string, sync?: boolean, vars?: Map<string, string>, options?: any): Promise<Session>;
     authenticateGoogle(token: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
     authenticateGameCenter(token: string, create?: boolean, username?: string, vars?: Map<string, string>): Promise<Session>;
-    authenticateSteam(token: string, create?: boolean, username?: string, vars?: Map<string, string>): Promise<Session>;
+    authenticateSteam(token: string, create?: boolean, username?: string, sync?: boolean, vars?: Map<string, string>): Promise<Session>;
     banGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group>;
@@ -221,6 +223,7 @@ export declare class Client {
     emitEvent(session: Session, request: ApiEvent): Promise<boolean>;
     getAccount(session: Session): Promise<ApiAccount>;
     importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean>;
+    importSteamFriends(session: Session, request: ApiAccountSteam, reset: boolean): Promise<boolean>;
     getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<Users>;
     joinGroup(session: Session, groupId: string): Promise<boolean>;
     joinTournament(session: Session, tournamentId: string): Promise<boolean>;
@@ -252,6 +255,8 @@ export declare class Client {
     readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects>;
     rpc(session: Session, id: string, input: object): Promise<RpcResponse>;
     rpcGet(id: string, session?: Session, httpKey?: string, input?: object): Promise<RpcResponse>;
+    sessionLogout(session: Session, token: string, refreshToken: string): Promise<boolean>;
+    sessionRefresh(session: Session, vars?: Map<string, string>): Promise<Session>;
     unlinkApple(session: Session, request: ApiAccountApple): Promise<boolean>;
     unlinkCustom(session: Session, request: ApiAccountCustom): Promise<boolean>;
     unlinkDevice(session: Session, request: ApiAccountDevice): Promise<boolean>;
@@ -263,6 +268,9 @@ export declare class Client {
     unlinkSteam(session: Session, request: ApiAccountSteam): Promise<boolean>;
     updateAccount(session: Session, request: ApiUpdateAccountRequest): Promise<boolean>;
     updateGroup(session: Session, groupId: string, request: ApiUpdateGroupRequest): Promise<boolean>;
+    validatePurchaseApple(session: Session, receipt?: string): Promise<ApiValidatePurchaseResponse>;
+    validatePurchaseGoogle(session: Session, purchase?: string): Promise<ApiValidatePurchaseResponse>;
+    validatePurchaseHuawei(session: Session, purchase?: string, signature?: string): Promise<ApiValidatePurchaseResponse>;
     writeLeaderboardRecord(session: Session, leaderboardId: string, request: WriteLeaderboardRecord): Promise<LeaderboardRecord>;
     writeStorageObjects(session: Session, objects: Array<WriteStorageObject>): Promise<ApiStorageObjectAcks>;
     writeTournamentRecord(session: Session, tournamentId: string, request: WriteTournamentRecord): Promise<LeaderboardRecord>;

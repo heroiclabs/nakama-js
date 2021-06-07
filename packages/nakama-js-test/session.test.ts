@@ -28,7 +28,7 @@ describe('Session Tests', () => {
     const expired = await page.evaluate(() => {
       const nowUnixEpoch = Math.floor(Date.now() / 1000);
       const expiredJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTY5MTA5NzMsInVpZCI6ImY0MTU4ZjJiLTgwZjMtNDkyNi05NDZiLWE4Y2NmYzE2NTQ5MCIsInVzbiI6InZUR2RHSHl4dmwifQ.gzLaMQPaj5wEKoskOSALIeJLOYXEVFoPx3KY0Jm1EVU";
-      const session = nakamajs.Session.restore(expiredJwt);
+      const session = nakamajs.Session.restore(expiredJwt, expiredJwt);
       return session.isexpired(nowUnixEpoch);
     });
 
@@ -40,7 +40,7 @@ describe('Session Tests', () => {
 
     const session = await page.evaluate(() => {
       const expiredJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTY5MTA5NzMsInVpZCI6ImY0MTU4ZjJiLTgwZjMtNDkyNi05NDZiLWE4Y2NmYzE2NTQ5MCIsInVzbiI6InZUR2RHSHl4dmwifQ.gzLaMQPaj5wEKoskOSALIeJLOYXEVFoPx3KY0Jm1EVU";
-      return nakamajs.Session.restore(expiredJwt);
+      return nakamajs.Session.restore(expiredJwt, expiredJwt);
     });
 
     expect(session.username).not.toBeNull();
