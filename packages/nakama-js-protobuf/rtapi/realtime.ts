@@ -1,17 +1,13 @@
 /* eslint-disable */
 import { util, configure, Writer, Reader } from "protobufjs/minimal";
 import * as Long from "long";
-import { Timestamp } from "../../../../google/protobuf/timestamp";
-import {
-  Notification,
-  ChannelMessage,
-  Rpc,
-} from "../../../../github.com/heroiclabs/nakama-common/api/api";
+import { Timestamp } from "../google/protobuf/timestamp";
+import { Notification, ChannelMessage, Rpc } from "../api/api";
 import {
   BoolValue,
   Int32Value,
   StringValue,
-} from "../../../../google/protobuf/wrappers";
+} from "../google/protobuf/wrappers";
 
 export const protobufPackage = "nakama.realtime";
 

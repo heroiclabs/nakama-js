@@ -1,5 +1,15 @@
 import { Writer, Reader } from "protobufjs/minimal";
 export declare const protobufPackage = "nakama.api";
+export declare enum OverrideOperator {
+    NO_OVERRIDE = 0,
+    BEST = 1,
+    SET = 2,
+    INCREMENT = 3,
+    DECREMENT = 4,
+    UNRECOGNIZED = -1
+}
+export declare function overrideOperatorFromJSON(object: any): OverrideOperator;
+export declare function overrideOperatorToJSON(object: OverrideOperator): string;
 export interface Account {
     user?: User;
     wallet: string;
@@ -133,6 +143,10 @@ export interface SessionRefreshRequest_VarsEntry {
     key: string;
     value: string;
 }
+export interface SessionLogoutRequest {
+    token: string;
+    refresh_token: string;
+}
 export interface AuthenticateAppleRequest {
     account?: AccountApple;
     create?: boolean;
@@ -178,6 +192,7 @@ export interface AuthenticateSteamRequest {
     account?: AccountSteam;
     create?: boolean;
     username: string;
+    sync?: boolean;
 }
 export interface BanGroupUsersRequest {
     group_id: string;
@@ -311,6 +326,10 @@ export interface ImportFacebookFriendsRequest {
     account?: AccountFacebook;
     reset?: boolean;
 }
+export interface ImportSteamFriendsRequest {
+    account?: AccountSteam;
+    reset?: boolean;
+}
 export interface JoinGroupRequest {
     group_id: string;
 }
@@ -346,6 +365,10 @@ export interface LeaveGroupRequest {
 }
 export interface LinkFacebookRequest {
     account?: AccountFacebook;
+    sync?: boolean;
+}
+export interface LinkSteamRequest {
+    account?: AccountSteam;
     sync?: boolean;
 }
 export interface ListChannelMessagesRequest {
@@ -590,6 +613,49 @@ export declare function userGroupList_UserGroup_StateToJSON(object: UserGroupLis
 export interface Users {
     users: User[];
 }
+export interface ValidatePurchaseAppleRequest {
+    receipt: string;
+}
+export interface ValidatePurchaseGoogleRequest {
+    purchase: string;
+}
+export interface ValidatePurchaseHuaweiRequest {
+    purchase: string;
+    signature: string;
+}
+export interface ValidatedPurchase {
+    product_id: string;
+    transaction_id: string;
+    store: ValidatedPurchase_Store;
+    purchase_time?: Date;
+    create_time?: Date;
+    update_time?: Date;
+    provider_response: string;
+    environment: ValidatedPurchase_Environment;
+}
+export declare enum ValidatedPurchase_Store {
+    APPLE_APP_STORE = 0,
+    GOOGLE_PLAY_STORE = 1,
+    HUAWEI_APP_GALLERY = 2,
+    UNRECOGNIZED = -1
+}
+export declare function validatedPurchase_StoreFromJSON(object: any): ValidatedPurchase_Store;
+export declare function validatedPurchase_StoreToJSON(object: ValidatedPurchase_Store): string;
+export declare enum ValidatedPurchase_Environment {
+    UNKNOWN = 0,
+    SANDBOX = 1,
+    PRODUCTION = 2,
+    UNRECOGNIZED = -1
+}
+export declare function validatedPurchase_EnvironmentFromJSON(object: any): ValidatedPurchase_Environment;
+export declare function validatedPurchase_EnvironmentToJSON(object: ValidatedPurchase_Environment): string;
+export interface ValidatePurchaseResponse {
+    validated_purchases: ValidatedPurchase[];
+}
+export interface PurchaseList {
+    validated_purchases: ValidatedPurchase[];
+    cursor: string;
+}
 export interface WriteLeaderboardRecordRequest {
     leaderboard_id: string;
     record?: WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
@@ -598,6 +664,7 @@ export interface WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
     score: number;
     subscore: number;
     metadata: string;
+    operator: OverrideOperator;
 }
 export interface WriteStorageObject {
     collection: string;
@@ -618,6 +685,7 @@ export interface WriteTournamentRecordRequest_TournamentRecordWrite {
     score: number;
     subscore: number;
     metadata: string;
+    operator: OverrideOperator;
 }
 export declare const Account: {
     encode(message: Account, writer?: Writer): Writer;
@@ -793,6 +861,13 @@ export declare const SessionRefreshRequest_VarsEntry: {
     fromJSON(object: any): SessionRefreshRequest_VarsEntry;
     toJSON(message: SessionRefreshRequest_VarsEntry): unknown;
     fromPartial(object: DeepPartial<SessionRefreshRequest_VarsEntry>): SessionRefreshRequest_VarsEntry;
+};
+export declare const SessionLogoutRequest: {
+    encode(message: SessionLogoutRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number | undefined): SessionLogoutRequest;
+    fromJSON(object: any): SessionLogoutRequest;
+    toJSON(message: SessionLogoutRequest): unknown;
+    fromPartial(object: DeepPartial<SessionLogoutRequest>): SessionLogoutRequest;
 };
 export declare const AuthenticateAppleRequest: {
     encode(message: AuthenticateAppleRequest, writer?: Writer): Writer;
@@ -1004,6 +1079,13 @@ export declare const ImportFacebookFriendsRequest: {
     toJSON(message: ImportFacebookFriendsRequest): unknown;
     fromPartial(object: DeepPartial<ImportFacebookFriendsRequest>): ImportFacebookFriendsRequest;
 };
+export declare const ImportSteamFriendsRequest: {
+    encode(message: ImportSteamFriendsRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number | undefined): ImportSteamFriendsRequest;
+    fromJSON(object: any): ImportSteamFriendsRequest;
+    toJSON(message: ImportSteamFriendsRequest): unknown;
+    fromPartial(object: DeepPartial<ImportSteamFriendsRequest>): ImportSteamFriendsRequest;
+};
 export declare const JoinGroupRequest: {
     encode(message: JoinGroupRequest, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number | undefined): JoinGroupRequest;
@@ -1052,6 +1134,13 @@ export declare const LinkFacebookRequest: {
     fromJSON(object: any): LinkFacebookRequest;
     toJSON(message: LinkFacebookRequest): unknown;
     fromPartial(object: DeepPartial<LinkFacebookRequest>): LinkFacebookRequest;
+};
+export declare const LinkSteamRequest: {
+    encode(message: LinkSteamRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number | undefined): LinkSteamRequest;
+    fromJSON(object: any): LinkSteamRequest;
+    toJSON(message: LinkSteamRequest): unknown;
+    fromPartial(object: DeepPartial<LinkSteamRequest>): LinkSteamRequest;
 };
 export declare const ListChannelMessagesRequest: {
     encode(message: ListChannelMessagesRequest, writer?: Writer): Writer;
@@ -1311,6 +1400,48 @@ export declare const Users: {
     fromJSON(object: any): Users;
     toJSON(message: Users): unknown;
     fromPartial(object: DeepPartial<Users>): Users;
+};
+export declare const ValidatePurchaseAppleRequest: {
+    encode(message: ValidatePurchaseAppleRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number | undefined): ValidatePurchaseAppleRequest;
+    fromJSON(object: any): ValidatePurchaseAppleRequest;
+    toJSON(message: ValidatePurchaseAppleRequest): unknown;
+    fromPartial(object: DeepPartial<ValidatePurchaseAppleRequest>): ValidatePurchaseAppleRequest;
+};
+export declare const ValidatePurchaseGoogleRequest: {
+    encode(message: ValidatePurchaseGoogleRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number | undefined): ValidatePurchaseGoogleRequest;
+    fromJSON(object: any): ValidatePurchaseGoogleRequest;
+    toJSON(message: ValidatePurchaseGoogleRequest): unknown;
+    fromPartial(object: DeepPartial<ValidatePurchaseGoogleRequest>): ValidatePurchaseGoogleRequest;
+};
+export declare const ValidatePurchaseHuaweiRequest: {
+    encode(message: ValidatePurchaseHuaweiRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number | undefined): ValidatePurchaseHuaweiRequest;
+    fromJSON(object: any): ValidatePurchaseHuaweiRequest;
+    toJSON(message: ValidatePurchaseHuaweiRequest): unknown;
+    fromPartial(object: DeepPartial<ValidatePurchaseHuaweiRequest>): ValidatePurchaseHuaweiRequest;
+};
+export declare const ValidatedPurchase: {
+    encode(message: ValidatedPurchase, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number | undefined): ValidatedPurchase;
+    fromJSON(object: any): ValidatedPurchase;
+    toJSON(message: ValidatedPurchase): unknown;
+    fromPartial(object: DeepPartial<ValidatedPurchase>): ValidatedPurchase;
+};
+export declare const ValidatePurchaseResponse: {
+    encode(message: ValidatePurchaseResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number | undefined): ValidatePurchaseResponse;
+    fromJSON(object: any): ValidatePurchaseResponse;
+    toJSON(message: ValidatePurchaseResponse): unknown;
+    fromPartial(object: DeepPartial<ValidatePurchaseResponse>): ValidatePurchaseResponse;
+};
+export declare const PurchaseList: {
+    encode(message: PurchaseList, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number | undefined): PurchaseList;
+    fromJSON(object: any): PurchaseList;
+    toJSON(message: PurchaseList): unknown;
+    fromPartial(object: DeepPartial<PurchaseList>): PurchaseList;
 };
 export declare const WriteLeaderboardRecordRequest: {
     encode(message: WriteLeaderboardRecordRequest, writer?: Writer): Writer;

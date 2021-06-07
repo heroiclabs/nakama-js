@@ -1,18 +1,74 @@
 /* eslint-disable */
 import { util, configure, Writer, Reader } from "protobufjs/minimal";
 import * as Long from "long";
-import { Timestamp } from "../../../../google/protobuf/timestamp";
+import { Timestamp } from "../google/protobuf/timestamp";
 import {
   BoolValue,
   Int32Value,
   StringValue,
   UInt32Value,
   Int64Value,
-} from "../../../../google/protobuf/wrappers";
+} from "../google/protobuf/wrappers";
 
 export const protobufPackage = "nakama.api";
 
 /** The Nakama server RPC protocol for games and apps. */
+
+/** Operator that can be used to override the one set in the leaderboard. */
+export enum OverrideOperator {
+  /** NO_OVERRIDE - Do not override the leaderboard operator. */
+  NO_OVERRIDE = 0,
+  /** BEST - Override the leaderboard operator with BEST. */
+  BEST = 1,
+  /** SET - Override the leaderboard operator with SET. */
+  SET = 2,
+  /** INCREMENT - Override the leaderboard operator with INCREMENT. */
+  INCREMENT = 3,
+  /** DECREMENT - Override the leaderboard operator with DECREMENT. */
+  DECREMENT = 4,
+  UNRECOGNIZED = -1,
+}
+
+export function overrideOperatorFromJSON(object: any): OverrideOperator {
+  switch (object) {
+    case 0:
+    case "NO_OVERRIDE":
+      return OverrideOperator.NO_OVERRIDE;
+    case 1:
+    case "BEST":
+      return OverrideOperator.BEST;
+    case 2:
+    case "SET":
+      return OverrideOperator.SET;
+    case 3:
+    case "INCREMENT":
+      return OverrideOperator.INCREMENT;
+    case 4:
+    case "DECREMENT":
+      return OverrideOperator.DECREMENT;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return OverrideOperator.UNRECOGNIZED;
+  }
+}
+
+export function overrideOperatorToJSON(object: OverrideOperator): string {
+  switch (object) {
+    case OverrideOperator.NO_OVERRIDE:
+      return "NO_OVERRIDE";
+    case OverrideOperator.BEST:
+      return "BEST";
+    case OverrideOperator.SET:
+      return "SET";
+    case OverrideOperator.INCREMENT:
+      return "INCREMENT";
+    case OverrideOperator.DECREMENT:
+      return "DECREMENT";
+    default:
+      return "UNKNOWN";
+  }
+}
 
 /** A user with additional account details. Always the current user. */
 export interface Account {
@@ -203,6 +259,14 @@ export interface SessionRefreshRequest_VarsEntry {
   value: string;
 }
 
+/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
+export interface SessionLogoutRequest {
+  /** Session token to log out. */
+  token: string;
+  /** Refresh token to invalidate. */
+  refresh_token: string;
+}
+
 /** Authenticate against the server with Apple Sign In. */
 export interface AuthenticateAppleRequest {
   /** The Apple account details. */
@@ -293,6 +357,8 @@ export interface AuthenticateSteamRequest {
   create?: boolean;
   /** Set the username on the account at register. Must be unique. */
   username: string;
+  /** Import Steam friends for the user. */
+  sync?: boolean;
 }
 
 /** Ban users from a group. */
@@ -618,6 +684,14 @@ export interface ImportFacebookFriendsRequest {
   reset?: boolean;
 }
 
+/** Import Facebook friends into the current user's account. */
+export interface ImportSteamFriendsRequest {
+  /** The Facebook account details. */
+  account?: AccountSteam;
+  /** Reset the current user's friends list. */
+  reset?: boolean;
+}
+
 /** Immediately join an open group, or request to join a closed one. */
 export interface JoinGroupRequest {
   /** The group ID to join. The group must already exist. */
@@ -689,6 +763,14 @@ export interface LinkFacebookRequest {
   /** The Facebook account details. */
   account?: AccountFacebook;
   /** Import Facebook friends for the user. */
+  sync?: boolean;
+}
+
+/** Link Steam to the current user's account. */
+export interface LinkSteamRequest {
+  /** The Facebook account details. */
+  account?: AccountSteam;
+  /** Import Steam friends for the user. */
   sync?: boolean;
 }
 
@@ -1211,6 +1293,152 @@ export interface Users {
   users: User[];
 }
 
+/** Apple IAP Purchases validation request */
+export interface ValidatePurchaseAppleRequest {
+  /** Base64 encoded Apple receipt data payload. */
+  receipt: string;
+}
+
+/** Google IAP Purchase validation request */
+export interface ValidatePurchaseGoogleRequest {
+  /** JSON encoded Google purchase payload. */
+  purchase: string;
+}
+
+/** Huawei IAP Purchase validation request */
+export interface ValidatePurchaseHuaweiRequest {
+  /** JSON encoded Huawei InAppPurchaseData. */
+  purchase: string;
+  /** InAppPurchaseData signature. */
+  signature: string;
+}
+
+/** Validated Purchase stored by Nakama. */
+export interface ValidatedPurchase {
+  /** Purchase Product ID. */
+  product_id: string;
+  /** Purchase Transaction ID. */
+  transaction_id: string;
+  /** Store identifier */
+  store: ValidatedPurchase_Store;
+  /** UNIX Timestamp when the purchase was done. */
+  purchase_time?: Date;
+  /** UNIX Timestamp when the receipt validation was stored in DB. */
+  create_time?: Date;
+  /** UNIX Timestamp when the receipt validation was updated in DB. */
+  update_time?: Date;
+  /** Raw provider validation response. */
+  provider_response: string;
+  /** Whether the purchase was done in production or sandbox environment. */
+  environment: ValidatedPurchase_Environment;
+}
+
+/** Validation Provider */
+export enum ValidatedPurchase_Store {
+  /** APPLE_APP_STORE - Apple App Store */
+  APPLE_APP_STORE = 0,
+  /** GOOGLE_PLAY_STORE - Google Play Store */
+  GOOGLE_PLAY_STORE = 1,
+  /** HUAWEI_APP_GALLERY - Huawei App Gallery */
+  HUAWEI_APP_GALLERY = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function validatedPurchase_StoreFromJSON(
+  object: any
+): ValidatedPurchase_Store {
+  switch (object) {
+    case 0:
+    case "APPLE_APP_STORE":
+      return ValidatedPurchase_Store.APPLE_APP_STORE;
+    case 1:
+    case "GOOGLE_PLAY_STORE":
+      return ValidatedPurchase_Store.GOOGLE_PLAY_STORE;
+    case 2:
+    case "HUAWEI_APP_GALLERY":
+      return ValidatedPurchase_Store.HUAWEI_APP_GALLERY;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return ValidatedPurchase_Store.UNRECOGNIZED;
+  }
+}
+
+export function validatedPurchase_StoreToJSON(
+  object: ValidatedPurchase_Store
+): string {
+  switch (object) {
+    case ValidatedPurchase_Store.APPLE_APP_STORE:
+      return "APPLE_APP_STORE";
+    case ValidatedPurchase_Store.GOOGLE_PLAY_STORE:
+      return "GOOGLE_PLAY_STORE";
+    case ValidatedPurchase_Store.HUAWEI_APP_GALLERY:
+      return "HUAWEI_APP_GALLERY";
+    default:
+      return "UNKNOWN";
+  }
+}
+
+/** Environment where the purchase took place */
+export enum ValidatedPurchase_Environment {
+  /** UNKNOWN - Unknown environment. */
+  UNKNOWN = 0,
+  /** SANDBOX - Sandbox/test environment. */
+  SANDBOX = 1,
+  /** PRODUCTION - Production environment. */
+  PRODUCTION = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function validatedPurchase_EnvironmentFromJSON(
+  object: any
+): ValidatedPurchase_Environment {
+  switch (object) {
+    case 0:
+    case "UNKNOWN":
+      return ValidatedPurchase_Environment.UNKNOWN;
+    case 1:
+    case "SANDBOX":
+      return ValidatedPurchase_Environment.SANDBOX;
+    case 2:
+    case "PRODUCTION":
+      return ValidatedPurchase_Environment.PRODUCTION;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return ValidatedPurchase_Environment.UNRECOGNIZED;
+  }
+}
+
+export function validatedPurchase_EnvironmentToJSON(
+  object: ValidatedPurchase_Environment
+): string {
+  switch (object) {
+    case ValidatedPurchase_Environment.UNKNOWN:
+      return "UNKNOWN";
+    case ValidatedPurchase_Environment.SANDBOX:
+      return "SANDBOX";
+    case ValidatedPurchase_Environment.PRODUCTION:
+      return "PRODUCTION";
+    default:
+      return "UNKNOWN";
+  }
+}
+
+/** Validate IAP response */
+export interface ValidatePurchaseResponse {
+  /** Newly seen validated purchases. */
+  validated_purchases: ValidatedPurchase[];
+}
+
+/** A list of validated purchases stored by Nakama. */
+export interface PurchaseList {
+  /** Stored validated purchases. */
+  validated_purchases: ValidatedPurchase[];
+  /** The cursor to send when retrieving the next page, if any. */
+  cursor: string;
+}
+
 /** A request to submit a score to a leaderboard. */
 export interface WriteLeaderboardRecordRequest {
   /** The ID of the leaderboard to write to. */
@@ -1227,6 +1455,8 @@ export interface WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
   subscore: number;
   /** Optional record metadata. */
   metadata: string;
+  /** Operator override. */
+  operator: OverrideOperator;
 }
 
 /** The object to store. */
@@ -1267,6 +1497,8 @@ export interface WriteTournamentRecordRequest_TournamentRecordWrite {
   subscore: number;
   /** A JSON object of additional properties (optional). */
   metadata: string;
+  /** Operator override. */
+  operator: OverrideOperator;
 }
 
 const baseAccount: object = { wallet: "", email: "", custom_id: "" };
@@ -3477,6 +3709,74 @@ export const SessionRefreshRequest_VarsEntry = {
   },
 };
 
+const baseSessionLogoutRequest: object = { token: "", refresh_token: "" };
+
+export const SessionLogoutRequest = {
+  encode(
+    message: SessionLogoutRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.token !== "") {
+      writer.uint32(10).string(message.token);
+    }
+    if (message.refresh_token !== "") {
+      writer.uint32(18).string(message.refresh_token);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): SessionLogoutRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseSessionLogoutRequest } as SessionLogoutRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.token = reader.string();
+          break;
+        case 2:
+          message.refresh_token = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SessionLogoutRequest {
+    const message = { ...baseSessionLogoutRequest } as SessionLogoutRequest;
+    if (object.token !== undefined && object.token !== null) {
+      message.token = String(object.token);
+    }
+    if (object.refresh_token !== undefined && object.refresh_token !== null) {
+      message.refresh_token = String(object.refresh_token);
+    }
+    return message;
+  },
+
+  toJSON(message: SessionLogoutRequest): unknown {
+    const obj: any = {};
+    message.token !== undefined && (obj.token = message.token);
+    message.refresh_token !== undefined &&
+      (obj.refresh_token = message.refresh_token);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<SessionLogoutRequest>): SessionLogoutRequest {
+    const message = { ...baseSessionLogoutRequest } as SessionLogoutRequest;
+    if (object.token !== undefined && object.token !== null) {
+      message.token = object.token;
+    }
+    if (object.refresh_token !== undefined && object.refresh_token !== null) {
+      message.refresh_token = object.refresh_token;
+    }
+    return message;
+  },
+};
+
 const baseAuthenticateAppleRequest: object = { username: "" };
 
 export const AuthenticateAppleRequest = {
@@ -4300,6 +4600,12 @@ export const AuthenticateSteamRequest = {
     if (message.username !== "") {
       writer.uint32(26).string(message.username);
     }
+    if (message.sync !== undefined) {
+      BoolValue.encode(
+        { value: message.sync! },
+        writer.uint32(34).fork()
+      ).ldelim();
+    }
     return writer;
   },
 
@@ -4324,6 +4630,9 @@ export const AuthenticateSteamRequest = {
         case 3:
           message.username = reader.string();
           break;
+        case 4:
+          message.sync = BoolValue.decode(reader, reader.uint32()).value;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -4345,6 +4654,9 @@ export const AuthenticateSteamRequest = {
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
     }
+    if (object.sync !== undefined && object.sync !== null) {
+      message.sync = Boolean(object.sync);
+    }
     return message;
   },
 
@@ -4356,6 +4668,7 @@ export const AuthenticateSteamRequest = {
         : undefined);
     message.create !== undefined && (obj.create = message.create);
     message.username !== undefined && (obj.username = message.username);
+    message.sync !== undefined && (obj.sync = message.sync);
     return obj;
   },
 
@@ -4373,6 +4686,9 @@ export const AuthenticateSteamRequest = {
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    }
+    if (object.sync !== undefined && object.sync !== null) {
+      message.sync = object.sync;
     }
     return message;
   },
@@ -6482,6 +6798,90 @@ export const ImportFacebookFriendsRequest = {
   },
 };
 
+const baseImportSteamFriendsRequest: object = {};
+
+export const ImportSteamFriendsRequest = {
+  encode(
+    message: ImportSteamFriendsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.account !== undefined) {
+      AccountSteam.encode(message.account, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.reset !== undefined) {
+      BoolValue.encode(
+        { value: message.reset! },
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ImportSteamFriendsRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseImportSteamFriendsRequest,
+    } as ImportSteamFriendsRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.account = AccountSteam.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.reset = BoolValue.decode(reader, reader.uint32()).value;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ImportSteamFriendsRequest {
+    const message = {
+      ...baseImportSteamFriendsRequest,
+    } as ImportSteamFriendsRequest;
+    if (object.account !== undefined && object.account !== null) {
+      message.account = AccountSteam.fromJSON(object.account);
+    }
+    if (object.reset !== undefined && object.reset !== null) {
+      message.reset = Boolean(object.reset);
+    }
+    return message;
+  },
+
+  toJSON(message: ImportSteamFriendsRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountSteam.toJSON(message.account)
+        : undefined);
+    message.reset !== undefined && (obj.reset = message.reset);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ImportSteamFriendsRequest>
+  ): ImportSteamFriendsRequest {
+    const message = {
+      ...baseImportSteamFriendsRequest,
+    } as ImportSteamFriendsRequest;
+    if (object.account !== undefined && object.account !== null) {
+      message.account = AccountSteam.fromPartial(object.account);
+    }
+    if (object.reset !== undefined && object.reset !== null) {
+      message.reset = object.reset;
+    }
+    return message;
+  },
+};
+
 const baseJoinGroupRequest: object = { group_id: "" };
 
 export const JoinGroupRequest = {
@@ -7090,7 +7490,7 @@ export const LinkFacebookRequest = {
     if (message.sync !== undefined) {
       BoolValue.encode(
         { value: message.sync! },
-        writer.uint32(34).fork()
+        writer.uint32(18).fork()
       ).ldelim();
     }
     return writer;
@@ -7106,7 +7506,7 @@ export const LinkFacebookRequest = {
         case 1:
           message.account = AccountFacebook.decode(reader, reader.uint32());
           break;
-        case 4:
+        case 2:
           message.sync = BoolValue.decode(reader, reader.uint32()).value;
           break;
         default:
@@ -7142,6 +7542,76 @@ export const LinkFacebookRequest = {
     const message = { ...baseLinkFacebookRequest } as LinkFacebookRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebook.fromPartial(object.account);
+    }
+    if (object.sync !== undefined && object.sync !== null) {
+      message.sync = object.sync;
+    }
+    return message;
+  },
+};
+
+const baseLinkSteamRequest: object = {};
+
+export const LinkSteamRequest = {
+  encode(message: LinkSteamRequest, writer: Writer = Writer.create()): Writer {
+    if (message.account !== undefined) {
+      AccountSteam.encode(message.account, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.sync !== undefined) {
+      BoolValue.encode(
+        { value: message.sync! },
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): LinkSteamRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseLinkSteamRequest } as LinkSteamRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.account = AccountSteam.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.sync = BoolValue.decode(reader, reader.uint32()).value;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LinkSteamRequest {
+    const message = { ...baseLinkSteamRequest } as LinkSteamRequest;
+    if (object.account !== undefined && object.account !== null) {
+      message.account = AccountSteam.fromJSON(object.account);
+    }
+    if (object.sync !== undefined && object.sync !== null) {
+      message.sync = Boolean(object.sync);
+    }
+    return message;
+  },
+
+  toJSON(message: LinkSteamRequest): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? AccountSteam.toJSON(message.account)
+        : undefined);
+    message.sync !== undefined && (obj.sync = message.sync);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<LinkSteamRequest>): LinkSteamRequest {
+    const message = { ...baseLinkSteamRequest } as LinkSteamRequest;
+    if (object.account !== undefined && object.account !== null) {
+      message.account = AccountSteam.fromPartial(object.account);
     }
     if (object.sync !== undefined && object.sync !== null) {
       message.sync = object.sync;
@@ -11338,6 +11808,568 @@ export const Users = {
   },
 };
 
+const baseValidatePurchaseAppleRequest: object = { receipt: "" };
+
+export const ValidatePurchaseAppleRequest = {
+  encode(
+    message: ValidatePurchaseAppleRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.receipt !== "") {
+      writer.uint32(10).string(message.receipt);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ValidatePurchaseAppleRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseValidatePurchaseAppleRequest,
+    } as ValidatePurchaseAppleRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.receipt = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ValidatePurchaseAppleRequest {
+    const message = {
+      ...baseValidatePurchaseAppleRequest,
+    } as ValidatePurchaseAppleRequest;
+    if (object.receipt !== undefined && object.receipt !== null) {
+      message.receipt = String(object.receipt);
+    }
+    return message;
+  },
+
+  toJSON(message: ValidatePurchaseAppleRequest): unknown {
+    const obj: any = {};
+    message.receipt !== undefined && (obj.receipt = message.receipt);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ValidatePurchaseAppleRequest>
+  ): ValidatePurchaseAppleRequest {
+    const message = {
+      ...baseValidatePurchaseAppleRequest,
+    } as ValidatePurchaseAppleRequest;
+    if (object.receipt !== undefined && object.receipt !== null) {
+      message.receipt = object.receipt;
+    }
+    return message;
+  },
+};
+
+const baseValidatePurchaseGoogleRequest: object = { purchase: "" };
+
+export const ValidatePurchaseGoogleRequest = {
+  encode(
+    message: ValidatePurchaseGoogleRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.purchase !== "") {
+      writer.uint32(10).string(message.purchase);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ValidatePurchaseGoogleRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseValidatePurchaseGoogleRequest,
+    } as ValidatePurchaseGoogleRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.purchase = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ValidatePurchaseGoogleRequest {
+    const message = {
+      ...baseValidatePurchaseGoogleRequest,
+    } as ValidatePurchaseGoogleRequest;
+    if (object.purchase !== undefined && object.purchase !== null) {
+      message.purchase = String(object.purchase);
+    }
+    return message;
+  },
+
+  toJSON(message: ValidatePurchaseGoogleRequest): unknown {
+    const obj: any = {};
+    message.purchase !== undefined && (obj.purchase = message.purchase);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ValidatePurchaseGoogleRequest>
+  ): ValidatePurchaseGoogleRequest {
+    const message = {
+      ...baseValidatePurchaseGoogleRequest,
+    } as ValidatePurchaseGoogleRequest;
+    if (object.purchase !== undefined && object.purchase !== null) {
+      message.purchase = object.purchase;
+    }
+    return message;
+  },
+};
+
+const baseValidatePurchaseHuaweiRequest: object = {
+  purchase: "",
+  signature: "",
+};
+
+export const ValidatePurchaseHuaweiRequest = {
+  encode(
+    message: ValidatePurchaseHuaweiRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.purchase !== "") {
+      writer.uint32(10).string(message.purchase);
+    }
+    if (message.signature !== "") {
+      writer.uint32(18).string(message.signature);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ValidatePurchaseHuaweiRequest {
+    const reader = input instanceof Reader ? input : new Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseValidatePurchaseHuaweiRequest,
+    } as ValidatePurchaseHuaweiRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.purchase = reader.string();
+          break;
+        case 2:
+          message.signature = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ValidatePurchaseHuaweiRequest {
+    const message = {
+      ...baseValidatePurchaseHuaweiRequest,
+    } as ValidatePurchaseHuaweiRequest;
+    if (object.purchase !== undefined && object.purchase !== null) {
+      message.purchase = String(object.purchase);
+    }
+    if (object.signature !== undefined && object.signature !== null) {
+      message.signature = String(object.signature);
+    }
+    return message;
+  },
+
+  toJSON(message: ValidatePurchaseHuaweiRequest): unknown {
+    const obj: any = {};
+    message.purchase !== undefined && (obj.purchase = message.purchase);
+    message.signature !== undefined && (obj.signature = message.signature);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ValidatePurchaseHuaweiRequest>
+  ): ValidatePurchaseHuaweiRequest {
+    const message = {
+      ...baseValidatePurchaseHuaweiRequest,
+    } as ValidatePurchaseHuaweiRequest;
+    if (object.purchase !== undefined && object.purchase !== null) {
+      message.purchase = object.purchase;
+    }
+    if (object.signature !== undefined && object.signature !== null) {
+      message.signature = object.signature;
+    }
+    return message;
+  },
+};
+
+const baseValidatedPurchase: object = {
+  product_id: "",
+  transaction_id: "",
+  store: 0,
+  provider_response: "",
+  environment: 0,
+};
+
+export const ValidatedPurchase = {
+  encode(message: ValidatedPurchase, writer: Writer = Writer.create()): Writer {
+    if (message.product_id !== "") {
+      writer.uint32(10).string(message.product_id);
+    }
+    if (message.transaction_id !== "") {
+      writer.uint32(18).string(message.transaction_id);
+    }
+    if (message.store !== 0) {
+      writer.uint32(24).int32(message.store);
+    }
+    if (message.purchase_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.purchase_time),
+        writer.uint32(34).fork()
+      ).ldelim();
+    }
+    if (message.create_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.create_time),
+        writer.uint32(42).fork()
+      ).ldelim();
+    }
+    if (message.update_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.update_time),
+        writer.uint32(50).fork()
+      ).ldelim();
+    }
+    if (message.provider_response !== "") {
+      writer.uint32(58).string(message.provider_response);
+    }
+    if (message.environment !== 0) {
+      writer.uint32(64).int32(message.environment);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): ValidatedPurchase {
+    const reader = input instanceof Reader ? input : new Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseValidatedPurchase } as ValidatedPurchase;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.product_id = reader.string();
+          break;
+        case 2:
+          message.transaction_id = reader.string();
+          break;
+        case 3:
+          message.store = reader.int32() as any;
+          break;
+        case 4:
+          message.purchase_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        case 5:
+          message.create_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        case 6:
+          message.update_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        case 7:
+          message.provider_response = reader.string();
+          break;
+        case 8:
+          message.environment = reader.int32() as any;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ValidatedPurchase {
+    const message = { ...baseValidatedPurchase } as ValidatedPurchase;
+    if (object.product_id !== undefined && object.product_id !== null) {
+      message.product_id = String(object.product_id);
+    }
+    if (object.transaction_id !== undefined && object.transaction_id !== null) {
+      message.transaction_id = String(object.transaction_id);
+    }
+    if (object.store !== undefined && object.store !== null) {
+      message.store = validatedPurchase_StoreFromJSON(object.store);
+    }
+    if (object.purchase_time !== undefined && object.purchase_time !== null) {
+      message.purchase_time = fromJsonTimestamp(object.purchase_time);
+    }
+    if (object.create_time !== undefined && object.create_time !== null) {
+      message.create_time = fromJsonTimestamp(object.create_time);
+    }
+    if (object.update_time !== undefined && object.update_time !== null) {
+      message.update_time = fromJsonTimestamp(object.update_time);
+    }
+    if (
+      object.provider_response !== undefined &&
+      object.provider_response !== null
+    ) {
+      message.provider_response = String(object.provider_response);
+    }
+    if (object.environment !== undefined && object.environment !== null) {
+      message.environment = validatedPurchase_EnvironmentFromJSON(
+        object.environment
+      );
+    }
+    return message;
+  },
+
+  toJSON(message: ValidatedPurchase): unknown {
+    const obj: any = {};
+    message.product_id !== undefined && (obj.product_id = message.product_id);
+    message.transaction_id !== undefined &&
+      (obj.transaction_id = message.transaction_id);
+    message.store !== undefined &&
+      (obj.store = validatedPurchase_StoreToJSON(message.store));
+    message.purchase_time !== undefined &&
+      (obj.purchase_time = message.purchase_time.toISOString());
+    message.create_time !== undefined &&
+      (obj.create_time = message.create_time.toISOString());
+    message.update_time !== undefined &&
+      (obj.update_time = message.update_time.toISOString());
+    message.provider_response !== undefined &&
+      (obj.provider_response = message.provider_response);
+    message.environment !== undefined &&
+      (obj.environment = validatedPurchase_EnvironmentToJSON(
+        message.environment
+      ));
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<ValidatedPurchase>): ValidatedPurchase {
+    const message = { ...baseValidatedPurchase } as ValidatedPurchase;
+    if (object.product_id !== undefined && object.product_id !== null) {
+      message.product_id = object.product_id;
+    }
+    if (object.transaction_id !== undefined && object.transaction_id !== null) {
+      message.transaction_id = object.transaction_id;
+    }
+    if (object.store !== undefined && object.store !== null) {
+      message.store = object.store;
+    }
+    if (object.purchase_time !== undefined && object.purchase_time !== null) {
+      message.purchase_time = object.purchase_time;
+    }
+    if (object.create_time !== undefined && object.create_time !== null) {
+      message.create_time = object.create_time;
+    }
+    if (object.update_time !== undefined && object.update_time !== null) {
+      message.update_time = object.update_time;
+    }
+    if (
+      object.provider_response !== undefined &&
+      object.provider_response !== null
+    ) {
+      message.provider_response = object.provider_response;
+    }
+    if (object.environment !== undefined && object.environment !== null) {
+      message.environment = object.environment;
+    }
+    return message;
+  },
+};
+
+const baseValidatePurchaseResponse: object = {};
+
+export const ValidatePurchaseResponse = {
+  encode(
+    message: ValidatePurchaseResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    for (const v of message.validated_purchases) {
+      ValidatedPurchase.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): ValidatePurchaseResponse {
+    const reader = input instanceof Reader ? input : new Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseValidatePurchaseResponse,
+    } as ValidatePurchaseResponse;
+    message.validated_purchases = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.validated_purchases.push(
+            ValidatedPurchase.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ValidatePurchaseResponse {
+    const message = {
+      ...baseValidatePurchaseResponse,
+    } as ValidatePurchaseResponse;
+    message.validated_purchases = [];
+    if (
+      object.validated_purchases !== undefined &&
+      object.validated_purchases !== null
+    ) {
+      for (const e of object.validated_purchases) {
+        message.validated_purchases.push(ValidatedPurchase.fromJSON(e));
+      }
+    }
+    return message;
+  },
+
+  toJSON(message: ValidatePurchaseResponse): unknown {
+    const obj: any = {};
+    if (message.validated_purchases) {
+      obj.validated_purchases = message.validated_purchases.map((e) =>
+        e ? ValidatedPurchase.toJSON(e) : undefined
+      );
+    } else {
+      obj.validated_purchases = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ValidatePurchaseResponse>
+  ): ValidatePurchaseResponse {
+    const message = {
+      ...baseValidatePurchaseResponse,
+    } as ValidatePurchaseResponse;
+    message.validated_purchases = [];
+    if (
+      object.validated_purchases !== undefined &&
+      object.validated_purchases !== null
+    ) {
+      for (const e of object.validated_purchases) {
+        message.validated_purchases.push(ValidatedPurchase.fromPartial(e));
+      }
+    }
+    return message;
+  },
+};
+
+const basePurchaseList: object = { cursor: "" };
+
+export const PurchaseList = {
+  encode(message: PurchaseList, writer: Writer = Writer.create()): Writer {
+    for (const v of message.validated_purchases) {
+      ValidatedPurchase.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.cursor !== "") {
+      writer.uint32(18).string(message.cursor);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): PurchaseList {
+    const reader = input instanceof Reader ? input : new Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...basePurchaseList } as PurchaseList;
+    message.validated_purchases = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.validated_purchases.push(
+            ValidatedPurchase.decode(reader, reader.uint32())
+          );
+          break;
+        case 2:
+          message.cursor = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PurchaseList {
+    const message = { ...basePurchaseList } as PurchaseList;
+    message.validated_purchases = [];
+    if (
+      object.validated_purchases !== undefined &&
+      object.validated_purchases !== null
+    ) {
+      for (const e of object.validated_purchases) {
+        message.validated_purchases.push(ValidatedPurchase.fromJSON(e));
+      }
+    }
+    if (object.cursor !== undefined && object.cursor !== null) {
+      message.cursor = String(object.cursor);
+    }
+    return message;
+  },
+
+  toJSON(message: PurchaseList): unknown {
+    const obj: any = {};
+    if (message.validated_purchases) {
+      obj.validated_purchases = message.validated_purchases.map((e) =>
+        e ? ValidatedPurchase.toJSON(e) : undefined
+      );
+    } else {
+      obj.validated_purchases = [];
+    }
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<PurchaseList>): PurchaseList {
+    const message = { ...basePurchaseList } as PurchaseList;
+    message.validated_purchases = [];
+    if (
+      object.validated_purchases !== undefined &&
+      object.validated_purchases !== null
+    ) {
+      for (const e of object.validated_purchases) {
+        message.validated_purchases.push(ValidatedPurchase.fromPartial(e));
+      }
+    }
+    if (object.cursor !== undefined && object.cursor !== null) {
+      message.cursor = object.cursor;
+    }
+    return message;
+  },
+};
+
 const baseWriteLeaderboardRecordRequest: object = { leaderboard_id: "" };
 
 export const WriteLeaderboardRecordRequest = {
@@ -11436,6 +12468,7 @@ const baseWriteLeaderboardRecordRequest_LeaderboardRecordWrite: object = {
   score: 0,
   subscore: 0,
   metadata: "",
+  operator: 0,
 };
 
 export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
@@ -11451,6 +12484,9 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
     }
     if (message.metadata !== "") {
       writer.uint32(26).string(message.metadata);
+    }
+    if (message.operator !== 0) {
+      writer.uint32(32).int32(message.operator);
     }
     return writer;
   },
@@ -11476,6 +12512,9 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
         case 3:
           message.metadata = reader.string();
           break;
+        case 4:
+          message.operator = reader.int32() as any;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -11497,6 +12536,9 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = String(object.metadata);
     }
+    if (object.operator !== undefined && object.operator !== null) {
+      message.operator = overrideOperatorFromJSON(object.operator);
+    }
     return message;
   },
 
@@ -11507,6 +12549,8 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
     message.score !== undefined && (obj.score = message.score);
     message.subscore !== undefined && (obj.subscore = message.subscore);
     message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.operator !== undefined &&
+      (obj.operator = overrideOperatorToJSON(message.operator));
     return obj;
   },
 
@@ -11524,6 +12568,9 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = object.metadata;
+    }
+    if (object.operator !== undefined && object.operator !== null) {
+      message.operator = object.operator;
     }
     return message;
   },
@@ -11857,6 +12904,7 @@ const baseWriteTournamentRecordRequest_TournamentRecordWrite: object = {
   score: 0,
   subscore: 0,
   metadata: "",
+  operator: 0,
 };
 
 export const WriteTournamentRecordRequest_TournamentRecordWrite = {
@@ -11872,6 +12920,9 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
     }
     if (message.metadata !== "") {
       writer.uint32(26).string(message.metadata);
+    }
+    if (message.operator !== 0) {
+      writer.uint32(32).int32(message.operator);
     }
     return writer;
   },
@@ -11897,6 +12948,9 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
         case 3:
           message.metadata = reader.string();
           break;
+        case 4:
+          message.operator = reader.int32() as any;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -11918,6 +12972,9 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = String(object.metadata);
     }
+    if (object.operator !== undefined && object.operator !== null) {
+      message.operator = overrideOperatorFromJSON(object.operator);
+    }
     return message;
   },
 
@@ -11926,6 +12983,8 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
     message.score !== undefined && (obj.score = message.score);
     message.subscore !== undefined && (obj.subscore = message.subscore);
     message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.operator !== undefined &&
+      (obj.operator = overrideOperatorToJSON(message.operator));
     return obj;
   },
 
@@ -11943,6 +13002,9 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = object.metadata;
+    }
+    if (object.operator !== undefined && object.operator !== null) {
+      message.operator = object.operator;
     }
     return message;
   },

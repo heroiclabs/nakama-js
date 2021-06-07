@@ -1,5 +1,5 @@
 import { Writer, Reader } from "protobufjs/minimal";
-import { Notification, ChannelMessage, Rpc } from "../../../../github.com/heroiclabs/nakama-common/api/api";
+import { Notification, ChannelMessage, Rpc } from "../api/api";
 export declare const protobufPackage = "nakama.realtime";
 export interface Envelope {
     cid: string;

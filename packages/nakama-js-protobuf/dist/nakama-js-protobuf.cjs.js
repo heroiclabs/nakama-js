@@ -2179,7 +2179,7 @@ __export(exports, {
 var protobuf = __toModule(require_minimal2());
 var import_long = __toModule(require_long());
 
-// github.com/heroiclabs/nakama-common/rtapi/realtime.ts
+// rtapi/realtime.ts
 var import_minimal4 = __toModule(require_minimal2());
 var Long4 = __toModule(require_long());
 
@@ -2254,7 +2254,7 @@ if (import_minimal.util.Long !== Long) {
   (0, import_minimal.configure)();
 }
 
-// github.com/heroiclabs/nakama-common/api/api.ts
+// api/api.ts
 var import_minimal3 = __toModule(require_minimal2());
 var Long3 = __toModule(require_long());
 
@@ -2404,7 +2404,16 @@ var windowBase64 = globalThis;
 var atob = windowBase64.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
 var btoa = windowBase64.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
 
-// github.com/heroiclabs/nakama-common/api/api.ts
+// api/api.ts
+var OverrideOperator;
+(function(OverrideOperator2) {
+  OverrideOperator2[OverrideOperator2["NO_OVERRIDE"] = 0] = "NO_OVERRIDE";
+  OverrideOperator2[OverrideOperator2["BEST"] = 1] = "BEST";
+  OverrideOperator2[OverrideOperator2["SET"] = 2] = "SET";
+  OverrideOperator2[OverrideOperator2["INCREMENT"] = 3] = "INCREMENT";
+  OverrideOperator2[OverrideOperator2["DECREMENT"] = 4] = "DECREMENT";
+  OverrideOperator2[OverrideOperator2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(OverrideOperator || (OverrideOperator = {}));
 var Friend_State;
 (function(Friend_State2) {
   Friend_State2[Friend_State2["FRIEND"] = 0] = "FRIEND";
@@ -2429,6 +2438,20 @@ var UserGroupList_UserGroup_State;
   UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["JOIN_REQUEST"] = 3] = "JOIN_REQUEST";
   UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(UserGroupList_UserGroup_State || (UserGroupList_UserGroup_State = {}));
+var ValidatedPurchase_Store;
+(function(ValidatedPurchase_Store2) {
+  ValidatedPurchase_Store2[ValidatedPurchase_Store2["APPLE_APP_STORE"] = 0] = "APPLE_APP_STORE";
+  ValidatedPurchase_Store2[ValidatedPurchase_Store2["GOOGLE_PLAY_STORE"] = 1] = "GOOGLE_PLAY_STORE";
+  ValidatedPurchase_Store2[ValidatedPurchase_Store2["HUAWEI_APP_GALLERY"] = 2] = "HUAWEI_APP_GALLERY";
+  ValidatedPurchase_Store2[ValidatedPurchase_Store2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(ValidatedPurchase_Store || (ValidatedPurchase_Store = {}));
+var ValidatedPurchase_Environment;
+(function(ValidatedPurchase_Environment2) {
+  ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["UNKNOWN"] = 0] = "UNKNOWN";
+  ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["SANDBOX"] = 1] = "SANDBOX";
+  ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["PRODUCTION"] = 2] = "PRODUCTION";
+  ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(ValidatedPurchase_Environment || (ValidatedPurchase_Environment = {}));
 var baseChannelMessage = {
   channel_id: "",
   message_id: "",
@@ -2876,7 +2899,7 @@ if (import_minimal3.util.Long !== Long3) {
   (0, import_minimal3.configure)();
 }
 
-// github.com/heroiclabs/nakama-common/rtapi/realtime.ts
+// rtapi/realtime.ts
 var ChannelJoin_Type;
 (function(ChannelJoin_Type2) {
   ChannelJoin_Type2[ChannelJoin_Type2["TYPE_UNSPECIFIED"] = 0] = "TYPE_UNSPECIFIED";
