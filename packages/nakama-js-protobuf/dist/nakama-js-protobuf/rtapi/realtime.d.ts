@@ -1,4 +1,4 @@
-import { Writer, Reader } from "protobufjs/minimal";
+import _m0 from "protobufjs/minimal";
 import { Notification, ChannelMessage, Rpc } from "../api/api";
 export declare const protobufPackage = "nakama.realtime";
 export interface Envelope {
@@ -478,414 +478,414 @@ export interface UserPresence {
     status?: string;
 }
 export declare const Envelope: {
-    encode(message: Envelope, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): Envelope;
+    encode(message: Envelope, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Envelope;
     fromJSON(object: any): Envelope;
     toJSON(message: Envelope): unknown;
     fromPartial(object: DeepPartial<Envelope>): Envelope;
 };
 export declare const Channel: {
-    encode(message: Channel, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): Channel;
+    encode(message: Channel, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Channel;
     fromJSON(object: any): Channel;
     toJSON(message: Channel): unknown;
     fromPartial(object: DeepPartial<Channel>): Channel;
 };
 export declare const ChannelJoin: {
-    encode(message: ChannelJoin, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): ChannelJoin;
+    encode(message: ChannelJoin, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ChannelJoin;
     fromJSON(object: any): ChannelJoin;
     toJSON(message: ChannelJoin): unknown;
     fromPartial(object: DeepPartial<ChannelJoin>): ChannelJoin;
 };
 export declare const ChannelLeave: {
-    encode(message: ChannelLeave, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): ChannelLeave;
+    encode(message: ChannelLeave, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ChannelLeave;
     fromJSON(object: any): ChannelLeave;
     toJSON(message: ChannelLeave): unknown;
     fromPartial(object: DeepPartial<ChannelLeave>): ChannelLeave;
 };
 export declare const ChannelMessageAck: {
-    encode(message: ChannelMessageAck, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): ChannelMessageAck;
+    encode(message: ChannelMessageAck, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ChannelMessageAck;
     fromJSON(object: any): ChannelMessageAck;
     toJSON(message: ChannelMessageAck): unknown;
     fromPartial(object: DeepPartial<ChannelMessageAck>): ChannelMessageAck;
 };
 export declare const ChannelMessageSend: {
-    encode(message: ChannelMessageSend, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): ChannelMessageSend;
+    encode(message: ChannelMessageSend, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ChannelMessageSend;
     fromJSON(object: any): ChannelMessageSend;
     toJSON(message: ChannelMessageSend): unknown;
     fromPartial(object: DeepPartial<ChannelMessageSend>): ChannelMessageSend;
 };
 export declare const ChannelMessageUpdate: {
-    encode(message: ChannelMessageUpdate, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): ChannelMessageUpdate;
+    encode(message: ChannelMessageUpdate, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ChannelMessageUpdate;
     fromJSON(object: any): ChannelMessageUpdate;
     toJSON(message: ChannelMessageUpdate): unknown;
     fromPartial(object: DeepPartial<ChannelMessageUpdate>): ChannelMessageUpdate;
 };
 export declare const ChannelMessageRemove: {
-    encode(message: ChannelMessageRemove, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): ChannelMessageRemove;
+    encode(message: ChannelMessageRemove, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ChannelMessageRemove;
     fromJSON(object: any): ChannelMessageRemove;
     toJSON(message: ChannelMessageRemove): unknown;
     fromPartial(object: DeepPartial<ChannelMessageRemove>): ChannelMessageRemove;
 };
 export declare const ChannelPresenceEvent: {
-    encode(message: ChannelPresenceEvent, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): ChannelPresenceEvent;
+    encode(message: ChannelPresenceEvent, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ChannelPresenceEvent;
     fromJSON(object: any): ChannelPresenceEvent;
     toJSON(message: ChannelPresenceEvent): unknown;
     fromPartial(object: DeepPartial<ChannelPresenceEvent>): ChannelPresenceEvent;
 };
 export declare const Error: {
-    encode(message: Error, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): Error;
+    encode(message: Error, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Error;
     fromJSON(object: any): Error;
     toJSON(message: Error): unknown;
     fromPartial(object: DeepPartial<Error>): Error;
 };
 export declare const Error_ContextEntry: {
-    encode(message: Error_ContextEntry, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): Error_ContextEntry;
+    encode(message: Error_ContextEntry, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Error_ContextEntry;
     fromJSON(object: any): Error_ContextEntry;
     toJSON(message: Error_ContextEntry): unknown;
     fromPartial(object: DeepPartial<Error_ContextEntry>): Error_ContextEntry;
 };
 export declare const Match: {
-    encode(message: Match, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): Match;
+    encode(message: Match, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Match;
     fromJSON(object: any): Match;
     toJSON(message: Match): unknown;
     fromPartial(object: DeepPartial<Match>): Match;
 };
 export declare const MatchCreate: {
-    encode(_: MatchCreate, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchCreate;
+    encode(_: MatchCreate, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchCreate;
     fromJSON(_: any): MatchCreate;
     toJSON(_: MatchCreate): unknown;
     fromPartial(_: DeepPartial<MatchCreate>): MatchCreate;
 };
 export declare const MatchData: {
-    encode(message: MatchData, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchData;
+    encode(message: MatchData, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchData;
     fromJSON(object: any): MatchData;
     toJSON(message: MatchData): unknown;
     fromPartial(object: DeepPartial<MatchData>): MatchData;
 };
 export declare const MatchDataSend: {
-    encode(message: MatchDataSend, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchDataSend;
+    encode(message: MatchDataSend, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchDataSend;
     fromJSON(object: any): MatchDataSend;
     toJSON(message: MatchDataSend): unknown;
     fromPartial(object: DeepPartial<MatchDataSend>): MatchDataSend;
 };
 export declare const MatchJoin: {
-    encode(message: MatchJoin, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchJoin;
+    encode(message: MatchJoin, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchJoin;
     fromJSON(object: any): MatchJoin;
     toJSON(message: MatchJoin): unknown;
     fromPartial(object: DeepPartial<MatchJoin>): MatchJoin;
 };
 export declare const MatchJoin_MetadataEntry: {
-    encode(message: MatchJoin_MetadataEntry, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchJoin_MetadataEntry;
+    encode(message: MatchJoin_MetadataEntry, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchJoin_MetadataEntry;
     fromJSON(object: any): MatchJoin_MetadataEntry;
     toJSON(message: MatchJoin_MetadataEntry): unknown;
     fromPartial(object: DeepPartial<MatchJoin_MetadataEntry>): MatchJoin_MetadataEntry;
 };
 export declare const MatchLeave: {
-    encode(message: MatchLeave, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchLeave;
+    encode(message: MatchLeave, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchLeave;
     fromJSON(object: any): MatchLeave;
     toJSON(message: MatchLeave): unknown;
     fromPartial(object: DeepPartial<MatchLeave>): MatchLeave;
 };
 export declare const MatchPresenceEvent: {
-    encode(message: MatchPresenceEvent, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchPresenceEvent;
+    encode(message: MatchPresenceEvent, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchPresenceEvent;
     fromJSON(object: any): MatchPresenceEvent;
     toJSON(message: MatchPresenceEvent): unknown;
     fromPartial(object: DeepPartial<MatchPresenceEvent>): MatchPresenceEvent;
 };
 export declare const MatchmakerAdd: {
-    encode(message: MatchmakerAdd, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchmakerAdd;
+    encode(message: MatchmakerAdd, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchmakerAdd;
     fromJSON(object: any): MatchmakerAdd;
     toJSON(message: MatchmakerAdd): unknown;
     fromPartial(object: DeepPartial<MatchmakerAdd>): MatchmakerAdd;
 };
 export declare const MatchmakerAdd_StringPropertiesEntry: {
-    encode(message: MatchmakerAdd_StringPropertiesEntry, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchmakerAdd_StringPropertiesEntry;
+    encode(message: MatchmakerAdd_StringPropertiesEntry, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchmakerAdd_StringPropertiesEntry;
     fromJSON(object: any): MatchmakerAdd_StringPropertiesEntry;
     toJSON(message: MatchmakerAdd_StringPropertiesEntry): unknown;
     fromPartial(object: DeepPartial<MatchmakerAdd_StringPropertiesEntry>): MatchmakerAdd_StringPropertiesEntry;
 };
 export declare const MatchmakerAdd_NumericPropertiesEntry: {
-    encode(message: MatchmakerAdd_NumericPropertiesEntry, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchmakerAdd_NumericPropertiesEntry;
+    encode(message: MatchmakerAdd_NumericPropertiesEntry, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchmakerAdd_NumericPropertiesEntry;
     fromJSON(object: any): MatchmakerAdd_NumericPropertiesEntry;
     toJSON(message: MatchmakerAdd_NumericPropertiesEntry): unknown;
     fromPartial(object: DeepPartial<MatchmakerAdd_NumericPropertiesEntry>): MatchmakerAdd_NumericPropertiesEntry;
 };
 export declare const MatchmakerMatched: {
-    encode(message: MatchmakerMatched, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchmakerMatched;
+    encode(message: MatchmakerMatched, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchmakerMatched;
     fromJSON(object: any): MatchmakerMatched;
     toJSON(message: MatchmakerMatched): unknown;
     fromPartial(object: DeepPartial<MatchmakerMatched>): MatchmakerMatched;
 };
 export declare const MatchmakerMatched_MatchmakerUser: {
-    encode(message: MatchmakerMatched_MatchmakerUser, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchmakerMatched_MatchmakerUser;
+    encode(message: MatchmakerMatched_MatchmakerUser, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchmakerMatched_MatchmakerUser;
     fromJSON(object: any): MatchmakerMatched_MatchmakerUser;
     toJSON(message: MatchmakerMatched_MatchmakerUser): unknown;
     fromPartial(object: DeepPartial<MatchmakerMatched_MatchmakerUser>): MatchmakerMatched_MatchmakerUser;
 };
 export declare const MatchmakerMatched_MatchmakerUser_StringPropertiesEntry: {
-    encode(message: MatchmakerMatched_MatchmakerUser_StringPropertiesEntry, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchmakerMatched_MatchmakerUser_StringPropertiesEntry;
+    encode(message: MatchmakerMatched_MatchmakerUser_StringPropertiesEntry, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchmakerMatched_MatchmakerUser_StringPropertiesEntry;
     fromJSON(object: any): MatchmakerMatched_MatchmakerUser_StringPropertiesEntry;
     toJSON(message: MatchmakerMatched_MatchmakerUser_StringPropertiesEntry): unknown;
     fromPartial(object: DeepPartial<MatchmakerMatched_MatchmakerUser_StringPropertiesEntry>): MatchmakerMatched_MatchmakerUser_StringPropertiesEntry;
 };
 export declare const MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry: {
-    encode(message: MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry;
+    encode(message: MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry;
     fromJSON(object: any): MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry;
     toJSON(message: MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry): unknown;
     fromPartial(object: DeepPartial<MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry>): MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry;
 };
 export declare const MatchmakerRemove: {
-    encode(message: MatchmakerRemove, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchmakerRemove;
+    encode(message: MatchmakerRemove, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchmakerRemove;
     fromJSON(object: any): MatchmakerRemove;
     toJSON(message: MatchmakerRemove): unknown;
     fromPartial(object: DeepPartial<MatchmakerRemove>): MatchmakerRemove;
 };
 export declare const MatchmakerTicket: {
-    encode(message: MatchmakerTicket, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): MatchmakerTicket;
+    encode(message: MatchmakerTicket, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchmakerTicket;
     fromJSON(object: any): MatchmakerTicket;
     toJSON(message: MatchmakerTicket): unknown;
     fromPartial(object: DeepPartial<MatchmakerTicket>): MatchmakerTicket;
 };
 export declare const Notifications: {
-    encode(message: Notifications, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): Notifications;
+    encode(message: Notifications, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Notifications;
     fromJSON(object: any): Notifications;
     toJSON(message: Notifications): unknown;
     fromPartial(object: DeepPartial<Notifications>): Notifications;
 };
 export declare const Party: {
-    encode(message: Party, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): Party;
+    encode(message: Party, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Party;
     fromJSON(object: any): Party;
     toJSON(message: Party): unknown;
     fromPartial(object: DeepPartial<Party>): Party;
 };
 export declare const PartyCreate: {
-    encode(message: PartyCreate, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyCreate;
+    encode(message: PartyCreate, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyCreate;
     fromJSON(object: any): PartyCreate;
     toJSON(message: PartyCreate): unknown;
     fromPartial(object: DeepPartial<PartyCreate>): PartyCreate;
 };
 export declare const PartyJoin: {
-    encode(message: PartyJoin, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyJoin;
+    encode(message: PartyJoin, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyJoin;
     fromJSON(object: any): PartyJoin;
     toJSON(message: PartyJoin): unknown;
     fromPartial(object: DeepPartial<PartyJoin>): PartyJoin;
 };
 export declare const PartyLeave: {
-    encode(message: PartyLeave, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyLeave;
+    encode(message: PartyLeave, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyLeave;
     fromJSON(object: any): PartyLeave;
     toJSON(message: PartyLeave): unknown;
     fromPartial(object: DeepPartial<PartyLeave>): PartyLeave;
 };
 export declare const PartyPromote: {
-    encode(message: PartyPromote, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyPromote;
+    encode(message: PartyPromote, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyPromote;
     fromJSON(object: any): PartyPromote;
     toJSON(message: PartyPromote): unknown;
     fromPartial(object: DeepPartial<PartyPromote>): PartyPromote;
 };
 export declare const PartyLeader: {
-    encode(message: PartyLeader, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyLeader;
+    encode(message: PartyLeader, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyLeader;
     fromJSON(object: any): PartyLeader;
     toJSON(message: PartyLeader): unknown;
     fromPartial(object: DeepPartial<PartyLeader>): PartyLeader;
 };
 export declare const PartyAccept: {
-    encode(message: PartyAccept, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyAccept;
+    encode(message: PartyAccept, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyAccept;
     fromJSON(object: any): PartyAccept;
     toJSON(message: PartyAccept): unknown;
     fromPartial(object: DeepPartial<PartyAccept>): PartyAccept;
 };
 export declare const PartyRemove: {
-    encode(message: PartyRemove, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyRemove;
+    encode(message: PartyRemove, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyRemove;
     fromJSON(object: any): PartyRemove;
     toJSON(message: PartyRemove): unknown;
     fromPartial(object: DeepPartial<PartyRemove>): PartyRemove;
 };
 export declare const PartyClose: {
-    encode(message: PartyClose, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyClose;
+    encode(message: PartyClose, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyClose;
     fromJSON(object: any): PartyClose;
     toJSON(message: PartyClose): unknown;
     fromPartial(object: DeepPartial<PartyClose>): PartyClose;
 };
 export declare const PartyJoinRequestList: {
-    encode(message: PartyJoinRequestList, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyJoinRequestList;
+    encode(message: PartyJoinRequestList, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyJoinRequestList;
     fromJSON(object: any): PartyJoinRequestList;
     toJSON(message: PartyJoinRequestList): unknown;
     fromPartial(object: DeepPartial<PartyJoinRequestList>): PartyJoinRequestList;
 };
 export declare const PartyJoinRequest: {
-    encode(message: PartyJoinRequest, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyJoinRequest;
+    encode(message: PartyJoinRequest, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyJoinRequest;
     fromJSON(object: any): PartyJoinRequest;
     toJSON(message: PartyJoinRequest): unknown;
     fromPartial(object: DeepPartial<PartyJoinRequest>): PartyJoinRequest;
 };
 export declare const PartyMatchmakerAdd: {
-    encode(message: PartyMatchmakerAdd, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyMatchmakerAdd;
+    encode(message: PartyMatchmakerAdd, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyMatchmakerAdd;
     fromJSON(object: any): PartyMatchmakerAdd;
     toJSON(message: PartyMatchmakerAdd): unknown;
     fromPartial(object: DeepPartial<PartyMatchmakerAdd>): PartyMatchmakerAdd;
 };
 export declare const PartyMatchmakerAdd_StringPropertiesEntry: {
-    encode(message: PartyMatchmakerAdd_StringPropertiesEntry, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyMatchmakerAdd_StringPropertiesEntry;
+    encode(message: PartyMatchmakerAdd_StringPropertiesEntry, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyMatchmakerAdd_StringPropertiesEntry;
     fromJSON(object: any): PartyMatchmakerAdd_StringPropertiesEntry;
     toJSON(message: PartyMatchmakerAdd_StringPropertiesEntry): unknown;
     fromPartial(object: DeepPartial<PartyMatchmakerAdd_StringPropertiesEntry>): PartyMatchmakerAdd_StringPropertiesEntry;
 };
 export declare const PartyMatchmakerAdd_NumericPropertiesEntry: {
-    encode(message: PartyMatchmakerAdd_NumericPropertiesEntry, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyMatchmakerAdd_NumericPropertiesEntry;
+    encode(message: PartyMatchmakerAdd_NumericPropertiesEntry, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyMatchmakerAdd_NumericPropertiesEntry;
     fromJSON(object: any): PartyMatchmakerAdd_NumericPropertiesEntry;
     toJSON(message: PartyMatchmakerAdd_NumericPropertiesEntry): unknown;
     fromPartial(object: DeepPartial<PartyMatchmakerAdd_NumericPropertiesEntry>): PartyMatchmakerAdd_NumericPropertiesEntry;
 };
 export declare const PartyMatchmakerRemove: {
-    encode(message: PartyMatchmakerRemove, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyMatchmakerRemove;
+    encode(message: PartyMatchmakerRemove, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyMatchmakerRemove;
     fromJSON(object: any): PartyMatchmakerRemove;
     toJSON(message: PartyMatchmakerRemove): unknown;
     fromPartial(object: DeepPartial<PartyMatchmakerRemove>): PartyMatchmakerRemove;
 };
 export declare const PartyMatchmakerTicket: {
-    encode(message: PartyMatchmakerTicket, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyMatchmakerTicket;
+    encode(message: PartyMatchmakerTicket, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyMatchmakerTicket;
     fromJSON(object: any): PartyMatchmakerTicket;
     toJSON(message: PartyMatchmakerTicket): unknown;
     fromPartial(object: DeepPartial<PartyMatchmakerTicket>): PartyMatchmakerTicket;
 };
 export declare const PartyData: {
-    encode(message: PartyData, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyData;
+    encode(message: PartyData, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyData;
     fromJSON(object: any): PartyData;
     toJSON(message: PartyData): unknown;
     fromPartial(object: DeepPartial<PartyData>): PartyData;
 };
 export declare const PartyDataSend: {
-    encode(message: PartyDataSend, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyDataSend;
+    encode(message: PartyDataSend, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyDataSend;
     fromJSON(object: any): PartyDataSend;
     toJSON(message: PartyDataSend): unknown;
     fromPartial(object: DeepPartial<PartyDataSend>): PartyDataSend;
 };
 export declare const PartyPresenceEvent: {
-    encode(message: PartyPresenceEvent, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): PartyPresenceEvent;
+    encode(message: PartyPresenceEvent, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PartyPresenceEvent;
     fromJSON(object: any): PartyPresenceEvent;
     toJSON(message: PartyPresenceEvent): unknown;
     fromPartial(object: DeepPartial<PartyPresenceEvent>): PartyPresenceEvent;
 };
 export declare const Ping: {
-    encode(_: Ping, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): Ping;
+    encode(_: Ping, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Ping;
     fromJSON(_: any): Ping;
     toJSON(_: Ping): unknown;
     fromPartial(_: DeepPartial<Ping>): Ping;
 };
 export declare const Pong: {
-    encode(_: Pong, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): Pong;
+    encode(_: Pong, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Pong;
     fromJSON(_: any): Pong;
     toJSON(_: Pong): unknown;
     fromPartial(_: DeepPartial<Pong>): Pong;
 };
 export declare const Status: {
-    encode(message: Status, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): Status;
+    encode(message: Status, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Status;
     fromJSON(object: any): Status;
     toJSON(message: Status): unknown;
     fromPartial(object: DeepPartial<Status>): Status;
 };
 export declare const StatusFollow: {
-    encode(message: StatusFollow, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): StatusFollow;
+    encode(message: StatusFollow, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): StatusFollow;
     fromJSON(object: any): StatusFollow;
     toJSON(message: StatusFollow): unknown;
     fromPartial(object: DeepPartial<StatusFollow>): StatusFollow;
 };
 export declare const StatusPresenceEvent: {
-    encode(message: StatusPresenceEvent, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): StatusPresenceEvent;
+    encode(message: StatusPresenceEvent, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): StatusPresenceEvent;
     fromJSON(object: any): StatusPresenceEvent;
     toJSON(message: StatusPresenceEvent): unknown;
     fromPartial(object: DeepPartial<StatusPresenceEvent>): StatusPresenceEvent;
 };
 export declare const StatusUnfollow: {
-    encode(message: StatusUnfollow, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): StatusUnfollow;
+    encode(message: StatusUnfollow, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): StatusUnfollow;
     fromJSON(object: any): StatusUnfollow;
     toJSON(message: StatusUnfollow): unknown;
     fromPartial(object: DeepPartial<StatusUnfollow>): StatusUnfollow;
 };
 export declare const StatusUpdate: {
-    encode(message: StatusUpdate, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): StatusUpdate;
+    encode(message: StatusUpdate, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): StatusUpdate;
     fromJSON(object: any): StatusUpdate;
     toJSON(message: StatusUpdate): unknown;
     fromPartial(object: DeepPartial<StatusUpdate>): StatusUpdate;
 };
 export declare const Stream: {
-    encode(message: Stream, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): Stream;
+    encode(message: Stream, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Stream;
     fromJSON(object: any): Stream;
     toJSON(message: Stream): unknown;
     fromPartial(object: DeepPartial<Stream>): Stream;
 };
 export declare const StreamData: {
-    encode(message: StreamData, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): StreamData;
+    encode(message: StreamData, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): StreamData;
     fromJSON(object: any): StreamData;
     toJSON(message: StreamData): unknown;
     fromPartial(object: DeepPartial<StreamData>): StreamData;
 };
 export declare const StreamPresenceEvent: {
-    encode(message: StreamPresenceEvent, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): StreamPresenceEvent;
+    encode(message: StreamPresenceEvent, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): StreamPresenceEvent;
     fromJSON(object: any): StreamPresenceEvent;
     toJSON(message: StreamPresenceEvent): unknown;
     fromPartial(object: DeepPartial<StreamPresenceEvent>): StreamPresenceEvent;
 };
 export declare const UserPresence: {
-    encode(message: UserPresence, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number | undefined): UserPresence;
+    encode(message: UserPresence, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): UserPresence;
     fromJSON(object: any): UserPresence;
     toJSON(message: UserPresence): unknown;
     fromPartial(object: DeepPartial<UserPresence>): UserPresence;
