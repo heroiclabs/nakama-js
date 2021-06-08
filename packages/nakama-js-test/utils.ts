@@ -46,6 +46,11 @@ export async function createPage(): Promise<Page> {
 
     await page.evaluateOnNewDocument(nakamaJsLib);
     await page.evaluateOnNewDocument(nakamaJsProtobufLib);
+    await page.evaluateOnNewDocument(() => {
+        function timeoutPromise(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    })
 
     await page.goto('about:blank');
 
