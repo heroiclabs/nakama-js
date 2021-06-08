@@ -78,7 +78,9 @@ let session = nakamajs.Session.restore(authtoken, refreshtoken);
 
 // Check whether a session is close to expiry.
 
-if (session.isexpired(Date.now().setUTCHours(24) / 1000)) {
+const unixTimeInFuture = Date.now() + 8.64e+7; // one day from now
+
+if (session.isexpired(unixTimeInFuture / 1000)) {
     try
     {
         session = await client.sessionRefresh(session);
@@ -87,8 +89,6 @@ if (session.isexpired(Date.now().setUTCHours(24) / 1000)) {
     {
         console.info("Session can no longer be refreshed. Must reauthenticate!");
     }
-
-    console.warn("Session has expired. Must reauthenticate.");
 }
 ```
 

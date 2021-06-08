@@ -86,7 +86,6 @@ describe('Session Tests', () => {
         await timeoutPromise(1000);
         const secondSession = await client.sessionRefresh(session);
         const secondToken = secondSession.token;
-
         return {"firstToken": firstToken, "secondToken": secondToken};
     }, customId);
 

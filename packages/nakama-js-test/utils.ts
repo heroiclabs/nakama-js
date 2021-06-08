@@ -44,12 +44,6 @@ export async function createPage(): Promise<Page> {
     const nakamaJsLib = fs.readFileSync(__dirname + '/../nakama-js/dist/nakama-js.iife.js', 'utf8');
     const nakamaJsProtobufLib = fs.readFileSync(__dirname + '/../nakama-js-protobuf/dist/nakama-js-protobuf.iife.js', 'utf8');
 
-    await page.evaluateOnNewDocument(() => {
-        function timeoutPromise(ms : number) : Promise<void> {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-    });
-
     await page.evaluateOnNewDocument(nakamaJsLib);
     await page.evaluateOnNewDocument(nakamaJsProtobufLib);
 
