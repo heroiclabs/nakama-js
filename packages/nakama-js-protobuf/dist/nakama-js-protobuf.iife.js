@@ -39,1314 +39,6 @@ var nakamajsprotobuf = (() => {
     return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
   };
 
-  // node_modules/@protobufjs/aspromise/index.js
-  var require_aspromise = __commonJS({
-    "node_modules/@protobufjs/aspromise/index.js"(exports2, module2) {
-      "use strict";
-      module2.exports = asPromise;
-      function asPromise(fn, ctx) {
-        var params = new Array(arguments.length - 1), offset = 0, index = 2, pending = true;
-        while (index < arguments.length)
-          params[offset++] = arguments[index++];
-        return new Promise(function executor(resolve, reject) {
-          params[offset] = function callback(err) {
-            if (pending) {
-              pending = false;
-              if (err)
-                reject(err);
-              else {
-                var params2 = new Array(arguments.length - 1), offset2 = 0;
-                while (offset2 < params2.length)
-                  params2[offset2++] = arguments[offset2];
-                resolve.apply(null, params2);
-              }
-            }
-          };
-          try {
-            fn.apply(ctx || null, params);
-          } catch (err) {
-            if (pending) {
-              pending = false;
-              reject(err);
-            }
-          }
-        });
-      }
-    }
-  });
-
-  // node_modules/@protobufjs/base64/index.js
-  var require_base64 = __commonJS({
-    "node_modules/@protobufjs/base64/index.js"(exports2) {
-      "use strict";
-      var base64 = exports2;
-      base64.length = function length(string) {
-        var p = string.length;
-        if (!p)
-          return 0;
-        var n = 0;
-        while (--p % 4 > 1 && string.charAt(p) === "=")
-          ++n;
-        return Math.ceil(string.length * 3) / 4 - n;
-      };
-      var b64 = new Array(64);
-      var s64 = new Array(123);
-      for (var i = 0; i < 64; )
-        s64[b64[i] = i < 26 ? i + 65 : i < 52 ? i + 71 : i < 62 ? i - 4 : i - 59 | 43] = i++;
-      base64.encode = function encode(buffer, start, end) {
-        var parts = null, chunk = [];
-        var i2 = 0, j = 0, t;
-        while (start < end) {
-          var b = buffer[start++];
-          switch (j) {
-            case 0:
-              chunk[i2++] = b64[b >> 2];
-              t = (b & 3) << 4;
-              j = 1;
-              break;
-            case 1:
-              chunk[i2++] = b64[t | b >> 4];
-              t = (b & 15) << 2;
-              j = 2;
-              break;
-            case 2:
-              chunk[i2++] = b64[t | b >> 6];
-              chunk[i2++] = b64[b & 63];
-              j = 0;
-              break;
-          }
-          if (i2 > 8191) {
-            (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
-            i2 = 0;
-          }
-        }
-        if (j) {
-          chunk[i2++] = b64[t];
-          chunk[i2++] = 61;
-          if (j === 1)
-            chunk[i2++] = 61;
-        }
-        if (parts) {
-          if (i2)
-            parts.push(String.fromCharCode.apply(String, chunk.slice(0, i2)));
-          return parts.join("");
-        }
-        return String.fromCharCode.apply(String, chunk.slice(0, i2));
-      };
-      var invalidEncoding = "invalid encoding";
-      base64.decode = function decode(string, buffer, offset) {
-        var start = offset;
-        var j = 0, t;
-        for (var i2 = 0; i2 < string.length; ) {
-          var c = string.charCodeAt(i2++);
-          if (c === 61 && j > 1)
-            break;
-          if ((c = s64[c]) === void 0)
-            throw Error(invalidEncoding);
-          switch (j) {
-            case 0:
-              t = c;
-              j = 1;
-              break;
-            case 1:
-              buffer[offset++] = t << 2 | (c & 48) >> 4;
-              t = c;
-              j = 2;
-              break;
-            case 2:
-              buffer[offset++] = (t & 15) << 4 | (c & 60) >> 2;
-              t = c;
-              j = 3;
-              break;
-            case 3:
-              buffer[offset++] = (t & 3) << 6 | c;
-              j = 0;
-              break;
-          }
-        }
-        if (j === 1)
-          throw Error(invalidEncoding);
-        return offset - start;
-      };
-      base64.test = function test(string) {
-        return /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(string);
-      };
-    }
-  });
-
-  // node_modules/@protobufjs/eventemitter/index.js
-  var require_eventemitter = __commonJS({
-    "node_modules/@protobufjs/eventemitter/index.js"(exports2, module2) {
-      "use strict";
-      module2.exports = EventEmitter;
-      function EventEmitter() {
-        this._listeners = {};
-      }
-      EventEmitter.prototype.on = function on(evt, fn, ctx) {
-        (this._listeners[evt] || (this._listeners[evt] = [])).push({
-          fn,
-          ctx: ctx || this
-        });
-        return this;
-      };
-      EventEmitter.prototype.off = function off(evt, fn) {
-        if (evt === void 0)
-          this._listeners = {};
-        else {
-          if (fn === void 0)
-            this._listeners[evt] = [];
-          else {
-            var listeners = this._listeners[evt];
-            for (var i = 0; i < listeners.length; )
-              if (listeners[i].fn === fn)
-                listeners.splice(i, 1);
-              else
-                ++i;
-          }
-        }
-        return this;
-      };
-      EventEmitter.prototype.emit = function emit(evt) {
-        var listeners = this._listeners[evt];
-        if (listeners) {
-          var args = [], i = 1;
-          for (; i < arguments.length; )
-            args.push(arguments[i++]);
-          for (i = 0; i < listeners.length; )
-            listeners[i].fn.apply(listeners[i++].ctx, args);
-        }
-        return this;
-      };
-    }
-  });
-
-  // node_modules/@protobufjs/float/index.js
-  var require_float = __commonJS({
-    "node_modules/@protobufjs/float/index.js"(exports2, module2) {
-      "use strict";
-      module2.exports = factory(factory);
-      function factory(exports3) {
-        if (typeof Float32Array !== "undefined")
-          (function() {
-            var f32 = new Float32Array([-0]), f8b = new Uint8Array(f32.buffer), le = f8b[3] === 128;
-            function writeFloat_f32_cpy(val, buf, pos) {
-              f32[0] = val;
-              buf[pos] = f8b[0];
-              buf[pos + 1] = f8b[1];
-              buf[pos + 2] = f8b[2];
-              buf[pos + 3] = f8b[3];
-            }
-            function writeFloat_f32_rev(val, buf, pos) {
-              f32[0] = val;
-              buf[pos] = f8b[3];
-              buf[pos + 1] = f8b[2];
-              buf[pos + 2] = f8b[1];
-              buf[pos + 3] = f8b[0];
-            }
-            exports3.writeFloatLE = le ? writeFloat_f32_cpy : writeFloat_f32_rev;
-            exports3.writeFloatBE = le ? writeFloat_f32_rev : writeFloat_f32_cpy;
-            function readFloat_f32_cpy(buf, pos) {
-              f8b[0] = buf[pos];
-              f8b[1] = buf[pos + 1];
-              f8b[2] = buf[pos + 2];
-              f8b[3] = buf[pos + 3];
-              return f32[0];
-            }
-            function readFloat_f32_rev(buf, pos) {
-              f8b[3] = buf[pos];
-              f8b[2] = buf[pos + 1];
-              f8b[1] = buf[pos + 2];
-              f8b[0] = buf[pos + 3];
-              return f32[0];
-            }
-            exports3.readFloatLE = le ? readFloat_f32_cpy : readFloat_f32_rev;
-            exports3.readFloatBE = le ? readFloat_f32_rev : readFloat_f32_cpy;
-          })();
-        else
-          (function() {
-            function writeFloat_ieee754(writeUint, val, buf, pos) {
-              var sign = val < 0 ? 1 : 0;
-              if (sign)
-                val = -val;
-              if (val === 0)
-                writeUint(1 / val > 0 ? 0 : 2147483648, buf, pos);
-              else if (isNaN(val))
-                writeUint(2143289344, buf, pos);
-              else if (val > 34028234663852886e22)
-                writeUint((sign << 31 | 2139095040) >>> 0, buf, pos);
-              else if (val < 11754943508222875e-54)
-                writeUint((sign << 31 | Math.round(val / 1401298464324817e-60)) >>> 0, buf, pos);
-              else {
-                var exponent = Math.floor(Math.log(val) / Math.LN2), mantissa = Math.round(val * Math.pow(2, -exponent) * 8388608) & 8388607;
-                writeUint((sign << 31 | exponent + 127 << 23 | mantissa) >>> 0, buf, pos);
-              }
-            }
-            exports3.writeFloatLE = writeFloat_ieee754.bind(null, writeUintLE);
-            exports3.writeFloatBE = writeFloat_ieee754.bind(null, writeUintBE);
-            function readFloat_ieee754(readUint, buf, pos) {
-              var uint = readUint(buf, pos), sign = (uint >> 31) * 2 + 1, exponent = uint >>> 23 & 255, mantissa = uint & 8388607;
-              return exponent === 255 ? mantissa ? NaN : sign * Infinity : exponent === 0 ? sign * 1401298464324817e-60 * mantissa : sign * Math.pow(2, exponent - 150) * (mantissa + 8388608);
-            }
-            exports3.readFloatLE = readFloat_ieee754.bind(null, readUintLE);
-            exports3.readFloatBE = readFloat_ieee754.bind(null, readUintBE);
-          })();
-        if (typeof Float64Array !== "undefined")
-          (function() {
-            var f64 = new Float64Array([-0]), f8b = new Uint8Array(f64.buffer), le = f8b[7] === 128;
-            function writeDouble_f64_cpy(val, buf, pos) {
-              f64[0] = val;
-              buf[pos] = f8b[0];
-              buf[pos + 1] = f8b[1];
-              buf[pos + 2] = f8b[2];
-              buf[pos + 3] = f8b[3];
-              buf[pos + 4] = f8b[4];
-              buf[pos + 5] = f8b[5];
-              buf[pos + 6] = f8b[6];
-              buf[pos + 7] = f8b[7];
-            }
-            function writeDouble_f64_rev(val, buf, pos) {
-              f64[0] = val;
-              buf[pos] = f8b[7];
-              buf[pos + 1] = f8b[6];
-              buf[pos + 2] = f8b[5];
-              buf[pos + 3] = f8b[4];
-              buf[pos + 4] = f8b[3];
-              buf[pos + 5] = f8b[2];
-              buf[pos + 6] = f8b[1];
-              buf[pos + 7] = f8b[0];
-            }
-            exports3.writeDoubleLE = le ? writeDouble_f64_cpy : writeDouble_f64_rev;
-            exports3.writeDoubleBE = le ? writeDouble_f64_rev : writeDouble_f64_cpy;
-            function readDouble_f64_cpy(buf, pos) {
-              f8b[0] = buf[pos];
-              f8b[1] = buf[pos + 1];
-              f8b[2] = buf[pos + 2];
-              f8b[3] = buf[pos + 3];
-              f8b[4] = buf[pos + 4];
-              f8b[5] = buf[pos + 5];
-              f8b[6] = buf[pos + 6];
-              f8b[7] = buf[pos + 7];
-              return f64[0];
-            }
-            function readDouble_f64_rev(buf, pos) {
-              f8b[7] = buf[pos];
-              f8b[6] = buf[pos + 1];
-              f8b[5] = buf[pos + 2];
-              f8b[4] = buf[pos + 3];
-              f8b[3] = buf[pos + 4];
-              f8b[2] = buf[pos + 5];
-              f8b[1] = buf[pos + 6];
-              f8b[0] = buf[pos + 7];
-              return f64[0];
-            }
-            exports3.readDoubleLE = le ? readDouble_f64_cpy : readDouble_f64_rev;
-            exports3.readDoubleBE = le ? readDouble_f64_rev : readDouble_f64_cpy;
-          })();
-        else
-          (function() {
-            function writeDouble_ieee754(writeUint, off0, off1, val, buf, pos) {
-              var sign = val < 0 ? 1 : 0;
-              if (sign)
-                val = -val;
-              if (val === 0) {
-                writeUint(0, buf, pos + off0);
-                writeUint(1 / val > 0 ? 0 : 2147483648, buf, pos + off1);
-              } else if (isNaN(val)) {
-                writeUint(0, buf, pos + off0);
-                writeUint(2146959360, buf, pos + off1);
-              } else if (val > 17976931348623157e292) {
-                writeUint(0, buf, pos + off0);
-                writeUint((sign << 31 | 2146435072) >>> 0, buf, pos + off1);
-              } else {
-                var mantissa;
-                if (val < 22250738585072014e-324) {
-                  mantissa = val / 5e-324;
-                  writeUint(mantissa >>> 0, buf, pos + off0);
-                  writeUint((sign << 31 | mantissa / 4294967296) >>> 0, buf, pos + off1);
-                } else {
-                  var exponent = Math.floor(Math.log(val) / Math.LN2);
-                  if (exponent === 1024)
-                    exponent = 1023;
-                  mantissa = val * Math.pow(2, -exponent);
-                  writeUint(mantissa * 4503599627370496 >>> 0, buf, pos + off0);
-                  writeUint((sign << 31 | exponent + 1023 << 20 | mantissa * 1048576 & 1048575) >>> 0, buf, pos + off1);
-                }
-              }
-            }
-            exports3.writeDoubleLE = writeDouble_ieee754.bind(null, writeUintLE, 0, 4);
-            exports3.writeDoubleBE = writeDouble_ieee754.bind(null, writeUintBE, 4, 0);
-            function readDouble_ieee754(readUint, off0, off1, buf, pos) {
-              var lo = readUint(buf, pos + off0), hi = readUint(buf, pos + off1);
-              var sign = (hi >> 31) * 2 + 1, exponent = hi >>> 20 & 2047, mantissa = 4294967296 * (hi & 1048575) + lo;
-              return exponent === 2047 ? mantissa ? NaN : sign * Infinity : exponent === 0 ? sign * 5e-324 * mantissa : sign * Math.pow(2, exponent - 1075) * (mantissa + 4503599627370496);
-            }
-            exports3.readDoubleLE = readDouble_ieee754.bind(null, readUintLE, 0, 4);
-            exports3.readDoubleBE = readDouble_ieee754.bind(null, readUintBE, 4, 0);
-          })();
-        return exports3;
-      }
-      function writeUintLE(val, buf, pos) {
-        buf[pos] = val & 255;
-        buf[pos + 1] = val >>> 8 & 255;
-        buf[pos + 2] = val >>> 16 & 255;
-        buf[pos + 3] = val >>> 24;
-      }
-      function writeUintBE(val, buf, pos) {
-        buf[pos] = val >>> 24;
-        buf[pos + 1] = val >>> 16 & 255;
-        buf[pos + 2] = val >>> 8 & 255;
-        buf[pos + 3] = val & 255;
-      }
-      function readUintLE(buf, pos) {
-        return (buf[pos] | buf[pos + 1] << 8 | buf[pos + 2] << 16 | buf[pos + 3] << 24) >>> 0;
-      }
-      function readUintBE(buf, pos) {
-        return (buf[pos] << 24 | buf[pos + 1] << 16 | buf[pos + 2] << 8 | buf[pos + 3]) >>> 0;
-      }
-    }
-  });
-
-  // node_modules/@protobufjs/inquire/index.js
-  var require_inquire = __commonJS({
-    "node_modules/@protobufjs/inquire/index.js"(exports, module) {
-      "use strict";
-      module.exports = inquire;
-      function inquire(moduleName) {
-        try {
-          var mod = eval("quire".replace(/^/, "re"))(moduleName);
-          if (mod && (mod.length || Object.keys(mod).length))
-            return mod;
-        } catch (e) {
-        }
-        return null;
-      }
-    }
-  });
-
-  // node_modules/@protobufjs/utf8/index.js
-  var require_utf8 = __commonJS({
-    "node_modules/@protobufjs/utf8/index.js"(exports2) {
-      "use strict";
-      var utf8 = exports2;
-      utf8.length = function utf8_length(string) {
-        var len = 0, c = 0;
-        for (var i = 0; i < string.length; ++i) {
-          c = string.charCodeAt(i);
-          if (c < 128)
-            len += 1;
-          else if (c < 2048)
-            len += 2;
-          else if ((c & 64512) === 55296 && (string.charCodeAt(i + 1) & 64512) === 56320) {
-            ++i;
-            len += 4;
-          } else
-            len += 3;
-        }
-        return len;
-      };
-      utf8.read = function utf8_read(buffer, start, end) {
-        var len = end - start;
-        if (len < 1)
-          return "";
-        var parts = null, chunk = [], i = 0, t;
-        while (start < end) {
-          t = buffer[start++];
-          if (t < 128)
-            chunk[i++] = t;
-          else if (t > 191 && t < 224)
-            chunk[i++] = (t & 31) << 6 | buffer[start++] & 63;
-          else if (t > 239 && t < 365) {
-            t = ((t & 7) << 18 | (buffer[start++] & 63) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63) - 65536;
-            chunk[i++] = 55296 + (t >> 10);
-            chunk[i++] = 56320 + (t & 1023);
-          } else
-            chunk[i++] = (t & 15) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63;
-          if (i > 8191) {
-            (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
-            i = 0;
-          }
-        }
-        if (parts) {
-          if (i)
-            parts.push(String.fromCharCode.apply(String, chunk.slice(0, i)));
-          return parts.join("");
-        }
-        return String.fromCharCode.apply(String, chunk.slice(0, i));
-      };
-      utf8.write = function utf8_write(string, buffer, offset) {
-        var start = offset, c1, c2;
-        for (var i = 0; i < string.length; ++i) {
-          c1 = string.charCodeAt(i);
-          if (c1 < 128) {
-            buffer[offset++] = c1;
-          } else if (c1 < 2048) {
-            buffer[offset++] = c1 >> 6 | 192;
-            buffer[offset++] = c1 & 63 | 128;
-          } else if ((c1 & 64512) === 55296 && ((c2 = string.charCodeAt(i + 1)) & 64512) === 56320) {
-            c1 = 65536 + ((c1 & 1023) << 10) + (c2 & 1023);
-            ++i;
-            buffer[offset++] = c1 >> 18 | 240;
-            buffer[offset++] = c1 >> 12 & 63 | 128;
-            buffer[offset++] = c1 >> 6 & 63 | 128;
-            buffer[offset++] = c1 & 63 | 128;
-          } else {
-            buffer[offset++] = c1 >> 12 | 224;
-            buffer[offset++] = c1 >> 6 & 63 | 128;
-            buffer[offset++] = c1 & 63 | 128;
-          }
-        }
-        return offset - start;
-      };
-    }
-  });
-
-  // node_modules/@protobufjs/pool/index.js
-  var require_pool = __commonJS({
-    "node_modules/@protobufjs/pool/index.js"(exports2, module2) {
-      "use strict";
-      module2.exports = pool;
-      function pool(alloc, slice, size) {
-        var SIZE = size || 8192;
-        var MAX = SIZE >>> 1;
-        var slab = null;
-        var offset = SIZE;
-        return function pool_alloc(size2) {
-          if (size2 < 1 || size2 > MAX)
-            return alloc(size2);
-          if (offset + size2 > SIZE) {
-            slab = alloc(SIZE);
-            offset = 0;
-          }
-          var buf = slice.call(slab, offset, offset += size2);
-          if (offset & 7)
-            offset = (offset | 7) + 1;
-          return buf;
-        };
-      }
-    }
-  });
-
-  // node_modules/protobufjs/src/util/longbits.js
-  var require_longbits = __commonJS({
-    "node_modules/protobufjs/src/util/longbits.js"(exports2, module2) {
-      "use strict";
-      module2.exports = LongBits;
-      var util5 = require_minimal();
-      function LongBits(lo, hi) {
-        this.lo = lo >>> 0;
-        this.hi = hi >>> 0;
-      }
-      var zero = LongBits.zero = new LongBits(0, 0);
-      zero.toNumber = function() {
-        return 0;
-      };
-      zero.zzEncode = zero.zzDecode = function() {
-        return this;
-      };
-      zero.length = function() {
-        return 1;
-      };
-      var zeroHash = LongBits.zeroHash = "\0\0\0\0\0\0\0\0";
-      LongBits.fromNumber = function fromNumber(value) {
-        if (value === 0)
-          return zero;
-        var sign = value < 0;
-        if (sign)
-          value = -value;
-        var lo = value >>> 0, hi = (value - lo) / 4294967296 >>> 0;
-        if (sign) {
-          hi = ~hi >>> 0;
-          lo = ~lo >>> 0;
-          if (++lo > 4294967295) {
-            lo = 0;
-            if (++hi > 4294967295)
-              hi = 0;
-          }
-        }
-        return new LongBits(lo, hi);
-      };
-      LongBits.from = function from(value) {
-        if (typeof value === "number")
-          return LongBits.fromNumber(value);
-        if (util5.isString(value)) {
-          if (util5.Long)
-            value = util5.Long.fromString(value);
-          else
-            return LongBits.fromNumber(parseInt(value, 10));
-        }
-        return value.low || value.high ? new LongBits(value.low >>> 0, value.high >>> 0) : zero;
-      };
-      LongBits.prototype.toNumber = function toNumber(unsigned) {
-        if (!unsigned && this.hi >>> 31) {
-          var lo = ~this.lo + 1 >>> 0, hi = ~this.hi >>> 0;
-          if (!lo)
-            hi = hi + 1 >>> 0;
-          return -(lo + hi * 4294967296);
-        }
-        return this.lo + this.hi * 4294967296;
-      };
-      LongBits.prototype.toLong = function toLong(unsigned) {
-        return util5.Long ? new util5.Long(this.lo | 0, this.hi | 0, Boolean(unsigned)) : { low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned) };
-      };
-      var charCodeAt = String.prototype.charCodeAt;
-      LongBits.fromHash = function fromHash(hash) {
-        if (hash === zeroHash)
-          return zero;
-        return new LongBits((charCodeAt.call(hash, 0) | charCodeAt.call(hash, 1) << 8 | charCodeAt.call(hash, 2) << 16 | charCodeAt.call(hash, 3) << 24) >>> 0, (charCodeAt.call(hash, 4) | charCodeAt.call(hash, 5) << 8 | charCodeAt.call(hash, 6) << 16 | charCodeAt.call(hash, 7) << 24) >>> 0);
-      };
-      LongBits.prototype.toHash = function toHash() {
-        return String.fromCharCode(this.lo & 255, this.lo >>> 8 & 255, this.lo >>> 16 & 255, this.lo >>> 24, this.hi & 255, this.hi >>> 8 & 255, this.hi >>> 16 & 255, this.hi >>> 24);
-      };
-      LongBits.prototype.zzEncode = function zzEncode() {
-        var mask = this.hi >> 31;
-        this.hi = ((this.hi << 1 | this.lo >>> 31) ^ mask) >>> 0;
-        this.lo = (this.lo << 1 ^ mask) >>> 0;
-        return this;
-      };
-      LongBits.prototype.zzDecode = function zzDecode() {
-        var mask = -(this.lo & 1);
-        this.lo = ((this.lo >>> 1 | this.hi << 31) ^ mask) >>> 0;
-        this.hi = (this.hi >>> 1 ^ mask) >>> 0;
-        return this;
-      };
-      LongBits.prototype.length = function length() {
-        var part0 = this.lo, part1 = (this.lo >>> 28 | this.hi << 4) >>> 0, part2 = this.hi >>> 24;
-        return part2 === 0 ? part1 === 0 ? part0 < 16384 ? part0 < 128 ? 1 : 2 : part0 < 2097152 ? 3 : 4 : part1 < 16384 ? part1 < 128 ? 5 : 6 : part1 < 2097152 ? 7 : 8 : part2 < 128 ? 9 : 10;
-      };
-    }
-  });
-
-  // node_modules/protobufjs/src/util/minimal.js
-  var require_minimal = __commonJS({
-    "node_modules/protobufjs/src/util/minimal.js"(exports2) {
-      "use strict";
-      var util5 = exports2;
-      util5.asPromise = require_aspromise();
-      util5.base64 = require_base64();
-      util5.EventEmitter = require_eventemitter();
-      util5.float = require_float();
-      util5.inquire = require_inquire();
-      util5.utf8 = require_utf8();
-      util5.pool = require_pool();
-      util5.LongBits = require_longbits();
-      util5.isNode = Boolean(typeof global !== "undefined" && global && global.process && global.process.versions && global.process.versions.node);
-      util5.global = util5.isNode && global || typeof window !== "undefined" && window || typeof self !== "undefined" && self || exports2;
-      util5.emptyArray = Object.freeze ? Object.freeze([]) : [];
-      util5.emptyObject = Object.freeze ? Object.freeze({}) : {};
-      util5.isInteger = Number.isInteger || function isInteger(value) {
-        return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
-      };
-      util5.isString = function isString(value) {
-        return typeof value === "string" || value instanceof String;
-      };
-      util5.isObject = function isObject(value) {
-        return value && typeof value === "object";
-      };
-      util5.isset = util5.isSet = function isSet(obj, prop) {
-        var value = obj[prop];
-        if (value != null && obj.hasOwnProperty(prop))
-          return typeof value !== "object" || (Array.isArray(value) ? value.length : Object.keys(value).length) > 0;
-        return false;
-      };
-      util5.Buffer = function() {
-        try {
-          var Buffer2 = util5.inquire("buffer").Buffer;
-          return Buffer2.prototype.utf8Write ? Buffer2 : null;
-        } catch (e) {
-          return null;
-        }
-      }();
-      util5._Buffer_from = null;
-      util5._Buffer_allocUnsafe = null;
-      util5.newBuffer = function newBuffer(sizeOrArray) {
-        return typeof sizeOrArray === "number" ? util5.Buffer ? util5._Buffer_allocUnsafe(sizeOrArray) : new util5.Array(sizeOrArray) : util5.Buffer ? util5._Buffer_from(sizeOrArray) : typeof Uint8Array === "undefined" ? sizeOrArray : new Uint8Array(sizeOrArray);
-      };
-      util5.Array = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
-      util5.Long = util5.global.dcodeIO && util5.global.dcodeIO.Long || util5.global.Long || util5.inquire("long");
-      util5.key2Re = /^true|false|0|1$/;
-      util5.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
-      util5.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
-      util5.longToHash = function longToHash(value) {
-        return value ? util5.LongBits.from(value).toHash() : util5.LongBits.zeroHash;
-      };
-      util5.longFromHash = function longFromHash(hash, unsigned) {
-        var bits = util5.LongBits.fromHash(hash);
-        if (util5.Long)
-          return util5.Long.fromBits(bits.lo, bits.hi, unsigned);
-        return bits.toNumber(Boolean(unsigned));
-      };
-      function merge(dst, src, ifNotSet) {
-        for (var keys = Object.keys(src), i = 0; i < keys.length; ++i)
-          if (dst[keys[i]] === void 0 || !ifNotSet)
-            dst[keys[i]] = src[keys[i]];
-        return dst;
-      }
-      util5.merge = merge;
-      util5.lcFirst = function lcFirst(str) {
-        return str.charAt(0).toLowerCase() + str.substring(1);
-      };
-      function newError(name) {
-        function CustomError(message, properties) {
-          if (!(this instanceof CustomError))
-            return new CustomError(message, properties);
-          Object.defineProperty(this, "message", { get: function() {
-            return message;
-          } });
-          if (Error.captureStackTrace)
-            Error.captureStackTrace(this, CustomError);
-          else
-            Object.defineProperty(this, "stack", { value: new Error().stack || "" });
-          if (properties)
-            merge(this, properties);
-        }
-        (CustomError.prototype = Object.create(Error.prototype)).constructor = CustomError;
-        Object.defineProperty(CustomError.prototype, "name", { get: function() {
-          return name;
-        } });
-        CustomError.prototype.toString = function toString() {
-          return this.name + ": " + this.message;
-        };
-        return CustomError;
-      }
-      util5.newError = newError;
-      util5.ProtocolError = newError("ProtocolError");
-      util5.oneOfGetter = function getOneOf(fieldNames) {
-        var fieldMap = {};
-        for (var i = 0; i < fieldNames.length; ++i)
-          fieldMap[fieldNames[i]] = 1;
-        return function() {
-          for (var keys = Object.keys(this), i2 = keys.length - 1; i2 > -1; --i2)
-            if (fieldMap[keys[i2]] === 1 && this[keys[i2]] !== void 0 && this[keys[i2]] !== null)
-              return keys[i2];
-        };
-      };
-      util5.oneOfSetter = function setOneOf(fieldNames) {
-        return function(name) {
-          for (var i = 0; i < fieldNames.length; ++i)
-            if (fieldNames[i] !== name)
-              delete this[fieldNames[i]];
-        };
-      };
-      util5.toJSONOptions = {
-        longs: String,
-        enums: String,
-        bytes: String,
-        json: true
-      };
-      util5._configure = function() {
-        var Buffer2 = util5.Buffer;
-        if (!Buffer2) {
-          util5._Buffer_from = util5._Buffer_allocUnsafe = null;
-          return;
-        }
-        util5._Buffer_from = Buffer2.from !== Uint8Array.from && Buffer2.from || function Buffer_from(value, encoding) {
-          return new Buffer2(value, encoding);
-        };
-        util5._Buffer_allocUnsafe = Buffer2.allocUnsafe || function Buffer_allocUnsafe(size) {
-          return new Buffer2(size);
-        };
-      };
-    }
-  });
-
-  // node_modules/protobufjs/src/writer.js
-  var require_writer = __commonJS({
-    "node_modules/protobufjs/src/writer.js"(exports2, module2) {
-      "use strict";
-      module2.exports = Writer5;
-      var util5 = require_minimal();
-      var BufferWriter;
-      var LongBits = util5.LongBits;
-      var base64 = util5.base64;
-      var utf8 = util5.utf8;
-      function Op(fn, len, val) {
-        this.fn = fn;
-        this.len = len;
-        this.next = void 0;
-        this.val = val;
-      }
-      function noop() {
-      }
-      function State(writer) {
-        this.head = writer.head;
-        this.tail = writer.tail;
-        this.len = writer.len;
-        this.next = writer.states;
-      }
-      function Writer5() {
-        this.len = 0;
-        this.head = new Op(noop, 0, 0);
-        this.tail = this.head;
-        this.states = null;
-      }
-      var create = function create2() {
-        return util5.Buffer ? function create_buffer_setup() {
-          return (Writer5.create = function create_buffer() {
-            return new BufferWriter();
-          })();
-        } : function create_array() {
-          return new Writer5();
-        };
-      };
-      Writer5.create = create();
-      Writer5.alloc = function alloc(size) {
-        return new util5.Array(size);
-      };
-      if (util5.Array !== Array)
-        Writer5.alloc = util5.pool(Writer5.alloc, util5.Array.prototype.subarray);
-      Writer5.prototype._push = function push(fn, len, val) {
-        this.tail = this.tail.next = new Op(fn, len, val);
-        this.len += len;
-        return this;
-      };
-      function writeByte(val, buf, pos) {
-        buf[pos] = val & 255;
-      }
-      function writeVarint32(val, buf, pos) {
-        while (val > 127) {
-          buf[pos++] = val & 127 | 128;
-          val >>>= 7;
-        }
-        buf[pos] = val;
-      }
-      function VarintOp(len, val) {
-        this.len = len;
-        this.next = void 0;
-        this.val = val;
-      }
-      VarintOp.prototype = Object.create(Op.prototype);
-      VarintOp.prototype.fn = writeVarint32;
-      Writer5.prototype.uint32 = function write_uint32(value) {
-        this.len += (this.tail = this.tail.next = new VarintOp((value = value >>> 0) < 128 ? 1 : value < 16384 ? 2 : value < 2097152 ? 3 : value < 268435456 ? 4 : 5, value)).len;
-        return this;
-      };
-      Writer5.prototype.int32 = function write_int32(value) {
-        return value < 0 ? this._push(writeVarint64, 10, LongBits.fromNumber(value)) : this.uint32(value);
-      };
-      Writer5.prototype.sint32 = function write_sint32(value) {
-        return this.uint32((value << 1 ^ value >> 31) >>> 0);
-      };
-      function writeVarint64(val, buf, pos) {
-        while (val.hi) {
-          buf[pos++] = val.lo & 127 | 128;
-          val.lo = (val.lo >>> 7 | val.hi << 25) >>> 0;
-          val.hi >>>= 7;
-        }
-        while (val.lo > 127) {
-          buf[pos++] = val.lo & 127 | 128;
-          val.lo = val.lo >>> 7;
-        }
-        buf[pos++] = val.lo;
-      }
-      Writer5.prototype.uint64 = function write_uint64(value) {
-        var bits = LongBits.from(value);
-        return this._push(writeVarint64, bits.length(), bits);
-      };
-      Writer5.prototype.int64 = Writer5.prototype.uint64;
-      Writer5.prototype.sint64 = function write_sint64(value) {
-        var bits = LongBits.from(value).zzEncode();
-        return this._push(writeVarint64, bits.length(), bits);
-      };
-      Writer5.prototype.bool = function write_bool(value) {
-        return this._push(writeByte, 1, value ? 1 : 0);
-      };
-      function writeFixed32(val, buf, pos) {
-        buf[pos] = val & 255;
-        buf[pos + 1] = val >>> 8 & 255;
-        buf[pos + 2] = val >>> 16 & 255;
-        buf[pos + 3] = val >>> 24;
-      }
-      Writer5.prototype.fixed32 = function write_fixed32(value) {
-        return this._push(writeFixed32, 4, value >>> 0);
-      };
-      Writer5.prototype.sfixed32 = Writer5.prototype.fixed32;
-      Writer5.prototype.fixed64 = function write_fixed64(value) {
-        var bits = LongBits.from(value);
-        return this._push(writeFixed32, 4, bits.lo)._push(writeFixed32, 4, bits.hi);
-      };
-      Writer5.prototype.sfixed64 = Writer5.prototype.fixed64;
-      Writer5.prototype.float = function write_float(value) {
-        return this._push(util5.float.writeFloatLE, 4, value);
-      };
-      Writer5.prototype.double = function write_double(value) {
-        return this._push(util5.float.writeDoubleLE, 8, value);
-      };
-      var writeBytes = util5.Array.prototype.set ? function writeBytes_set(val, buf, pos) {
-        buf.set(val, pos);
-      } : function writeBytes_for(val, buf, pos) {
-        for (var i = 0; i < val.length; ++i)
-          buf[pos + i] = val[i];
-      };
-      Writer5.prototype.bytes = function write_bytes(value) {
-        var len = value.length >>> 0;
-        if (!len)
-          return this._push(writeByte, 1, 0);
-        if (util5.isString(value)) {
-          var buf = Writer5.alloc(len = base64.length(value));
-          base64.decode(value, buf, 0);
-          value = buf;
-        }
-        return this.uint32(len)._push(writeBytes, len, value);
-      };
-      Writer5.prototype.string = function write_string(value) {
-        var len = utf8.length(value);
-        return len ? this.uint32(len)._push(utf8.write, len, value) : this._push(writeByte, 1, 0);
-      };
-      Writer5.prototype.fork = function fork() {
-        this.states = new State(this);
-        this.head = this.tail = new Op(noop, 0, 0);
-        this.len = 0;
-        return this;
-      };
-      Writer5.prototype.reset = function reset() {
-        if (this.states) {
-          this.head = this.states.head;
-          this.tail = this.states.tail;
-          this.len = this.states.len;
-          this.states = this.states.next;
-        } else {
-          this.head = this.tail = new Op(noop, 0, 0);
-          this.len = 0;
-        }
-        return this;
-      };
-      Writer5.prototype.ldelim = function ldelim() {
-        var head = this.head, tail = this.tail, len = this.len;
-        this.reset().uint32(len);
-        if (len) {
-          this.tail.next = head.next;
-          this.tail = tail;
-          this.len += len;
-        }
-        return this;
-      };
-      Writer5.prototype.finish = function finish() {
-        var head = this.head.next, buf = this.constructor.alloc(this.len), pos = 0;
-        while (head) {
-          head.fn(head.val, buf, pos);
-          pos += head.len;
-          head = head.next;
-        }
-        return buf;
-      };
-      Writer5._configure = function(BufferWriter_) {
-        BufferWriter = BufferWriter_;
-        Writer5.create = create();
-        BufferWriter._configure();
-      };
-    }
-  });
-
-  // node_modules/protobufjs/src/writer_buffer.js
-  var require_writer_buffer = __commonJS({
-    "node_modules/protobufjs/src/writer_buffer.js"(exports2, module2) {
-      "use strict";
-      module2.exports = BufferWriter;
-      var Writer5 = require_writer();
-      (BufferWriter.prototype = Object.create(Writer5.prototype)).constructor = BufferWriter;
-      var util5 = require_minimal();
-      function BufferWriter() {
-        Writer5.call(this);
-      }
-      BufferWriter._configure = function() {
-        BufferWriter.alloc = util5._Buffer_allocUnsafe;
-        BufferWriter.writeBytesBuffer = util5.Buffer && util5.Buffer.prototype instanceof Uint8Array && util5.Buffer.prototype.set.name === "set" ? function writeBytesBuffer_set(val, buf, pos) {
-          buf.set(val, pos);
-        } : function writeBytesBuffer_copy(val, buf, pos) {
-          if (val.copy)
-            val.copy(buf, pos, 0, val.length);
-          else
-            for (var i = 0; i < val.length; )
-              buf[pos++] = val[i++];
-        };
-      };
-      BufferWriter.prototype.bytes = function write_bytes_buffer(value) {
-        if (util5.isString(value))
-          value = util5._Buffer_from(value, "base64");
-        var len = value.length >>> 0;
-        this.uint32(len);
-        if (len)
-          this._push(BufferWriter.writeBytesBuffer, len, value);
-        return this;
-      };
-      function writeStringBuffer(val, buf, pos) {
-        if (val.length < 40)
-          util5.utf8.write(val, buf, pos);
-        else if (buf.utf8Write)
-          buf.utf8Write(val, pos);
-        else
-          buf.write(val, pos);
-      }
-      BufferWriter.prototype.string = function write_string_buffer(value) {
-        var len = util5.Buffer.byteLength(value);
-        this.uint32(len);
-        if (len)
-          this._push(writeStringBuffer, len, value);
-        return this;
-      };
-      BufferWriter._configure();
-    }
-  });
-
-  // node_modules/protobufjs/src/reader.js
-  var require_reader = __commonJS({
-    "node_modules/protobufjs/src/reader.js"(exports2, module2) {
-      "use strict";
-      module2.exports = Reader5;
-      var util5 = require_minimal();
-      var BufferReader;
-      var LongBits = util5.LongBits;
-      var utf8 = util5.utf8;
-      function indexOutOfRange(reader, writeLength) {
-        return RangeError("index out of range: " + reader.pos + " + " + (writeLength || 1) + " > " + reader.len);
-      }
-      function Reader5(buffer) {
-        this.buf = buffer;
-        this.pos = 0;
-        this.len = buffer.length;
-      }
-      var create_array = typeof Uint8Array !== "undefined" ? function create_typed_array(buffer) {
-        if (buffer instanceof Uint8Array || Array.isArray(buffer))
-          return new Reader5(buffer);
-        throw Error("illegal buffer");
-      } : function create_array2(buffer) {
-        if (Array.isArray(buffer))
-          return new Reader5(buffer);
-        throw Error("illegal buffer");
-      };
-      var create = function create2() {
-        return util5.Buffer ? function create_buffer_setup(buffer) {
-          return (Reader5.create = function create_buffer(buffer2) {
-            return util5.Buffer.isBuffer(buffer2) ? new BufferReader(buffer2) : create_array(buffer2);
-          })(buffer);
-        } : create_array;
-      };
-      Reader5.create = create();
-      Reader5.prototype._slice = util5.Array.prototype.subarray || util5.Array.prototype.slice;
-      Reader5.prototype.uint32 = function read_uint32_setup() {
-        var value = 4294967295;
-        return function read_uint32() {
-          value = (this.buf[this.pos] & 127) >>> 0;
-          if (this.buf[this.pos++] < 128)
-            return value;
-          value = (value | (this.buf[this.pos] & 127) << 7) >>> 0;
-          if (this.buf[this.pos++] < 128)
-            return value;
-          value = (value | (this.buf[this.pos] & 127) << 14) >>> 0;
-          if (this.buf[this.pos++] < 128)
-            return value;
-          value = (value | (this.buf[this.pos] & 127) << 21) >>> 0;
-          if (this.buf[this.pos++] < 128)
-            return value;
-          value = (value | (this.buf[this.pos] & 15) << 28) >>> 0;
-          if (this.buf[this.pos++] < 128)
-            return value;
-          if ((this.pos += 5) > this.len) {
-            this.pos = this.len;
-            throw indexOutOfRange(this, 10);
-          }
-          return value;
-        };
-      }();
-      Reader5.prototype.int32 = function read_int32() {
-        return this.uint32() | 0;
-      };
-      Reader5.prototype.sint32 = function read_sint32() {
-        var value = this.uint32();
-        return value >>> 1 ^ -(value & 1) | 0;
-      };
-      function readLongVarint() {
-        var bits = new LongBits(0, 0);
-        var i = 0;
-        if (this.len - this.pos > 4) {
-          for (; i < 4; ++i) {
-            bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
-            if (this.buf[this.pos++] < 128)
-              return bits;
-          }
-          bits.lo = (bits.lo | (this.buf[this.pos] & 127) << 28) >>> 0;
-          bits.hi = (bits.hi | (this.buf[this.pos] & 127) >> 4) >>> 0;
-          if (this.buf[this.pos++] < 128)
-            return bits;
-          i = 0;
-        } else {
-          for (; i < 3; ++i) {
-            if (this.pos >= this.len)
-              throw indexOutOfRange(this);
-            bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
-            if (this.buf[this.pos++] < 128)
-              return bits;
-          }
-          bits.lo = (bits.lo | (this.buf[this.pos++] & 127) << i * 7) >>> 0;
-          return bits;
-        }
-        if (this.len - this.pos > 4) {
-          for (; i < 5; ++i) {
-            bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
-            if (this.buf[this.pos++] < 128)
-              return bits;
-          }
-        } else {
-          for (; i < 5; ++i) {
-            if (this.pos >= this.len)
-              throw indexOutOfRange(this);
-            bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
-            if (this.buf[this.pos++] < 128)
-              return bits;
-          }
-        }
-        throw Error("invalid varint encoding");
-      }
-      Reader5.prototype.bool = function read_bool() {
-        return this.uint32() !== 0;
-      };
-      function readFixed32_end(buf, end) {
-        return (buf[end - 4] | buf[end - 3] << 8 | buf[end - 2] << 16 | buf[end - 1] << 24) >>> 0;
-      }
-      Reader5.prototype.fixed32 = function read_fixed32() {
-        if (this.pos + 4 > this.len)
-          throw indexOutOfRange(this, 4);
-        return readFixed32_end(this.buf, this.pos += 4);
-      };
-      Reader5.prototype.sfixed32 = function read_sfixed32() {
-        if (this.pos + 4 > this.len)
-          throw indexOutOfRange(this, 4);
-        return readFixed32_end(this.buf, this.pos += 4) | 0;
-      };
-      function readFixed64() {
-        if (this.pos + 8 > this.len)
-          throw indexOutOfRange(this, 8);
-        return new LongBits(readFixed32_end(this.buf, this.pos += 4), readFixed32_end(this.buf, this.pos += 4));
-      }
-      Reader5.prototype.float = function read_float() {
-        if (this.pos + 4 > this.len)
-          throw indexOutOfRange(this, 4);
-        var value = util5.float.readFloatLE(this.buf, this.pos);
-        this.pos += 4;
-        return value;
-      };
-      Reader5.prototype.double = function read_double() {
-        if (this.pos + 8 > this.len)
-          throw indexOutOfRange(this, 4);
-        var value = util5.float.readDoubleLE(this.buf, this.pos);
-        this.pos += 8;
-        return value;
-      };
-      Reader5.prototype.bytes = function read_bytes() {
-        var length = this.uint32(), start = this.pos, end = this.pos + length;
-        if (end > this.len)
-          throw indexOutOfRange(this, length);
-        this.pos += length;
-        if (Array.isArray(this.buf))
-          return this.buf.slice(start, end);
-        return start === end ? new this.buf.constructor(0) : this._slice.call(this.buf, start, end);
-      };
-      Reader5.prototype.string = function read_string() {
-        var bytes = this.bytes();
-        return utf8.read(bytes, 0, bytes.length);
-      };
-      Reader5.prototype.skip = function skip(length) {
-        if (typeof length === "number") {
-          if (this.pos + length > this.len)
-            throw indexOutOfRange(this, length);
-          this.pos += length;
-        } else {
-          do {
-            if (this.pos >= this.len)
-              throw indexOutOfRange(this);
-          } while (this.buf[this.pos++] & 128);
-        }
-        return this;
-      };
-      Reader5.prototype.skipType = function(wireType) {
-        switch (wireType) {
-          case 0:
-            this.skip();
-            break;
-          case 1:
-            this.skip(8);
-            break;
-          case 2:
-            this.skip(this.uint32());
-            break;
-          case 3:
-            while ((wireType = this.uint32() & 7) !== 4) {
-              this.skipType(wireType);
-            }
-            break;
-          case 5:
-            this.skip(4);
-            break;
-          default:
-            throw Error("invalid wire type " + wireType + " at offset " + this.pos);
-        }
-        return this;
-      };
-      Reader5._configure = function(BufferReader_) {
-        BufferReader = BufferReader_;
-        Reader5.create = create();
-        BufferReader._configure();
-        var fn = util5.Long ? "toLong" : "toNumber";
-        util5.merge(Reader5.prototype, {
-          int64: function read_int64() {
-            return readLongVarint.call(this)[fn](false);
-          },
-          uint64: function read_uint64() {
-            return readLongVarint.call(this)[fn](true);
-          },
-          sint64: function read_sint64() {
-            return readLongVarint.call(this).zzDecode()[fn](false);
-          },
-          fixed64: function read_fixed64() {
-            return readFixed64.call(this)[fn](true);
-          },
-          sfixed64: function read_sfixed64() {
-            return readFixed64.call(this)[fn](false);
-          }
-        });
-      };
-    }
-  });
-
-  // node_modules/protobufjs/src/reader_buffer.js
-  var require_reader_buffer = __commonJS({
-    "node_modules/protobufjs/src/reader_buffer.js"(exports2, module2) {
-      "use strict";
-      module2.exports = BufferReader;
-      var Reader5 = require_reader();
-      (BufferReader.prototype = Object.create(Reader5.prototype)).constructor = BufferReader;
-      var util5 = require_minimal();
-      function BufferReader(buffer) {
-        Reader5.call(this, buffer);
-      }
-      BufferReader._configure = function() {
-        if (util5.Buffer)
-          BufferReader.prototype._slice = util5.Buffer.prototype.slice;
-      };
-      BufferReader.prototype.string = function read_string_buffer() {
-        var len = this.uint32();
-        return this.buf.utf8Slice ? this.buf.utf8Slice(this.pos, this.pos = Math.min(this.pos + len, this.len)) : this.buf.toString("utf-8", this.pos, this.pos = Math.min(this.pos + len, this.len));
-      };
-      BufferReader._configure();
-    }
-  });
-
-  // node_modules/protobufjs/src/rpc/service.js
-  var require_service = __commonJS({
-    "node_modules/protobufjs/src/rpc/service.js"(exports2, module2) {
-      "use strict";
-      module2.exports = Service;
-      var util5 = require_minimal();
-      (Service.prototype = Object.create(util5.EventEmitter.prototype)).constructor = Service;
-      function Service(rpcImpl, requestDelimited, responseDelimited) {
-        if (typeof rpcImpl !== "function")
-          throw TypeError("rpcImpl must be a function");
-        util5.EventEmitter.call(this);
-        this.rpcImpl = rpcImpl;
-        this.requestDelimited = Boolean(requestDelimited);
-        this.responseDelimited = Boolean(responseDelimited);
-      }
-      Service.prototype.rpcCall = function rpcCall(method, requestCtor, responseCtor, request, callback) {
-        if (!request)
-          throw TypeError("request must be specified");
-        var self2 = this;
-        if (!callback)
-          return util5.asPromise(rpcCall, self2, method, requestCtor, responseCtor, request);
-        if (!self2.rpcImpl) {
-          setTimeout(function() {
-            callback(Error("already ended"));
-          }, 0);
-          return void 0;
-        }
-        try {
-          return self2.rpcImpl(method, requestCtor[self2.requestDelimited ? "encodeDelimited" : "encode"](request).finish(), function rpcCallback(err, response) {
-            if (err) {
-              self2.emit("error", err, method);
-              return callback(err);
-            }
-            if (response === null) {
-              self2.end(true);
-              return void 0;
-            }
-            if (!(response instanceof responseCtor)) {
-              try {
-                response = responseCtor[self2.responseDelimited ? "decodeDelimited" : "decode"](response);
-              } catch (err2) {
-                self2.emit("error", err2, method);
-                return callback(err2);
-              }
-            }
-            self2.emit("data", response, method);
-            return callback(null, response);
-          });
-        } catch (err) {
-          self2.emit("error", err, method);
-          setTimeout(function() {
-            callback(err);
-          }, 0);
-          return void 0;
-        }
-      };
-      Service.prototype.end = function end(endedByRPC) {
-        if (this.rpcImpl) {
-          if (!endedByRPC)
-            this.rpcImpl(null, null, null);
-          this.rpcImpl = null;
-          this.emit("end").off();
-        }
-        return this;
-      };
-    }
-  });
-
-  // node_modules/protobufjs/src/rpc.js
-  var require_rpc = __commonJS({
-    "node_modules/protobufjs/src/rpc.js"(exports2) {
-      "use strict";
-      var rpc = exports2;
-      rpc.Service = require_service();
-    }
-  });
-
-  // node_modules/protobufjs/src/roots.js
-  var require_roots = __commonJS({
-    "node_modules/protobufjs/src/roots.js"(exports2, module2) {
-      "use strict";
-      module2.exports = {};
-    }
-  });
-
-  // node_modules/protobufjs/src/index-minimal.js
-  var require_index_minimal = __commonJS({
-    "node_modules/protobufjs/src/index-minimal.js"(exports2) {
-      "use strict";
-      var protobuf = exports2;
-      protobuf.build = "minimal";
-      protobuf.Writer = require_writer();
-      protobuf.BufferWriter = require_writer_buffer();
-      protobuf.Reader = require_reader();
-      protobuf.BufferReader = require_reader_buffer();
-      protobuf.util = require_minimal();
-      protobuf.rpc = require_rpc();
-      protobuf.roots = require_roots();
-      protobuf.configure = configure5;
-      function configure5() {
-        protobuf.util._configure();
-        protobuf.Writer._configure(protobuf.BufferWriter);
-        protobuf.Reader._configure(protobuf.BufferReader);
-      }
-      configure5();
-    }
-  });
-
-  // node_modules/protobufjs/minimal.js
-  var require_minimal2 = __commonJS({
-    "node_modules/protobufjs/minimal.js"(exports2, module2) {
-      "use strict";
-      module2.exports = require_index_minimal();
-    }
-  });
-
   // node_modules/long/src/long.js
   var require_long = __commonJS({
     "node_modules/long/src/long.js"(exports2, module2) {
@@ -2172,15 +864,1323 @@ var nakamajsprotobuf = (() => {
     }
   });
 
+  // node_modules/@protobufjs/aspromise/index.js
+  var require_aspromise = __commonJS({
+    "node_modules/@protobufjs/aspromise/index.js"(exports2, module2) {
+      "use strict";
+      module2.exports = asPromise;
+      function asPromise(fn, ctx) {
+        var params = new Array(arguments.length - 1), offset = 0, index = 2, pending = true;
+        while (index < arguments.length)
+          params[offset++] = arguments[index++];
+        return new Promise(function executor(resolve, reject) {
+          params[offset] = function callback(err) {
+            if (pending) {
+              pending = false;
+              if (err)
+                reject(err);
+              else {
+                var params2 = new Array(arguments.length - 1), offset2 = 0;
+                while (offset2 < params2.length)
+                  params2[offset2++] = arguments[offset2];
+                resolve.apply(null, params2);
+              }
+            }
+          };
+          try {
+            fn.apply(ctx || null, params);
+          } catch (err) {
+            if (pending) {
+              pending = false;
+              reject(err);
+            }
+          }
+        });
+      }
+    }
+  });
+
+  // node_modules/@protobufjs/base64/index.js
+  var require_base64 = __commonJS({
+    "node_modules/@protobufjs/base64/index.js"(exports2) {
+      "use strict";
+      var base64 = exports2;
+      base64.length = function length(string) {
+        var p = string.length;
+        if (!p)
+          return 0;
+        var n = 0;
+        while (--p % 4 > 1 && string.charAt(p) === "=")
+          ++n;
+        return Math.ceil(string.length * 3) / 4 - n;
+      };
+      var b64 = new Array(64);
+      var s64 = new Array(123);
+      for (var i = 0; i < 64; )
+        s64[b64[i] = i < 26 ? i + 65 : i < 52 ? i + 71 : i < 62 ? i - 4 : i - 59 | 43] = i++;
+      base64.encode = function encode(buffer, start, end) {
+        var parts = null, chunk = [];
+        var i2 = 0, j = 0, t;
+        while (start < end) {
+          var b = buffer[start++];
+          switch (j) {
+            case 0:
+              chunk[i2++] = b64[b >> 2];
+              t = (b & 3) << 4;
+              j = 1;
+              break;
+            case 1:
+              chunk[i2++] = b64[t | b >> 4];
+              t = (b & 15) << 2;
+              j = 2;
+              break;
+            case 2:
+              chunk[i2++] = b64[t | b >> 6];
+              chunk[i2++] = b64[b & 63];
+              j = 0;
+              break;
+          }
+          if (i2 > 8191) {
+            (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
+            i2 = 0;
+          }
+        }
+        if (j) {
+          chunk[i2++] = b64[t];
+          chunk[i2++] = 61;
+          if (j === 1)
+            chunk[i2++] = 61;
+        }
+        if (parts) {
+          if (i2)
+            parts.push(String.fromCharCode.apply(String, chunk.slice(0, i2)));
+          return parts.join("");
+        }
+        return String.fromCharCode.apply(String, chunk.slice(0, i2));
+      };
+      var invalidEncoding = "invalid encoding";
+      base64.decode = function decode(string, buffer, offset) {
+        var start = offset;
+        var j = 0, t;
+        for (var i2 = 0; i2 < string.length; ) {
+          var c = string.charCodeAt(i2++);
+          if (c === 61 && j > 1)
+            break;
+          if ((c = s64[c]) === void 0)
+            throw Error(invalidEncoding);
+          switch (j) {
+            case 0:
+              t = c;
+              j = 1;
+              break;
+            case 1:
+              buffer[offset++] = t << 2 | (c & 48) >> 4;
+              t = c;
+              j = 2;
+              break;
+            case 2:
+              buffer[offset++] = (t & 15) << 4 | (c & 60) >> 2;
+              t = c;
+              j = 3;
+              break;
+            case 3:
+              buffer[offset++] = (t & 3) << 6 | c;
+              j = 0;
+              break;
+          }
+        }
+        if (j === 1)
+          throw Error(invalidEncoding);
+        return offset - start;
+      };
+      base64.test = function test(string) {
+        return /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(string);
+      };
+    }
+  });
+
+  // node_modules/@protobufjs/eventemitter/index.js
+  var require_eventemitter = __commonJS({
+    "node_modules/@protobufjs/eventemitter/index.js"(exports2, module2) {
+      "use strict";
+      module2.exports = EventEmitter;
+      function EventEmitter() {
+        this._listeners = {};
+      }
+      EventEmitter.prototype.on = function on(evt, fn, ctx) {
+        (this._listeners[evt] || (this._listeners[evt] = [])).push({
+          fn,
+          ctx: ctx || this
+        });
+        return this;
+      };
+      EventEmitter.prototype.off = function off(evt, fn) {
+        if (evt === void 0)
+          this._listeners = {};
+        else {
+          if (fn === void 0)
+            this._listeners[evt] = [];
+          else {
+            var listeners = this._listeners[evt];
+            for (var i = 0; i < listeners.length; )
+              if (listeners[i].fn === fn)
+                listeners.splice(i, 1);
+              else
+                ++i;
+          }
+        }
+        return this;
+      };
+      EventEmitter.prototype.emit = function emit(evt) {
+        var listeners = this._listeners[evt];
+        if (listeners) {
+          var args = [], i = 1;
+          for (; i < arguments.length; )
+            args.push(arguments[i++]);
+          for (i = 0; i < listeners.length; )
+            listeners[i].fn.apply(listeners[i++].ctx, args);
+        }
+        return this;
+      };
+    }
+  });
+
+  // node_modules/@protobufjs/float/index.js
+  var require_float = __commonJS({
+    "node_modules/@protobufjs/float/index.js"(exports2, module2) {
+      "use strict";
+      module2.exports = factory(factory);
+      function factory(exports3) {
+        if (typeof Float32Array !== "undefined")
+          (function() {
+            var f32 = new Float32Array([-0]), f8b = new Uint8Array(f32.buffer), le = f8b[3] === 128;
+            function writeFloat_f32_cpy(val, buf, pos) {
+              f32[0] = val;
+              buf[pos] = f8b[0];
+              buf[pos + 1] = f8b[1];
+              buf[pos + 2] = f8b[2];
+              buf[pos + 3] = f8b[3];
+            }
+            function writeFloat_f32_rev(val, buf, pos) {
+              f32[0] = val;
+              buf[pos] = f8b[3];
+              buf[pos + 1] = f8b[2];
+              buf[pos + 2] = f8b[1];
+              buf[pos + 3] = f8b[0];
+            }
+            exports3.writeFloatLE = le ? writeFloat_f32_cpy : writeFloat_f32_rev;
+            exports3.writeFloatBE = le ? writeFloat_f32_rev : writeFloat_f32_cpy;
+            function readFloat_f32_cpy(buf, pos) {
+              f8b[0] = buf[pos];
+              f8b[1] = buf[pos + 1];
+              f8b[2] = buf[pos + 2];
+              f8b[3] = buf[pos + 3];
+              return f32[0];
+            }
+            function readFloat_f32_rev(buf, pos) {
+              f8b[3] = buf[pos];
+              f8b[2] = buf[pos + 1];
+              f8b[1] = buf[pos + 2];
+              f8b[0] = buf[pos + 3];
+              return f32[0];
+            }
+            exports3.readFloatLE = le ? readFloat_f32_cpy : readFloat_f32_rev;
+            exports3.readFloatBE = le ? readFloat_f32_rev : readFloat_f32_cpy;
+          })();
+        else
+          (function() {
+            function writeFloat_ieee754(writeUint, val, buf, pos) {
+              var sign = val < 0 ? 1 : 0;
+              if (sign)
+                val = -val;
+              if (val === 0)
+                writeUint(1 / val > 0 ? 0 : 2147483648, buf, pos);
+              else if (isNaN(val))
+                writeUint(2143289344, buf, pos);
+              else if (val > 34028234663852886e22)
+                writeUint((sign << 31 | 2139095040) >>> 0, buf, pos);
+              else if (val < 11754943508222875e-54)
+                writeUint((sign << 31 | Math.round(val / 1401298464324817e-60)) >>> 0, buf, pos);
+              else {
+                var exponent = Math.floor(Math.log(val) / Math.LN2), mantissa = Math.round(val * Math.pow(2, -exponent) * 8388608) & 8388607;
+                writeUint((sign << 31 | exponent + 127 << 23 | mantissa) >>> 0, buf, pos);
+              }
+            }
+            exports3.writeFloatLE = writeFloat_ieee754.bind(null, writeUintLE);
+            exports3.writeFloatBE = writeFloat_ieee754.bind(null, writeUintBE);
+            function readFloat_ieee754(readUint, buf, pos) {
+              var uint = readUint(buf, pos), sign = (uint >> 31) * 2 + 1, exponent = uint >>> 23 & 255, mantissa = uint & 8388607;
+              return exponent === 255 ? mantissa ? NaN : sign * Infinity : exponent === 0 ? sign * 1401298464324817e-60 * mantissa : sign * Math.pow(2, exponent - 150) * (mantissa + 8388608);
+            }
+            exports3.readFloatLE = readFloat_ieee754.bind(null, readUintLE);
+            exports3.readFloatBE = readFloat_ieee754.bind(null, readUintBE);
+          })();
+        if (typeof Float64Array !== "undefined")
+          (function() {
+            var f64 = new Float64Array([-0]), f8b = new Uint8Array(f64.buffer), le = f8b[7] === 128;
+            function writeDouble_f64_cpy(val, buf, pos) {
+              f64[0] = val;
+              buf[pos] = f8b[0];
+              buf[pos + 1] = f8b[1];
+              buf[pos + 2] = f8b[2];
+              buf[pos + 3] = f8b[3];
+              buf[pos + 4] = f8b[4];
+              buf[pos + 5] = f8b[5];
+              buf[pos + 6] = f8b[6];
+              buf[pos + 7] = f8b[7];
+            }
+            function writeDouble_f64_rev(val, buf, pos) {
+              f64[0] = val;
+              buf[pos] = f8b[7];
+              buf[pos + 1] = f8b[6];
+              buf[pos + 2] = f8b[5];
+              buf[pos + 3] = f8b[4];
+              buf[pos + 4] = f8b[3];
+              buf[pos + 5] = f8b[2];
+              buf[pos + 6] = f8b[1];
+              buf[pos + 7] = f8b[0];
+            }
+            exports3.writeDoubleLE = le ? writeDouble_f64_cpy : writeDouble_f64_rev;
+            exports3.writeDoubleBE = le ? writeDouble_f64_rev : writeDouble_f64_cpy;
+            function readDouble_f64_cpy(buf, pos) {
+              f8b[0] = buf[pos];
+              f8b[1] = buf[pos + 1];
+              f8b[2] = buf[pos + 2];
+              f8b[3] = buf[pos + 3];
+              f8b[4] = buf[pos + 4];
+              f8b[5] = buf[pos + 5];
+              f8b[6] = buf[pos + 6];
+              f8b[7] = buf[pos + 7];
+              return f64[0];
+            }
+            function readDouble_f64_rev(buf, pos) {
+              f8b[7] = buf[pos];
+              f8b[6] = buf[pos + 1];
+              f8b[5] = buf[pos + 2];
+              f8b[4] = buf[pos + 3];
+              f8b[3] = buf[pos + 4];
+              f8b[2] = buf[pos + 5];
+              f8b[1] = buf[pos + 6];
+              f8b[0] = buf[pos + 7];
+              return f64[0];
+            }
+            exports3.readDoubleLE = le ? readDouble_f64_cpy : readDouble_f64_rev;
+            exports3.readDoubleBE = le ? readDouble_f64_rev : readDouble_f64_cpy;
+          })();
+        else
+          (function() {
+            function writeDouble_ieee754(writeUint, off0, off1, val, buf, pos) {
+              var sign = val < 0 ? 1 : 0;
+              if (sign)
+                val = -val;
+              if (val === 0) {
+                writeUint(0, buf, pos + off0);
+                writeUint(1 / val > 0 ? 0 : 2147483648, buf, pos + off1);
+              } else if (isNaN(val)) {
+                writeUint(0, buf, pos + off0);
+                writeUint(2146959360, buf, pos + off1);
+              } else if (val > 17976931348623157e292) {
+                writeUint(0, buf, pos + off0);
+                writeUint((sign << 31 | 2146435072) >>> 0, buf, pos + off1);
+              } else {
+                var mantissa;
+                if (val < 22250738585072014e-324) {
+                  mantissa = val / 5e-324;
+                  writeUint(mantissa >>> 0, buf, pos + off0);
+                  writeUint((sign << 31 | mantissa / 4294967296) >>> 0, buf, pos + off1);
+                } else {
+                  var exponent = Math.floor(Math.log(val) / Math.LN2);
+                  if (exponent === 1024)
+                    exponent = 1023;
+                  mantissa = val * Math.pow(2, -exponent);
+                  writeUint(mantissa * 4503599627370496 >>> 0, buf, pos + off0);
+                  writeUint((sign << 31 | exponent + 1023 << 20 | mantissa * 1048576 & 1048575) >>> 0, buf, pos + off1);
+                }
+              }
+            }
+            exports3.writeDoubleLE = writeDouble_ieee754.bind(null, writeUintLE, 0, 4);
+            exports3.writeDoubleBE = writeDouble_ieee754.bind(null, writeUintBE, 4, 0);
+            function readDouble_ieee754(readUint, off0, off1, buf, pos) {
+              var lo = readUint(buf, pos + off0), hi = readUint(buf, pos + off1);
+              var sign = (hi >> 31) * 2 + 1, exponent = hi >>> 20 & 2047, mantissa = 4294967296 * (hi & 1048575) + lo;
+              return exponent === 2047 ? mantissa ? NaN : sign * Infinity : exponent === 0 ? sign * 5e-324 * mantissa : sign * Math.pow(2, exponent - 1075) * (mantissa + 4503599627370496);
+            }
+            exports3.readDoubleLE = readDouble_ieee754.bind(null, readUintLE, 0, 4);
+            exports3.readDoubleBE = readDouble_ieee754.bind(null, readUintBE, 4, 0);
+          })();
+        return exports3;
+      }
+      function writeUintLE(val, buf, pos) {
+        buf[pos] = val & 255;
+        buf[pos + 1] = val >>> 8 & 255;
+        buf[pos + 2] = val >>> 16 & 255;
+        buf[pos + 3] = val >>> 24;
+      }
+      function writeUintBE(val, buf, pos) {
+        buf[pos] = val >>> 24;
+        buf[pos + 1] = val >>> 16 & 255;
+        buf[pos + 2] = val >>> 8 & 255;
+        buf[pos + 3] = val & 255;
+      }
+      function readUintLE(buf, pos) {
+        return (buf[pos] | buf[pos + 1] << 8 | buf[pos + 2] << 16 | buf[pos + 3] << 24) >>> 0;
+      }
+      function readUintBE(buf, pos) {
+        return (buf[pos] << 24 | buf[pos + 1] << 16 | buf[pos + 2] << 8 | buf[pos + 3]) >>> 0;
+      }
+    }
+  });
+
+  // node_modules/@protobufjs/inquire/index.js
+  var require_inquire = __commonJS({
+    "node_modules/@protobufjs/inquire/index.js"(exports, module) {
+      "use strict";
+      module.exports = inquire;
+      function inquire(moduleName) {
+        try {
+          var mod = eval("quire".replace(/^/, "re"))(moduleName);
+          if (mod && (mod.length || Object.keys(mod).length))
+            return mod;
+        } catch (e) {
+        }
+        return null;
+      }
+    }
+  });
+
+  // node_modules/@protobufjs/utf8/index.js
+  var require_utf8 = __commonJS({
+    "node_modules/@protobufjs/utf8/index.js"(exports2) {
+      "use strict";
+      var utf8 = exports2;
+      utf8.length = function utf8_length(string) {
+        var len = 0, c = 0;
+        for (var i = 0; i < string.length; ++i) {
+          c = string.charCodeAt(i);
+          if (c < 128)
+            len += 1;
+          else if (c < 2048)
+            len += 2;
+          else if ((c & 64512) === 55296 && (string.charCodeAt(i + 1) & 64512) === 56320) {
+            ++i;
+            len += 4;
+          } else
+            len += 3;
+        }
+        return len;
+      };
+      utf8.read = function utf8_read(buffer, start, end) {
+        var len = end - start;
+        if (len < 1)
+          return "";
+        var parts = null, chunk = [], i = 0, t;
+        while (start < end) {
+          t = buffer[start++];
+          if (t < 128)
+            chunk[i++] = t;
+          else if (t > 191 && t < 224)
+            chunk[i++] = (t & 31) << 6 | buffer[start++] & 63;
+          else if (t > 239 && t < 365) {
+            t = ((t & 7) << 18 | (buffer[start++] & 63) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63) - 65536;
+            chunk[i++] = 55296 + (t >> 10);
+            chunk[i++] = 56320 + (t & 1023);
+          } else
+            chunk[i++] = (t & 15) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63;
+          if (i > 8191) {
+            (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
+            i = 0;
+          }
+        }
+        if (parts) {
+          if (i)
+            parts.push(String.fromCharCode.apply(String, chunk.slice(0, i)));
+          return parts.join("");
+        }
+        return String.fromCharCode.apply(String, chunk.slice(0, i));
+      };
+      utf8.write = function utf8_write(string, buffer, offset) {
+        var start = offset, c1, c2;
+        for (var i = 0; i < string.length; ++i) {
+          c1 = string.charCodeAt(i);
+          if (c1 < 128) {
+            buffer[offset++] = c1;
+          } else if (c1 < 2048) {
+            buffer[offset++] = c1 >> 6 | 192;
+            buffer[offset++] = c1 & 63 | 128;
+          } else if ((c1 & 64512) === 55296 && ((c2 = string.charCodeAt(i + 1)) & 64512) === 56320) {
+            c1 = 65536 + ((c1 & 1023) << 10) + (c2 & 1023);
+            ++i;
+            buffer[offset++] = c1 >> 18 | 240;
+            buffer[offset++] = c1 >> 12 & 63 | 128;
+            buffer[offset++] = c1 >> 6 & 63 | 128;
+            buffer[offset++] = c1 & 63 | 128;
+          } else {
+            buffer[offset++] = c1 >> 12 | 224;
+            buffer[offset++] = c1 >> 6 & 63 | 128;
+            buffer[offset++] = c1 & 63 | 128;
+          }
+        }
+        return offset - start;
+      };
+    }
+  });
+
+  // node_modules/@protobufjs/pool/index.js
+  var require_pool = __commonJS({
+    "node_modules/@protobufjs/pool/index.js"(exports2, module2) {
+      "use strict";
+      module2.exports = pool;
+      function pool(alloc, slice, size) {
+        var SIZE = size || 8192;
+        var MAX = SIZE >>> 1;
+        var slab = null;
+        var offset = SIZE;
+        return function pool_alloc(size2) {
+          if (size2 < 1 || size2 > MAX)
+            return alloc(size2);
+          if (offset + size2 > SIZE) {
+            slab = alloc(SIZE);
+            offset = 0;
+          }
+          var buf = slice.call(slab, offset, offset += size2);
+          if (offset & 7)
+            offset = (offset | 7) + 1;
+          return buf;
+        };
+      }
+    }
+  });
+
+  // node_modules/protobufjs/src/util/longbits.js
+  var require_longbits = __commonJS({
+    "node_modules/protobufjs/src/util/longbits.js"(exports2, module2) {
+      "use strict";
+      module2.exports = LongBits;
+      var util3 = require_minimal();
+      function LongBits(lo, hi) {
+        this.lo = lo >>> 0;
+        this.hi = hi >>> 0;
+      }
+      var zero = LongBits.zero = new LongBits(0, 0);
+      zero.toNumber = function() {
+        return 0;
+      };
+      zero.zzEncode = zero.zzDecode = function() {
+        return this;
+      };
+      zero.length = function() {
+        return 1;
+      };
+      var zeroHash = LongBits.zeroHash = "\0\0\0\0\0\0\0\0";
+      LongBits.fromNumber = function fromNumber(value) {
+        if (value === 0)
+          return zero;
+        var sign = value < 0;
+        if (sign)
+          value = -value;
+        var lo = value >>> 0, hi = (value - lo) / 4294967296 >>> 0;
+        if (sign) {
+          hi = ~hi >>> 0;
+          lo = ~lo >>> 0;
+          if (++lo > 4294967295) {
+            lo = 0;
+            if (++hi > 4294967295)
+              hi = 0;
+          }
+        }
+        return new LongBits(lo, hi);
+      };
+      LongBits.from = function from(value) {
+        if (typeof value === "number")
+          return LongBits.fromNumber(value);
+        if (util3.isString(value)) {
+          if (util3.Long)
+            value = util3.Long.fromString(value);
+          else
+            return LongBits.fromNumber(parseInt(value, 10));
+        }
+        return value.low || value.high ? new LongBits(value.low >>> 0, value.high >>> 0) : zero;
+      };
+      LongBits.prototype.toNumber = function toNumber(unsigned) {
+        if (!unsigned && this.hi >>> 31) {
+          var lo = ~this.lo + 1 >>> 0, hi = ~this.hi >>> 0;
+          if (!lo)
+            hi = hi + 1 >>> 0;
+          return -(lo + hi * 4294967296);
+        }
+        return this.lo + this.hi * 4294967296;
+      };
+      LongBits.prototype.toLong = function toLong(unsigned) {
+        return util3.Long ? new util3.Long(this.lo | 0, this.hi | 0, Boolean(unsigned)) : { low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned) };
+      };
+      var charCodeAt = String.prototype.charCodeAt;
+      LongBits.fromHash = function fromHash(hash) {
+        if (hash === zeroHash)
+          return zero;
+        return new LongBits((charCodeAt.call(hash, 0) | charCodeAt.call(hash, 1) << 8 | charCodeAt.call(hash, 2) << 16 | charCodeAt.call(hash, 3) << 24) >>> 0, (charCodeAt.call(hash, 4) | charCodeAt.call(hash, 5) << 8 | charCodeAt.call(hash, 6) << 16 | charCodeAt.call(hash, 7) << 24) >>> 0);
+      };
+      LongBits.prototype.toHash = function toHash() {
+        return String.fromCharCode(this.lo & 255, this.lo >>> 8 & 255, this.lo >>> 16 & 255, this.lo >>> 24, this.hi & 255, this.hi >>> 8 & 255, this.hi >>> 16 & 255, this.hi >>> 24);
+      };
+      LongBits.prototype.zzEncode = function zzEncode() {
+        var mask = this.hi >> 31;
+        this.hi = ((this.hi << 1 | this.lo >>> 31) ^ mask) >>> 0;
+        this.lo = (this.lo << 1 ^ mask) >>> 0;
+        return this;
+      };
+      LongBits.prototype.zzDecode = function zzDecode() {
+        var mask = -(this.lo & 1);
+        this.lo = ((this.lo >>> 1 | this.hi << 31) ^ mask) >>> 0;
+        this.hi = (this.hi >>> 1 ^ mask) >>> 0;
+        return this;
+      };
+      LongBits.prototype.length = function length() {
+        var part0 = this.lo, part1 = (this.lo >>> 28 | this.hi << 4) >>> 0, part2 = this.hi >>> 24;
+        return part2 === 0 ? part1 === 0 ? part0 < 16384 ? part0 < 128 ? 1 : 2 : part0 < 2097152 ? 3 : 4 : part1 < 16384 ? part1 < 128 ? 5 : 6 : part1 < 2097152 ? 7 : 8 : part2 < 128 ? 9 : 10;
+      };
+    }
+  });
+
+  // node_modules/protobufjs/src/util/minimal.js
+  var require_minimal = __commonJS({
+    "node_modules/protobufjs/src/util/minimal.js"(exports2) {
+      "use strict";
+      var util3 = exports2;
+      util3.asPromise = require_aspromise();
+      util3.base64 = require_base64();
+      util3.EventEmitter = require_eventemitter();
+      util3.float = require_float();
+      util3.inquire = require_inquire();
+      util3.utf8 = require_utf8();
+      util3.pool = require_pool();
+      util3.LongBits = require_longbits();
+      util3.isNode = Boolean(typeof global !== "undefined" && global && global.process && global.process.versions && global.process.versions.node);
+      util3.global = util3.isNode && global || typeof window !== "undefined" && window || typeof self !== "undefined" && self || exports2;
+      util3.emptyArray = Object.freeze ? Object.freeze([]) : [];
+      util3.emptyObject = Object.freeze ? Object.freeze({}) : {};
+      util3.isInteger = Number.isInteger || function isInteger(value) {
+        return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
+      };
+      util3.isString = function isString(value) {
+        return typeof value === "string" || value instanceof String;
+      };
+      util3.isObject = function isObject(value) {
+        return value && typeof value === "object";
+      };
+      util3.isset = util3.isSet = function isSet(obj, prop) {
+        var value = obj[prop];
+        if (value != null && obj.hasOwnProperty(prop))
+          return typeof value !== "object" || (Array.isArray(value) ? value.length : Object.keys(value).length) > 0;
+        return false;
+      };
+      util3.Buffer = function() {
+        try {
+          var Buffer2 = util3.inquire("buffer").Buffer;
+          return Buffer2.prototype.utf8Write ? Buffer2 : null;
+        } catch (e) {
+          return null;
+        }
+      }();
+      util3._Buffer_from = null;
+      util3._Buffer_allocUnsafe = null;
+      util3.newBuffer = function newBuffer(sizeOrArray) {
+        return typeof sizeOrArray === "number" ? util3.Buffer ? util3._Buffer_allocUnsafe(sizeOrArray) : new util3.Array(sizeOrArray) : util3.Buffer ? util3._Buffer_from(sizeOrArray) : typeof Uint8Array === "undefined" ? sizeOrArray : new Uint8Array(sizeOrArray);
+      };
+      util3.Array = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
+      util3.Long = util3.global.dcodeIO && util3.global.dcodeIO.Long || util3.global.Long || util3.inquire("long");
+      util3.key2Re = /^true|false|0|1$/;
+      util3.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
+      util3.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
+      util3.longToHash = function longToHash(value) {
+        return value ? util3.LongBits.from(value).toHash() : util3.LongBits.zeroHash;
+      };
+      util3.longFromHash = function longFromHash(hash, unsigned) {
+        var bits = util3.LongBits.fromHash(hash);
+        if (util3.Long)
+          return util3.Long.fromBits(bits.lo, bits.hi, unsigned);
+        return bits.toNumber(Boolean(unsigned));
+      };
+      function merge(dst, src, ifNotSet) {
+        for (var keys = Object.keys(src), i = 0; i < keys.length; ++i)
+          if (dst[keys[i]] === void 0 || !ifNotSet)
+            dst[keys[i]] = src[keys[i]];
+        return dst;
+      }
+      util3.merge = merge;
+      util3.lcFirst = function lcFirst(str) {
+        return str.charAt(0).toLowerCase() + str.substring(1);
+      };
+      function newError(name) {
+        function CustomError(message, properties) {
+          if (!(this instanceof CustomError))
+            return new CustomError(message, properties);
+          Object.defineProperty(this, "message", { get: function() {
+            return message;
+          } });
+          if (Error.captureStackTrace)
+            Error.captureStackTrace(this, CustomError);
+          else
+            Object.defineProperty(this, "stack", { value: new Error().stack || "" });
+          if (properties)
+            merge(this, properties);
+        }
+        (CustomError.prototype = Object.create(Error.prototype)).constructor = CustomError;
+        Object.defineProperty(CustomError.prototype, "name", { get: function() {
+          return name;
+        } });
+        CustomError.prototype.toString = function toString() {
+          return this.name + ": " + this.message;
+        };
+        return CustomError;
+      }
+      util3.newError = newError;
+      util3.ProtocolError = newError("ProtocolError");
+      util3.oneOfGetter = function getOneOf(fieldNames) {
+        var fieldMap = {};
+        for (var i = 0; i < fieldNames.length; ++i)
+          fieldMap[fieldNames[i]] = 1;
+        return function() {
+          for (var keys = Object.keys(this), i2 = keys.length - 1; i2 > -1; --i2)
+            if (fieldMap[keys[i2]] === 1 && this[keys[i2]] !== void 0 && this[keys[i2]] !== null)
+              return keys[i2];
+        };
+      };
+      util3.oneOfSetter = function setOneOf(fieldNames) {
+        return function(name) {
+          for (var i = 0; i < fieldNames.length; ++i)
+            if (fieldNames[i] !== name)
+              delete this[fieldNames[i]];
+        };
+      };
+      util3.toJSONOptions = {
+        longs: String,
+        enums: String,
+        bytes: String,
+        json: true
+      };
+      util3._configure = function() {
+        var Buffer2 = util3.Buffer;
+        if (!Buffer2) {
+          util3._Buffer_from = util3._Buffer_allocUnsafe = null;
+          return;
+        }
+        util3._Buffer_from = Buffer2.from !== Uint8Array.from && Buffer2.from || function Buffer_from(value, encoding) {
+          return new Buffer2(value, encoding);
+        };
+        util3._Buffer_allocUnsafe = Buffer2.allocUnsafe || function Buffer_allocUnsafe(size) {
+          return new Buffer2(size);
+        };
+      };
+    }
+  });
+
+  // node_modules/protobufjs/src/writer.js
+  var require_writer = __commonJS({
+    "node_modules/protobufjs/src/writer.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Writer3;
+      var util3 = require_minimal();
+      var BufferWriter;
+      var LongBits = util3.LongBits;
+      var base64 = util3.base64;
+      var utf8 = util3.utf8;
+      function Op(fn, len, val) {
+        this.fn = fn;
+        this.len = len;
+        this.next = void 0;
+        this.val = val;
+      }
+      function noop() {
+      }
+      function State(writer) {
+        this.head = writer.head;
+        this.tail = writer.tail;
+        this.len = writer.len;
+        this.next = writer.states;
+      }
+      function Writer3() {
+        this.len = 0;
+        this.head = new Op(noop, 0, 0);
+        this.tail = this.head;
+        this.states = null;
+      }
+      var create = function create2() {
+        return util3.Buffer ? function create_buffer_setup() {
+          return (Writer3.create = function create_buffer() {
+            return new BufferWriter();
+          })();
+        } : function create_array() {
+          return new Writer3();
+        };
+      };
+      Writer3.create = create();
+      Writer3.alloc = function alloc(size) {
+        return new util3.Array(size);
+      };
+      if (util3.Array !== Array)
+        Writer3.alloc = util3.pool(Writer3.alloc, util3.Array.prototype.subarray);
+      Writer3.prototype._push = function push(fn, len, val) {
+        this.tail = this.tail.next = new Op(fn, len, val);
+        this.len += len;
+        return this;
+      };
+      function writeByte(val, buf, pos) {
+        buf[pos] = val & 255;
+      }
+      function writeVarint32(val, buf, pos) {
+        while (val > 127) {
+          buf[pos++] = val & 127 | 128;
+          val >>>= 7;
+        }
+        buf[pos] = val;
+      }
+      function VarintOp(len, val) {
+        this.len = len;
+        this.next = void 0;
+        this.val = val;
+      }
+      VarintOp.prototype = Object.create(Op.prototype);
+      VarintOp.prototype.fn = writeVarint32;
+      Writer3.prototype.uint32 = function write_uint32(value) {
+        this.len += (this.tail = this.tail.next = new VarintOp((value = value >>> 0) < 128 ? 1 : value < 16384 ? 2 : value < 2097152 ? 3 : value < 268435456 ? 4 : 5, value)).len;
+        return this;
+      };
+      Writer3.prototype.int32 = function write_int32(value) {
+        return value < 0 ? this._push(writeVarint64, 10, LongBits.fromNumber(value)) : this.uint32(value);
+      };
+      Writer3.prototype.sint32 = function write_sint32(value) {
+        return this.uint32((value << 1 ^ value >> 31) >>> 0);
+      };
+      function writeVarint64(val, buf, pos) {
+        while (val.hi) {
+          buf[pos++] = val.lo & 127 | 128;
+          val.lo = (val.lo >>> 7 | val.hi << 25) >>> 0;
+          val.hi >>>= 7;
+        }
+        while (val.lo > 127) {
+          buf[pos++] = val.lo & 127 | 128;
+          val.lo = val.lo >>> 7;
+        }
+        buf[pos++] = val.lo;
+      }
+      Writer3.prototype.uint64 = function write_uint64(value) {
+        var bits = LongBits.from(value);
+        return this._push(writeVarint64, bits.length(), bits);
+      };
+      Writer3.prototype.int64 = Writer3.prototype.uint64;
+      Writer3.prototype.sint64 = function write_sint64(value) {
+        var bits = LongBits.from(value).zzEncode();
+        return this._push(writeVarint64, bits.length(), bits);
+      };
+      Writer3.prototype.bool = function write_bool(value) {
+        return this._push(writeByte, 1, value ? 1 : 0);
+      };
+      function writeFixed32(val, buf, pos) {
+        buf[pos] = val & 255;
+        buf[pos + 1] = val >>> 8 & 255;
+        buf[pos + 2] = val >>> 16 & 255;
+        buf[pos + 3] = val >>> 24;
+      }
+      Writer3.prototype.fixed32 = function write_fixed32(value) {
+        return this._push(writeFixed32, 4, value >>> 0);
+      };
+      Writer3.prototype.sfixed32 = Writer3.prototype.fixed32;
+      Writer3.prototype.fixed64 = function write_fixed64(value) {
+        var bits = LongBits.from(value);
+        return this._push(writeFixed32, 4, bits.lo)._push(writeFixed32, 4, bits.hi);
+      };
+      Writer3.prototype.sfixed64 = Writer3.prototype.fixed64;
+      Writer3.prototype.float = function write_float(value) {
+        return this._push(util3.float.writeFloatLE, 4, value);
+      };
+      Writer3.prototype.double = function write_double(value) {
+        return this._push(util3.float.writeDoubleLE, 8, value);
+      };
+      var writeBytes = util3.Array.prototype.set ? function writeBytes_set(val, buf, pos) {
+        buf.set(val, pos);
+      } : function writeBytes_for(val, buf, pos) {
+        for (var i = 0; i < val.length; ++i)
+          buf[pos + i] = val[i];
+      };
+      Writer3.prototype.bytes = function write_bytes(value) {
+        var len = value.length >>> 0;
+        if (!len)
+          return this._push(writeByte, 1, 0);
+        if (util3.isString(value)) {
+          var buf = Writer3.alloc(len = base64.length(value));
+          base64.decode(value, buf, 0);
+          value = buf;
+        }
+        return this.uint32(len)._push(writeBytes, len, value);
+      };
+      Writer3.prototype.string = function write_string(value) {
+        var len = utf8.length(value);
+        return len ? this.uint32(len)._push(utf8.write, len, value) : this._push(writeByte, 1, 0);
+      };
+      Writer3.prototype.fork = function fork() {
+        this.states = new State(this);
+        this.head = this.tail = new Op(noop, 0, 0);
+        this.len = 0;
+        return this;
+      };
+      Writer3.prototype.reset = function reset() {
+        if (this.states) {
+          this.head = this.states.head;
+          this.tail = this.states.tail;
+          this.len = this.states.len;
+          this.states = this.states.next;
+        } else {
+          this.head = this.tail = new Op(noop, 0, 0);
+          this.len = 0;
+        }
+        return this;
+      };
+      Writer3.prototype.ldelim = function ldelim() {
+        var head = this.head, tail = this.tail, len = this.len;
+        this.reset().uint32(len);
+        if (len) {
+          this.tail.next = head.next;
+          this.tail = tail;
+          this.len += len;
+        }
+        return this;
+      };
+      Writer3.prototype.finish = function finish() {
+        var head = this.head.next, buf = this.constructor.alloc(this.len), pos = 0;
+        while (head) {
+          head.fn(head.val, buf, pos);
+          pos += head.len;
+          head = head.next;
+        }
+        return buf;
+      };
+      Writer3._configure = function(BufferWriter_) {
+        BufferWriter = BufferWriter_;
+        Writer3.create = create();
+        BufferWriter._configure();
+      };
+    }
+  });
+
+  // node_modules/protobufjs/src/writer_buffer.js
+  var require_writer_buffer = __commonJS({
+    "node_modules/protobufjs/src/writer_buffer.js"(exports2, module2) {
+      "use strict";
+      module2.exports = BufferWriter;
+      var Writer3 = require_writer();
+      (BufferWriter.prototype = Object.create(Writer3.prototype)).constructor = BufferWriter;
+      var util3 = require_minimal();
+      function BufferWriter() {
+        Writer3.call(this);
+      }
+      BufferWriter._configure = function() {
+        BufferWriter.alloc = util3._Buffer_allocUnsafe;
+        BufferWriter.writeBytesBuffer = util3.Buffer && util3.Buffer.prototype instanceof Uint8Array && util3.Buffer.prototype.set.name === "set" ? function writeBytesBuffer_set(val, buf, pos) {
+          buf.set(val, pos);
+        } : function writeBytesBuffer_copy(val, buf, pos) {
+          if (val.copy)
+            val.copy(buf, pos, 0, val.length);
+          else
+            for (var i = 0; i < val.length; )
+              buf[pos++] = val[i++];
+        };
+      };
+      BufferWriter.prototype.bytes = function write_bytes_buffer(value) {
+        if (util3.isString(value))
+          value = util3._Buffer_from(value, "base64");
+        var len = value.length >>> 0;
+        this.uint32(len);
+        if (len)
+          this._push(BufferWriter.writeBytesBuffer, len, value);
+        return this;
+      };
+      function writeStringBuffer(val, buf, pos) {
+        if (val.length < 40)
+          util3.utf8.write(val, buf, pos);
+        else if (buf.utf8Write)
+          buf.utf8Write(val, pos);
+        else
+          buf.write(val, pos);
+      }
+      BufferWriter.prototype.string = function write_string_buffer(value) {
+        var len = util3.Buffer.byteLength(value);
+        this.uint32(len);
+        if (len)
+          this._push(writeStringBuffer, len, value);
+        return this;
+      };
+      BufferWriter._configure();
+    }
+  });
+
+  // node_modules/protobufjs/src/reader.js
+  var require_reader = __commonJS({
+    "node_modules/protobufjs/src/reader.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Reader3;
+      var util3 = require_minimal();
+      var BufferReader;
+      var LongBits = util3.LongBits;
+      var utf8 = util3.utf8;
+      function indexOutOfRange(reader, writeLength) {
+        return RangeError("index out of range: " + reader.pos + " + " + (writeLength || 1) + " > " + reader.len);
+      }
+      function Reader3(buffer) {
+        this.buf = buffer;
+        this.pos = 0;
+        this.len = buffer.length;
+      }
+      var create_array = typeof Uint8Array !== "undefined" ? function create_typed_array(buffer) {
+        if (buffer instanceof Uint8Array || Array.isArray(buffer))
+          return new Reader3(buffer);
+        throw Error("illegal buffer");
+      } : function create_array2(buffer) {
+        if (Array.isArray(buffer))
+          return new Reader3(buffer);
+        throw Error("illegal buffer");
+      };
+      var create = function create2() {
+        return util3.Buffer ? function create_buffer_setup(buffer) {
+          return (Reader3.create = function create_buffer(buffer2) {
+            return util3.Buffer.isBuffer(buffer2) ? new BufferReader(buffer2) : create_array(buffer2);
+          })(buffer);
+        } : create_array;
+      };
+      Reader3.create = create();
+      Reader3.prototype._slice = util3.Array.prototype.subarray || util3.Array.prototype.slice;
+      Reader3.prototype.uint32 = function read_uint32_setup() {
+        var value = 4294967295;
+        return function read_uint32() {
+          value = (this.buf[this.pos] & 127) >>> 0;
+          if (this.buf[this.pos++] < 128)
+            return value;
+          value = (value | (this.buf[this.pos] & 127) << 7) >>> 0;
+          if (this.buf[this.pos++] < 128)
+            return value;
+          value = (value | (this.buf[this.pos] & 127) << 14) >>> 0;
+          if (this.buf[this.pos++] < 128)
+            return value;
+          value = (value | (this.buf[this.pos] & 127) << 21) >>> 0;
+          if (this.buf[this.pos++] < 128)
+            return value;
+          value = (value | (this.buf[this.pos] & 15) << 28) >>> 0;
+          if (this.buf[this.pos++] < 128)
+            return value;
+          if ((this.pos += 5) > this.len) {
+            this.pos = this.len;
+            throw indexOutOfRange(this, 10);
+          }
+          return value;
+        };
+      }();
+      Reader3.prototype.int32 = function read_int32() {
+        return this.uint32() | 0;
+      };
+      Reader3.prototype.sint32 = function read_sint32() {
+        var value = this.uint32();
+        return value >>> 1 ^ -(value & 1) | 0;
+      };
+      function readLongVarint() {
+        var bits = new LongBits(0, 0);
+        var i = 0;
+        if (this.len - this.pos > 4) {
+          for (; i < 4; ++i) {
+            bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
+            if (this.buf[this.pos++] < 128)
+              return bits;
+          }
+          bits.lo = (bits.lo | (this.buf[this.pos] & 127) << 28) >>> 0;
+          bits.hi = (bits.hi | (this.buf[this.pos] & 127) >> 4) >>> 0;
+          if (this.buf[this.pos++] < 128)
+            return bits;
+          i = 0;
+        } else {
+          for (; i < 3; ++i) {
+            if (this.pos >= this.len)
+              throw indexOutOfRange(this);
+            bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
+            if (this.buf[this.pos++] < 128)
+              return bits;
+          }
+          bits.lo = (bits.lo | (this.buf[this.pos++] & 127) << i * 7) >>> 0;
+          return bits;
+        }
+        if (this.len - this.pos > 4) {
+          for (; i < 5; ++i) {
+            bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
+            if (this.buf[this.pos++] < 128)
+              return bits;
+          }
+        } else {
+          for (; i < 5; ++i) {
+            if (this.pos >= this.len)
+              throw indexOutOfRange(this);
+            bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
+            if (this.buf[this.pos++] < 128)
+              return bits;
+          }
+        }
+        throw Error("invalid varint encoding");
+      }
+      Reader3.prototype.bool = function read_bool() {
+        return this.uint32() !== 0;
+      };
+      function readFixed32_end(buf, end) {
+        return (buf[end - 4] | buf[end - 3] << 8 | buf[end - 2] << 16 | buf[end - 1] << 24) >>> 0;
+      }
+      Reader3.prototype.fixed32 = function read_fixed32() {
+        if (this.pos + 4 > this.len)
+          throw indexOutOfRange(this, 4);
+        return readFixed32_end(this.buf, this.pos += 4);
+      };
+      Reader3.prototype.sfixed32 = function read_sfixed32() {
+        if (this.pos + 4 > this.len)
+          throw indexOutOfRange(this, 4);
+        return readFixed32_end(this.buf, this.pos += 4) | 0;
+      };
+      function readFixed64() {
+        if (this.pos + 8 > this.len)
+          throw indexOutOfRange(this, 8);
+        return new LongBits(readFixed32_end(this.buf, this.pos += 4), readFixed32_end(this.buf, this.pos += 4));
+      }
+      Reader3.prototype.float = function read_float() {
+        if (this.pos + 4 > this.len)
+          throw indexOutOfRange(this, 4);
+        var value = util3.float.readFloatLE(this.buf, this.pos);
+        this.pos += 4;
+        return value;
+      };
+      Reader3.prototype.double = function read_double() {
+        if (this.pos + 8 > this.len)
+          throw indexOutOfRange(this, 4);
+        var value = util3.float.readDoubleLE(this.buf, this.pos);
+        this.pos += 8;
+        return value;
+      };
+      Reader3.prototype.bytes = function read_bytes() {
+        var length = this.uint32(), start = this.pos, end = this.pos + length;
+        if (end > this.len)
+          throw indexOutOfRange(this, length);
+        this.pos += length;
+        if (Array.isArray(this.buf))
+          return this.buf.slice(start, end);
+        return start === end ? new this.buf.constructor(0) : this._slice.call(this.buf, start, end);
+      };
+      Reader3.prototype.string = function read_string() {
+        var bytes = this.bytes();
+        return utf8.read(bytes, 0, bytes.length);
+      };
+      Reader3.prototype.skip = function skip(length) {
+        if (typeof length === "number") {
+          if (this.pos + length > this.len)
+            throw indexOutOfRange(this, length);
+          this.pos += length;
+        } else {
+          do {
+            if (this.pos >= this.len)
+              throw indexOutOfRange(this);
+          } while (this.buf[this.pos++] & 128);
+        }
+        return this;
+      };
+      Reader3.prototype.skipType = function(wireType) {
+        switch (wireType) {
+          case 0:
+            this.skip();
+            break;
+          case 1:
+            this.skip(8);
+            break;
+          case 2:
+            this.skip(this.uint32());
+            break;
+          case 3:
+            while ((wireType = this.uint32() & 7) !== 4) {
+              this.skipType(wireType);
+            }
+            break;
+          case 5:
+            this.skip(4);
+            break;
+          default:
+            throw Error("invalid wire type " + wireType + " at offset " + this.pos);
+        }
+        return this;
+      };
+      Reader3._configure = function(BufferReader_) {
+        BufferReader = BufferReader_;
+        Reader3.create = create();
+        BufferReader._configure();
+        var fn = util3.Long ? "toLong" : "toNumber";
+        util3.merge(Reader3.prototype, {
+          int64: function read_int64() {
+            return readLongVarint.call(this)[fn](false);
+          },
+          uint64: function read_uint64() {
+            return readLongVarint.call(this)[fn](true);
+          },
+          sint64: function read_sint64() {
+            return readLongVarint.call(this).zzDecode()[fn](false);
+          },
+          fixed64: function read_fixed64() {
+            return readFixed64.call(this)[fn](true);
+          },
+          sfixed64: function read_sfixed64() {
+            return readFixed64.call(this)[fn](false);
+          }
+        });
+      };
+    }
+  });
+
+  // node_modules/protobufjs/src/reader_buffer.js
+  var require_reader_buffer = __commonJS({
+    "node_modules/protobufjs/src/reader_buffer.js"(exports2, module2) {
+      "use strict";
+      module2.exports = BufferReader;
+      var Reader3 = require_reader();
+      (BufferReader.prototype = Object.create(Reader3.prototype)).constructor = BufferReader;
+      var util3 = require_minimal();
+      function BufferReader(buffer) {
+        Reader3.call(this, buffer);
+      }
+      BufferReader._configure = function() {
+        if (util3.Buffer)
+          BufferReader.prototype._slice = util3.Buffer.prototype.slice;
+      };
+      BufferReader.prototype.string = function read_string_buffer() {
+        var len = this.uint32();
+        return this.buf.utf8Slice ? this.buf.utf8Slice(this.pos, this.pos = Math.min(this.pos + len, this.len)) : this.buf.toString("utf-8", this.pos, this.pos = Math.min(this.pos + len, this.len));
+      };
+      BufferReader._configure();
+    }
+  });
+
+  // node_modules/protobufjs/src/rpc/service.js
+  var require_service = __commonJS({
+    "node_modules/protobufjs/src/rpc/service.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Service;
+      var util3 = require_minimal();
+      (Service.prototype = Object.create(util3.EventEmitter.prototype)).constructor = Service;
+      function Service(rpcImpl, requestDelimited, responseDelimited) {
+        if (typeof rpcImpl !== "function")
+          throw TypeError("rpcImpl must be a function");
+        util3.EventEmitter.call(this);
+        this.rpcImpl = rpcImpl;
+        this.requestDelimited = Boolean(requestDelimited);
+        this.responseDelimited = Boolean(responseDelimited);
+      }
+      Service.prototype.rpcCall = function rpcCall(method, requestCtor, responseCtor, request, callback) {
+        if (!request)
+          throw TypeError("request must be specified");
+        var self2 = this;
+        if (!callback)
+          return util3.asPromise(rpcCall, self2, method, requestCtor, responseCtor, request);
+        if (!self2.rpcImpl) {
+          setTimeout(function() {
+            callback(Error("already ended"));
+          }, 0);
+          return void 0;
+        }
+        try {
+          return self2.rpcImpl(method, requestCtor[self2.requestDelimited ? "encodeDelimited" : "encode"](request).finish(), function rpcCallback(err, response) {
+            if (err) {
+              self2.emit("error", err, method);
+              return callback(err);
+            }
+            if (response === null) {
+              self2.end(true);
+              return void 0;
+            }
+            if (!(response instanceof responseCtor)) {
+              try {
+                response = responseCtor[self2.responseDelimited ? "decodeDelimited" : "decode"](response);
+              } catch (err2) {
+                self2.emit("error", err2, method);
+                return callback(err2);
+              }
+            }
+            self2.emit("data", response, method);
+            return callback(null, response);
+          });
+        } catch (err) {
+          self2.emit("error", err, method);
+          setTimeout(function() {
+            callback(err);
+          }, 0);
+          return void 0;
+        }
+      };
+      Service.prototype.end = function end(endedByRPC) {
+        if (this.rpcImpl) {
+          if (!endedByRPC)
+            this.rpcImpl(null, null, null);
+          this.rpcImpl = null;
+          this.emit("end").off();
+        }
+        return this;
+      };
+    }
+  });
+
+  // node_modules/protobufjs/src/rpc.js
+  var require_rpc = __commonJS({
+    "node_modules/protobufjs/src/rpc.js"(exports2) {
+      "use strict";
+      var rpc = exports2;
+      rpc.Service = require_service();
+    }
+  });
+
+  // node_modules/protobufjs/src/roots.js
+  var require_roots = __commonJS({
+    "node_modules/protobufjs/src/roots.js"(exports2, module2) {
+      "use strict";
+      module2.exports = {};
+    }
+  });
+
+  // node_modules/protobufjs/src/index-minimal.js
+  var require_index_minimal = __commonJS({
+    "node_modules/protobufjs/src/index-minimal.js"(exports2) {
+      "use strict";
+      var protobuf = exports2;
+      protobuf.build = "minimal";
+      protobuf.Writer = require_writer();
+      protobuf.BufferWriter = require_writer_buffer();
+      protobuf.Reader = require_reader();
+      protobuf.BufferReader = require_reader_buffer();
+      protobuf.util = require_minimal();
+      protobuf.rpc = require_rpc();
+      protobuf.roots = require_roots();
+      protobuf.configure = configure3;
+      function configure3() {
+        protobuf.util._configure();
+        protobuf.Writer._configure(protobuf.BufferWriter);
+        protobuf.Reader._configure(protobuf.BufferReader);
+      }
+      configure3();
+    }
+  });
+
+  // node_modules/protobufjs/minimal.js
+  var require_minimal2 = __commonJS({
+    "node_modules/protobufjs/minimal.js"(exports2, module2) {
+      "use strict";
+      module2.exports = require_index_minimal();
+    }
+  });
+
   // index.ts
   var nakama_js_protobuf_exports = {};
   __export(nakama_js_protobuf_exports, {
     WebSocketAdapterPb: () => WebSocketAdapterPb
   });
 
-  // github.com/heroiclabs/nakama-common/rtapi/realtime.ts
+  // rtapi/realtime.ts
+  var import_long2 = __toModule(require_long());
   var import_minimal4 = __toModule(require_minimal2());
-  var Long4 = __toModule(require_long());
 
   // google/protobuf/timestamp.ts
   var Long = __toModule(require_long());
@@ -2253,9 +2253,9 @@ var nakamajsprotobuf = (() => {
     (0, import_minimal.configure)();
   }
 
-  // github.com/heroiclabs/nakama-common/api/api.ts
+  // api/api.ts
+  var import_long = __toModule(require_long());
   var import_minimal3 = __toModule(require_minimal2());
-  var Long3 = __toModule(require_long());
 
   // google/protobuf/wrappers.ts
   var Long2 = __toModule(require_long());
@@ -2403,7 +2403,16 @@ var nakamajsprotobuf = (() => {
   var atob = windowBase64.atob || ((b64) => Buffer.from(b64, "base64").toString("binary"));
   var btoa = windowBase64.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
 
-  // github.com/heroiclabs/nakama-common/api/api.ts
+  // api/api.ts
+  var OverrideOperator;
+  (function(OverrideOperator2) {
+    OverrideOperator2[OverrideOperator2["NO_OVERRIDE"] = 0] = "NO_OVERRIDE";
+    OverrideOperator2[OverrideOperator2["BEST"] = 1] = "BEST";
+    OverrideOperator2[OverrideOperator2["SET"] = 2] = "SET";
+    OverrideOperator2[OverrideOperator2["INCREMENT"] = 3] = "INCREMENT";
+    OverrideOperator2[OverrideOperator2["DECREMENT"] = 4] = "DECREMENT";
+    OverrideOperator2[OverrideOperator2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+  })(OverrideOperator || (OverrideOperator = {}));
   var Friend_State;
   (function(Friend_State2) {
     Friend_State2[Friend_State2["FRIEND"] = 0] = "FRIEND";
@@ -2428,6 +2437,20 @@ var nakamajsprotobuf = (() => {
     UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["JOIN_REQUEST"] = 3] = "JOIN_REQUEST";
     UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
   })(UserGroupList_UserGroup_State || (UserGroupList_UserGroup_State = {}));
+  var ValidatedPurchase_Store;
+  (function(ValidatedPurchase_Store2) {
+    ValidatedPurchase_Store2[ValidatedPurchase_Store2["APPLE_APP_STORE"] = 0] = "APPLE_APP_STORE";
+    ValidatedPurchase_Store2[ValidatedPurchase_Store2["GOOGLE_PLAY_STORE"] = 1] = "GOOGLE_PLAY_STORE";
+    ValidatedPurchase_Store2[ValidatedPurchase_Store2["HUAWEI_APP_GALLERY"] = 2] = "HUAWEI_APP_GALLERY";
+    ValidatedPurchase_Store2[ValidatedPurchase_Store2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+  })(ValidatedPurchase_Store || (ValidatedPurchase_Store = {}));
+  var ValidatedPurchase_Environment;
+  (function(ValidatedPurchase_Environment2) {
+    ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["UNKNOWN"] = 0] = "UNKNOWN";
+    ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["SANDBOX"] = 1] = "SANDBOX";
+    ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["PRODUCTION"] = 2] = "PRODUCTION";
+    ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+  })(ValidatedPurchase_Environment || (ValidatedPurchase_Environment = {}));
   var baseChannelMessage = {
     channel_id: "",
     message_id: "",
@@ -2440,7 +2463,7 @@ var nakamajsprotobuf = (() => {
     user_id_two: ""
   };
   var ChannelMessage = {
-    encode(message, writer = import_minimal3.Writer.create()) {
+    encode(message, writer = import_minimal3.default.Writer.create()) {
       if (message.channel_id !== "") {
         writer.uint32(10).string(message.channel_id);
       }
@@ -2483,7 +2506,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal3.Reader ? input : new import_minimal3.Reader(input);
+      const reader = input instanceof import_minimal3.default.Reader ? input : new import_minimal3.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseChannelMessage);
       while (reader.pos < end) {
@@ -2648,7 +2671,7 @@ var nakamajsprotobuf = (() => {
     persistent: false
   };
   var Notification = {
-    encode(message, writer = import_minimal3.Writer.create()) {
+    encode(message, writer = import_minimal3.default.Writer.create()) {
       if (message.id !== "") {
         writer.uint32(10).string(message.id);
       }
@@ -2673,7 +2696,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal3.Reader ? input : new import_minimal3.Reader(input);
+      const reader = input instanceof import_minimal3.default.Reader ? input : new import_minimal3.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseNotification);
       while (reader.pos < end) {
@@ -2771,7 +2794,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseRpc = { id: "", payload: "", http_key: "" };
   var Rpc = {
-    encode(message, writer = import_minimal3.Writer.create()) {
+    encode(message, writer = import_minimal3.default.Writer.create()) {
       if (message.id !== "") {
         writer.uint32(10).string(message.id);
       }
@@ -2784,7 +2807,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal3.Reader ? input : new import_minimal3.Reader(input);
+      const reader = input instanceof import_minimal3.default.Reader ? input : new import_minimal3.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseRpc);
       while (reader.pos < end) {
@@ -2870,12 +2893,12 @@ var nakamajsprotobuf = (() => {
       return fromTimestamp(Timestamp.fromJSON(o));
     }
   }
-  if (import_minimal3.util.Long !== Long3) {
-    import_minimal3.util.Long = Long3;
-    (0, import_minimal3.configure)();
+  if (import_minimal3.default.util.Long !== import_long.default) {
+    import_minimal3.default.util.Long = import_long.default;
+    import_minimal3.default.configure();
   }
 
-  // github.com/heroiclabs/nakama-common/rtapi/realtime.ts
+  // rtapi/realtime.ts
   var ChannelJoin_Type;
   (function(ChannelJoin_Type2) {
     ChannelJoin_Type2[ChannelJoin_Type2["TYPE_UNSPECIFIED"] = 0] = "TYPE_UNSPECIFIED";
@@ -2898,7 +2921,7 @@ var nakamajsprotobuf = (() => {
   })(Error_Code || (Error_Code = {}));
   var baseEnvelope = { cid: "" };
   var Envelope = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W;
       if (message.cid !== "") {
         writer.uint32(10).string(message.cid);
@@ -3053,7 +3076,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseEnvelope);
       while (reader.pos < end) {
@@ -4012,7 +4035,7 @@ var nakamajsprotobuf = (() => {
     user_id_two: ""
   };
   var Channel = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.id !== "") {
         writer.uint32(10).string(message.id);
       }
@@ -4037,7 +4060,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseChannel);
       message.presences = [];
@@ -4146,7 +4169,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseChannelJoin = { target: "", type: 0 };
   var ChannelJoin = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.target !== "") {
         writer.uint32(10).string(message.target);
       }
@@ -4162,7 +4185,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseChannelJoin);
       while (reader.pos < end) {
@@ -4230,14 +4253,14 @@ var nakamajsprotobuf = (() => {
   };
   var baseChannelLeave = { channel_id: "" };
   var ChannelLeave = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.channel_id !== "") {
         writer.uint32(10).string(message.channel_id);
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseChannelLeave);
       while (reader.pos < end) {
@@ -4283,7 +4306,7 @@ var nakamajsprotobuf = (() => {
     user_id_two: ""
   };
   var ChannelMessageAck = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.channel_id !== "") {
         writer.uint32(10).string(message.channel_id);
       }
@@ -4320,7 +4343,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseChannelMessageAck);
       while (reader.pos < end) {
@@ -4458,7 +4481,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseChannelMessageSend = { channel_id: "", content: "" };
   var ChannelMessageSend = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.channel_id !== "") {
         writer.uint32(10).string(message.channel_id);
       }
@@ -4468,7 +4491,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseChannelMessageSend);
       while (reader.pos < end) {
@@ -4520,7 +4543,7 @@ var nakamajsprotobuf = (() => {
     content: ""
   };
   var ChannelMessageUpdate = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.channel_id !== "") {
         writer.uint32(10).string(message.channel_id);
       }
@@ -4533,7 +4556,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseChannelMessageUpdate);
       while (reader.pos < end) {
@@ -4591,7 +4614,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseChannelMessageRemove = { channel_id: "", message_id: "" };
   var ChannelMessageRemove = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.channel_id !== "") {
         writer.uint32(10).string(message.channel_id);
       }
@@ -4601,7 +4624,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseChannelMessageRemove);
       while (reader.pos < end) {
@@ -4655,7 +4678,7 @@ var nakamajsprotobuf = (() => {
     user_id_two: ""
   };
   var ChannelPresenceEvent = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.channel_id !== "") {
         writer.uint32(10).string(message.channel_id);
       }
@@ -4680,7 +4703,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseChannelPresenceEvent);
       message.joins = [];
@@ -4800,7 +4823,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseError = { code: 0, message: "" };
   var Error2 = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.code !== 0) {
         writer.uint32(8).int32(message.code);
       }
@@ -4813,7 +4836,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseError);
       message.context = {};
@@ -4888,7 +4911,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseError_ContextEntry = { key: "", value: "" };
   var Error_ContextEntry = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.key !== "") {
         writer.uint32(10).string(message.key);
       }
@@ -4898,7 +4921,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseError_ContextEntry);
       while (reader.pos < end) {
@@ -4946,7 +4969,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatch = { match_id: "", authoritative: false, size: 0 };
   var Match = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.match_id !== "") {
         writer.uint32(10).string(message.match_id);
       }
@@ -4968,7 +4991,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatch);
       message.presences = [];
@@ -5067,11 +5090,11 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchCreate = {};
   var MatchCreate = {
-    encode(_, writer = import_minimal4.Writer.create()) {
+    encode(_, writer = import_minimal4.default.Writer.create()) {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchCreate);
       while (reader.pos < end) {
@@ -5099,7 +5122,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchData = { match_id: "", op_code: 0, reliable: false };
   var MatchData = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.match_id !== "") {
         writer.uint32(10).string(message.match_id);
       }
@@ -5118,7 +5141,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchData);
       message.data = new Uint8Array();
@@ -5198,7 +5221,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchDataSend = { match_id: "", op_code: 0, reliable: false };
   var MatchDataSend = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.match_id !== "") {
         writer.uint32(10).string(message.match_id);
       }
@@ -5217,7 +5240,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchDataSend);
       message.presences = [];
@@ -5308,7 +5331,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchJoin = {};
   var MatchJoin = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       var _a, _b;
       if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id") {
         writer.uint32(10).string(message.id.match_id);
@@ -5322,7 +5345,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchJoin);
       message.metadata = {};
@@ -5399,7 +5422,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchJoin_MetadataEntry = { key: "", value: "" };
   var MatchJoin_MetadataEntry = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.key !== "") {
         writer.uint32(10).string(message.key);
       }
@@ -5409,7 +5432,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchJoin_MetadataEntry);
       while (reader.pos < end) {
@@ -5457,14 +5480,14 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchLeave = { match_id: "" };
   var MatchLeave = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.match_id !== "") {
         writer.uint32(10).string(message.match_id);
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchLeave);
       while (reader.pos < end) {
@@ -5502,7 +5525,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchPresenceEvent = { match_id: "" };
   var MatchPresenceEvent = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.match_id !== "") {
         writer.uint32(10).string(message.match_id);
       }
@@ -5515,7 +5538,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchPresenceEvent);
       message.joins = [];
@@ -5595,7 +5618,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchmakerAdd = { min_count: 0, max_count: 0, query: "" };
   var MatchmakerAdd = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.min_count !== 0) {
         writer.uint32(8).int32(message.min_count);
       }
@@ -5614,7 +5637,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchmakerAdd);
       message.string_properties = {};
@@ -5726,7 +5749,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchmakerAdd_StringPropertiesEntry = { key: "", value: "" };
   var MatchmakerAdd_StringPropertiesEntry = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.key !== "") {
         writer.uint32(10).string(message.key);
       }
@@ -5736,7 +5759,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchmakerAdd_StringPropertiesEntry);
       while (reader.pos < end) {
@@ -5784,7 +5807,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchmakerAdd_NumericPropertiesEntry = { key: "", value: 0 };
   var MatchmakerAdd_NumericPropertiesEntry = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.key !== "") {
         writer.uint32(10).string(message.key);
       }
@@ -5794,7 +5817,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchmakerAdd_NumericPropertiesEntry);
       while (reader.pos < end) {
@@ -5842,7 +5865,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchmakerMatched = { ticket: "" };
   var MatchmakerMatched = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       var _a, _b;
       if (message.ticket !== "") {
         writer.uint32(10).string(message.ticket);
@@ -5862,7 +5885,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchmakerMatched);
       message.users = [];
@@ -5953,7 +5976,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchmakerMatched_MatchmakerUser = { party_id: "" };
   var MatchmakerMatched_MatchmakerUser = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.presence !== void 0) {
         UserPresence.encode(message.presence, writer.uint32(10).fork()).ldelim();
       }
@@ -5969,7 +5992,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchmakerMatched_MatchmakerUser);
       message.string_properties = {};
@@ -6074,7 +6097,7 @@ var nakamajsprotobuf = (() => {
     value: ""
   };
   var MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.key !== "") {
         writer.uint32(10).string(message.key);
       }
@@ -6084,7 +6107,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchmakerMatched_MatchmakerUser_StringPropertiesEntry);
       while (reader.pos < end) {
@@ -6135,7 +6158,7 @@ var nakamajsprotobuf = (() => {
     value: 0
   };
   var MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.key !== "") {
         writer.uint32(10).string(message.key);
       }
@@ -6145,7 +6168,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchmakerMatched_MatchmakerUser_NumericPropertiesEntry);
       while (reader.pos < end) {
@@ -6193,14 +6216,14 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchmakerRemove = { ticket: "" };
   var MatchmakerRemove = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.ticket !== "") {
         writer.uint32(10).string(message.ticket);
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchmakerRemove);
       while (reader.pos < end) {
@@ -6238,14 +6261,14 @@ var nakamajsprotobuf = (() => {
   };
   var baseMatchmakerTicket = { ticket: "" };
   var MatchmakerTicket = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.ticket !== "") {
         writer.uint32(10).string(message.ticket);
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseMatchmakerTicket);
       while (reader.pos < end) {
@@ -6283,14 +6306,14 @@ var nakamajsprotobuf = (() => {
   };
   var baseNotifications = {};
   var Notifications = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       for (const v of message.notifications) {
         Notification.encode(v, writer.uint32(10).fork()).ldelim();
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseNotifications);
       message.notifications = [];
@@ -6339,7 +6362,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseParty = { party_id: "", open: false, max_size: 0 };
   var Party = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -6361,7 +6384,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseParty);
       message.presences = [];
@@ -6460,7 +6483,7 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyCreate = { open: false, max_size: 0 };
   var PartyCreate = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.open === true) {
         writer.uint32(8).bool(message.open);
       }
@@ -6470,7 +6493,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyCreate);
       while (reader.pos < end) {
@@ -6518,14 +6541,14 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyJoin = { party_id: "" };
   var PartyJoin = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyJoin);
       while (reader.pos < end) {
@@ -6563,14 +6586,14 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyLeave = { party_id: "" };
   var PartyLeave = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyLeave);
       while (reader.pos < end) {
@@ -6608,7 +6631,7 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyPromote = { party_id: "" };
   var PartyPromote = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -6618,7 +6641,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyPromote);
       while (reader.pos < end) {
@@ -6666,7 +6689,7 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyLeader = { party_id: "" };
   var PartyLeader = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -6676,7 +6699,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyLeader);
       while (reader.pos < end) {
@@ -6724,7 +6747,7 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyAccept = { party_id: "" };
   var PartyAccept = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -6734,7 +6757,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyAccept);
       while (reader.pos < end) {
@@ -6782,7 +6805,7 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyRemove = { party_id: "" };
   var PartyRemove = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -6792,7 +6815,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyRemove);
       while (reader.pos < end) {
@@ -6840,14 +6863,14 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyClose = { party_id: "" };
   var PartyClose = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyClose);
       while (reader.pos < end) {
@@ -6885,14 +6908,14 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyJoinRequestList = { party_id: "" };
   var PartyJoinRequestList = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyJoinRequestList);
       while (reader.pos < end) {
@@ -6930,7 +6953,7 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyJoinRequest = { party_id: "" };
   var PartyJoinRequest = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -6940,7 +6963,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyJoinRequest);
       message.presences = [];
@@ -7004,7 +7027,7 @@ var nakamajsprotobuf = (() => {
     query: ""
   };
   var PartyMatchmakerAdd = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -7026,7 +7049,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyMatchmakerAdd);
       message.string_properties = {};
@@ -7151,7 +7174,7 @@ var nakamajsprotobuf = (() => {
     value: ""
   };
   var PartyMatchmakerAdd_StringPropertiesEntry = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.key !== "") {
         writer.uint32(10).string(message.key);
       }
@@ -7161,7 +7184,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyMatchmakerAdd_StringPropertiesEntry);
       while (reader.pos < end) {
@@ -7212,7 +7235,7 @@ var nakamajsprotobuf = (() => {
     value: 0
   };
   var PartyMatchmakerAdd_NumericPropertiesEntry = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.key !== "") {
         writer.uint32(10).string(message.key);
       }
@@ -7222,7 +7245,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyMatchmakerAdd_NumericPropertiesEntry);
       while (reader.pos < end) {
@@ -7270,7 +7293,7 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyMatchmakerRemove = { party_id: "", ticket: "" };
   var PartyMatchmakerRemove = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -7280,7 +7303,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyMatchmakerRemove);
       while (reader.pos < end) {
@@ -7328,7 +7351,7 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyMatchmakerTicket = { party_id: "", ticket: "" };
   var PartyMatchmakerTicket = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -7338,7 +7361,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyMatchmakerTicket);
       while (reader.pos < end) {
@@ -7386,7 +7409,7 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyData = { party_id: "", op_code: 0 };
   var PartyData = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -7402,7 +7425,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyData);
       message.data = new Uint8Array();
@@ -7472,7 +7495,7 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyDataSend = { party_id: "", op_code: 0 };
   var PartyDataSend = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -7485,7 +7508,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyDataSend);
       message.data = new Uint8Array();
@@ -7545,7 +7568,7 @@ var nakamajsprotobuf = (() => {
   };
   var basePartyPresenceEvent = { party_id: "" };
   var PartyPresenceEvent = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.party_id !== "") {
         writer.uint32(10).string(message.party_id);
       }
@@ -7558,7 +7581,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePartyPresenceEvent);
       message.joins = [];
@@ -7638,11 +7661,11 @@ var nakamajsprotobuf = (() => {
   };
   var basePing = {};
   var Ping = {
-    encode(_, writer = import_minimal4.Writer.create()) {
+    encode(_, writer = import_minimal4.default.Writer.create()) {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePing);
       while (reader.pos < end) {
@@ -7670,11 +7693,11 @@ var nakamajsprotobuf = (() => {
   };
   var basePong = {};
   var Pong = {
-    encode(_, writer = import_minimal4.Writer.create()) {
+    encode(_, writer = import_minimal4.default.Writer.create()) {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, basePong);
       while (reader.pos < end) {
@@ -7702,14 +7725,14 @@ var nakamajsprotobuf = (() => {
   };
   var baseStatus = {};
   var Status = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       for (const v of message.presences) {
         UserPresence.encode(v, writer.uint32(10).fork()).ldelim();
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseStatus);
       message.presences = [];
@@ -7758,7 +7781,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseStatusFollow = { user_ids: "", usernames: "" };
   var StatusFollow = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       for (const v of message.user_ids) {
         writer.uint32(10).string(v);
       }
@@ -7768,7 +7791,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseStatusFollow);
       message.user_ids = [];
@@ -7838,7 +7861,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseStatusPresenceEvent = {};
   var StatusPresenceEvent = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       for (const v of message.joins) {
         UserPresence.encode(v, writer.uint32(18).fork()).ldelim();
       }
@@ -7848,7 +7871,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseStatusPresenceEvent);
       message.joins = [];
@@ -7918,14 +7941,14 @@ var nakamajsprotobuf = (() => {
   };
   var baseStatusUnfollow = { user_ids: "" };
   var StatusUnfollow = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       for (const v of message.user_ids) {
         writer.uint32(10).string(v);
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseStatusUnfollow);
       message.user_ids = [];
@@ -7974,14 +7997,14 @@ var nakamajsprotobuf = (() => {
   };
   var baseStatusUpdate = {};
   var StatusUpdate = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.status !== void 0) {
         StringValue.encode({ value: message.status }, writer.uint32(10).fork()).ldelim();
       }
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseStatusUpdate);
       while (reader.pos < end) {
@@ -8019,7 +8042,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseStream = { mode: 0, subject: "", subcontext: "", label: "" };
   var Stream = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.mode !== 0) {
         writer.uint32(8).int32(message.mode);
       }
@@ -8035,7 +8058,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseStream);
       while (reader.pos < end) {
@@ -8103,7 +8126,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseStreamData = { data: "", reliable: false };
   var StreamData = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.stream !== void 0) {
         Stream.encode(message.stream, writer.uint32(10).fork()).ldelim();
       }
@@ -8119,7 +8142,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseStreamData);
       while (reader.pos < end) {
@@ -8187,7 +8210,7 @@ var nakamajsprotobuf = (() => {
   };
   var baseStreamPresenceEvent = {};
   var StreamPresenceEvent = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.stream !== void 0) {
         Stream.encode(message.stream, writer.uint32(10).fork()).ldelim();
       }
@@ -8200,7 +8223,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseStreamPresenceEvent);
       message.joins = [];
@@ -8285,7 +8308,7 @@ var nakamajsprotobuf = (() => {
     persistence: false
   };
   var UserPresence = {
-    encode(message, writer = import_minimal4.Writer.create()) {
+    encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.user_id !== "") {
         writer.uint32(10).string(message.user_id);
       }
@@ -8304,7 +8327,7 @@ var nakamajsprotobuf = (() => {
       return writer;
     },
     decode(input, length) {
-      const reader = input instanceof import_minimal4.Reader ? input : new import_minimal4.Reader(input);
+      const reader = input instanceof import_minimal4.default.Reader ? input : new import_minimal4.default.Reader(input);
       let end = length === void 0 ? reader.len : reader.pos + length;
       const message = __spreadValues({}, baseUserPresence);
       while (reader.pos < end) {
@@ -8433,9 +8456,9 @@ var nakamajsprotobuf = (() => {
     }
     return long.toNumber();
   }
-  if (import_minimal4.util.Long !== Long4) {
-    import_minimal4.util.Long = Long4;
-    (0, import_minimal4.configure)();
+  if (import_minimal4.default.util.Long !== import_long2.default) {
+    import_minimal4.default.util.Long = import_long2.default;
+    import_minimal4.default.configure();
   }
 
   // web_socket_adapter_pb.ts

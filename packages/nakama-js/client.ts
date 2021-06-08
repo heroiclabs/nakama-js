@@ -466,6 +466,7 @@ export class Client {
       password: "",
       timeoutMs: timeout,
     };
+
     this.apiClient = new NakamaApi(this.configuration);
   }
 

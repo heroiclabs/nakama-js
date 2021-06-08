@@ -71,7 +71,8 @@ export class Session implements ISession {
     const tokenDecoded = JSON.parse(atob(tokenParts[1])); // FIXME: use base64 polyfill for React Native.
     const tokenExpiresAt = Math.floor(parseInt(tokenDecoded['exp']));
 
-    // clients that have updated will not have a cached refresh token
+    // clients that have just updated to the refresh tokens
+    // client release will not have a cached refresh token
     if (refreshToken) {
 
         const refreshTokenParts = refreshToken.split('.');

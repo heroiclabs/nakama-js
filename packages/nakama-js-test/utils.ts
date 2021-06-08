@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { Page } from "puppeteer";
+import { Page, Browser} from "puppeteer";
 const fs = require("fs");
 const crypto = require("crypto");
 const base64url = require("base64url");
-import global from "jest-environment-puppeteer"
+
+// automatically assigned by puppeteer + Jest
+declare var browser : Browser;
 
 // util to generate a random id.
 export function generateid(): string {
@@ -41,6 +43,12 @@ export async function createPage(): Promise<Page> {
 
     const nakamaJsLib = fs.readFileSync(__dirname + '/../nakama-js/dist/nakama-js.iife.js', 'utf8');
     const nakamaJsProtobufLib = fs.readFileSync(__dirname + '/../nakama-js-protobuf/dist/nakama-js-protobuf.iife.js', 'utf8');
+
+    await page.evaluateOnNewDocument(() => {
+        function timeoutPromise(ms : number) : Promise<void> {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    });
 
     await page.evaluateOnNewDocument(nakamaJsLib);
     await page.evaluateOnNewDocument(nakamaJsProtobufLib);
