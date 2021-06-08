@@ -19,6 +19,8 @@ such as `socket.addMatchmaker` for better type checking.
 - Changed the return type from `socket.addMatchmaker` to a `MatchmakerTicket` rather than a `MatchmakerMatched`.
 - Changed signature of `authenticateSteam` and `linkSteam` to allow for a `sync` option.
 - Upgraded ts-proto dependency
+- Sessions that are close to expiration will now be automatically refreshed. You can configure this behavior
+via the `autoRefreshSession` parameter in the `Client` constructor and the `expiredTimespanMs` expiration buffer value on the client.
 
 ### [2.1.5]
 ### Fixed
