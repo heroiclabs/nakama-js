@@ -47,7 +47,7 @@ export async function createPage(): Promise<Page> {
     await page.evaluateOnNewDocument(nakamaJsLib);
     await page.evaluateOnNewDocument(nakamaJsProtobufLib);
     await page.evaluateOnNewDocument(() => {
-        function timeoutPromise(ms) {
+        globalThis.timeoutPromise = function(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
     })

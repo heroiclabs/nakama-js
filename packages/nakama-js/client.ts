@@ -48,7 +48,6 @@ import {
   ApiUsers,
   ApiUserGroupList,
   ApiWriteStorageObjectsRequest,
-  ConfigurationParameters,
   NakamaApi,
   ApiSession,
   ApiAccountApple,
@@ -448,8 +447,6 @@ export class Client {
 
   // The low level API client for Nakama server.
   private readonly apiClient: NakamaApi;
-  // The server configuration.
-  private readonly configuration: ConfigurationParameters;
 
   constructor(
       readonly serverkey = DEFAULT_SERVER_KEY,
@@ -460,14 +457,8 @@ export class Client {
       readonly autoRefreshSession = true) {
     const scheme = (useSSL) ? "https://" : "http://";
     const basePath = `${scheme}${host}:${port}`;
-    this.configuration = {
-      basePath: basePath,
-      username: serverkey,
-      password: "",
-      timeoutMs: timeout,
-    };
 
-    this.apiClient = new NakamaApi(this.configuration);
+    this.apiClient = new NakamaApi(serverkey, basePath, timeout);
   }
 
   /** Add users to a group, or accept their join requests. */
@@ -478,9 +469,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.addGroupUsers(groupId, ids).then((response: any) => {
+    return this.apiClient.addGroupUsers(session.token, groupId, ids).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -493,9 +482,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.addFriends(ids, usernames).then((response: any) => {
+    return this.apiClient.addFriends(session.token, ids, usernames).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -508,7 +495,7 @@ export class Client {
       "vars": vars
     };
 
-    return this.apiClient.authenticateApple(request, create, username, options).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateApple(this.serverkey, "", request, create, username, options).then((apiSession : ApiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -519,7 +506,7 @@ export class Client {
       "id": id,
       "vars": vars
     };
-    return this.apiClient.authenticateCustom(request, create, username, options).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateCustom(this.serverkey, "", request, create, username, options).then((apiSession : ApiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -531,7 +518,7 @@ export class Client {
       "vars": vars
     };
 
-    return this.apiClient.authenticateDevice(request, create, username).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateDevice(this.serverkey, "", request, create, username).then((apiSession : ApiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -544,7 +531,7 @@ export class Client {
       "vars": vars
     };
 
-    return this.apiClient.authenticateEmail(request, create, username).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateEmail(this.serverkey, "", request, create, username).then((apiSession : ApiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -556,7 +543,7 @@ export class Client {
       "vars": vars
     };
 
-    return this.apiClient.authenticateFacebookInstantGame(
+    return this.apiClient.authenticateFacebookInstantGame(this.serverkey, "",
       {signed_player_info: request.signed_player_info, vars: request.vars}, create, username, options).then((apiSession : ApiSession) => {
         return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
       });
@@ -569,7 +556,7 @@ export class Client {
       "vars": vars
     };
 
-    return this.apiClient.authenticateFacebook(request, create, username, sync, options).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateFacebook(this.serverkey, "", request, create, username, sync, options).then((apiSession : ApiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -581,7 +568,7 @@ export class Client {
       "vars": vars
     };
 
-    return this.apiClient.authenticateGoogle(request, create, username, options).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateGoogle(this.serverkey, "", request, create, username, options).then((apiSession : ApiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -593,7 +580,7 @@ export class Client {
       "vars": vars
     };
 
-    return this.apiClient.authenticateGameCenter(request, create, username).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateGameCenter(this.serverkey, "", request, create, username).then((apiSession : ApiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -606,7 +593,7 @@ export class Client {
       "sync": sync
     };
 
-    return this.apiClient.authenticateSteam(request, create, username).then((apiSession : ApiSession) => {
+    return this.apiClient.authenticateSteam(this.serverkey, "", request, create, username).then((apiSession : ApiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -618,9 +605,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.banGroupUsers(groupId, ids).then((response: any) => {
+    return this.apiClient.banGroupUsers(session.token, groupId, ids).then((response: any) => {
         return response !== undefined;
     });
   }
@@ -632,9 +617,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.blockFriends(ids, usernames).then((response: any) => {
+    return this.apiClient.blockFriends(session.token, ids, usernames).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -646,9 +629,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.createGroup(request).then((response: ApiGroup) => {
+    return this.apiClient.createGroup(session.token, request).then((response: ApiGroup) => {
       return Promise.resolve({
         avatar_url: response.avatar_url,
         create_time: response.create_time,
@@ -678,9 +659,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.deleteFriends(ids, usernames).then((response: any) => {
+    return this.apiClient.deleteFriends(session.token, ids, usernames).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -692,9 +671,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.deleteGroup(groupId).then((response: any) => {
+    return this.apiClient.deleteGroup(session.token, groupId).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -706,9 +683,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.deleteNotifications(ids).then((response: any) => {
+    return this.apiClient.deleteNotifications(session.token, ids).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -720,9 +695,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.deleteStorageObjects(request).then((response: any) => {
+    return this.apiClient.deleteStorageObjects(session.token, request).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -734,9 +707,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.demoteGroupUsers(groupId, ids).then((response: any) => {
+    return this.apiClient.demoteGroupUsers(session.token, groupId, ids).then((response: any) => {
         return Promise.resolve(response != undefined);
     });
   }
@@ -748,9 +719,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.event(request).then((response: any) => {
+    return this.apiClient.event(session.token, request).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -763,9 +732,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.getAccount();
+    return this.apiClient.getAccount(session.token);
   }
 
   /** Import Facebook friends and add them to a user's account. */
@@ -775,9 +742,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.importFacebookFriends(request).then((response: any) => {
+    return this.apiClient.importFacebookFriends(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -789,9 +754,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.importSteamFriends(request, reset).then((response: any) => {
+    return this.apiClient.importSteamFriends(session.token, request, reset).then((response: any) => {
         return response !== undefined;
     });
 }
@@ -803,9 +766,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.getUsers(ids, usernames, facebookIds).then((response: ApiUsers) => {
+    return this.apiClient.getUsers(session.token, ids, usernames, facebookIds).then((response: ApiUsers) => {
       var result: Users = {
         users: []
       };
@@ -845,9 +806,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.joinGroup(groupId, {}).then((response: any) => {
+    return this.apiClient.joinGroup(session.token, groupId, {}).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -858,9 +817,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.joinTournament(tournamentId, {}).then((response: any) => {
+    return this.apiClient.joinTournament(session.token, tournamentId, {}).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -872,9 +829,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.kickGroupUsers(groupId, ids).then((response: any) => {
+    return this.apiClient.kickGroupUsers(session.token, groupId, ids).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
@@ -886,9 +841,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.leaveGroup(groupId, {}).then((response: any) => {
+    return this.apiClient.leaveGroup(session.token, groupId, {}).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -900,9 +853,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then((response: ApiChannelMessageList) => {
+    return this.apiClient.listChannelMessages(session.token, channelId, limit, forward, cursor).then((response: ApiChannelMessageList) => {
       var result: ChannelMessageList = {
         messages: [],
         next_cursor: response.next_cursor,
@@ -941,9 +892,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listGroupUsers(groupId, limit, state, cursor).then((response: ApiGroupUserList) => {
+    return this.apiClient.listGroupUsers(session.token, groupId, limit, state, cursor).then((response: ApiGroupUserList) => {
       var result: GroupUserList = {
         group_users: [],
         cursor: response.cursor
@@ -987,9 +936,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listUserGroups(userId, state, limit, cursor).then((response: ApiUserGroupList) => {
+    return this.apiClient.listUserGroups(session.token, userId, state, limit, cursor).then((response: ApiUserGroupList) => {
       var result: UserGroupList = {
         user_groups: [],
         cursor: response.cursor,
@@ -1029,9 +976,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listGroups(name, cursor, limit).then((response: ApiGroupList) => {
+    return this.apiClient.listGroups(session.token, name, cursor, limit).then((response: ApiGroupList) => {
       var result: GroupList = {
         groups: []
       };
@@ -1068,9 +1013,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.linkApple(request).then((response: any) => {
+    return this.apiClient.linkApple(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1082,9 +1025,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.linkCustom(request).then((response: any) => {
+    return this.apiClient.linkCustom(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1096,9 +1037,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.linkDevice(request).then((response: any) => {
+    return this.apiClient.linkDevice(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1110,9 +1049,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.linkEmail(request).then((response: any) => {
+    return this.apiClient.linkEmail(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1124,9 +1061,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.linkFacebook(request).then((response: any) => {
+    return this.apiClient.linkFacebook(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1138,9 +1073,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.linkFacebookInstantGame(request).then((response: any) => {
+    return this.apiClient.linkFacebookInstantGame(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1152,9 +1085,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.linkGoogle(request).then((response: any) => {
+    return this.apiClient.linkGoogle(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1166,9 +1097,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.linkGameCenter(request).then((response: any) => {
+    return this.apiClient.linkGameCenter(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1180,9 +1109,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.linkSteam(request).then((response: any) => {
+    return this.apiClient.linkSteam(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1194,9 +1121,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listFriends(limit, state, cursor).then((response: ApiFriendList) => {
+    return this.apiClient.listFriends(session.token, limit, state, cursor).then((response: ApiFriendList) => {
 
       var result: Friends = {
         friends: [],
@@ -1242,9 +1167,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry).then((response: ApiLeaderboardRecordList) => {
+    return this.apiClient.listLeaderboardRecords(session.token, leaderboardId, ownerIds, limit, cursor, expiry).then((response: ApiLeaderboardRecordList) => {
       var list: LeaderboardRecordList = {
         next_cursor: response.next_cursor,
         prev_cursor: response.prev_cursor,
@@ -1298,9 +1221,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry).then((response: ApiLeaderboardRecordList) => {
+    return this.apiClient.listLeaderboardRecordsAroundOwner(session.token, leaderboardId, ownerId, limit, expiry).then((response: ApiLeaderboardRecordList) => {
       var list: LeaderboardRecordList = {
         next_cursor: response.next_cursor,
         prev_cursor: response.prev_cursor,
@@ -1355,9 +1276,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize, query);
+    return this.apiClient.listMatches(session.token, limit, authoritative, label, minSize, maxSize, query);
   }
 
   /** Fetch list of notifications. */
@@ -1367,9 +1286,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listNotifications(limit, cacheableCursor).then((response: ApiNotificationList) => {
+    return this.apiClient.listNotifications(session.token, limit, cacheableCursor).then((response: ApiNotificationList) => {
       var result: NotificationList = {
         cacheable_cursor: response.cacheable_cursor,
         notifications: [],
@@ -1401,9 +1318,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listStorageObjects(collection, userId, limit, cursor).then((response: ApiStorageObjectList) => {
+    return this.apiClient.listStorageObjects(session.token, collection, userId, limit, cursor).then((response: ApiStorageObjectList) => {
       var result: StorageObjectList = {
         objects: [],
         cursor: response.cursor
@@ -1437,9 +1352,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor).then((response: ApiTournamentList) => {
+    return this.apiClient.listTournaments(session.token, categoryStart, categoryEnd, startTime, endTime, limit, cursor).then((response: ApiTournamentList) => {
       var list: TournamentList = {
         cursor: response.cursor,
         tournaments: [],
@@ -1480,9 +1393,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry).then((response: ApiTournamentRecordList) => {
+    return this.apiClient.listTournamentRecords(session.token, tournamentId, ownerIds, limit, cursor, expiry).then((response: ApiTournamentRecordList) => {
       var list: TournamentRecordList = {
         next_cursor: response.next_cursor,
         prev_cursor: response.prev_cursor,
@@ -1537,9 +1448,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry).then((response: ApiTournamentRecordList) => {
+    return this.apiClient.listTournamentRecordsAroundOwner(session.token, tournamentId, ownerId, limit, expiry).then((response: ApiTournamentRecordList) => {
       var list: TournamentRecordList = {
         next_cursor: response.next_cursor,
         prev_cursor: response.prev_cursor,
@@ -1594,9 +1503,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.promoteGroupUsers(groupId, ids);
+    return this.apiClient.promoteGroupUsers(session.token, groupId, ids);
   }
 
   /** Fetch storage objects. */
@@ -1606,9 +1513,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.readStorageObjects(request).then((response: ApiStorageObjects) => {
+    return this.apiClient.readStorageObjects(session.token, request).then((response: ApiStorageObjects) => {
       var result: StorageObjects = {objects: []};
 
       if (response.objects == null) {
@@ -1632,16 +1537,14 @@ export class Client {
     });
   }
 
-  /** Execute a Lua function on the server. */
+  /** Execute an RPC function on the server. */
   async rpc(session: Session, id: string, input: object): Promise<RpcResponse> {
     if (this.autoRefreshSession && session.refresh_token &&
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.rpcFunc(id, JSON.stringify(input)).then((response: ApiRpc) => {
+    return this.apiClient.rpcFunc(session.token, id, JSON.stringify(input)).then((response: ApiRpc) => {
       return Promise.resolve({
         id: response.id,
         payload: (!response.payload) ? undefined : JSON.parse(response.payload)
@@ -1649,29 +1552,15 @@ export class Client {
     });
   }
 
-  /** Execute a Lua function on the server. */
-  async rpcGet(id: string, session?: Session, httpKey?: string, input?: object): Promise<RpcResponse> {
-    if (session && this.autoRefreshSession && session.refresh_token &&
-        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
-        await this.sessionRefresh(session);
-    }
-
-    if (!httpKey || httpKey == "") {
-      this.configuration.bearerToken = (session && session.token);
-    } else {
-      // When a HTTP key is used we should not use basicauth or bearer auth.
-      this.configuration.username = undefined;
-      this.configuration.bearerToken = undefined;
-    }
+  /** Execute an RPC function on the server. */
+  async rpcHttpKey(id: string, httpKey?: string, input?: object): Promise<RpcResponse> {
     return this.apiClient.rpcFunc2(id, input && JSON.stringify(input) || "", httpKey)
       .then((response: ApiRpc) => {
-        this.configuration.username = this.serverkey;
         return Promise.resolve({
           id: response.id,
           payload: (!response.payload) ? undefined : JSON.parse(response.payload)
         });
       }).catch((err: any) => {
-        this.configuration.username = this.serverkey;
         throw err;
       });
   }
@@ -1683,9 +1572,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.sessionLogout({refresh_token: refreshToken, token: token}).then((response: any) => {
+    return this.apiClient.sessionLogout(session.token, {refresh_token: refreshToken, token: token}).then((response: any) => {
         return response !== undefined;
     });
   }
@@ -1706,7 +1593,7 @@ export class Client {
         console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
     }
 
-    const apiSession = await this.apiClient.sessionRefresh({token: session.refresh_token, vars: vars});
+    const apiSession = await this.apiClient.sessionRefresh(this.serverkey, "", {token: session.refresh_token, vars: vars});
     session.update(apiSession.token!, apiSession.refresh_token!);
     return session;
   }
@@ -1718,9 +1605,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.unlinkApple(request).then((response: any) => {
+    return this.apiClient.unlinkApple(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1733,9 +1618,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.unlinkCustom(request).then((response: any) => {
+    return this.apiClient.unlinkCustom(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1747,9 +1630,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.unlinkDevice(request).then((response: any) => {
+    return this.apiClient.unlinkDevice(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1761,9 +1642,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.unlinkEmail(request).then((response: any) => {
+    return this.apiClient.unlinkEmail(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1775,9 +1654,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.unlinkFacebook(request).then((response: any) => {
+    return this.apiClient.unlinkFacebook(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1789,9 +1666,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.unlinkFacebookInstantGame(request).then((response: any) => {
+    return this.apiClient.unlinkFacebookInstantGame(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1803,9 +1678,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.unlinkGoogle(request).then((response: any) => {
+    return this.apiClient.unlinkGoogle(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1817,9 +1690,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.unlinkGameCenter(request).then((response: any) => {
+    return this.apiClient.unlinkGameCenter(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1830,10 +1701,7 @@ export class Client {
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
         await this.sessionRefresh(session);
     }
-
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.unlinkSteam(request).then((response: any) => {
+    return this.apiClient.unlinkSteam(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1845,9 +1713,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.updateAccount(request).then((response: any) => {
+    return this.apiClient.updateAccount(session.token, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1859,9 +1725,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.updateGroup(groupId, request).then((response: any) => {
+    return this.apiClient.updateGroup(session.token, groupId, request).then((response: any) => {
       return response !== undefined;
     });
   }
@@ -1873,9 +1737,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.validatePurchaseApple({receipt: receipt})
+    return this.apiClient.validatePurchaseApple(session.token, {receipt: receipt})
   }
 
   /** Validate a Google IAP receipt. */
@@ -1885,9 +1747,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.validatePurchaseGoogle({purchase: purchase})
+    return this.apiClient.validatePurchaseGoogle(session.token, {purchase: purchase})
   }
 
   /** Validate a Huawei IAP receipt. */
@@ -1897,9 +1757,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.validatePurchaseHuawei({purchase: purchase, signature: signature})
+    return this.apiClient.validatePurchaseHuawei(session.token, {purchase: purchase, signature: signature})
   }
 
   /** Write a record to a leaderboard. */
@@ -1909,9 +1767,7 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
-    return this.apiClient.writeLeaderboardRecord(leaderboardId, {
+    return this.apiClient.writeLeaderboardRecord(session.token, leaderboardId, {
       metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
       score: request.score,
       subscore: request.subscore
@@ -1939,8 +1795,6 @@ export class Client {
         await this.sessionRefresh(session);
     }
 
-    this.configuration.bearerToken = (session && session.token);
-
     var request: ApiWriteStorageObjectsRequest = {objects: []};
     objects.forEach(o => {
       request.objects!.push({
@@ -1953,13 +1807,12 @@ export class Client {
       })
     })
 
-    return this.apiClient.writeStorageObjects(request);
+    return this.apiClient.writeStorageObjects(session.token, request);
   }
 
   /** Write a record to a tournament. */
   async writeTournamentRecord(session: Session, tournamentId: string, request: WriteTournamentRecord): Promise<LeaderboardRecord> {
-    this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.writeTournamentRecord(tournamentId, {
+    return this.apiClient.writeTournamentRecord(session.token, tournamentId, {
       metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
       score: request.score,
       subscore: request.subscore

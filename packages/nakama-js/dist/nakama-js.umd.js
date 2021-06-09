@@ -534,6 +534,35 @@
       }
   }
 
+  function __values(o) {
+      var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+      if (m) return m.call(o);
+      if (o && typeof o.length === "number") return {
+          next: function () {
+              if (o && i >= o.length) o = void 0;
+              return { value: o && o[i++], done: !o };
+          }
+      };
+      throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+  }
+
+  function __read(o, n) {
+      var m = typeof Symbol === "function" && o[Symbol.iterator];
+      if (!m) return o;
+      var i = m.call(o), r, ar = [], e;
+      try {
+          while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+      }
+      catch (error) { e = { error: error }; }
+      finally {
+          try {
+              if (r && !r.done && (m = i["return"])) m.call(i);
+          }
+          finally { if (e) throw e.error; }
+      }
+      return ar;
+  }
+
   /**
    *  base64.ts
    *
@@ -724,6 +753,70 @@
    */
   const decode = (src) => _decode(_unURI(src));
 
+  function buildFullUrl(basePath, fragment, queryParams) {
+      var e_1, _a;
+      var fullPath = basePath + fragment + "?";
+      var _loop_1 = function (k, v) {
+          if (v instanceof Array) {
+              fullPath += v.reduce(function (prev, curr) {
+                  return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+              }, "");
+          }
+          else {
+              if (v != null) {
+                  fullPath += encodeURIComponent(k) + "=" + encodeURIComponent(v) + "&";
+              }
+          }
+      };
+      try {
+          for (var queryParams_1 = __values(queryParams), queryParams_1_1 = queryParams_1.next(); !queryParams_1_1.done; queryParams_1_1 = queryParams_1.next()) {
+              var _b = __read(queryParams_1_1.value, 2), k = _b[0], v = _b[1];
+              _loop_1(k, v);
+          }
+      }
+      catch (e_1_1) { e_1 = { error: e_1_1 }; }
+      finally {
+          try {
+              if (queryParams_1_1 && !queryParams_1_1.done && (_a = queryParams_1.return)) _a.call(queryParams_1);
+          }
+          finally { if (e_1) throw e_1.error; }
+      }
+      return fullPath;
+  }
+  function buildFetchOptions(method, options, bodyJson) {
+      var fetchOptions = __assign({ method: method }, options);
+      fetchOptions.headers = __assign({}, options.headers);
+      var descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+      if (!(descriptor === null || descriptor === void 0 ? void 0 : descriptor.set)) {
+          fetchOptions.credentials = 'cocos-ignore';
+      }
+      if (!Object.keys(fetchOptions.headers).includes("Accept")) {
+          fetchOptions.headers["Accept"] = "application/json";
+      }
+      if (!Object.keys(fetchOptions.headers).includes("Content-Type")) {
+          fetchOptions.headers["Content-Type"] = "application/json";
+      }
+      Object.keys(fetchOptions.headers).forEach(function (key) {
+          if (!fetchOptions.headers[key]) {
+              delete fetchOptions.headers[key];
+          }
+      });
+      if (bodyJson) {
+          fetchOptions.body = bodyJson;
+      }
+      return fetchOptions;
+  }
+  function b64EncodeUnicode(str) {
+      return encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
+          return String.fromCharCode(Number('0x' + p1));
+      }));
+  }
+  function b64DecodeUnicode(str) {
+      return decodeURIComponent(decode(str).split('').map(function (c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+  }
+
   var ValidatedPurchaseEnvironment;
   (function (ValidatedPurchaseEnvironment) {
       ValidatedPurchaseEnvironment[ValidatedPurchaseEnvironment["UNKNOWN"] = 0] = "UNKNOWN";
@@ -745,51 +838,22 @@
       ApiOverrideOperator[ApiOverrideOperator["DECREMENT"] = 4] = "DECREMENT";
   })(ApiOverrideOperator || (ApiOverrideOperator = {}));
   var NakamaApi = (function () {
-      function NakamaApi(configuration) {
-          this.configuration = configuration;
+      function NakamaApi(serverKey, basePath, timeoutMs) {
+          this.serverKey = serverKey;
+          this.basePath = basePath;
+          this.timeoutMs = timeoutMs;
       }
-      NakamaApi.prototype.doFetch = function (urlPath, method, queryParams, body, options) {
+      NakamaApi.prototype.healthcheck = function (bearerToken, options) {
           var _this = this;
-          var urlQuery = "?" + Object.keys(queryParams)
-              .map(function (k) {
-              if (queryParams[k] instanceof Array) {
-                  return queryParams[k].reduce(function (prev, curr) {
-                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-                  }, "");
-              }
-              else {
-                  if (queryParams[k] != null) {
-                      return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-                  }
-              }
-          })
-              .join("");
-          var fetchOptions = __assign({ method: method }, options);
-          fetchOptions.headers = __assign({}, options.headers);
-          var descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
-          if (!(descriptor === null || descriptor === void 0 ? void 0 : descriptor.set)) {
-              fetchOptions.credentials = 'cocos-ignore';
-          }
-          if (this.configuration.bearerToken) {
-              fetchOptions.headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-          }
-          else if (this.configuration.username) {
-              fetchOptions.headers["Authorization"] = "Basic " + encode(this.configuration.username + ":" + this.configuration.password);
-          }
-          if (!Object.keys(fetchOptions.headers).includes("Accept")) {
-              fetchOptions.headers["Accept"] = "application/json";
-          }
-          if (!Object.keys(fetchOptions.headers).includes("Content-Type")) {
-              fetchOptions.headers["Content-Type"] = "application/json";
-          }
-          Object.keys(fetchOptions.headers).forEach(function (key) {
-              if (!fetchOptions.headers[key]) {
-                  delete fetchOptions.headers[key];
-              }
-          });
-          fetchOptions.body = body;
+          if (options === void 0) { options = {}; }
+          var urlPath = "/healthcheck";
+          var queryParams = new Map();
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
-              fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then(function (response) {
+              fetch(fullUrl, fetchOptions).then(function (response) {
                   if (response.status == 204) {
                       return response;
                   }
@@ -801,501 +865,1257 @@
                   }
               }),
               new Promise(function (_, reject) {
-                  return setTimeout(reject, _this.configuration.timeoutMs, "Request timed out.");
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
               }),
           ]);
       };
-      NakamaApi.prototype.healthcheck = function (options) {
-          if (options === void 0) { options = {}; }
-          var urlPath = "/healthcheck";
-          var queryParams = {};
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
-      };
-      NakamaApi.prototype.getAccount = function (options) {
+      NakamaApi.prototype.getAccount = function (bearerToken, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/account";
-          var queryParams = {};
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.updateAccount = function (body, options) {
+      NakamaApi.prototype.updateAccount = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.authenticateApple = function (body, create, username, options) {
+      NakamaApi.prototype.authenticateApple = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/authenticate/apple";
-          var queryParams = {
-              create: create,
-              username: username,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("create", create);
+          queryParams.set("username", username);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.authenticateCustom = function (body, create, username, options) {
+      NakamaApi.prototype.authenticateCustom = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/authenticate/custom";
-          var queryParams = {
-              create: create,
-              username: username,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("create", create);
+          queryParams.set("username", username);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.authenticateDevice = function (body, create, username, options) {
+      NakamaApi.prototype.authenticateDevice = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/authenticate/device";
-          var queryParams = {
-              create: create,
-              username: username,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("create", create);
+          queryParams.set("username", username);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.authenticateEmail = function (body, create, username, options) {
+      NakamaApi.prototype.authenticateEmail = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/authenticate/email";
-          var queryParams = {
-              create: create,
-              username: username,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("create", create);
+          queryParams.set("username", username);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.authenticateFacebook = function (body, create, username, sync, options) {
+      NakamaApi.prototype.authenticateFacebook = function (basicAuthUsername, basicAuthPassword, body, create, username, sync, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/authenticate/facebook";
-          var queryParams = {
-              create: create,
-              username: username,
-              sync: sync,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("create", create);
+          queryParams.set("username", username);
+          queryParams.set("sync", sync);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.authenticateFacebookInstantGame = function (body, create, username, options) {
+      NakamaApi.prototype.authenticateFacebookInstantGame = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/authenticate/facebookinstantgame";
-          var queryParams = {
-              create: create,
-              username: username,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("create", create);
+          queryParams.set("username", username);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.authenticateGameCenter = function (body, create, username, options) {
+      NakamaApi.prototype.authenticateGameCenter = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/authenticate/gamecenter";
-          var queryParams = {
-              create: create,
-              username: username,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("create", create);
+          queryParams.set("username", username);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.authenticateGoogle = function (body, create, username, options) {
+      NakamaApi.prototype.authenticateGoogle = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/authenticate/google";
-          var queryParams = {
-              create: create,
-              username: username,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("create", create);
+          queryParams.set("username", username);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.authenticateSteam = function (body, create, username, sync, options) {
+      NakamaApi.prototype.authenticateSteam = function (basicAuthUsername, basicAuthPassword, body, create, username, sync, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/authenticate/steam";
-          var queryParams = {
-              create: create,
-              username: username,
-              sync: sync,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("create", create);
+          queryParams.set("username", username);
+          queryParams.set("sync", sync);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.linkApple = function (body, options) {
+      NakamaApi.prototype.linkApple = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/link/apple";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.linkCustom = function (body, options) {
+      NakamaApi.prototype.linkCustom = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/link/custom";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.linkDevice = function (body, options) {
+      NakamaApi.prototype.linkDevice = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/link/device";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.linkEmail = function (body, options) {
+      NakamaApi.prototype.linkEmail = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/link/email";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.linkFacebook = function (body, sync, options) {
+      NakamaApi.prototype.linkFacebook = function (bearerToken, body, sync, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/link/facebook";
-          var queryParams = {
-              sync: sync,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("sync", sync);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.linkFacebookInstantGame = function (body, options) {
+      NakamaApi.prototype.linkFacebookInstantGame = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/link/facebookinstantgame";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.linkGameCenter = function (body, options) {
+      NakamaApi.prototype.linkGameCenter = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/link/gamecenter";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.linkGoogle = function (body, options) {
+      NakamaApi.prototype.linkGoogle = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/link/google";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.linkSteam = function (body, options) {
+      NakamaApi.prototype.linkSteam = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/link/steam";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.sessionRefresh = function (body, options) {
+      NakamaApi.prototype.sessionRefresh = function (basicAuthUsername, basicAuthPassword, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/session/refresh";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.unlinkApple = function (body, options) {
+      NakamaApi.prototype.unlinkApple = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/unlink/apple";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.unlinkCustom = function (body, options) {
+      NakamaApi.prototype.unlinkCustom = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/unlink/custom";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.unlinkDevice = function (body, options) {
+      NakamaApi.prototype.unlinkDevice = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/unlink/device";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.unlinkEmail = function (body, options) {
+      NakamaApi.prototype.unlinkEmail = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/unlink/email";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.unlinkFacebook = function (body, options) {
+      NakamaApi.prototype.unlinkFacebook = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/unlink/facebook";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.unlinkFacebookInstantGame = function (body, options) {
+      NakamaApi.prototype.unlinkFacebookInstantGame = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/unlink/facebookinstantgame";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.unlinkGameCenter = function (body, options) {
+      NakamaApi.prototype.unlinkGameCenter = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/unlink/gamecenter";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.unlinkGoogle = function (body, options) {
+      NakamaApi.prototype.unlinkGoogle = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/unlink/google";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.unlinkSteam = function (body, options) {
+      NakamaApi.prototype.unlinkSteam = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/account/unlink/steam";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listChannelMessages = function (channelId, limit, forward, cursor, options) {
+      NakamaApi.prototype.listChannelMessages = function (bearerToken, channelId, limit, forward, cursor, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (channelId === null || channelId === undefined) {
               throw new Error("'channelId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/channel/{channelId}"
               .replace("{channelId}", encodeURIComponent(String(channelId)));
-          var queryParams = {
-              limit: limit,
-              forward: forward,
-              cursor: cursor,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("limit", limit);
+          queryParams.set("forward", forward);
+          queryParams.set("cursor", cursor);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.event = function (body, options) {
+      NakamaApi.prototype.event = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/event";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.deleteFriends = function (ids, usernames, options) {
+      NakamaApi.prototype.deleteFriends = function (bearerToken, ids, usernames, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/friend";
-          var queryParams = {
-              ids: ids,
-              usernames: usernames,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("ids", ids);
+          queryParams.set("usernames", usernames);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listFriends = function (limit, state, cursor, options) {
+      NakamaApi.prototype.listFriends = function (bearerToken, limit, state, cursor, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/friend";
-          var queryParams = {
-              limit: limit,
-              state: state,
-              cursor: cursor,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("limit", limit);
+          queryParams.set("state", state);
+          queryParams.set("cursor", cursor);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.addFriends = function (ids, usernames, options) {
+      NakamaApi.prototype.addFriends = function (bearerToken, ids, usernames, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/friend";
-          var queryParams = {
-              ids: ids,
-              usernames: usernames,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("ids", ids);
+          queryParams.set("usernames", usernames);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          console.log("full url " + fullUrl);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.blockFriends = function (ids, usernames, options) {
+      NakamaApi.prototype.blockFriends = function (bearerToken, ids, usernames, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/friend/block";
-          var queryParams = {
-              ids: ids,
-              usernames: usernames,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("ids", ids);
+          queryParams.set("usernames", usernames);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.importFacebookFriends = function (body, reset, options) {
+      NakamaApi.prototype.importFacebookFriends = function (bearerToken, body, reset, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/friend/facebook";
-          var queryParams = {
-              reset: reset,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("reset", reset);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.importSteamFriends = function (body, reset, options) {
+      NakamaApi.prototype.importSteamFriends = function (bearerToken, body, reset, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/friend/steam";
-          var queryParams = {
-              reset: reset,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("reset", reset);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listGroups = function (name, cursor, limit, options) {
+      NakamaApi.prototype.listGroups = function (bearerToken, name, cursor, limit, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/group";
-          var queryParams = {
-              name: name,
-              cursor: cursor,
-              limit: limit,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("name", name);
+          queryParams.set("cursor", cursor);
+          queryParams.set("limit", limit);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.createGroup = function (body, options) {
+      NakamaApi.prototype.createGroup = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/group";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.deleteGroup = function (groupId, options) {
+      NakamaApi.prototype.deleteGroup = function (bearerToken, groupId, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (groupId === null || groupId === undefined) {
               throw new Error("'groupId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/group/{groupId}"
               .replace("{groupId}", encodeURIComponent(String(groupId)));
-          var queryParams = {};
-          var _body = null;
-          return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.updateGroup = function (groupId, body, options) {
+      NakamaApi.prototype.updateGroup = function (bearerToken, groupId, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (groupId === null || groupId === undefined) {
               throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1305,38 +2125,93 @@
           }
           var urlPath = "/v2/group/{groupId}"
               .replace("{groupId}", encodeURIComponent(String(groupId)));
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.addGroupUsers = function (groupId, userIds, options) {
+      NakamaApi.prototype.addGroupUsers = function (bearerToken, groupId, userIds, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (groupId === null || groupId === undefined) {
               throw new Error("'groupId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/group/{groupId}/add"
               .replace("{groupId}", encodeURIComponent(String(groupId)));
-          var queryParams = {
-              user_ids: userIds,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("user_ids", userIds);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.banGroupUsers = function (groupId, userIds, options) {
+      NakamaApi.prototype.banGroupUsers = function (bearerToken, groupId, userIds, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (groupId === null || groupId === undefined) {
               throw new Error("'groupId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/group/{groupId}/ban"
               .replace("{groupId}", encodeURIComponent(String(groupId)));
-          var queryParams = {
-              user_ids: userIds,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("user_ids", userIds);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.demoteGroupUsers = function (groupId, userIds, options) {
+      NakamaApi.prototype.demoteGroupUsers = function (bearerToken, groupId, userIds, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (groupId === null || groupId === undefined) {
               throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1346,136 +2221,340 @@
           }
           var urlPath = "/v2/group/{groupId}/demote"
               .replace("{groupId}", encodeURIComponent(String(groupId)));
-          var queryParams = {
-              user_ids: userIds,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("user_ids", userIds);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.joinGroup = function (groupId, options) {
+      NakamaApi.prototype.joinGroup = function (bearerToken, groupId, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (groupId === null || groupId === undefined) {
               throw new Error("'groupId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/group/{groupId}/join"
               .replace("{groupId}", encodeURIComponent(String(groupId)));
-          var queryParams = {};
-          var _body = null;
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.kickGroupUsers = function (groupId, userIds, options) {
+      NakamaApi.prototype.kickGroupUsers = function (bearerToken, groupId, userIds, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (groupId === null || groupId === undefined) {
               throw new Error("'groupId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/group/{groupId}/kick"
               .replace("{groupId}", encodeURIComponent(String(groupId)));
-          var queryParams = {
-              user_ids: userIds,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("user_ids", userIds);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.leaveGroup = function (groupId, options) {
+      NakamaApi.prototype.leaveGroup = function (bearerToken, groupId, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (groupId === null || groupId === undefined) {
               throw new Error("'groupId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/group/{groupId}/leave"
               .replace("{groupId}", encodeURIComponent(String(groupId)));
-          var queryParams = {};
-          var _body = null;
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.promoteGroupUsers = function (groupId, userIds, options) {
+      NakamaApi.prototype.promoteGroupUsers = function (bearerToken, groupId, userIds, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (groupId === null || groupId === undefined) {
               throw new Error("'groupId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/group/{groupId}/promote"
               .replace("{groupId}", encodeURIComponent(String(groupId)));
-          var queryParams = {
-              user_ids: userIds,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("user_ids", userIds);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listGroupUsers = function (groupId, limit, state, cursor, options) {
+      NakamaApi.prototype.listGroupUsers = function (bearerToken, groupId, limit, state, cursor, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (groupId === null || groupId === undefined) {
               throw new Error("'groupId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/group/{groupId}/user"
               .replace("{groupId}", encodeURIComponent(String(groupId)));
-          var queryParams = {
-              limit: limit,
-              state: state,
-              cursor: cursor,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("limit", limit);
+          queryParams.set("state", state);
+          queryParams.set("cursor", cursor);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.validatePurchaseApple = function (body, options) {
+      NakamaApi.prototype.validatePurchaseApple = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/iap/purchase/apple";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.validatePurchaseGoogle = function (body, options) {
+      NakamaApi.prototype.validatePurchaseGoogle = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/iap/purchase/google";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.validatePurchaseHuawei = function (body, options) {
+      NakamaApi.prototype.validatePurchaseHuawei = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/iap/purchase/huawei";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.deleteLeaderboardRecord = function (leaderboardId, options) {
+      NakamaApi.prototype.deleteLeaderboardRecord = function (bearerToken, leaderboardId, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (leaderboardId === null || leaderboardId === undefined) {
               throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/leaderboard/{leaderboardId}"
               .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-          var queryParams = {};
-          var _body = null;
-          return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listLeaderboardRecords = function (leaderboardId, ownerIds, limit, cursor, expiry, options) {
+      NakamaApi.prototype.listLeaderboardRecords = function (bearerToken, leaderboardId, ownerIds, limit, cursor, expiry, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (leaderboardId === null || leaderboardId === undefined) {
               throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/leaderboard/{leaderboardId}"
               .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-          var queryParams = {
-              ownerIds: ownerIds,
-              limit: limit,
-              cursor: cursor,
-              expiry: expiry,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("ownerIds", ownerIds);
+          queryParams.set("limit", limit);
+          queryParams.set("cursor", cursor);
+          queryParams.set("expiry", expiry);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.writeLeaderboardRecord = function (leaderboardId, body, options) {
+      NakamaApi.prototype.writeLeaderboardRecord = function (bearerToken, leaderboardId, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (leaderboardId === null || leaderboardId === undefined) {
               throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
@@ -1485,12 +2564,31 @@
           }
           var urlPath = "/v2/leaderboard/{leaderboardId}"
               .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listLeaderboardRecordsAroundOwner = function (leaderboardId, ownerId, limit, expiry, options) {
+      NakamaApi.prototype.listLeaderboardRecordsAroundOwner = function (bearerToken, leaderboardId, ownerId, limit, expiry, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (leaderboardId === null || leaderboardId === undefined) {
               throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
@@ -1501,61 +2599,151 @@
           var urlPath = "/v2/leaderboard/{leaderboardId}/owner/{ownerId}"
               .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)))
               .replace("{ownerId}", encodeURIComponent(String(ownerId)));
-          var queryParams = {
-              limit: limit,
-              expiry: expiry,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("limit", limit);
+          queryParams.set("expiry", expiry);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listMatches = function (limit, authoritative, label, minSize, maxSize, query, options) {
+      NakamaApi.prototype.listMatches = function (bearerToken, limit, authoritative, label, minSize, maxSize, query, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/match";
-          var queryParams = {
-              limit: limit,
-              authoritative: authoritative,
-              label: label,
-              minSize: minSize,
-              maxSize: maxSize,
-              query: query,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("limit", limit);
+          queryParams.set("authoritative", authoritative);
+          queryParams.set("label", label);
+          queryParams.set("minSize", minSize);
+          queryParams.set("maxSize", maxSize);
+          queryParams.set("query", query);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.deleteNotifications = function (ids, options) {
+      NakamaApi.prototype.deleteNotifications = function (bearerToken, ids, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/notification";
-          var queryParams = {
-              ids: ids,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("ids", ids);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listNotifications = function (limit, cacheableCursor, options) {
+      NakamaApi.prototype.listNotifications = function (bearerToken, limit, cacheableCursor, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/notification";
-          var queryParams = {
-              limit: limit,
-              cacheableCursor: cacheableCursor,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("limit", limit);
+          queryParams.set("cacheableCursor", cacheableCursor);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.rpcFunc2 = function (id, payload, httpKey, options) {
+      NakamaApi.prototype.rpcFunc2 = function (bearerToken, id, payload, httpKey, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (id === null || id === undefined) {
               throw new Error("'id' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/rpc/{id}"
               .replace("{id}", encodeURIComponent(String(id)));
-          var queryParams = {
-              payload: payload,
-              httpKey: httpKey,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("payload", payload);
+          queryParams.set("httpKey", httpKey);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.rpcFunc = function (id, body, httpKey, options) {
+      NakamaApi.prototype.rpcFunc = function (bearerToken, id, body, httpKey, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (id === null || id === undefined) {
               throw new Error("'id' is a required parameter but is null or undefined.");
@@ -1565,73 +2753,185 @@
           }
           var urlPath = "/v2/rpc/{id}"
               .replace("{id}", encodeURIComponent(String(id)));
-          var queryParams = {
-              httpKey: httpKey,
-          };
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("httpKey", httpKey);
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.sessionLogout = function (body, options) {
+      NakamaApi.prototype.sessionLogout = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/session/logout";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.readStorageObjects = function (body, options) {
+      NakamaApi.prototype.readStorageObjects = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/storage";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.writeStorageObjects = function (body, options) {
+      NakamaApi.prototype.writeStorageObjects = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/storage";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.deleteStorageObjects = function (body, options) {
+      NakamaApi.prototype.deleteStorageObjects = function (bearerToken, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (body === null || body === undefined) {
               throw new Error("'body' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/storage/delete";
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listStorageObjects = function (collection, userId, limit, cursor, options) {
+      NakamaApi.prototype.listStorageObjects = function (bearerToken, collection, userId, limit, cursor, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (collection === null || collection === undefined) {
               throw new Error("'collection' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/storage/{collection}"
               .replace("{collection}", encodeURIComponent(String(collection)));
-          var queryParams = {
-              userId: userId,
-              limit: limit,
-              cursor: cursor,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("userId", userId);
+          queryParams.set("limit", limit);
+          queryParams.set("cursor", cursor);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listStorageObjects2 = function (collection, userId, limit, cursor, options) {
+      NakamaApi.prototype.listStorageObjects2 = function (bearerToken, collection, userId, limit, cursor, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (collection === null || collection === undefined) {
               throw new Error("'collection' is a required parameter but is null or undefined.");
@@ -1642,44 +2942,98 @@
           var urlPath = "/v2/storage/{collection}/{userId}"
               .replace("{collection}", encodeURIComponent(String(collection)))
               .replace("{userId}", encodeURIComponent(String(userId)));
-          var queryParams = {
-              limit: limit,
-              cursor: cursor,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("limit", limit);
+          queryParams.set("cursor", cursor);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listTournaments = function (categoryStart, categoryEnd, startTime, endTime, limit, cursor, options) {
+      NakamaApi.prototype.listTournaments = function (bearerToken, categoryStart, categoryEnd, startTime, endTime, limit, cursor, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/tournament";
-          var queryParams = {
-              categoryStart: categoryStart,
-              categoryEnd: categoryEnd,
-              startTime: startTime,
-              endTime: endTime,
-              limit: limit,
-              cursor: cursor,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("categoryStart", categoryStart);
+          queryParams.set("categoryEnd", categoryEnd);
+          queryParams.set("startTime", startTime);
+          queryParams.set("endTime", endTime);
+          queryParams.set("limit", limit);
+          queryParams.set("cursor", cursor);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listTournamentRecords = function (tournamentId, ownerIds, limit, cursor, expiry, options) {
+      NakamaApi.prototype.listTournamentRecords = function (bearerToken, tournamentId, ownerIds, limit, cursor, expiry, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (tournamentId === null || tournamentId === undefined) {
               throw new Error("'tournamentId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/tournament/{tournamentId}"
               .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-          var queryParams = {
-              ownerIds: ownerIds,
-              limit: limit,
-              cursor: cursor,
-              expiry: expiry,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("ownerIds", ownerIds);
+          queryParams.set("limit", limit);
+          queryParams.set("cursor", cursor);
+          queryParams.set("expiry", expiry);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.writeTournamentRecord2 = function (tournamentId, body, options) {
+      NakamaApi.prototype.writeTournamentRecord2 = function (bearerToken, tournamentId, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (tournamentId === null || tournamentId === undefined) {
               throw new Error("'tournamentId' is a required parameter but is null or undefined.");
@@ -1689,12 +3043,31 @@
           }
           var urlPath = "/v2/tournament/{tournamentId}"
               .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.writeTournamentRecord = function (tournamentId, body, options) {
+      NakamaApi.prototype.writeTournamentRecord = function (bearerToken, tournamentId, body, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (tournamentId === null || tournamentId === undefined) {
               throw new Error("'tournamentId' is a required parameter but is null or undefined.");
@@ -1704,23 +3077,61 @@
           }
           var urlPath = "/v2/tournament/{tournamentId}"
               .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-          var queryParams = {};
-          var _body = null;
-          _body = JSON.stringify(body || {});
-          return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          bodyJson = JSON.stringify(body || {});
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.joinTournament = function (tournamentId, options) {
+      NakamaApi.prototype.joinTournament = function (bearerToken, tournamentId, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (tournamentId === null || tournamentId === undefined) {
               throw new Error("'tournamentId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/tournament/{tournamentId}/join"
               .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-          var queryParams = {};
-          var _body = null;
-          return this.doFetch(urlPath, "POST", queryParams, _body, options);
+          var queryParams = new Map();
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("POST", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listTournamentRecordsAroundOwner = function (tournamentId, ownerId, limit, expiry, options) {
+      NakamaApi.prototype.listTournamentRecordsAroundOwner = function (bearerToken, tournamentId, ownerId, limit, expiry, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (tournamentId === null || tournamentId === undefined) {
               throw new Error("'tournamentId' is a required parameter but is null or undefined.");
@@ -1731,38 +3142,91 @@
           var urlPath = "/v2/tournament/{tournamentId}/owner/{ownerId}"
               .replace("{tournamentId}", encodeURIComponent(String(tournamentId)))
               .replace("{ownerId}", encodeURIComponent(String(ownerId)));
-          var queryParams = {
-              limit: limit,
-              expiry: expiry,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("limit", limit);
+          queryParams.set("expiry", expiry);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.getUsers = function (ids, usernames, facebookIds, options) {
+      NakamaApi.prototype.getUsers = function (bearerToken, ids, usernames, facebookIds, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v2/user";
-          var queryParams = {
-              ids: ids,
-              usernames: usernames,
-              facebookIds: facebookIds,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("ids", ids);
+          queryParams.set("usernames", usernames);
+          queryParams.set("facebookIds", facebookIds);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
-      NakamaApi.prototype.listUserGroups = function (userId, limit, state, cursor, options) {
+      NakamaApi.prototype.listUserGroups = function (bearerToken, userId, limit, state, cursor, options) {
+          var _this = this;
           if (options === void 0) { options = {}; }
           if (userId === null || userId === undefined) {
               throw new Error("'userId' is a required parameter but is null or undefined.");
           }
           var urlPath = "/v2/user/{userId}/group"
               .replace("{userId}", encodeURIComponent(String(userId)));
-          var queryParams = {
-              limit: limit,
-              state: state,
-              cursor: cursor,
-          };
-          var _body = null;
-          return this.doFetch(urlPath, "GET", queryParams, _body, options);
+          var queryParams = new Map();
+          queryParams.set("limit", limit);
+          queryParams.set("state", state);
+          queryParams.set("cursor", cursor);
+          var bodyJson = "";
+          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fetchOptions = buildFetchOptions("GET", options, bodyJson);
+          fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          return Promise.race([
+              fetch(fullUrl, fetchOptions).then(function (response) {
+                  if (response.status == 204) {
+                      return response;
+                  }
+                  else if (response.status >= 200 && response.status < 300) {
+                      return response.json();
+                  }
+                  else {
+                      throw response;
+                  }
+              }),
+              new Promise(function (_, reject) {
+                  return setTimeout(reject, _this.timeoutMs, "Request timed out.");
+              }),
+          ]);
       };
       return NakamaApi;
   }());
@@ -1890,17 +3354,6 @@
       };
       return WebSocketAdapterText;
   }());
-
-  function b64EncodeUnicode(str) {
-      return encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
-          return String.fromCharCode(Number('0x' + p1));
-      }));
-  }
-  function b64DecodeUnicode(str) {
-      return decodeURIComponent(decode(str).split('').map(function (c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-  }
 
   var DefaultSocket = (function () {
       function DefaultSocket(host, port, useSSL, verbose, adapter) {
@@ -2487,13 +3940,7 @@
           this.expiredTimespanMs = DEFAULT_EXPIRED_TIMESPAN_MS;
           var scheme = (useSSL) ? "https://" : "http://";
           var basePath = "" + scheme + host + ":" + port;
-          this.configuration = {
-              basePath: basePath,
-              username: serverkey,
-              password: "",
-              timeoutMs: timeout,
-          };
-          this.apiClient = new NakamaApi(this.configuration);
+          this.apiClient = new NakamaApi(serverkey, basePath, timeout);
       }
       Client.prototype.addGroupUsers = function (session, groupId, ids) {
           return __awaiter(this, void 0, void 0, function () {
@@ -2506,11 +3953,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.addGroupUsers(groupId, ids).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.addGroupUsers(session.token, groupId, ids).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -2526,11 +3971,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.addFriends(ids, usernames).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.addFriends(session.token, ids, usernames).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -2545,7 +3988,7 @@
                       "token": token,
                       "vars": vars
                   };
-                  return [2, this.apiClient.authenticateApple(request, create, username, options).then(function (apiSession) {
+                  return [2, this.apiClient.authenticateApple(this.serverkey, "", request, create, username, options).then(function (apiSession) {
                           return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
                       })];
               });
@@ -2558,7 +4001,7 @@
               "id": id,
               "vars": vars
           };
-          return this.apiClient.authenticateCustom(request, create, username, options).then(function (apiSession) {
+          return this.apiClient.authenticateCustom(this.serverkey, "", request, create, username, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
@@ -2567,7 +4010,7 @@
               "id": id,
               "vars": vars
           };
-          return this.apiClient.authenticateDevice(request, create, username).then(function (apiSession) {
+          return this.apiClient.authenticateDevice(this.serverkey, "", request, create, username).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
@@ -2577,7 +4020,7 @@
               "password": password,
               "vars": vars
           };
-          return this.apiClient.authenticateEmail(request, create, username).then(function (apiSession) {
+          return this.apiClient.authenticateEmail(this.serverkey, "", request, create, username).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
@@ -2587,7 +4030,7 @@
               "signed_player_info": signedPlayerInfo,
               "vars": vars
           };
-          return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then(function (apiSession) {
+          return this.apiClient.authenticateFacebookInstantGame(this.serverkey, "", { signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
@@ -2597,7 +4040,7 @@
               "token": token,
               "vars": vars
           };
-          return this.apiClient.authenticateFacebook(request, create, username, sync, options).then(function (apiSession) {
+          return this.apiClient.authenticateFacebook(this.serverkey, "", request, create, username, sync, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
@@ -2607,7 +4050,7 @@
               "token": token,
               "vars": vars
           };
-          return this.apiClient.authenticateGoogle(request, create, username, options).then(function (apiSession) {
+          return this.apiClient.authenticateGoogle(this.serverkey, "", request, create, username, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
@@ -2616,7 +4059,7 @@
               "token": token,
               "vars": vars
           };
-          return this.apiClient.authenticateGameCenter(request, create, username).then(function (apiSession) {
+          return this.apiClient.authenticateGameCenter(this.serverkey, "", request, create, username).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
@@ -2629,7 +4072,7 @@
                       "vars": vars,
                       "sync": sync
                   };
-                  return [2, this.apiClient.authenticateSteam(request, create, username).then(function (apiSession) {
+                  return [2, this.apiClient.authenticateSteam(this.serverkey, "", request, create, username).then(function (apiSession) {
                           return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
                       })];
               });
@@ -2646,11 +4089,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.banGroupUsers(groupId, ids).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.banGroupUsers(session.token, groupId, ids).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -2666,11 +4107,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.blockFriends(ids, usernames).then(function (response) {
-                                  return Promise.resolve(response != undefined);
-                              })];
+                      case 2: return [2, this.apiClient.blockFriends(session.token, ids, usernames).then(function (response) {
+                              return Promise.resolve(response != undefined);
+                          })];
                   }
               });
           });
@@ -2686,24 +4125,22 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.createGroup(request).then(function (response) {
-                                  return Promise.resolve({
-                                      avatar_url: response.avatar_url,
-                                      create_time: response.create_time,
-                                      creator_id: response.creator_id,
-                                      description: response.description,
-                                      edge_count: response.edge_count ? Number(response.edge_count) : 0,
-                                      id: response.id,
-                                      lang_tag: response.lang_tag,
-                                      max_count: response.max_count ? Number(response.max_count) : 0,
-                                      metadata: response.metadata ? JSON.parse(response.metadata) : undefined,
-                                      name: response.name,
-                                      open: response.open,
-                                      update_time: response.update_time
-                                  });
-                              })];
+                      case 2: return [2, this.apiClient.createGroup(session.token, request).then(function (response) {
+                              return Promise.resolve({
+                                  avatar_url: response.avatar_url,
+                                  create_time: response.create_time,
+                                  creator_id: response.creator_id,
+                                  description: response.description,
+                                  edge_count: response.edge_count ? Number(response.edge_count) : 0,
+                                  id: response.id,
+                                  lang_tag: response.lang_tag,
+                                  max_count: response.max_count ? Number(response.max_count) : 0,
+                                  metadata: response.metadata ? JSON.parse(response.metadata) : undefined,
+                                  name: response.name,
+                                  open: response.open,
+                                  update_time: response.update_time
+                              });
+                          })];
                   }
               });
           });
@@ -2725,11 +4162,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.deleteFriends(ids, usernames).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.deleteFriends(session.token, ids, usernames).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -2745,11 +4180,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.deleteGroup(groupId).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.deleteGroup(session.token, groupId).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -2765,11 +4198,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.deleteNotifications(ids).then(function (response) {
-                                  return Promise.resolve(response != undefined);
-                              })];
+                      case 2: return [2, this.apiClient.deleteNotifications(session.token, ids).then(function (response) {
+                              return Promise.resolve(response != undefined);
+                          })];
                   }
               });
           });
@@ -2785,11 +4216,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.deleteStorageObjects(request).then(function (response) {
-                                  return Promise.resolve(response != undefined);
-                              })];
+                      case 2: return [2, this.apiClient.deleteStorageObjects(session.token, request).then(function (response) {
+                              return Promise.resolve(response != undefined);
+                          })];
                   }
               });
           });
@@ -2805,11 +4234,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.demoteGroupUsers(groupId, ids).then(function (response) {
-                                  return Promise.resolve(response != undefined);
-                              })];
+                      case 2: return [2, this.apiClient.demoteGroupUsers(session.token, groupId, ids).then(function (response) {
+                              return Promise.resolve(response != undefined);
+                          })];
                   }
               });
           });
@@ -2825,11 +4252,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.event(request).then(function (response) {
-                                  return Promise.resolve(response != undefined);
-                              })];
+                      case 2: return [2, this.apiClient.event(session.token, request).then(function (response) {
+                              return Promise.resolve(response != undefined);
+                          })];
                   }
               });
           });
@@ -2845,9 +4270,7 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.getAccount()];
+                      case 2: return [2, this.apiClient.getAccount(session.token)];
                   }
               });
           });
@@ -2863,11 +4286,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.importFacebookFriends(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.importFacebookFriends(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -2883,11 +4304,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.importSteamFriends(request, reset).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.importSteamFriends(session.token, request, reset).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -2903,37 +4322,35 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.getUsers(ids, usernames, facebookIds).then(function (response) {
-                                  var result = {
-                                      users: []
-                                  };
-                                  if (response.users == null) {
-                                      return Promise.resolve(result);
-                                  }
-                                  response.users.forEach(function (u) {
-                                      result.users.push({
-                                          avatar_url: u.avatar_url,
-                                          create_time: u.create_time,
-                                          display_name: u.display_name,
-                                          edge_count: u.edge_count ? Number(u.edge_count) : 0,
-                                          facebook_id: u.facebook_id,
-                                          gamecenter_id: u.gamecenter_id,
-                                          google_id: u.google_id,
-                                          id: u.id,
-                                          lang_tag: u.lang_tag,
-                                          location: u.location,
-                                          online: u.online,
-                                          steam_id: u.steam_id,
-                                          timezone: u.timezone,
-                                          update_time: u.update_time,
-                                          username: u.username,
-                                          metadata: u.metadata ? JSON.parse(u.metadata) : undefined
-                                      });
-                                  });
+                      case 2: return [2, this.apiClient.getUsers(session.token, ids, usernames, facebookIds).then(function (response) {
+                              var result = {
+                                  users: []
+                              };
+                              if (response.users == null) {
                                   return Promise.resolve(result);
-                              })];
+                              }
+                              response.users.forEach(function (u) {
+                                  result.users.push({
+                                      avatar_url: u.avatar_url,
+                                      create_time: u.create_time,
+                                      display_name: u.display_name,
+                                      edge_count: u.edge_count ? Number(u.edge_count) : 0,
+                                      facebook_id: u.facebook_id,
+                                      gamecenter_id: u.gamecenter_id,
+                                      google_id: u.google_id,
+                                      id: u.id,
+                                      lang_tag: u.lang_tag,
+                                      location: u.location,
+                                      online: u.online,
+                                      steam_id: u.steam_id,
+                                      timezone: u.timezone,
+                                      update_time: u.update_time,
+                                      username: u.username,
+                                      metadata: u.metadata ? JSON.parse(u.metadata) : undefined
+                                  });
+                              });
+                              return Promise.resolve(result);
+                          })];
                   }
               });
           });
@@ -2949,11 +4366,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.joinGroup(groupId, {}).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.joinGroup(session.token, groupId, {}).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -2969,11 +4384,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.joinTournament(tournamentId, {}).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.joinTournament(session.token, tournamentId, {}).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -2989,11 +4402,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.kickGroupUsers(groupId, ids).then(function (response) {
-                                  return Promise.resolve(response != undefined);
-                              })];
+                      case 2: return [2, this.apiClient.kickGroupUsers(session.token, groupId, ids).then(function (response) {
+                              return Promise.resolve(response != undefined);
+                          })];
                   }
               });
           });
@@ -3009,11 +4420,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.leaveGroup(groupId, {}).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.leaveGroup(session.token, groupId, {}).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -3029,36 +4438,34 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then(function (response) {
-                                  var result = {
-                                      messages: [],
-                                      next_cursor: response.next_cursor,
-                                      prev_cursor: response.prev_cursor
-                                  };
-                                  if (response.messages == null) {
-                                      return Promise.resolve(result);
-                                  }
-                                  response.messages.forEach(function (m) {
-                                      result.messages.push({
-                                          channel_id: m.channel_id,
-                                          code: m.code ? Number(m.code) : 0,
-                                          create_time: m.create_time,
-                                          message_id: m.message_id,
-                                          persistent: m.persistent,
-                                          sender_id: m.sender_id,
-                                          update_time: m.update_time,
-                                          username: m.username,
-                                          content: m.content ? JSON.parse(m.content) : undefined,
-                                          group_id: m.group_id,
-                                          room_name: m.room_name,
-                                          user_id_one: m.user_id_one,
-                                          user_id_two: m.user_id_two
-                                      });
-                                  });
+                      case 2: return [2, this.apiClient.listChannelMessages(session.token, channelId, limit, forward, cursor).then(function (response) {
+                              var result = {
+                                  messages: [],
+                                  next_cursor: response.next_cursor,
+                                  prev_cursor: response.prev_cursor
+                              };
+                              if (response.messages == null) {
                                   return Promise.resolve(result);
-                              })];
+                              }
+                              response.messages.forEach(function (m) {
+                                  result.messages.push({
+                                      channel_id: m.channel_id,
+                                      code: m.code ? Number(m.code) : 0,
+                                      create_time: m.create_time,
+                                      message_id: m.message_id,
+                                      persistent: m.persistent,
+                                      sender_id: m.sender_id,
+                                      update_time: m.update_time,
+                                      username: m.username,
+                                      content: m.content ? JSON.parse(m.content) : undefined,
+                                      group_id: m.group_id,
+                                      room_name: m.room_name,
+                                      user_id_one: m.user_id_one,
+                                      user_id_two: m.user_id_two
+                                  });
+                              });
+                              return Promise.resolve(result);
+                          })];
                   }
               });
           });
@@ -3074,41 +4481,39 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listGroupUsers(groupId, limit, state, cursor).then(function (response) {
-                                  var result = {
-                                      group_users: [],
-                                      cursor: response.cursor
-                                  };
-                                  if (response.group_users == null) {
-                                      return Promise.resolve(result);
-                                  }
-                                  response.group_users.forEach(function (gu) {
-                                      result.group_users.push({
-                                          user: {
-                                              avatar_url: gu.user.avatar_url,
-                                              create_time: gu.user.create_time,
-                                              display_name: gu.user.display_name,
-                                              edge_count: gu.user.edge_count ? Number(gu.user.edge_count) : 0,
-                                              facebook_id: gu.user.facebook_id,
-                                              gamecenter_id: gu.user.gamecenter_id,
-                                              google_id: gu.user.google_id,
-                                              id: gu.user.id,
-                                              lang_tag: gu.user.lang_tag,
-                                              location: gu.user.location,
-                                              online: gu.user.online,
-                                              steam_id: gu.user.steam_id,
-                                              timezone: gu.user.timezone,
-                                              update_time: gu.user.update_time,
-                                              username: gu.user.username,
-                                              metadata: gu.user.metadata ? JSON.parse(gu.user.metadata) : undefined
-                                          },
-                                          state: gu.state ? Number(gu.state) : 0
-                                      });
-                                  });
+                      case 2: return [2, this.apiClient.listGroupUsers(session.token, groupId, limit, state, cursor).then(function (response) {
+                              var result = {
+                                  group_users: [],
+                                  cursor: response.cursor
+                              };
+                              if (response.group_users == null) {
                                   return Promise.resolve(result);
-                              })];
+                              }
+                              response.group_users.forEach(function (gu) {
+                                  result.group_users.push({
+                                      user: {
+                                          avatar_url: gu.user.avatar_url,
+                                          create_time: gu.user.create_time,
+                                          display_name: gu.user.display_name,
+                                          edge_count: gu.user.edge_count ? Number(gu.user.edge_count) : 0,
+                                          facebook_id: gu.user.facebook_id,
+                                          gamecenter_id: gu.user.gamecenter_id,
+                                          google_id: gu.user.google_id,
+                                          id: gu.user.id,
+                                          lang_tag: gu.user.lang_tag,
+                                          location: gu.user.location,
+                                          online: gu.user.online,
+                                          steam_id: gu.user.steam_id,
+                                          timezone: gu.user.timezone,
+                                          update_time: gu.user.update_time,
+                                          username: gu.user.username,
+                                          metadata: gu.user.metadata ? JSON.parse(gu.user.metadata) : undefined
+                                      },
+                                      state: gu.state ? Number(gu.state) : 0
+                                  });
+                              });
+                              return Promise.resolve(result);
+                          })];
                   }
               });
           });
@@ -3124,37 +4529,35 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listUserGroups(userId, state, limit, cursor).then(function (response) {
-                                  var result = {
-                                      user_groups: [],
-                                      cursor: response.cursor,
-                                  };
-                                  if (response.user_groups == null) {
-                                      return Promise.resolve(result);
-                                  }
-                                  response.user_groups.forEach(function (ug) {
-                                      result.user_groups.push({
-                                          group: {
-                                              avatar_url: ug.group.avatar_url,
-                                              create_time: ug.group.create_time,
-                                              creator_id: ug.group.creator_id,
-                                              description: ug.group.description,
-                                              edge_count: ug.group.edge_count ? Number(ug.group.edge_count) : 0,
-                                              id: ug.group.id,
-                                              lang_tag: ug.group.lang_tag,
-                                              max_count: ug.group.max_count,
-                                              metadata: ug.group.metadata ? JSON.parse(ug.group.metadata) : undefined,
-                                              name: ug.group.name,
-                                              open: ug.group.open,
-                                              update_time: ug.group.update_time
-                                          },
-                                          state: ug.state ? Number(ug.state) : 0
-                                      });
-                                  });
+                      case 2: return [2, this.apiClient.listUserGroups(session.token, userId, state, limit, cursor).then(function (response) {
+                              var result = {
+                                  user_groups: [],
+                                  cursor: response.cursor,
+                              };
+                              if (response.user_groups == null) {
                                   return Promise.resolve(result);
-                              })];
+                              }
+                              response.user_groups.forEach(function (ug) {
+                                  result.user_groups.push({
+                                      group: {
+                                          avatar_url: ug.group.avatar_url,
+                                          create_time: ug.group.create_time,
+                                          creator_id: ug.group.creator_id,
+                                          description: ug.group.description,
+                                          edge_count: ug.group.edge_count ? Number(ug.group.edge_count) : 0,
+                                          id: ug.group.id,
+                                          lang_tag: ug.group.lang_tag,
+                                          max_count: ug.group.max_count,
+                                          metadata: ug.group.metadata ? JSON.parse(ug.group.metadata) : undefined,
+                                          name: ug.group.name,
+                                          open: ug.group.open,
+                                          update_time: ug.group.update_time
+                                      },
+                                      state: ug.state ? Number(ug.state) : 0
+                                  });
+                              });
+                              return Promise.resolve(result);
+                          })];
                   }
               });
           });
@@ -3170,34 +4573,32 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listGroups(name, cursor, limit).then(function (response) {
-                                  var result = {
-                                      groups: []
-                                  };
-                                  if (response.groups == null) {
-                                      return Promise.resolve(result);
-                                  }
-                                  result.cursor = response.cursor;
-                                  response.groups.forEach(function (ug) {
-                                      result.groups.push({
-                                          avatar_url: ug.avatar_url,
-                                          create_time: ug.create_time,
-                                          creator_id: ug.creator_id,
-                                          description: ug.description,
-                                          edge_count: ug.edge_count ? Number(ug.edge_count) : 0,
-                                          id: ug.id,
-                                          lang_tag: ug.lang_tag,
-                                          max_count: ug.max_count,
-                                          metadata: ug.metadata ? JSON.parse(ug.metadata) : undefined,
-                                          name: ug.name,
-                                          open: ug.open,
-                                          update_time: ug.update_time
-                                      });
-                                  });
+                      case 2: return [2, this.apiClient.listGroups(session.token, name, cursor, limit).then(function (response) {
+                              var result = {
+                                  groups: []
+                              };
+                              if (response.groups == null) {
                                   return Promise.resolve(result);
-                              })];
+                              }
+                              result.cursor = response.cursor;
+                              response.groups.forEach(function (ug) {
+                                  result.groups.push({
+                                      avatar_url: ug.avatar_url,
+                                      create_time: ug.create_time,
+                                      creator_id: ug.creator_id,
+                                      description: ug.description,
+                                      edge_count: ug.edge_count ? Number(ug.edge_count) : 0,
+                                      id: ug.id,
+                                      lang_tag: ug.lang_tag,
+                                      max_count: ug.max_count,
+                                      metadata: ug.metadata ? JSON.parse(ug.metadata) : undefined,
+                                      name: ug.name,
+                                      open: ug.open,
+                                      update_time: ug.update_time
+                                  });
+                              });
+                              return Promise.resolve(result);
+                          })];
                   }
               });
           });
@@ -3213,11 +4614,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.linkApple(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.linkApple(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -3233,11 +4632,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.linkCustom(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.linkCustom(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -3253,11 +4650,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.linkDevice(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.linkDevice(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -3273,11 +4668,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.linkEmail(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.linkEmail(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -3293,11 +4686,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.linkFacebook(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.linkFacebook(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -3313,11 +4704,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.linkFacebookInstantGame(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.linkFacebookInstantGame(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -3333,11 +4722,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.linkGoogle(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.linkGoogle(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -3353,11 +4740,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.linkGameCenter(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.linkGameCenter(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -3373,11 +4758,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.linkSteam(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.linkSteam(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -3393,42 +4776,40 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listFriends(limit, state, cursor).then(function (response) {
-                                  var result = {
-                                      friends: [],
-                                      cursor: response.cursor
-                                  };
-                                  if (response.friends == null) {
-                                      return Promise.resolve(result);
-                                  }
-                                  response.friends.forEach(function (f) {
-                                      result.friends.push({
-                                          user: {
-                                              avatar_url: f.user.avatar_url,
-                                              create_time: f.user.create_time,
-                                              display_name: f.user.display_name,
-                                              edge_count: f.user.edge_count ? Number(f.user.edge_count) : 0,
-                                              facebook_id: f.user.facebook_id,
-                                              gamecenter_id: f.user.gamecenter_id,
-                                              google_id: f.user.google_id,
-                                              id: f.user.id,
-                                              lang_tag: f.user.lang_tag,
-                                              location: f.user.location,
-                                              online: f.user.online,
-                                              steam_id: f.user.steam_id,
-                                              timezone: f.user.timezone,
-                                              update_time: f.user.update_time,
-                                              username: f.user.username,
-                                              metadata: f.user.metadata ? JSON.parse(f.user.metadata) : undefined,
-                                              facebook_instant_game_id: f.user.facebook_instant_game_id
-                                          },
-                                          state: f.state
-                                      });
-                                  });
+                      case 2: return [2, this.apiClient.listFriends(session.token, limit, state, cursor).then(function (response) {
+                              var result = {
+                                  friends: [],
+                                  cursor: response.cursor
+                              };
+                              if (response.friends == null) {
                                   return Promise.resolve(result);
-                              })];
+                              }
+                              response.friends.forEach(function (f) {
+                                  result.friends.push({
+                                      user: {
+                                          avatar_url: f.user.avatar_url,
+                                          create_time: f.user.create_time,
+                                          display_name: f.user.display_name,
+                                          edge_count: f.user.edge_count ? Number(f.user.edge_count) : 0,
+                                          facebook_id: f.user.facebook_id,
+                                          gamecenter_id: f.user.gamecenter_id,
+                                          google_id: f.user.google_id,
+                                          id: f.user.id,
+                                          lang_tag: f.user.lang_tag,
+                                          location: f.user.location,
+                                          online: f.user.online,
+                                          steam_id: f.user.steam_id,
+                                          timezone: f.user.timezone,
+                                          update_time: f.user.update_time,
+                                          username: f.user.username,
+                                          metadata: f.user.metadata ? JSON.parse(f.user.metadata) : undefined,
+                                          facebook_instant_game_id: f.user.facebook_instant_game_id
+                                      },
+                                      state: f.state
+                                  });
+                              });
+                              return Promise.resolve(result);
+                          })];
                   }
               });
           });
@@ -3444,51 +4825,49 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry).then(function (response) {
-                                  var list = {
-                                      next_cursor: response.next_cursor,
-                                      prev_cursor: response.prev_cursor,
-                                      owner_records: [],
-                                      records: []
-                                  };
-                                  if (response.owner_records != null) {
-                                      response.owner_records.forEach(function (o) {
-                                          list.owner_records.push({
-                                              expiry_time: o.expiry_time,
-                                              leaderboard_id: o.leaderboard_id,
-                                              metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                                              num_score: o.num_score ? Number(o.num_score) : 0,
-                                              owner_id: o.owner_id,
-                                              rank: o.rank ? Number(o.rank) : 0,
-                                              score: o.score ? Number(o.score) : 0,
-                                              subscore: o.subscore ? Number(o.subscore) : 0,
-                                              update_time: o.update_time,
-                                              username: o.username,
-                                              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
-                                          });
+                      case 2: return [2, this.apiClient.listLeaderboardRecords(session.token, leaderboardId, ownerIds, limit, cursor, expiry).then(function (response) {
+                              var list = {
+                                  next_cursor: response.next_cursor,
+                                  prev_cursor: response.prev_cursor,
+                                  owner_records: [],
+                                  records: []
+                              };
+                              if (response.owner_records != null) {
+                                  response.owner_records.forEach(function (o) {
+                                      list.owner_records.push({
+                                          expiry_time: o.expiry_time,
+                                          leaderboard_id: o.leaderboard_id,
+                                          metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                                          num_score: o.num_score ? Number(o.num_score) : 0,
+                                          owner_id: o.owner_id,
+                                          rank: o.rank ? Number(o.rank) : 0,
+                                          score: o.score ? Number(o.score) : 0,
+                                          subscore: o.subscore ? Number(o.subscore) : 0,
+                                          update_time: o.update_time,
+                                          username: o.username,
+                                          max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                                       });
-                                  }
-                                  if (response.records != null) {
-                                      response.records.forEach(function (o) {
-                                          list.records.push({
-                                              expiry_time: o.expiry_time,
-                                              leaderboard_id: o.leaderboard_id,
-                                              metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                                              num_score: o.num_score ? Number(o.num_score) : 0,
-                                              owner_id: o.owner_id,
-                                              rank: o.rank ? Number(o.rank) : 0,
-                                              score: o.score ? Number(o.score) : 0,
-                                              subscore: o.subscore ? Number(o.subscore) : 0,
-                                              update_time: o.update_time,
-                                              username: o.username,
-                                              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
-                                          });
+                                  });
+                              }
+                              if (response.records != null) {
+                                  response.records.forEach(function (o) {
+                                      list.records.push({
+                                          expiry_time: o.expiry_time,
+                                          leaderboard_id: o.leaderboard_id,
+                                          metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                                          num_score: o.num_score ? Number(o.num_score) : 0,
+                                          owner_id: o.owner_id,
+                                          rank: o.rank ? Number(o.rank) : 0,
+                                          score: o.score ? Number(o.score) : 0,
+                                          subscore: o.subscore ? Number(o.subscore) : 0,
+                                          update_time: o.update_time,
+                                          username: o.username,
+                                          max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                                       });
-                                  }
-                                  return Promise.resolve(list);
-                              })];
+                                  });
+                              }
+                              return Promise.resolve(list);
+                          })];
                   }
               });
           });
@@ -3504,51 +4883,49 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry).then(function (response) {
-                                  var list = {
-                                      next_cursor: response.next_cursor,
-                                      prev_cursor: response.prev_cursor,
-                                      owner_records: [],
-                                      records: []
-                                  };
-                                  if (response.owner_records != null) {
-                                      response.owner_records.forEach(function (o) {
-                                          list.owner_records.push({
-                                              expiry_time: o.expiry_time,
-                                              leaderboard_id: o.leaderboard_id,
-                                              metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                                              num_score: o.num_score ? Number(o.num_score) : 0,
-                                              owner_id: o.owner_id,
-                                              rank: o.rank ? Number(o.rank) : 0,
-                                              score: o.score ? Number(o.score) : 0,
-                                              subscore: o.subscore ? Number(o.subscore) : 0,
-                                              update_time: o.update_time,
-                                              username: o.username,
-                                              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
-                                          });
+                      case 2: return [2, this.apiClient.listLeaderboardRecordsAroundOwner(session.token, leaderboardId, ownerId, limit, expiry).then(function (response) {
+                              var list = {
+                                  next_cursor: response.next_cursor,
+                                  prev_cursor: response.prev_cursor,
+                                  owner_records: [],
+                                  records: []
+                              };
+                              if (response.owner_records != null) {
+                                  response.owner_records.forEach(function (o) {
+                                      list.owner_records.push({
+                                          expiry_time: o.expiry_time,
+                                          leaderboard_id: o.leaderboard_id,
+                                          metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                                          num_score: o.num_score ? Number(o.num_score) : 0,
+                                          owner_id: o.owner_id,
+                                          rank: o.rank ? Number(o.rank) : 0,
+                                          score: o.score ? Number(o.score) : 0,
+                                          subscore: o.subscore ? Number(o.subscore) : 0,
+                                          update_time: o.update_time,
+                                          username: o.username,
+                                          max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                                       });
-                                  }
-                                  if (response.records != null) {
-                                      response.records.forEach(function (o) {
-                                          list.records.push({
-                                              expiry_time: o.expiry_time,
-                                              leaderboard_id: o.leaderboard_id,
-                                              metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                                              num_score: o.num_score ? Number(o.num_score) : 0,
-                                              owner_id: o.owner_id,
-                                              rank: o.rank ? Number(o.rank) : 0,
-                                              score: o.score ? Number(o.score) : 0,
-                                              subscore: o.subscore ? Number(o.subscore) : 0,
-                                              update_time: o.update_time,
-                                              username: o.username,
-                                              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
-                                          });
+                                  });
+                              }
+                              if (response.records != null) {
+                                  response.records.forEach(function (o) {
+                                      list.records.push({
+                                          expiry_time: o.expiry_time,
+                                          leaderboard_id: o.leaderboard_id,
+                                          metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                                          num_score: o.num_score ? Number(o.num_score) : 0,
+                                          owner_id: o.owner_id,
+                                          rank: o.rank ? Number(o.rank) : 0,
+                                          score: o.score ? Number(o.score) : 0,
+                                          subscore: o.subscore ? Number(o.subscore) : 0,
+                                          update_time: o.update_time,
+                                          username: o.username,
+                                          max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                                       });
-                                  }
-                                  return Promise.resolve(list);
-                              })];
+                                  });
+                              }
+                              return Promise.resolve(list);
+                          })];
                   }
               });
           });
@@ -3564,9 +4941,7 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize, query)];
+                      case 2: return [2, this.apiClient.listMatches(session.token, limit, authoritative, label, minSize, maxSize, query)];
                   }
               });
           });
@@ -3582,29 +4957,27 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listNotifications(limit, cacheableCursor).then(function (response) {
-                                  var result = {
-                                      cacheable_cursor: response.cacheable_cursor,
-                                      notifications: [],
-                                  };
-                                  if (response.notifications == null) {
-                                      return Promise.resolve(result);
-                                  }
-                                  response.notifications.forEach(function (n) {
-                                      result.notifications.push({
-                                          code: n.code ? Number(n.code) : 0,
-                                          create_time: n.create_time,
-                                          id: n.id,
-                                          persistent: n.persistent,
-                                          sender_id: n.sender_id,
-                                          subject: n.subject,
-                                          content: n.content ? JSON.parse(n.content) : undefined
-                                      });
-                                  });
+                      case 2: return [2, this.apiClient.listNotifications(session.token, limit, cacheableCursor).then(function (response) {
+                              var result = {
+                                  cacheable_cursor: response.cacheable_cursor,
+                                  notifications: [],
+                              };
+                              if (response.notifications == null) {
                                   return Promise.resolve(result);
-                              })];
+                              }
+                              response.notifications.forEach(function (n) {
+                                  result.notifications.push({
+                                      code: n.code ? Number(n.code) : 0,
+                                      create_time: n.create_time,
+                                      id: n.id,
+                                      persistent: n.persistent,
+                                      sender_id: n.sender_id,
+                                      subject: n.subject,
+                                      content: n.content ? JSON.parse(n.content) : undefined
+                                  });
+                              });
+                              return Promise.resolve(result);
+                          })];
                   }
               });
           });
@@ -3620,31 +4993,29 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listStorageObjects(collection, userId, limit, cursor).then(function (response) {
-                                  var result = {
-                                      objects: [],
-                                      cursor: response.cursor
-                                  };
-                                  if (response.objects == null) {
-                                      return Promise.resolve(result);
-                                  }
-                                  response.objects.forEach(function (o) {
-                                      result.objects.push({
-                                          collection: o.collection,
-                                          key: o.key,
-                                          permission_read: o.permission_read ? Number(o.permission_read) : 0,
-                                          permission_write: o.permission_write ? Number(o.permission_write) : 0,
-                                          value: o.value ? JSON.parse(o.value) : undefined,
-                                          version: o.version,
-                                          user_id: o.user_id,
-                                          create_time: o.create_time,
-                                          update_time: o.update_time
-                                      });
-                                  });
+                      case 2: return [2, this.apiClient.listStorageObjects(session.token, collection, userId, limit, cursor).then(function (response) {
+                              var result = {
+                                  objects: [],
+                                  cursor: response.cursor
+                              };
+                              if (response.objects == null) {
                                   return Promise.resolve(result);
-                              })];
+                              }
+                              response.objects.forEach(function (o) {
+                                  result.objects.push({
+                                      collection: o.collection,
+                                      key: o.key,
+                                      permission_read: o.permission_read ? Number(o.permission_read) : 0,
+                                      permission_write: o.permission_write ? Number(o.permission_write) : 0,
+                                      value: o.value ? JSON.parse(o.value) : undefined,
+                                      version: o.version,
+                                      user_id: o.user_id,
+                                      create_time: o.create_time,
+                                      update_time: o.update_time
+                                  });
+                              });
+                              return Promise.resolve(result);
+                          })];
                   }
               });
           });
@@ -3660,38 +5031,36 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor).then(function (response) {
-                                  var list = {
-                                      cursor: response.cursor,
-                                      tournaments: [],
-                                  };
-                                  if (response.tournaments != null) {
-                                      response.tournaments.forEach(function (o) {
-                                          list.tournaments.push({
-                                              id: o.id,
-                                              title: o.title,
-                                              description: o.description,
-                                              duration: o.duration ? Number(o.duration) : 0,
-                                              category: o.category ? Number(o.category) : 0,
-                                              sort_order: o.sort_order ? Number(o.sort_order) : 0,
-                                              size: o.size ? Number(o.size) : 0,
-                                              max_size: o.max_size ? Number(o.max_size) : 0,
-                                              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
-                                              can_enter: o.can_enter,
-                                              end_active: o.end_active ? Number(o.end_active) : 0,
-                                              next_reset: o.next_reset ? Number(o.next_reset) : 0,
-                                              metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                                              create_time: o.create_time,
-                                              start_time: o.start_time,
-                                              end_time: o.end_time,
-                                              start_active: o.start_active,
-                                          });
+                      case 2: return [2, this.apiClient.listTournaments(session.token, categoryStart, categoryEnd, startTime, endTime, limit, cursor).then(function (response) {
+                              var list = {
+                                  cursor: response.cursor,
+                                  tournaments: [],
+                              };
+                              if (response.tournaments != null) {
+                                  response.tournaments.forEach(function (o) {
+                                      list.tournaments.push({
+                                          id: o.id,
+                                          title: o.title,
+                                          description: o.description,
+                                          duration: o.duration ? Number(o.duration) : 0,
+                                          category: o.category ? Number(o.category) : 0,
+                                          sort_order: o.sort_order ? Number(o.sort_order) : 0,
+                                          size: o.size ? Number(o.size) : 0,
+                                          max_size: o.max_size ? Number(o.max_size) : 0,
+                                          max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
+                                          can_enter: o.can_enter,
+                                          end_active: o.end_active ? Number(o.end_active) : 0,
+                                          next_reset: o.next_reset ? Number(o.next_reset) : 0,
+                                          metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                                          create_time: o.create_time,
+                                          start_time: o.start_time,
+                                          end_time: o.end_time,
+                                          start_active: o.start_active,
                                       });
-                                  }
-                                  return Promise.resolve(list);
-                              })];
+                                  });
+                              }
+                              return Promise.resolve(list);
+                          })];
                   }
               });
           });
@@ -3707,51 +5076,49 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry).then(function (response) {
-                                  var list = {
-                                      next_cursor: response.next_cursor,
-                                      prev_cursor: response.prev_cursor,
-                                      owner_records: [],
-                                      records: []
-                                  };
-                                  if (response.owner_records != null) {
-                                      response.owner_records.forEach(function (o) {
-                                          list.owner_records.push({
-                                              expiry_time: o.expiry_time,
-                                              leaderboard_id: o.leaderboard_id,
-                                              metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                                              num_score: o.num_score ? Number(o.num_score) : 0,
-                                              owner_id: o.owner_id,
-                                              rank: o.rank ? Number(o.rank) : 0,
-                                              score: o.score ? Number(o.score) : 0,
-                                              subscore: o.subscore ? Number(o.subscore) : 0,
-                                              update_time: o.update_time,
-                                              username: o.username,
-                                              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
-                                          });
+                      case 2: return [2, this.apiClient.listTournamentRecords(session.token, tournamentId, ownerIds, limit, cursor, expiry).then(function (response) {
+                              var list = {
+                                  next_cursor: response.next_cursor,
+                                  prev_cursor: response.prev_cursor,
+                                  owner_records: [],
+                                  records: []
+                              };
+                              if (response.owner_records != null) {
+                                  response.owner_records.forEach(function (o) {
+                                      list.owner_records.push({
+                                          expiry_time: o.expiry_time,
+                                          leaderboard_id: o.leaderboard_id,
+                                          metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                                          num_score: o.num_score ? Number(o.num_score) : 0,
+                                          owner_id: o.owner_id,
+                                          rank: o.rank ? Number(o.rank) : 0,
+                                          score: o.score ? Number(o.score) : 0,
+                                          subscore: o.subscore ? Number(o.subscore) : 0,
+                                          update_time: o.update_time,
+                                          username: o.username,
+                                          max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                                       });
-                                  }
-                                  if (response.records != null) {
-                                      response.records.forEach(function (o) {
-                                          list.records.push({
-                                              expiry_time: o.expiry_time,
-                                              leaderboard_id: o.leaderboard_id,
-                                              metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                                              num_score: o.num_score ? Number(o.num_score) : 0,
-                                              owner_id: o.owner_id,
-                                              rank: o.rank ? Number(o.rank) : 0,
-                                              score: o.score ? Number(o.score) : 0,
-                                              subscore: o.subscore ? Number(o.subscore) : 0,
-                                              update_time: o.update_time,
-                                              username: o.username,
-                                              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
-                                          });
+                                  });
+                              }
+                              if (response.records != null) {
+                                  response.records.forEach(function (o) {
+                                      list.records.push({
+                                          expiry_time: o.expiry_time,
+                                          leaderboard_id: o.leaderboard_id,
+                                          metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                                          num_score: o.num_score ? Number(o.num_score) : 0,
+                                          owner_id: o.owner_id,
+                                          rank: o.rank ? Number(o.rank) : 0,
+                                          score: o.score ? Number(o.score) : 0,
+                                          subscore: o.subscore ? Number(o.subscore) : 0,
+                                          update_time: o.update_time,
+                                          username: o.username,
+                                          max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                                       });
-                                  }
-                                  return Promise.resolve(list);
-                              })];
+                                  });
+                              }
+                              return Promise.resolve(list);
+                          })];
                   }
               });
           });
@@ -3767,51 +5134,49 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry).then(function (response) {
-                                  var list = {
-                                      next_cursor: response.next_cursor,
-                                      prev_cursor: response.prev_cursor,
-                                      owner_records: [],
-                                      records: []
-                                  };
-                                  if (response.owner_records != null) {
-                                      response.owner_records.forEach(function (o) {
-                                          list.owner_records.push({
-                                              expiry_time: o.expiry_time,
-                                              leaderboard_id: o.leaderboard_id,
-                                              metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                                              num_score: o.num_score ? Number(o.num_score) : 0,
-                                              owner_id: o.owner_id,
-                                              rank: o.rank ? Number(o.rank) : 0,
-                                              score: o.score ? Number(o.score) : 0,
-                                              subscore: o.subscore ? Number(o.subscore) : 0,
-                                              update_time: o.update_time,
-                                              username: o.username,
-                                              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
-                                          });
+                      case 2: return [2, this.apiClient.listTournamentRecordsAroundOwner(session.token, tournamentId, ownerId, limit, expiry).then(function (response) {
+                              var list = {
+                                  next_cursor: response.next_cursor,
+                                  prev_cursor: response.prev_cursor,
+                                  owner_records: [],
+                                  records: []
+                              };
+                              if (response.owner_records != null) {
+                                  response.owner_records.forEach(function (o) {
+                                      list.owner_records.push({
+                                          expiry_time: o.expiry_time,
+                                          leaderboard_id: o.leaderboard_id,
+                                          metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                                          num_score: o.num_score ? Number(o.num_score) : 0,
+                                          owner_id: o.owner_id,
+                                          rank: o.rank ? Number(o.rank) : 0,
+                                          score: o.score ? Number(o.score) : 0,
+                                          subscore: o.subscore ? Number(o.subscore) : 0,
+                                          update_time: o.update_time,
+                                          username: o.username,
+                                          max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                                       });
-                                  }
-                                  if (response.records != null) {
-                                      response.records.forEach(function (o) {
-                                          list.records.push({
-                                              expiry_time: o.expiry_time,
-                                              leaderboard_id: o.leaderboard_id,
-                                              metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
-                                              num_score: o.num_score ? Number(o.num_score) : 0,
-                                              owner_id: o.owner_id,
-                                              rank: o.rank ? Number(o.rank) : 0,
-                                              score: o.score ? Number(o.score) : 0,
-                                              subscore: o.subscore ? Number(o.subscore) : 0,
-                                              update_time: o.update_time,
-                                              username: o.username,
-                                              max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
-                                          });
+                                  });
+                              }
+                              if (response.records != null) {
+                                  response.records.forEach(function (o) {
+                                      list.records.push({
+                                          expiry_time: o.expiry_time,
+                                          leaderboard_id: o.leaderboard_id,
+                                          metadata: o.metadata ? JSON.parse(o.metadata) : undefined,
+                                          num_score: o.num_score ? Number(o.num_score) : 0,
+                                          owner_id: o.owner_id,
+                                          rank: o.rank ? Number(o.rank) : 0,
+                                          score: o.score ? Number(o.score) : 0,
+                                          subscore: o.subscore ? Number(o.subscore) : 0,
+                                          update_time: o.update_time,
+                                          username: o.username,
+                                          max_num_score: o.max_num_score ? Number(o.max_num_score) : 0,
                                       });
-                                  }
-                                  return Promise.resolve(list);
-                              })];
+                                  });
+                              }
+                              return Promise.resolve(list);
+                          })];
                   }
               });
           });
@@ -3827,9 +5192,7 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.promoteGroupUsers(groupId, ids)];
+                      case 2: return [2, this.apiClient.promoteGroupUsers(session.token, groupId, ids)];
                   }
               });
           });
@@ -3845,28 +5208,26 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.readStorageObjects(request).then(function (response) {
-                                  var result = { objects: [] };
-                                  if (response.objects == null) {
-                                      return Promise.resolve(result);
-                                  }
-                                  response.objects.forEach(function (o) {
-                                      result.objects.push({
-                                          collection: o.collection,
-                                          key: o.key,
-                                          permission_read: o.permission_read ? Number(o.permission_read) : 0,
-                                          permission_write: o.permission_write ? Number(o.permission_write) : 0,
-                                          value: o.value ? JSON.parse(o.value) : undefined,
-                                          version: o.version,
-                                          user_id: o.user_id,
-                                          create_time: o.create_time,
-                                          update_time: o.update_time
-                                      });
-                                  });
+                      case 2: return [2, this.apiClient.readStorageObjects(session.token, request).then(function (response) {
+                              var result = { objects: [] };
+                              if (response.objects == null) {
                                   return Promise.resolve(result);
-                              })];
+                              }
+                              response.objects.forEach(function (o) {
+                                  result.objects.push({
+                                      collection: o.collection,
+                                      key: o.key,
+                                      permission_read: o.permission_read ? Number(o.permission_read) : 0,
+                                      permission_write: o.permission_write ? Number(o.permission_write) : 0,
+                                      value: o.value ? JSON.parse(o.value) : undefined,
+                                      version: o.version,
+                                      user_id: o.user_id,
+                                      create_time: o.create_time,
+                                      update_time: o.update_time
+                                  });
+                              });
+                              return Promise.resolve(result);
+                          })];
                   }
               });
           });
@@ -3882,50 +5243,28 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.rpcFunc(id, JSON.stringify(input)).then(function (response) {
-                                  return Promise.resolve({
-                                      id: response.id,
-                                      payload: (!response.payload) ? undefined : JSON.parse(response.payload)
-                                  });
-                              })];
+                      case 2: return [2, this.apiClient.rpcFunc(session.token, id, JSON.stringify(input)).then(function (response) {
+                              return Promise.resolve({
+                                  id: response.id,
+                                  payload: (!response.payload) ? undefined : JSON.parse(response.payload)
+                              });
+                          })];
                   }
               });
           });
       };
-      Client.prototype.rpcGet = function (id, session, httpKey, input) {
+      Client.prototype.rpcHttpKey = function (id, httpKey, input) {
           return __awaiter(this, void 0, void 0, function () {
-              var _this = this;
               return __generator(this, function (_a) {
-                  switch (_a.label) {
-                      case 0:
-                          if (!(session && this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
-                      case 1:
-                          _a.sent();
-                          _a.label = 2;
-                      case 2:
-                          if (!httpKey || httpKey == "") {
-                              this.configuration.bearerToken = (session && session.token);
-                          }
-                          else {
-                              this.configuration.username = undefined;
-                              this.configuration.bearerToken = undefined;
-                          }
-                          return [2, this.apiClient.rpcFunc2(id, input && JSON.stringify(input) || "", httpKey)
-                                  .then(function (response) {
-                                  _this.configuration.username = _this.serverkey;
-                                  return Promise.resolve({
-                                      id: response.id,
-                                      payload: (!response.payload) ? undefined : JSON.parse(response.payload)
-                                  });
-                              }).catch(function (err) {
-                                  _this.configuration.username = _this.serverkey;
-                                  throw err;
-                              })];
-                  }
+                  return [2, this.apiClient.rpcFunc2(id, input && JSON.stringify(input) || "", httpKey)
+                          .then(function (response) {
+                          return Promise.resolve({
+                              id: response.id,
+                              payload: (!response.payload) ? undefined : JSON.parse(response.payload)
+                          });
+                      }).catch(function (err) {
+                          throw err;
+                      })];
               });
           });
       };
@@ -3940,11 +5279,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.sessionLogout({ refresh_token: refreshToken, token: token }).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.sessionLogout(session.token, { refresh_token: refreshToken, token: token }).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -3966,7 +5303,7 @@
                           if (session.created && session.refresh_expires_at - session.created_at < 3700) {
                               console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
                           }
-                          return [4, this.apiClient.sessionRefresh({ token: session.refresh_token, vars: vars })];
+                          return [4, this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars: vars })];
                       case 1:
                           apiSession = _a.sent();
                           session.update(apiSession.token, apiSession.refresh_token);
@@ -3986,11 +5323,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.unlinkApple(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.unlinkApple(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -4006,11 +5341,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.unlinkCustom(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.unlinkCustom(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -4026,11 +5359,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.unlinkDevice(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.unlinkDevice(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -4046,11 +5377,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.unlinkEmail(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.unlinkEmail(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -4066,11 +5395,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.unlinkFacebook(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.unlinkFacebook(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -4086,11 +5413,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.unlinkFacebookInstantGame(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.unlinkFacebookInstantGame(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -4106,11 +5431,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.unlinkGoogle(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.unlinkGoogle(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -4126,11 +5449,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.unlinkGameCenter(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.unlinkGameCenter(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -4146,11 +5467,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.unlinkSteam(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.unlinkSteam(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -4166,11 +5485,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.updateAccount(request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.updateAccount(session.token, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -4186,11 +5503,9 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.updateGroup(groupId, request).then(function (response) {
-                                  return response !== undefined;
-                              })];
+                      case 2: return [2, this.apiClient.updateGroup(session.token, groupId, request).then(function (response) {
+                              return response !== undefined;
+                          })];
                   }
               });
           });
@@ -4206,9 +5521,7 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.validatePurchaseApple({ receipt: receipt })];
+                      case 2: return [2, this.apiClient.validatePurchaseApple(session.token, { receipt: receipt })];
                   }
               });
           });
@@ -4224,9 +5537,7 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.validatePurchaseGoogle({ purchase: purchase })];
+                      case 2: return [2, this.apiClient.validatePurchaseGoogle(session.token, { purchase: purchase })];
                   }
               });
           });
@@ -4242,9 +5553,7 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.validatePurchaseHuawei({ purchase: purchase, signature: signature })];
+                      case 2: return [2, this.apiClient.validatePurchaseHuawei(session.token, { purchase: purchase, signature: signature })];
                   }
               });
           });
@@ -4260,27 +5569,25 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2:
-                          this.configuration.bearerToken = (session && session.token);
-                          return [2, this.apiClient.writeLeaderboardRecord(leaderboardId, {
-                                  metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
-                                  score: request.score,
-                                  subscore: request.subscore
-                              }).then(function (response) {
-                                  return Promise.resolve({
-                                      expiry_time: response.expiry_time,
-                                      leaderboard_id: response.leaderboard_id,
-                                      metadata: response.metadata ? JSON.parse(response.metadata) : undefined,
-                                      num_score: response.num_score ? Number(response.num_score) : 0,
-                                      owner_id: response.owner_id,
-                                      score: response.score ? Number(response.score) : 0,
-                                      subscore: response.subscore ? Number(response.subscore) : 0,
-                                      update_time: response.update_time,
-                                      username: response.username,
-                                      max_num_score: response.max_num_score ? Number(response.max_num_score) : 0,
-                                      rank: response.rank ? Number(response.rank) : 0,
-                                  });
-                              })];
+                      case 2: return [2, this.apiClient.writeLeaderboardRecord(session.token, leaderboardId, {
+                              metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
+                              score: request.score,
+                              subscore: request.subscore
+                          }).then(function (response) {
+                              return Promise.resolve({
+                                  expiry_time: response.expiry_time,
+                                  leaderboard_id: response.leaderboard_id,
+                                  metadata: response.metadata ? JSON.parse(response.metadata) : undefined,
+                                  num_score: response.num_score ? Number(response.num_score) : 0,
+                                  owner_id: response.owner_id,
+                                  score: response.score ? Number(response.score) : 0,
+                                  subscore: response.subscore ? Number(response.subscore) : 0,
+                                  update_time: response.update_time,
+                                  username: response.username,
+                                  max_num_score: response.max_num_score ? Number(response.max_num_score) : 0,
+                                  rank: response.rank ? Number(response.rank) : 0,
+                              });
+                          })];
                   }
               });
           });
@@ -4298,7 +5605,6 @@
                           _a.sent();
                           _a.label = 2;
                       case 2:
-                          this.configuration.bearerToken = (session && session.token);
                           request = { objects: [] };
                           objects.forEach(function (o) {
                               request.objects.push({
@@ -4310,7 +5616,7 @@
                                   version: o.version
                               });
                           });
-                          return [2, this.apiClient.writeStorageObjects(request)];
+                          return [2, this.apiClient.writeStorageObjects(session.token, request)];
                   }
               });
           });
@@ -4318,8 +5624,7 @@
       Client.prototype.writeTournamentRecord = function (session, tournamentId, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
-                  this.configuration.bearerToken = (session && session.token);
-                  return [2, this.apiClient.writeTournamentRecord(tournamentId, {
+                  return [2, this.apiClient.writeTournamentRecord(session.token, tournamentId, {
                           metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
                           score: request.score,
                           subscore: request.subscore

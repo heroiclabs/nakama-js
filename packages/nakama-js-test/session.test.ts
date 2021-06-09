@@ -115,6 +115,8 @@ describe('Session Tests', () => {
         }
     }, customId);
 
+    console.log(exception);
+
     expect(exception).toBeDefined;
     expect(exception).not.toBeNull;
     expect(exception.status).toEqual(401);

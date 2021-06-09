@@ -21,6 +21,10 @@ such as `socket.addMatchmaker` for better type checking.
 - Upgraded ts-proto dependency
 - Sessions that are close to expiration will now be automatically refreshed. You can configure this behavior
 via the `autoRefreshSession` parameter in the `Client` constructor and the `expiredTimespanMs` expiration buffer value on the client.
+- Removed `session` parameter from `rpcGet` and renamed it to `rpcHttpKey`. This function should be used with an http key rather than a session.
+
+### Fixed
+- 401 Unauthorized errors while renewing sessions.
 
 ### [2.1.5]
 ### Fixed
