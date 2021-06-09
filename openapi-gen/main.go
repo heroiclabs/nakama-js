@@ -93,8 +93,8 @@ export class NakamaApi {
 
 {{- range $url, $path := .Paths}}
   {{- range $method, $operation := $path}}
-  /** {{$operation.Summary}} */
 
+  /** {{$operation.Summary}} */
   {{ $operation.OperationId | stripOperationPrefix | snakeToCamel }}(
   {{- if $operation.Security }}
     {{- with (index $operation.Security 0) }}
@@ -113,7 +113,7 @@ export class NakamaApi {
   {{- range $parameter := $operation.Parameters}}
   	{{ $parameter.Name | snakeToCamel }}{{- if not $parameter.Required }}?{{- end -}}:
   		{{- if eq $parameter.In "path" -}}
-     {{ $parameter.Type }},
+    {{ $parameter.Type }},
   		{{- else if eq $parameter.In "body" -}}
     	{{- if eq $parameter.Schema.Type "string" -}}
     {{ $parameter.Schema.Type }},
@@ -121,16 +121,16 @@ export class NakamaApi {
     {{ $parameter.Schema.Ref | cleanRef }},
     	{{- end }}
 	{{- else if eq $parameter.Type "array" -}}
-  Array<{{$parameter.Items.Type}}>,
+    Array<{{$parameter.Items.Type}}>,
   	{{- else if eq $parameter.Type "object" -}}
-  Map<{{$parameter.AdditionalProperties.Type}}>,
+    Map<{{$parameter.AdditionalProperties.Type}}>,
   	{{- else if eq $parameter.Type "integer" -}}
-  number,
+    number,
   	{{- else -}}
-  {{ $parameter.Type }},
+    {{ $parameter.Type }},
   	{{- end -}}
-  {{- end}}
-    options: any = {}): Promise<{{- if $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- else -}} any {{- end}}> {
+  {{- end }}
+        options: any = {}): Promise<{{- if $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- else -}} any {{- end}}> {
     {{ range $parameter := $operation.Parameters}}
     {{- $snakeToCamel := $parameter.Name | snakeToCamel}}
     {{- if $parameter.Required }}

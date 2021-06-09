@@ -132,7 +132,7 @@ export interface ApiAccountFacebook {
 
 /** Send a Facebook Instant Game token to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountFacebookInstantGame {
-  //
+  // 
   signed_player_info?: string;
   // Extra information that will be bundled in the session token.
   vars?: Map<string, string>;
@@ -372,7 +372,7 @@ export interface ApiLinkSteamRequest {
 export interface ApiMatch {
   // True if it's an server-managed authoritative match, false otherwise.
   authoritative?: boolean;
-  //
+  // 
   handler_name?: string;
   // Match label, if any.
   label?: string;
@@ -380,7 +380,7 @@ export interface ApiMatch {
   match_id?: string;
   // Current number of users in the match.
   size?: number;
-  //
+  // 
   tick_rate?: number;
 }
 
@@ -721,7 +721,7 @@ export interface ApiValidatedPurchase {
   provider_response?: string;
   // UNIX Timestamp when the purchase was done.
   purchase_time?: string;
-  //
+  // 
   store?: ValidatedPurchaseStore;
   // Purchase Transaction ID.
   transaction_id?: string;
@@ -753,19 +753,19 @@ export interface ApiWriteStorageObjectsRequest {
 
 /**  */
 export interface ProtobufAny {
-  //
+  // 
   type_url?: string;
-  //
+  // 
   value?: string;
 }
 
 /**  */
 export interface RpcStatus {
-  //
+  // 
   code?: number;
-  //
+  // 
   details?: Array<ProtobufAny>;
-  //
+  // 
   message?: string;
 }
 
@@ -775,8 +775,8 @@ export class NakamaApi {
   /** A healthcheck which load balancers can use to check the service. */
 
   healthcheck(bearerToken: string,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     const urlPath = "/healthcheck";
     const queryParams = new Map<string, any>();
 
@@ -804,8 +804,8 @@ export class NakamaApi {
   /** Fetch the current user's account. */
 
   getAccount(bearerToken: string,
-    options: any = {}): Promise<ApiAccount> {
-
+      options: any = {}): Promise<ApiAccount> {
+    
     const urlPath = "/v2/account";
     const queryParams = new Map<string, any>();
 
@@ -834,8 +834,8 @@ export class NakamaApi {
 
   updateAccount(bearerToken: string,
   	body:ApiUpdateAccountRequest,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -871,8 +871,8 @@ export class NakamaApi {
   	body:ApiAccountApple,
   	create?:boolean,
   	username?:string,
-    options: any = {}): Promise<ApiSession> {
-
+      options: any = {}): Promise<ApiSession> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -910,8 +910,8 @@ export class NakamaApi {
   	body:ApiAccountCustom,
   	create?:boolean,
   	username?:string,
-    options: any = {}): Promise<ApiSession> {
-
+      options: any = {}): Promise<ApiSession> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -949,8 +949,8 @@ export class NakamaApi {
   	body:ApiAccountDevice,
   	create?:boolean,
   	username?:string,
-    options: any = {}): Promise<ApiSession> {
-
+      options: any = {}): Promise<ApiSession> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -988,8 +988,8 @@ export class NakamaApi {
   	body:ApiAccountEmail,
   	create?:boolean,
   	username?:string,
-    options: any = {}): Promise<ApiSession> {
-
+      options: any = {}): Promise<ApiSession> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1028,8 +1028,8 @@ export class NakamaApi {
   	create?:boolean,
   	username?:string,
   	sync?:boolean,
-    options: any = {}): Promise<ApiSession> {
-
+      options: any = {}): Promise<ApiSession> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1068,8 +1068,8 @@ export class NakamaApi {
   	body:ApiAccountFacebookInstantGame,
   	create?:boolean,
   	username?:string,
-    options: any = {}): Promise<ApiSession> {
-
+      options: any = {}): Promise<ApiSession> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1107,8 +1107,8 @@ export class NakamaApi {
   	body:ApiAccountGameCenter,
   	create?:boolean,
   	username?:string,
-    options: any = {}): Promise<ApiSession> {
-
+      options: any = {}): Promise<ApiSession> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1146,8 +1146,8 @@ export class NakamaApi {
   	body:ApiAccountGoogle,
   	create?:boolean,
   	username?:string,
-    options: any = {}): Promise<ApiSession> {
-
+      options: any = {}): Promise<ApiSession> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1186,8 +1186,8 @@ export class NakamaApi {
   	create?:boolean,
   	username?:string,
   	sync?:boolean,
-    options: any = {}): Promise<ApiSession> {
-
+      options: any = {}): Promise<ApiSession> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1223,8 +1223,8 @@ export class NakamaApi {
 
   linkApple(bearerToken: string,
   	body:ApiAccountApple,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1257,8 +1257,8 @@ export class NakamaApi {
 
   linkCustom(bearerToken: string,
   	body:ApiAccountCustom,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1291,8 +1291,8 @@ export class NakamaApi {
 
   linkDevice(bearerToken: string,
   	body:ApiAccountDevice,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1325,8 +1325,8 @@ export class NakamaApi {
 
   linkEmail(bearerToken: string,
   	body:ApiAccountEmail,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1360,8 +1360,8 @@ export class NakamaApi {
   linkFacebook(bearerToken: string,
   	body:ApiAccountFacebook,
   	sync?:boolean,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1395,8 +1395,8 @@ export class NakamaApi {
 
   linkFacebookInstantGame(bearerToken: string,
   	body:ApiAccountFacebookInstantGame,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1429,8 +1429,8 @@ export class NakamaApi {
 
   linkGameCenter(bearerToken: string,
   	body:ApiAccountGameCenter,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1463,8 +1463,8 @@ export class NakamaApi {
 
   linkGoogle(bearerToken: string,
   	body:ApiAccountGoogle,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1497,8 +1497,8 @@ export class NakamaApi {
 
   linkSteam(bearerToken: string,
   	body:ApiLinkSteamRequest,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1532,8 +1532,8 @@ export class NakamaApi {
   sessionRefresh(basicAuthUsername: string,
     basicAuthPassword: string,
   	body:ApiSessionRefreshRequest,
-    options: any = {}): Promise<ApiSession> {
-
+      options: any = {}): Promise<ApiSession> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1566,8 +1566,8 @@ export class NakamaApi {
 
   unlinkApple(bearerToken: string,
   	body:ApiAccountApple,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1600,8 +1600,8 @@ export class NakamaApi {
 
   unlinkCustom(bearerToken: string,
   	body:ApiAccountCustom,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1634,8 +1634,8 @@ export class NakamaApi {
 
   unlinkDevice(bearerToken: string,
   	body:ApiAccountDevice,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1668,8 +1668,8 @@ export class NakamaApi {
 
   unlinkEmail(bearerToken: string,
   	body:ApiAccountEmail,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1702,8 +1702,8 @@ export class NakamaApi {
 
   unlinkFacebook(bearerToken: string,
   	body:ApiAccountFacebook,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1736,8 +1736,8 @@ export class NakamaApi {
 
   unlinkFacebookInstantGame(bearerToken: string,
   	body:ApiAccountFacebookInstantGame,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1770,8 +1770,8 @@ export class NakamaApi {
 
   unlinkGameCenter(bearerToken: string,
   	body:ApiAccountGameCenter,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1804,8 +1804,8 @@ export class NakamaApi {
 
   unlinkGoogle(bearerToken: string,
   	body:ApiAccountGoogle,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1838,8 +1838,8 @@ export class NakamaApi {
 
   unlinkSteam(bearerToken: string,
   	body:ApiAccountSteam,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1875,8 +1875,8 @@ export class NakamaApi {
   	limit?:number,
   	forward?:boolean,
   	cursor?:string,
-    options: any = {}): Promise<ApiChannelMessageList> {
-
+      options: any = {}): Promise<ApiChannelMessageList> {
+    
     if (channelId === null || channelId === undefined) {
       throw new Error("'channelId' is a required parameter but is null or undefined.");
     }
@@ -1912,8 +1912,8 @@ export class NakamaApi {
 
   event(bearerToken: string,
   	body:ApiEvent,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -1947,8 +1947,8 @@ export class NakamaApi {
   deleteFriends(bearerToken: string,
   	ids?:Array<string>,
   	usernames?:Array<string>,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     const urlPath = "/v2/friend";
     const queryParams = new Map<string, any>();
 	queryParams.set("ids", ids);
@@ -1981,8 +1981,8 @@ export class NakamaApi {
   	limit?:number,
   	state?:number,
   	cursor?:string,
-    options: any = {}): Promise<ApiFriendList> {
-
+      options: any = {}): Promise<ApiFriendList> {
+    
     const urlPath = "/v2/friend";
     const queryParams = new Map<string, any>();
 	queryParams.set("limit", limit);
@@ -2015,8 +2015,8 @@ export class NakamaApi {
   addFriends(bearerToken: string,
   	ids?:Array<string>,
   	usernames?:Array<string>,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     const urlPath = "/v2/friend";
     const queryParams = new Map<string, any>();
 	queryParams.set("ids", ids);
@@ -2025,7 +2025,6 @@ export class NakamaApi {
     let bodyJson : string = "";
 
     const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
-    console.log("full url " + fullUrl);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
 	fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
 
@@ -2049,8 +2048,8 @@ export class NakamaApi {
   blockFriends(bearerToken: string,
   	ids?:Array<string>,
   	usernames?:Array<string>,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     const urlPath = "/v2/friend/block";
     const queryParams = new Map<string, any>();
 	queryParams.set("ids", ids);
@@ -2082,8 +2081,8 @@ export class NakamaApi {
   importFacebookFriends(bearerToken: string,
   	body:ApiAccountFacebook,
   	reset?:boolean,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -2118,8 +2117,8 @@ export class NakamaApi {
   importSteamFriends(bearerToken: string,
   	body:ApiAccountSteam,
   	reset?:boolean,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -2155,8 +2154,8 @@ export class NakamaApi {
   	name?:string,
   	cursor?:string,
   	limit?:number,
-    options: any = {}): Promise<ApiGroupList> {
-
+      options: any = {}): Promise<ApiGroupList> {
+    
     const urlPath = "/v2/group";
     const queryParams = new Map<string, any>();
 	queryParams.set("name", name);
@@ -2188,8 +2187,8 @@ export class NakamaApi {
 
   createGroup(bearerToken: string,
   	body:ApiCreateGroupRequest,
-    options: any = {}): Promise<ApiGroup> {
-
+      options: any = {}): Promise<ApiGroup> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -2222,8 +2221,8 @@ export class NakamaApi {
 
   deleteGroup(bearerToken: string,
   	groupId:string,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (groupId === null || groupId === undefined) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -2257,8 +2256,8 @@ export class NakamaApi {
   updateGroup(bearerToken: string,
   	groupId:string,
   	body:ApiUpdateGroupRequest,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (groupId === null || groupId === undefined) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -2296,8 +2295,8 @@ export class NakamaApi {
   addGroupUsers(bearerToken: string,
   	groupId:string,
   	userIds?:Array<string>,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (groupId === null || groupId === undefined) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -2332,8 +2331,8 @@ export class NakamaApi {
   banGroupUsers(bearerToken: string,
   	groupId:string,
   	userIds?:Array<string>,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (groupId === null || groupId === undefined) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -2368,8 +2367,8 @@ export class NakamaApi {
   demoteGroupUsers(bearerToken: string,
   	groupId:string,
   	userIds:Array<string>,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (groupId === null || groupId === undefined) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -2406,8 +2405,8 @@ export class NakamaApi {
 
   joinGroup(bearerToken: string,
   	groupId:string,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (groupId === null || groupId === undefined) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -2441,8 +2440,8 @@ export class NakamaApi {
   kickGroupUsers(bearerToken: string,
   	groupId:string,
   	userIds?:Array<string>,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (groupId === null || groupId === undefined) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -2476,8 +2475,8 @@ export class NakamaApi {
 
   leaveGroup(bearerToken: string,
   	groupId:string,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (groupId === null || groupId === undefined) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -2511,8 +2510,8 @@ export class NakamaApi {
   promoteGroupUsers(bearerToken: string,
   	groupId:string,
   	userIds?:Array<string>,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (groupId === null || groupId === undefined) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -2549,8 +2548,8 @@ export class NakamaApi {
   	limit?:number,
   	state?:number,
   	cursor?:string,
-    options: any = {}): Promise<ApiGroupUserList> {
-
+      options: any = {}): Promise<ApiGroupUserList> {
+    
     if (groupId === null || groupId === undefined) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -2586,8 +2585,8 @@ export class NakamaApi {
 
   validatePurchaseApple(bearerToken: string,
   	body:ApiValidatePurchaseAppleRequest,
-    options: any = {}): Promise<ApiValidatePurchaseResponse> {
-
+      options: any = {}): Promise<ApiValidatePurchaseResponse> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -2620,8 +2619,8 @@ export class NakamaApi {
 
   validatePurchaseGoogle(bearerToken: string,
   	body:ApiValidatePurchaseGoogleRequest,
-    options: any = {}): Promise<ApiValidatePurchaseResponse> {
-
+      options: any = {}): Promise<ApiValidatePurchaseResponse> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -2654,8 +2653,8 @@ export class NakamaApi {
 
   validatePurchaseHuawei(bearerToken: string,
   	body:ApiValidatePurchaseHuaweiRequest,
-    options: any = {}): Promise<ApiValidatePurchaseResponse> {
-
+      options: any = {}): Promise<ApiValidatePurchaseResponse> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -2688,8 +2687,8 @@ export class NakamaApi {
 
   deleteLeaderboardRecord(bearerToken: string,
   	leaderboardId:string,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (leaderboardId === null || leaderboardId === undefined) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
     }
@@ -2726,8 +2725,8 @@ export class NakamaApi {
   	limit?:number,
   	cursor?:string,
   	expiry?:string,
-    options: any = {}): Promise<ApiLeaderboardRecordList> {
-
+      options: any = {}): Promise<ApiLeaderboardRecordList> {
+    
     if (leaderboardId === null || leaderboardId === undefined) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
     }
@@ -2765,8 +2764,8 @@ export class NakamaApi {
   writeLeaderboardRecord(bearerToken: string,
   	leaderboardId:string,
   	body:WriteLeaderboardRecordRequestLeaderboardRecordWrite,
-    options: any = {}): Promise<ApiLeaderboardRecord> {
-
+      options: any = {}): Promise<ApiLeaderboardRecord> {
+    
     if (leaderboardId === null || leaderboardId === undefined) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
     }
@@ -2806,8 +2805,8 @@ export class NakamaApi {
   	ownerId:string,
   	limit?:number,
   	expiry?:string,
-    options: any = {}): Promise<ApiLeaderboardRecordList> {
-
+      options: any = {}): Promise<ApiLeaderboardRecordList> {
+    
     if (leaderboardId === null || leaderboardId === undefined) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
     }
@@ -2851,8 +2850,8 @@ export class NakamaApi {
   	minSize?:number,
   	maxSize?:number,
   	query?:string,
-    options: any = {}): Promise<ApiMatchList> {
-
+      options: any = {}): Promise<ApiMatchList> {
+    
     const urlPath = "/v2/match";
     const queryParams = new Map<string, any>();
 	queryParams.set("limit", limit);
@@ -2887,8 +2886,8 @@ export class NakamaApi {
 
   deleteNotifications(bearerToken: string,
   	ids?:Array<string>,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     const urlPath = "/v2/notification";
     const queryParams = new Map<string, any>();
 	queryParams.set("ids", ids);
@@ -2919,8 +2918,8 @@ export class NakamaApi {
   listNotifications(bearerToken: string,
   	limit?:number,
   	cacheableCursor?:string,
-    options: any = {}): Promise<ApiNotificationList> {
-
+      options: any = {}): Promise<ApiNotificationList> {
+    
     const urlPath = "/v2/notification";
     const queryParams = new Map<string, any>();
 	queryParams.set("limit", limit);
@@ -2953,8 +2952,8 @@ export class NakamaApi {
   	id:string,
   	payload?:string,
   	httpKey?:string,
-    options: any = {}): Promise<ApiRpc> {
-
+      options: any = {}): Promise<ApiRpc> {
+    
     if (id === null || id === undefined) {
       throw new Error("'id' is a required parameter but is null or undefined.");
     }
@@ -2991,8 +2990,8 @@ export class NakamaApi {
   	id:string,
   	body:string,
   	httpKey?:string,
-    options: any = {}): Promise<ApiRpc> {
-
+      options: any = {}): Promise<ApiRpc> {
+    
     if (id === null || id === undefined) {
       throw new Error("'id' is a required parameter but is null or undefined.");
     }
@@ -3030,8 +3029,8 @@ export class NakamaApi {
 
   sessionLogout(bearerToken: string,
   	body:ApiSessionLogoutRequest,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -3064,8 +3063,8 @@ export class NakamaApi {
 
   readStorageObjects(bearerToken: string,
   	body:ApiReadStorageObjectsRequest,
-    options: any = {}): Promise<ApiStorageObjects> {
-
+      options: any = {}): Promise<ApiStorageObjects> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -3098,8 +3097,8 @@ export class NakamaApi {
 
   writeStorageObjects(bearerToken: string,
   	body:ApiWriteStorageObjectsRequest,
-    options: any = {}): Promise<ApiStorageObjectAcks> {
-
+      options: any = {}): Promise<ApiStorageObjectAcks> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -3132,8 +3131,8 @@ export class NakamaApi {
 
   deleteStorageObjects(bearerToken: string,
   	body:ApiDeleteStorageObjectsRequest,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
@@ -3169,8 +3168,8 @@ export class NakamaApi {
   	userId?:string,
   	limit?:number,
   	cursor?:string,
-    options: any = {}): Promise<ApiStorageObjectList> {
-
+      options: any = {}): Promise<ApiStorageObjectList> {
+    
     if (collection === null || collection === undefined) {
       throw new Error("'collection' is a required parameter but is null or undefined.");
     }
@@ -3209,8 +3208,8 @@ export class NakamaApi {
   	userId:string,
   	limit?:number,
   	cursor?:string,
-    options: any = {}): Promise<ApiStorageObjectList> {
-
+      options: any = {}): Promise<ApiStorageObjectList> {
+    
     if (collection === null || collection === undefined) {
       throw new Error("'collection' is a required parameter but is null or undefined.");
     }
@@ -3254,8 +3253,8 @@ export class NakamaApi {
   	endTime?:number,
   	limit?:number,
   	cursor?:string,
-    options: any = {}): Promise<ApiTournamentList> {
-
+      options: any = {}): Promise<ApiTournamentList> {
+    
     const urlPath = "/v2/tournament";
     const queryParams = new Map<string, any>();
 	queryParams.set("categoryStart", categoryStart);
@@ -3294,8 +3293,8 @@ export class NakamaApi {
   	limit?:number,
   	cursor?:string,
   	expiry?:string,
-    options: any = {}): Promise<ApiTournamentRecordList> {
-
+      options: any = {}): Promise<ApiTournamentRecordList> {
+    
     if (tournamentId === null || tournamentId === undefined) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
@@ -3333,8 +3332,8 @@ export class NakamaApi {
   writeTournamentRecord2(bearerToken: string,
   	tournamentId:string,
   	body:WriteTournamentRecordRequestTournamentRecordWrite,
-    options: any = {}): Promise<ApiLeaderboardRecord> {
-
+      options: any = {}): Promise<ApiLeaderboardRecord> {
+    
     if (tournamentId === null || tournamentId === undefined) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
@@ -3372,8 +3371,8 @@ export class NakamaApi {
   writeTournamentRecord(bearerToken: string,
   	tournamentId:string,
   	body:WriteTournamentRecordRequestTournamentRecordWrite,
-    options: any = {}): Promise<ApiLeaderboardRecord> {
-
+      options: any = {}): Promise<ApiLeaderboardRecord> {
+    
     if (tournamentId === null || tournamentId === undefined) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
@@ -3410,8 +3409,8 @@ export class NakamaApi {
 
   joinTournament(bearerToken: string,
   	tournamentId:string,
-    options: any = {}): Promise<any> {
-
+      options: any = {}): Promise<any> {
+    
     if (tournamentId === null || tournamentId === undefined) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
@@ -3447,8 +3446,8 @@ export class NakamaApi {
   	ownerId:string,
   	limit?:number,
   	expiry?:string,
-    options: any = {}): Promise<ApiTournamentRecordList> {
-
+      options: any = {}): Promise<ApiTournamentRecordList> {
+    
     if (tournamentId === null || tournamentId === undefined) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
@@ -3489,8 +3488,8 @@ export class NakamaApi {
   	ids?:Array<string>,
   	usernames?:Array<string>,
   	facebookIds?:Array<string>,
-    options: any = {}): Promise<ApiUsers> {
-
+      options: any = {}): Promise<ApiUsers> {
+    
     const urlPath = "/v2/user";
     const queryParams = new Map<string, any>();
 	queryParams.set("ids", ids);
@@ -3525,8 +3524,8 @@ export class NakamaApi {
   	limit?:number,
   	state?:number,
   	cursor?:string,
-    options: any = {}): Promise<ApiUserGroupList> {
-
+      options: any = {}): Promise<ApiUserGroupList> {
+    
     if (userId === null || userId === undefined) {
       throw new Error("'userId' is a required parameter but is null or undefined.");
     }
