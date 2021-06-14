@@ -1,37 +1,43 @@
 var nakamajs = (() => {
   var __create = Object.create;
   var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __assign = Object.assign;
-  var __markAsModule = (target) => __defProp(target, "__esModule", {value: true});
-  var __commonJS = (callback, module) => () => {
-    if (!module) {
-      module = {exports: {}};
-      callback(module.exports, module);
-    }
-    return module.exports;
+  var __propIsEnum = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues = (a, b) => {
+    for (var prop in b || (b = {}))
+      if (__hasOwnProp.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    if (__getOwnPropSymbols)
+      for (var prop of __getOwnPropSymbols(b)) {
+        if (__propIsEnum.call(b, prop))
+          __defNormalProp(a, prop, b[prop]);
+      }
+    return a;
+  };
+  var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
+  var __commonJS = (cb, mod) => function __require() {
+    return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
   var __export = (target, all) => {
     __markAsModule(target);
     for (var name in all)
-      __defProp(target, name, {get: all[name], enumerable: true});
+      __defProp(target, name, { get: all[name], enumerable: true });
   };
-  var __exportStar = (target, module, desc) => {
-    __markAsModule(target);
+  var __reExport = (target, module, desc) => {
     if (module && typeof module === "object" || typeof module === "function") {
       for (let key of __getOwnPropNames(module))
         if (!__hasOwnProp.call(target, key) && key !== "default")
-          __defProp(target, key, {get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable});
+          __defProp(target, key, { get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable });
     }
     return target;
   };
   var __toModule = (module) => {
-    if (module && module.__esModule)
-      return module;
-    return __exportStar(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", {value: module, enumerable: true}), module);
+    return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
   };
   var __async = (__this, __arguments, generator) => {
     return new Promise((resolve, reject) => {
@@ -49,414 +55,414 @@ var nakamajs = (() => {
           reject(e);
         }
       };
-      var step = (result) => {
-        return result.done ? resolve(result.value) : Promise.resolve(result.value).then(fulfilled, rejected);
-      };
+      var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
       step((generator = generator.apply(__this, __arguments)).next());
     });
   };
 
   // node_modules/whatwg-fetch/fetch.js
-  var require_fetch = __commonJS((exports) => {
-    (function(self2) {
-      "use strict";
-      if (self2.fetch) {
-        return;
-      }
-      var support = {
-        searchParams: "URLSearchParams" in self2,
-        iterable: "Symbol" in self2 && "iterator" in Symbol,
-        blob: "FileReader" in self2 && "Blob" in self2 && function() {
-          try {
-            new Blob();
-            return true;
-          } catch (e) {
-            return false;
-          }
-        }(),
-        formData: "FormData" in self2,
-        arrayBuffer: "ArrayBuffer" in self2
-      };
-      if (support.arrayBuffer) {
-        var viewClasses = [
-          "[object Int8Array]",
-          "[object Uint8Array]",
-          "[object Uint8ClampedArray]",
-          "[object Int16Array]",
-          "[object Uint16Array]",
-          "[object Int32Array]",
-          "[object Uint32Array]",
-          "[object Float32Array]",
-          "[object Float64Array]"
-        ];
-        var isDataView = function(obj) {
-          return obj && DataView.prototype.isPrototypeOf(obj);
-        };
-        var isArrayBufferView = ArrayBuffer.isView || function(obj) {
-          return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1;
-        };
-      }
-      function normalizeName(name) {
-        if (typeof name !== "string") {
-          name = String(name);
+  var require_fetch = __commonJS({
+    "node_modules/whatwg-fetch/fetch.js"(exports) {
+      (function(self2) {
+        "use strict";
+        if (self2.fetch) {
+          return;
         }
-        if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
-          throw new TypeError("Invalid character in header field name");
-        }
-        return name.toLowerCase();
-      }
-      function normalizeValue(value) {
-        if (typeof value !== "string") {
-          value = String(value);
-        }
-        return value;
-      }
-      function iteratorFor(items) {
-        var iterator = {
-          next: function() {
-            var value = items.shift();
-            return {done: value === void 0, value};
-          }
+        var support = {
+          searchParams: "URLSearchParams" in self2,
+          iterable: "Symbol" in self2 && "iterator" in Symbol,
+          blob: "FileReader" in self2 && "Blob" in self2 && function() {
+            try {
+              new Blob();
+              return true;
+            } catch (e) {
+              return false;
+            }
+          }(),
+          formData: "FormData" in self2,
+          arrayBuffer: "ArrayBuffer" in self2
         };
-        if (support.iterable) {
-          iterator[Symbol.iterator] = function() {
-            return iterator;
+        if (support.arrayBuffer) {
+          var viewClasses = [
+            "[object Int8Array]",
+            "[object Uint8Array]",
+            "[object Uint8ClampedArray]",
+            "[object Int16Array]",
+            "[object Uint16Array]",
+            "[object Int32Array]",
+            "[object Uint32Array]",
+            "[object Float32Array]",
+            "[object Float64Array]"
+          ];
+          var isDataView = function(obj) {
+            return obj && DataView.prototype.isPrototypeOf(obj);
+          };
+          var isArrayBufferView = ArrayBuffer.isView || function(obj) {
+            return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1;
           };
         }
-        return iterator;
-      }
-      function Headers(headers) {
-        this.map = {};
-        if (headers instanceof Headers) {
-          headers.forEach(function(value, name) {
-            this.append(name, value);
-          }, this);
-        } else if (Array.isArray(headers)) {
-          headers.forEach(function(header) {
-            this.append(header[0], header[1]);
-          }, this);
-        } else if (headers) {
-          Object.getOwnPropertyNames(headers).forEach(function(name) {
-            this.append(name, headers[name]);
-          }, this);
+        function normalizeName(name) {
+          if (typeof name !== "string") {
+            name = String(name);
+          }
+          if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+            throw new TypeError("Invalid character in header field name");
+          }
+          return name.toLowerCase();
         }
-      }
-      Headers.prototype.append = function(name, value) {
-        name = normalizeName(name);
-        value = normalizeValue(value);
-        var oldValue = this.map[name];
-        this.map[name] = oldValue ? oldValue + "," + value : value;
-      };
-      Headers.prototype["delete"] = function(name) {
-        delete this.map[normalizeName(name)];
-      };
-      Headers.prototype.get = function(name) {
-        name = normalizeName(name);
-        return this.has(name) ? this.map[name] : null;
-      };
-      Headers.prototype.has = function(name) {
-        return this.map.hasOwnProperty(normalizeName(name));
-      };
-      Headers.prototype.set = function(name, value) {
-        this.map[normalizeName(name)] = normalizeValue(value);
-      };
-      Headers.prototype.forEach = function(callback, thisArg) {
-        for (var name in this.map) {
-          if (this.map.hasOwnProperty(name)) {
-            callback.call(thisArg, this.map[name], name, this);
+        function normalizeValue(value) {
+          if (typeof value !== "string") {
+            value = String(value);
+          }
+          return value;
+        }
+        function iteratorFor(items) {
+          var iterator = {
+            next: function() {
+              var value = items.shift();
+              return { done: value === void 0, value };
+            }
+          };
+          if (support.iterable) {
+            iterator[Symbol.iterator] = function() {
+              return iterator;
+            };
+          }
+          return iterator;
+        }
+        function Headers(headers) {
+          this.map = {};
+          if (headers instanceof Headers) {
+            headers.forEach(function(value, name) {
+              this.append(name, value);
+            }, this);
+          } else if (Array.isArray(headers)) {
+            headers.forEach(function(header) {
+              this.append(header[0], header[1]);
+            }, this);
+          } else if (headers) {
+            Object.getOwnPropertyNames(headers).forEach(function(name) {
+              this.append(name, headers[name]);
+            }, this);
           }
         }
-      };
-      Headers.prototype.keys = function() {
-        var items = [];
-        this.forEach(function(value, name) {
-          items.push(name);
-        });
-        return iteratorFor(items);
-      };
-      Headers.prototype.values = function() {
-        var items = [];
-        this.forEach(function(value) {
-          items.push(value);
-        });
-        return iteratorFor(items);
-      };
-      Headers.prototype.entries = function() {
-        var items = [];
-        this.forEach(function(value, name) {
-          items.push([name, value]);
-        });
-        return iteratorFor(items);
-      };
-      if (support.iterable) {
-        Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
-      }
-      function consumed(body) {
-        if (body.bodyUsed) {
-          return Promise.reject(new TypeError("Already read"));
-        }
-        body.bodyUsed = true;
-      }
-      function fileReaderReady(reader) {
-        return new Promise(function(resolve, reject) {
-          reader.onload = function() {
-            resolve(reader.result);
-          };
-          reader.onerror = function() {
-            reject(reader.error);
-          };
-        });
-      }
-      function readBlobAsArrayBuffer(blob) {
-        var reader = new FileReader();
-        var promise = fileReaderReady(reader);
-        reader.readAsArrayBuffer(blob);
-        return promise;
-      }
-      function readBlobAsText(blob) {
-        var reader = new FileReader();
-        var promise = fileReaderReady(reader);
-        reader.readAsText(blob);
-        return promise;
-      }
-      function readArrayBufferAsText(buf) {
-        var view = new Uint8Array(buf);
-        var chars = new Array(view.length);
-        for (var i = 0; i < view.length; i++) {
-          chars[i] = String.fromCharCode(view[i]);
-        }
-        return chars.join("");
-      }
-      function bufferClone(buf) {
-        if (buf.slice) {
-          return buf.slice(0);
-        } else {
-          var view = new Uint8Array(buf.byteLength);
-          view.set(new Uint8Array(buf));
-          return view.buffer;
-        }
-      }
-      function Body() {
-        this.bodyUsed = false;
-        this._initBody = function(body) {
-          this._bodyInit = body;
-          if (!body) {
-            this._bodyText = "";
-          } else if (typeof body === "string") {
-            this._bodyText = body;
-          } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-            this._bodyBlob = body;
-          } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-            this._bodyFormData = body;
-          } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-            this._bodyText = body.toString();
-          } else if (support.arrayBuffer && support.blob && isDataView(body)) {
-            this._bodyArrayBuffer = bufferClone(body.buffer);
-            this._bodyInit = new Blob([this._bodyArrayBuffer]);
-          } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
-            this._bodyArrayBuffer = bufferClone(body);
-          } else {
-            throw new Error("unsupported BodyInit type");
-          }
-          if (!this.headers.get("content-type")) {
-            if (typeof body === "string") {
-              this.headers.set("content-type", "text/plain;charset=UTF-8");
-            } else if (this._bodyBlob && this._bodyBlob.type) {
-              this.headers.set("content-type", this._bodyBlob.type);
-            } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-              this.headers.set("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+        Headers.prototype.append = function(name, value) {
+          name = normalizeName(name);
+          value = normalizeValue(value);
+          var oldValue = this.map[name];
+          this.map[name] = oldValue ? oldValue + "," + value : value;
+        };
+        Headers.prototype["delete"] = function(name) {
+          delete this.map[normalizeName(name)];
+        };
+        Headers.prototype.get = function(name) {
+          name = normalizeName(name);
+          return this.has(name) ? this.map[name] : null;
+        };
+        Headers.prototype.has = function(name) {
+          return this.map.hasOwnProperty(normalizeName(name));
+        };
+        Headers.prototype.set = function(name, value) {
+          this.map[normalizeName(name)] = normalizeValue(value);
+        };
+        Headers.prototype.forEach = function(callback, thisArg) {
+          for (var name in this.map) {
+            if (this.map.hasOwnProperty(name)) {
+              callback.call(thisArg, this.map[name], name, this);
             }
           }
         };
-        if (support.blob) {
-          this.blob = function() {
+        Headers.prototype.keys = function() {
+          var items = [];
+          this.forEach(function(value, name) {
+            items.push(name);
+          });
+          return iteratorFor(items);
+        };
+        Headers.prototype.values = function() {
+          var items = [];
+          this.forEach(function(value) {
+            items.push(value);
+          });
+          return iteratorFor(items);
+        };
+        Headers.prototype.entries = function() {
+          var items = [];
+          this.forEach(function(value, name) {
+            items.push([name, value]);
+          });
+          return iteratorFor(items);
+        };
+        if (support.iterable) {
+          Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
+        }
+        function consumed(body) {
+          if (body.bodyUsed) {
+            return Promise.reject(new TypeError("Already read"));
+          }
+          body.bodyUsed = true;
+        }
+        function fileReaderReady(reader) {
+          return new Promise(function(resolve, reject) {
+            reader.onload = function() {
+              resolve(reader.result);
+            };
+            reader.onerror = function() {
+              reject(reader.error);
+            };
+          });
+        }
+        function readBlobAsArrayBuffer(blob) {
+          var reader = new FileReader();
+          var promise = fileReaderReady(reader);
+          reader.readAsArrayBuffer(blob);
+          return promise;
+        }
+        function readBlobAsText(blob) {
+          var reader = new FileReader();
+          var promise = fileReaderReady(reader);
+          reader.readAsText(blob);
+          return promise;
+        }
+        function readArrayBufferAsText(buf) {
+          var view = new Uint8Array(buf);
+          var chars = new Array(view.length);
+          for (var i = 0; i < view.length; i++) {
+            chars[i] = String.fromCharCode(view[i]);
+          }
+          return chars.join("");
+        }
+        function bufferClone(buf) {
+          if (buf.slice) {
+            return buf.slice(0);
+          } else {
+            var view = new Uint8Array(buf.byteLength);
+            view.set(new Uint8Array(buf));
+            return view.buffer;
+          }
+        }
+        function Body() {
+          this.bodyUsed = false;
+          this._initBody = function(body) {
+            this._bodyInit = body;
+            if (!body) {
+              this._bodyText = "";
+            } else if (typeof body === "string") {
+              this._bodyText = body;
+            } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+              this._bodyBlob = body;
+            } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+              this._bodyFormData = body;
+            } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+              this._bodyText = body.toString();
+            } else if (support.arrayBuffer && support.blob && isDataView(body)) {
+              this._bodyArrayBuffer = bufferClone(body.buffer);
+              this._bodyInit = new Blob([this._bodyArrayBuffer]);
+            } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+              this._bodyArrayBuffer = bufferClone(body);
+            } else {
+              throw new Error("unsupported BodyInit type");
+            }
+            if (!this.headers.get("content-type")) {
+              if (typeof body === "string") {
+                this.headers.set("content-type", "text/plain;charset=UTF-8");
+              } else if (this._bodyBlob && this._bodyBlob.type) {
+                this.headers.set("content-type", this._bodyBlob.type);
+              } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+                this.headers.set("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+              }
+            }
+          };
+          if (support.blob) {
+            this.blob = function() {
+              var rejected = consumed(this);
+              if (rejected) {
+                return rejected;
+              }
+              if (this._bodyBlob) {
+                return Promise.resolve(this._bodyBlob);
+              } else if (this._bodyArrayBuffer) {
+                return Promise.resolve(new Blob([this._bodyArrayBuffer]));
+              } else if (this._bodyFormData) {
+                throw new Error("could not read FormData body as blob");
+              } else {
+                return Promise.resolve(new Blob([this._bodyText]));
+              }
+            };
+            this.arrayBuffer = function() {
+              if (this._bodyArrayBuffer) {
+                return consumed(this) || Promise.resolve(this._bodyArrayBuffer);
+              } else {
+                return this.blob().then(readBlobAsArrayBuffer);
+              }
+            };
+          }
+          this.text = function() {
             var rejected = consumed(this);
             if (rejected) {
               return rejected;
             }
             if (this._bodyBlob) {
-              return Promise.resolve(this._bodyBlob);
+              return readBlobAsText(this._bodyBlob);
             } else if (this._bodyArrayBuffer) {
-              return Promise.resolve(new Blob([this._bodyArrayBuffer]));
+              return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer));
             } else if (this._bodyFormData) {
-              throw new Error("could not read FormData body as blob");
+              throw new Error("could not read FormData body as text");
             } else {
-              return Promise.resolve(new Blob([this._bodyText]));
+              return Promise.resolve(this._bodyText);
             }
           };
-          this.arrayBuffer = function() {
-            if (this._bodyArrayBuffer) {
-              return consumed(this) || Promise.resolve(this._bodyArrayBuffer);
-            } else {
-              return this.blob().then(readBlobAsArrayBuffer);
-            }
-          };
-        }
-        this.text = function() {
-          var rejected = consumed(this);
-          if (rejected) {
-            return rejected;
-          }
-          if (this._bodyBlob) {
-            return readBlobAsText(this._bodyBlob);
-          } else if (this._bodyArrayBuffer) {
-            return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer));
-          } else if (this._bodyFormData) {
-            throw new Error("could not read FormData body as text");
-          } else {
-            return Promise.resolve(this._bodyText);
-          }
-        };
-        if (support.formData) {
-          this.formData = function() {
-            return this.text().then(decode2);
-          };
-        }
-        this.json = function() {
-          return this.text().then(JSON.parse);
-        };
-        return this;
-      }
-      var methods = ["DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT"];
-      function normalizeMethod(method) {
-        var upcased = method.toUpperCase();
-        return methods.indexOf(upcased) > -1 ? upcased : method;
-      }
-      function Request(input, options) {
-        options = options || {};
-        var body = options.body;
-        if (input instanceof Request) {
-          if (input.bodyUsed) {
-            throw new TypeError("Already read");
-          }
-          this.url = input.url;
-          this.credentials = input.credentials;
-          if (!options.headers) {
-            this.headers = new Headers(input.headers);
-          }
-          this.method = input.method;
-          this.mode = input.mode;
-          if (!body && input._bodyInit != null) {
-            body = input._bodyInit;
-            input.bodyUsed = true;
-          }
-        } else {
-          this.url = String(input);
-        }
-        this.credentials = options.credentials || this.credentials || "omit";
-        if (options.headers || !this.headers) {
-          this.headers = new Headers(options.headers);
-        }
-        this.method = normalizeMethod(options.method || this.method || "GET");
-        this.mode = options.mode || this.mode || null;
-        this.referrer = null;
-        if ((this.method === "GET" || this.method === "HEAD") && body) {
-          throw new TypeError("Body not allowed for GET or HEAD requests");
-        }
-        this._initBody(body);
-      }
-      Request.prototype.clone = function() {
-        return new Request(this, {body: this._bodyInit});
-      };
-      function decode2(body) {
-        var form = new FormData();
-        body.trim().split("&").forEach(function(bytes) {
-          if (bytes) {
-            var split = bytes.split("=");
-            var name = split.shift().replace(/\+/g, " ");
-            var value = split.join("=").replace(/\+/g, " ");
-            form.append(decodeURIComponent(name), decodeURIComponent(value));
-          }
-        });
-        return form;
-      }
-      function parseHeaders(rawHeaders) {
-        var headers = new Headers();
-        var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, " ");
-        preProcessedHeaders.split(/\r?\n/).forEach(function(line) {
-          var parts = line.split(":");
-          var key = parts.shift().trim();
-          if (key) {
-            var value = parts.join(":").trim();
-            headers.append(key, value);
-          }
-        });
-        return headers;
-      }
-      Body.call(Request.prototype);
-      function Response(bodyInit, options) {
-        if (!options) {
-          options = {};
-        }
-        this.type = "default";
-        this.status = options.status === void 0 ? 200 : options.status;
-        this.ok = this.status >= 200 && this.status < 300;
-        this.statusText = "statusText" in options ? options.statusText : "OK";
-        this.headers = new Headers(options.headers);
-        this.url = options.url || "";
-        this._initBody(bodyInit);
-      }
-      Body.call(Response.prototype);
-      Response.prototype.clone = function() {
-        return new Response(this._bodyInit, {
-          status: this.status,
-          statusText: this.statusText,
-          headers: new Headers(this.headers),
-          url: this.url
-        });
-      };
-      Response.error = function() {
-        var response = new Response(null, {status: 0, statusText: ""});
-        response.type = "error";
-        return response;
-      };
-      var redirectStatuses = [301, 302, 303, 307, 308];
-      Response.redirect = function(url, status) {
-        if (redirectStatuses.indexOf(status) === -1) {
-          throw new RangeError("Invalid status code");
-        }
-        return new Response(null, {status, headers: {location: url}});
-      };
-      self2.Headers = Headers;
-      self2.Request = Request;
-      self2.Response = Response;
-      self2.fetch = function(input, init) {
-        return new Promise(function(resolve, reject) {
-          var request = new Request(input, init);
-          var xhr = new XMLHttpRequest();
-          xhr.onload = function() {
-            var options = {
-              status: xhr.status,
-              statusText: xhr.statusText,
-              headers: parseHeaders(xhr.getAllResponseHeaders() || "")
+          if (support.formData) {
+            this.formData = function() {
+              return this.text().then(decode2);
             };
-            options.url = "responseURL" in xhr ? xhr.responseURL : options.headers.get("X-Request-URL");
-            var body = "response" in xhr ? xhr.response : xhr.responseText;
-            resolve(new Response(body, options));
-          };
-          xhr.onerror = function() {
-            reject(new TypeError("Network request failed"));
-          };
-          xhr.ontimeout = function() {
-            reject(new TypeError("Network request failed"));
-          };
-          xhr.open(request.method, request.url, true);
-          if (request.credentials === "include") {
-            xhr.withCredentials = true;
-          } else if (request.credentials === "omit") {
-            xhr.withCredentials = false;
           }
-          if ("responseType" in xhr && support.blob) {
-            xhr.responseType = "blob";
+          this.json = function() {
+            return this.text().then(JSON.parse);
+          };
+          return this;
+        }
+        var methods = ["DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT"];
+        function normalizeMethod(method) {
+          var upcased = method.toUpperCase();
+          return methods.indexOf(upcased) > -1 ? upcased : method;
+        }
+        function Request(input, options) {
+          options = options || {};
+          var body = options.body;
+          if (input instanceof Request) {
+            if (input.bodyUsed) {
+              throw new TypeError("Already read");
+            }
+            this.url = input.url;
+            this.credentials = input.credentials;
+            if (!options.headers) {
+              this.headers = new Headers(input.headers);
+            }
+            this.method = input.method;
+            this.mode = input.mode;
+            if (!body && input._bodyInit != null) {
+              body = input._bodyInit;
+              input.bodyUsed = true;
+            }
+          } else {
+            this.url = String(input);
           }
-          request.headers.forEach(function(value, name) {
-            xhr.setRequestHeader(name, value);
+          this.credentials = options.credentials || this.credentials || "omit";
+          if (options.headers || !this.headers) {
+            this.headers = new Headers(options.headers);
+          }
+          this.method = normalizeMethod(options.method || this.method || "GET");
+          this.mode = options.mode || this.mode || null;
+          this.referrer = null;
+          if ((this.method === "GET" || this.method === "HEAD") && body) {
+            throw new TypeError("Body not allowed for GET or HEAD requests");
+          }
+          this._initBody(body);
+        }
+        Request.prototype.clone = function() {
+          return new Request(this, { body: this._bodyInit });
+        };
+        function decode2(body) {
+          var form = new FormData();
+          body.trim().split("&").forEach(function(bytes) {
+            if (bytes) {
+              var split = bytes.split("=");
+              var name = split.shift().replace(/\+/g, " ");
+              var value = split.join("=").replace(/\+/g, " ");
+              form.append(decodeURIComponent(name), decodeURIComponent(value));
+            }
           });
-          xhr.send(typeof request._bodyInit === "undefined" ? null : request._bodyInit);
-        });
-      };
-      self2.fetch.polyfill = true;
-    })(typeof self !== "undefined" ? self : exports);
+          return form;
+        }
+        function parseHeaders(rawHeaders) {
+          var headers = new Headers();
+          var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, " ");
+          preProcessedHeaders.split(/\r?\n/).forEach(function(line) {
+            var parts = line.split(":");
+            var key = parts.shift().trim();
+            if (key) {
+              var value = parts.join(":").trim();
+              headers.append(key, value);
+            }
+          });
+          return headers;
+        }
+        Body.call(Request.prototype);
+        function Response(bodyInit, options) {
+          if (!options) {
+            options = {};
+          }
+          this.type = "default";
+          this.status = options.status === void 0 ? 200 : options.status;
+          this.ok = this.status >= 200 && this.status < 300;
+          this.statusText = "statusText" in options ? options.statusText : "OK";
+          this.headers = new Headers(options.headers);
+          this.url = options.url || "";
+          this._initBody(bodyInit);
+        }
+        Body.call(Response.prototype);
+        Response.prototype.clone = function() {
+          return new Response(this._bodyInit, {
+            status: this.status,
+            statusText: this.statusText,
+            headers: new Headers(this.headers),
+            url: this.url
+          });
+        };
+        Response.error = function() {
+          var response = new Response(null, { status: 0, statusText: "" });
+          response.type = "error";
+          return response;
+        };
+        var redirectStatuses = [301, 302, 303, 307, 308];
+        Response.redirect = function(url, status) {
+          if (redirectStatuses.indexOf(status) === -1) {
+            throw new RangeError("Invalid status code");
+          }
+          return new Response(null, { status, headers: { location: url } });
+        };
+        self2.Headers = Headers;
+        self2.Request = Request;
+        self2.Response = Response;
+        self2.fetch = function(input, init) {
+          return new Promise(function(resolve, reject) {
+            var request = new Request(input, init);
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+              var options = {
+                status: xhr.status,
+                statusText: xhr.statusText,
+                headers: parseHeaders(xhr.getAllResponseHeaders() || "")
+              };
+              options.url = "responseURL" in xhr ? xhr.responseURL : options.headers.get("X-Request-URL");
+              var body = "response" in xhr ? xhr.response : xhr.responseText;
+              resolve(new Response(body, options));
+            };
+            xhr.onerror = function() {
+              reject(new TypeError("Network request failed"));
+            };
+            xhr.ontimeout = function() {
+              reject(new TypeError("Network request failed"));
+            };
+            xhr.open(request.method, request.url, true);
+            if (request.credentials === "include") {
+              xhr.withCredentials = true;
+            } else if (request.credentials === "omit") {
+              xhr.withCredentials = false;
+            }
+            if ("responseType" in xhr && support.blob) {
+              xhr.responseType = "blob";
+            }
+            request.headers.forEach(function(value, name) {
+              xhr.setRequestHeader(name, value);
+            });
+            xhr.send(typeof request._bodyInit === "undefined" ? null : request._bodyInit);
+          });
+        };
+        self2.fetch.polyfill = true;
+      })(typeof self !== "undefined" ? self : exports);
+    }
   });
 
   // index.ts
@@ -568,8 +574,8 @@ var nakamajs = (() => {
           }
         }
       }).join("");
-      const fetchOptions = __assign(__assign({}, {method}), options);
-      fetchOptions.headers = __assign({}, options.headers);
+      const fetchOptions = __spreadValues(__spreadValues({}, { method }), options);
+      fetchOptions.headers = __spreadValues({}, options.headers);
       const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
       if (!(descriptor == null ? void 0 : descriptor.set)) {
         fetchOptions.credentials = "cocos-ignore";
@@ -1659,7 +1665,7 @@ var nakamajs = (() => {
               untypedMessage.channel_message_update.content = JSON.stringify(untypedMessage.channel_message_update.content);
             }
             const cid = this.generatecid();
-            this.cIds[cid] = {resolve, reject};
+            this.cIds[cid] = { resolve, reject };
             untypedMessage.cid = cid;
             this.adapter.send(untypedMessage);
           }
@@ -1672,7 +1678,7 @@ var nakamajs = (() => {
     addMatchmaker(query, minCount, maxCount, stringProperties, numericProperties) {
       return __async(this, null, function* () {
         const matchMakerAdd = {
-          matchmaker_add: {
+          "matchmaker_add": {
             min_count: minCount,
             max_count: maxCount,
             query,
@@ -1686,13 +1692,13 @@ var nakamajs = (() => {
     }
     createMatch() {
       return __async(this, null, function* () {
-        const response = yield this.send({match_create: {}});
+        const response = yield this.send({ match_create: {} });
         return response.match;
       });
     }
     followUsers(userIds) {
       return __async(this, null, function* () {
-        const response = yield this.send({status_follow: {user_ids: userIds}});
+        const response = yield this.send({ status_follow: { user_ids: userIds } });
         return response.status;
       });
     }
@@ -1711,7 +1717,7 @@ var nakamajs = (() => {
     }
     joinMatch(match_id, token, metadata) {
       return __async(this, null, function* () {
-        const join = {match_join: {metadata}};
+        const join = { match_join: { metadata } };
         if (token) {
           join.match_join.token = token;
         } else {
@@ -1722,10 +1728,10 @@ var nakamajs = (() => {
       });
     }
     leaveChat(channel_id) {
-      return this.send({channel_leave: {channel_id}});
+      return this.send({ channel_leave: { channel_id } });
     }
     leaveMatch(matchId) {
-      return this.send({match_leave: {match_id: matchId}});
+      return this.send({ match_leave: { match_id: matchId } });
     }
     removeChatMessage(channel_id, message_id) {
       return __async(this, null, function* () {
@@ -1739,7 +1745,7 @@ var nakamajs = (() => {
       });
     }
     removeMatchmaker(ticket) {
-      return this.send({matchmaker_remove: {ticket}});
+      return this.send({ matchmaker_remove: { ticket } });
     }
     rpc(id, payload, http_key) {
       return __async(this, null, function* () {
@@ -1766,20 +1772,20 @@ var nakamajs = (() => {
       });
     }
     unfollowUsers(user_ids) {
-      return this.send({status_unfollow: {user_ids}});
+      return this.send({ status_unfollow: { user_ids } });
     }
     updateChatMessage(channel_id, message_id, content) {
       return __async(this, null, function* () {
-        const response = yield this.send({channel_message_update: {channel_id, message_id, content}});
+        const response = yield this.send({ channel_message_update: { channel_id, message_id, content } });
         return response.channel_message_ack;
       });
     }
     updateStatus(status) {
-      return this.send({status_update: {status}});
+      return this.send({ status_update: { status } });
     }
     writeChatMessage(channel_id, content) {
       return __async(this, null, function* () {
-        const response = yield this.send({channel_message_send: {channel_id, content}});
+        const response = yield this.send({ channel_message_send: { channel_id, content } });
         return response.channel_message_ack;
       });
     }
@@ -1821,8 +1827,8 @@ var nakamajs = (() => {
     }
     authenticateApple(token, create, username, vars = new Map(), options = {}) {
       const request = {
-        token,
-        vars
+        "token": token,
+        "vars": vars
       };
       return this.apiClient.authenticateApple(request, create, username, options).then((apiSession) => {
         return Session.restore(apiSession.token || "");
@@ -1830,8 +1836,8 @@ var nakamajs = (() => {
     }
     authenticateCustom(id, create, username, vars = new Map(), options = {}) {
       const request = {
-        id,
-        vars
+        "id": id,
+        "vars": vars
       };
       return this.apiClient.authenticateCustom(request, create, username, options).then((apiSession) => {
         return Session.restore(apiSession.token || "");
@@ -1839,8 +1845,8 @@ var nakamajs = (() => {
     }
     authenticateDevice(id, create, username, vars) {
       const request = {
-        id,
-        vars
+        "id": id,
+        "vars": vars
       };
       return this.apiClient.authenticateDevice(request, create, username).then((apiSession) => {
         return Session.restore(apiSession.token || "");
@@ -1848,9 +1854,9 @@ var nakamajs = (() => {
     }
     authenticateEmail(email, password, create, username, vars) {
       const request = {
-        email,
-        password,
-        vars
+        "email": email,
+        "password": password,
+        "vars": vars
       };
       return this.apiClient.authenticateEmail(request, create, username).then((apiSession) => {
         return Session.restore(apiSession.token || "");
@@ -1858,17 +1864,17 @@ var nakamajs = (() => {
     }
     authenticateFacebookInstantGame(signedPlayerInfo, create, username, vars, options = {}) {
       const request = {
-        signed_player_info: signedPlayerInfo,
-        vars
+        "signed_player_info": signedPlayerInfo,
+        "vars": vars
       };
-      return this.apiClient.authenticateFacebookInstantGame({signed_player_info: request.signed_player_info, vars: request.vars}, create, username, options).then((apiSession) => {
+      return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then((apiSession) => {
         return Session.restore(apiSession.token || "");
       });
     }
     authenticateFacebook(token, create, username, sync, vars, options = {}) {
       const request = {
-        token,
-        vars
+        "token": token,
+        "vars": vars
       };
       return this.apiClient.authenticateFacebook(request, create, username, sync, options).then((apiSession) => {
         return Session.restore(apiSession.token || "");
@@ -1876,8 +1882,8 @@ var nakamajs = (() => {
     }
     authenticateGoogle(token, create, username, vars, options = {}) {
       const request = {
-        token,
-        vars
+        "token": token,
+        "vars": vars
       };
       return this.apiClient.authenticateGoogle(request, create, username, options).then((apiSession) => {
         return Session.restore(apiSession.token || "");
@@ -1885,8 +1891,8 @@ var nakamajs = (() => {
     }
     authenticateGameCenter(token, create, username, vars) {
       const request = {
-        token,
-        vars
+        "token": token,
+        "vars": vars
       };
       return this.apiClient.authenticateGameCenter(request, create, username).then((apiSession) => {
         return Session.restore(apiSession.token || "");
@@ -1894,8 +1900,8 @@ var nakamajs = (() => {
     }
     authenticateSteam(token, create, username, vars) {
       const request = {
-        token,
-        vars
+        "token": token,
+        "vars": vars
       };
       return this.apiClient.authenticateSteam(request, create, username).then((apiSession) => {
         return Session.restore(apiSession.token || "");
@@ -2532,7 +2538,7 @@ var nakamajs = (() => {
     readStorageObjects(session, request) {
       this.configuration.bearerToken = session && session.token;
       return this.apiClient.readStorageObjects(request).then((response) => {
-        var result = {objects: []};
+        var result = { objects: [] };
         if (response.objects == null) {
           return Promise.resolve(result);
         }
@@ -2669,7 +2675,7 @@ var nakamajs = (() => {
     }
     writeStorageObjects(session, objects) {
       this.configuration.bearerToken = session && session.token;
-      var request = {objects: []};
+      var request = { objects: [] };
       objects.forEach((o) => {
         request.objects.push({
           collection: o.collection,
