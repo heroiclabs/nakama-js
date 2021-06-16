@@ -3,6 +3,10 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [2.1.7]
+### Fixed
+- Fixed cacheable cursor parsing in  `ChannelMessageList`.
+
 ### [2.1.6]
 ### Added
 - Added a cachable cursor to `ChannelMessageList`.

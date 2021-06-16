@@ -765,7 +765,8 @@ export class Client {
       var result: ChannelMessageList = {
         messages: [],
         next_cursor: response.next_cursor,
-        prev_cursor: response.prev_cursor
+        prev_cursor: response.prev_cursor,
+        cacheable_cursor: response.cacheable_cursor
       };
 
       if (response.messages == null) {

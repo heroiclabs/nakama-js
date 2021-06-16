@@ -2045,7 +2045,8 @@ var Client = class {
       var result = {
         messages: [],
         next_cursor: response.next_cursor,
-        prev_cursor: response.prev_cursor
+        prev_cursor: response.prev_cursor,
+        cacheable_cursor: response.cacheable_cursor
       };
       if (response.messages == null) {
         return Promise.resolve(result);
