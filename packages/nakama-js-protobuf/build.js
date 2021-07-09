@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const { exec } = require("child_process");
+const { execSync } = require("child_process");
 
-function build(args) {
-    exec("npx esbuild --bundle index.ts --target=es6 --global-name=nakamajsprotobuf " + args)
+function esbuild(args) {
+    execSync("npx esbuild --bundle index.ts --target=es6 --global-name=nakamajsprotobuf " + args)
 }
 
-build(" --format=cjs --outfile=dist/nakama-js-protobuf.cjs.js")
-build(" --format=esm --outfile=dist/nakama-js-protobuf.esm.js")
-build(" --format=iife --outfile=dist/nakama-js-protobuf.iife.js")
+// emit .d.ts files and perform type checking
+execSync("npx typescript --project tsconfig.json", {stdio: 'inherit'})
+
+esbuild(" --format=cjs --outfile=dist/nakama-js-protobuf.cjs.js")
+esbuild(" --format=esm --outfile=dist/nakama-js-protobuf.esm.js")
+esbuild(" --format=iife --outfile=dist/nakama-js-protobuf.iife.js")

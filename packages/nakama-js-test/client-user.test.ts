@@ -18,6 +18,7 @@
 import {Page} from "puppeteer"
 import * as nakamajs from "@heroiclabs/nakama-js";
 import {createPage, generateid} from "./utils";
+import {describe, expect, it} from '@jest/globals'
 
 describe('User Tests', () => {
 

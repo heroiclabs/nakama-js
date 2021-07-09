@@ -18,6 +18,7 @@ import * as nakamajs from "@heroiclabs/nakama-js";
 import {StreamData} from "@heroiclabs/nakama-js/socket"
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType} from "./utils"
+import {describe, expect, it} from '@jest/globals'
 
 describe('Socket Message Tests', () => {
 

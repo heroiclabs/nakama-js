@@ -1477,6 +1477,8 @@ var nakamajs = (() => {
     send(msg) {
       if (msg.match_data_send) {
         msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+      } else if (msg.party_data_send) {
+        msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
       }
       this._socket.send(JSON.stringify(msg));
     }
@@ -1524,7 +1526,7 @@ var nakamajs = (() => {
       };
       this.adapter.onMessage = (message) => {
         if (this.verbose && window && window.console) {
-          console.log("Response: %o", message);
+          console.log("Response: %o", JSON.stringify(message));
         }
         if (message.cid == void 0) {
           if (message.notifications) {
@@ -1538,6 +1540,8 @@ var nakamajs = (() => {
             this.onmatchdata(message.match_data);
           } else if (message.match_presence_event) {
             this.onmatchpresence(message.match_presence_event);
+          } else if (message.matchmaker_ticket) {
+            this.onmatchmakerticket(message.matchmaker_ticket);
           } else if (message.matchmaker_matched) {
             this.onmatchmakermatched(message.matchmaker_matched);
           } else if (message.status_presence_event) {
@@ -1551,6 +1555,22 @@ var nakamajs = (() => {
             this.onchannelmessage(message.channel_message);
           } else if (message.channel_presence_event) {
             this.onchannelpresence(message.channel_presence_event);
+          } else if (message.party_data) {
+            message.party_data.data = message.party_data.data != null ? JSON.parse(b64DecodeUnicode(message.party_data.data)) : null;
+            message.party_data.op_code = parseInt(message.party_data.op_code);
+            this.onpartydata(message.party_data);
+          } else if (message.on_party_close) {
+            this.onpartyclose();
+          } else if (message.party_join_request) {
+            this.onpartyjoinrequest(message.party_join_request);
+          } else if (message.party_leader) {
+            this.onpartyleader(message.party_leader);
+          } else if (message.party_matchmaker_ticket) {
+            this.onpartymatchmakerticket(message.party_matchmaker_ticket);
+          } else if (message.party_presence_event) {
+            this.onpartypresence(message.party_presence_event);
+          } else if (message.party) {
+            this.onparty(message.party);
           } else {
             if (this.verbose && window && window.console) {
               console.log("Unrecognized message received: %o", message);
@@ -1628,9 +1648,49 @@ var nakamajs = (() => {
         console.log(matchPresence);
       }
     }
+    onmatchmakerticket(matchmakerTicket) {
+      if (this.verbose && window && window.console) {
+        console.log(matchmakerTicket);
+      }
+    }
     onmatchmakermatched(matchmakerMatched) {
       if (this.verbose && window && window.console) {
         console.log(matchmakerMatched);
+      }
+    }
+    onparty(party) {
+      if (this.verbose && window && window.console) {
+        console.log(party);
+      }
+    }
+    onpartyclose() {
+      if (this.verbose && window && window.console) {
+        console.log("Party closed.");
+      }
+    }
+    onpartyjoinrequest(partyJoinRequest) {
+      if (this.verbose && window && window.console) {
+        console.log(partyJoinRequest);
+      }
+    }
+    onpartydata(partyData) {
+      if (this.verbose && window && window.console) {
+        console.log(partyData);
+      }
+    }
+    onpartyleader(partyLeader) {
+      if (this.verbose && window && window.console) {
+        console.log(partyLeader);
+      }
+    }
+    onpartymatchmakerticket(partyMatched) {
+      if (this.verbose && window && window.console) {
+        console.log(partyMatched);
+      }
+    }
+    onpartypresence(partyPresence) {
+      if (this.verbose && window && window.console) {
+        console.log(partyPresence);
       }
     }
     onstatuspresence(statusPresence) {
@@ -1658,6 +1718,10 @@ var nakamajs = (() => {
             untypedMessage.match_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.match_data_send.data));
             this.adapter.send(untypedMessage);
             resolve();
+          } else if (untypedMessage.party_data_send) {
+            untypedMessage.party_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.party_data_send.data));
+            this.adapter.send(untypedMessage);
+            resolve();
           } else {
             if (untypedMessage.channel_message_send) {
               untypedMessage.channel_message_send.content = JSON.stringify(untypedMessage.channel_message_send.content);
@@ -1671,29 +1735,57 @@ var nakamajs = (() => {
           }
         }
         if (this.verbose && window && window.console) {
-          console.log("Sent message: %o", untypedMessage);
+          console.log("Sent message: %o", JSON.stringify(untypedMessage));
         }
       });
     }
-    addMatchmaker(query, minCount, maxCount, stringProperties, numericProperties) {
+    acceptPartyMember(party_id, presence) {
+      return this.send({ party_accept: { party_id, presence } });
+    }
+    addMatchmaker(query, min_count, max_count, string_properties, numeric_properties) {
       return __async(this, null, function* () {
-        const matchMakerAdd = {
+        const response = yield this.send({
           "matchmaker_add": {
-            min_count: minCount,
-            max_count: maxCount,
+            min_count,
+            max_count,
             query,
-            string_properties: stringProperties,
-            numeric_properties: numericProperties
+            string_properties,
+            numeric_properties
           }
-        };
-        const response = yield this.send(matchMakerAdd);
+        });
         return response.matchmaker_ticket;
+      });
+    }
+    addMatchmakerParty(party_id, query, min_count, max_count, string_properties, numeric_properties) {
+      return __async(this, null, function* () {
+        const response = yield this.send({
+          party_matchmaker_add: {
+            party_id,
+            min_count,
+            max_count,
+            query,
+            string_properties,
+            numeric_properties
+          }
+        });
+        return response.party_matchmaker_ticket;
+      });
+    }
+    closeParty(party_id) {
+      return __async(this, null, function* () {
+        return yield this.send({ party_close: { party_id } });
       });
     }
     createMatch() {
       return __async(this, null, function* () {
         const response = yield this.send({ match_create: {} });
         return response.match;
+      });
+    }
+    createParty(open, max_size) {
+      return __async(this, null, function* () {
+        const response = yield this.send({ party_create: { open, max_size } });
+        return response.party;
       });
     }
     followUsers(userIds) {
@@ -1727,11 +1819,31 @@ var nakamajs = (() => {
         return response.match;
       });
     }
+    joinParty(party_id) {
+      return __async(this, null, function* () {
+        return yield this.send({ party_join: { party_id } });
+      });
+    }
     leaveChat(channel_id) {
       return this.send({ channel_leave: { channel_id } });
     }
     leaveMatch(matchId) {
       return this.send({ match_leave: { match_id: matchId } });
+    }
+    leaveParty(party_id) {
+      return this.send({ party_leave: { party_id } });
+    }
+    listPartyJoinRequests(party_id) {
+      return __async(this, null, function* () {
+        const response = yield this.send({ party_join_request_list: { party_id } });
+        return response.party_join_request;
+      });
+    }
+    promotePartyMember(party_id, party_member) {
+      return __async(this, null, function* () {
+        const response = yield this.send({ party_promote: { party_id, presence: party_member } });
+        return response.party_leader;
+      });
     }
     removeChatMessage(channel_id, message_id) {
       return __async(this, null, function* () {
@@ -1746,6 +1858,22 @@ var nakamajs = (() => {
     }
     removeMatchmaker(ticket) {
       return this.send({ matchmaker_remove: { ticket } });
+    }
+    removeMatchmakerParty(party_id, ticket) {
+      return this.send({
+        party_matchmaker_remove: {
+          party_id,
+          ticket
+        }
+      });
+    }
+    removePartyMember(party_id, member) {
+      return __async(this, null, function* () {
+        return this.send({ party_remove: {
+          party_id,
+          presence: member
+        } });
+      });
     }
     rpc(id, payload, http_key) {
       return __async(this, null, function* () {
@@ -1770,6 +1898,9 @@ var nakamajs = (() => {
           }
         });
       });
+    }
+    sendPartyData(party_id, op_code, data) {
+      return this.send({ party_data_send: { party_id, op_code, data } });
     }
     unfollowUsers(user_ids) {
       return this.send({ status_unfollow: { user_ids } });

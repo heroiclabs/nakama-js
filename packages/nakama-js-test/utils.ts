@@ -18,6 +18,7 @@ import { Page } from "puppeteer";
 const fs = require("fs");
 const crypto = require("crypto");
 const base64url = require("base64url");
+import global from "jest-environment-puppeteer"
 
 // util to generate a random id.
 export function generateid(): string {
@@ -88,3 +89,5 @@ export function createFacebookInstantGameAuthToken(id : string) : string {
     const token = encodedSignature + "." + encodedPayload;
     return token;
   }
+
+export const matchmakerTimeout = 20000;

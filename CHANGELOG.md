@@ -3,9 +3,16 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [Unreleased]
+- Removes the deprecated generalist `socket.Send` function for sending data. Use the other exported Socket methods
+such as `socket.addMatchmaker` for better type checking.
+- Added realtime party support.
+- Upgraded ts-proto dependency and shipped type definitions with the protobuf adapter.
+- Changed the return type from `socket.addMatchmaker` to a `MatchmakerTicket` rather than a `MatchmakerMatched`.
+
 ### [2.1.7]
 ### Fixed
-- Fixed cacheable cursor parsing in  `ChannelMessageList`.
+- Fixed cacheable cursor parsing in `ChannelMessageList`.
 
 ### [2.1.6]
 ### Added

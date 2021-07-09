@@ -165,20 +165,27 @@ docker-compose -f ./docker-compose.yml up
 yarn workspace @heroiclabs/nakama-js-test run test
 ```
 
+Note on Yarn workspaces and testing particular versions of `nakama-js` from the `nakama-js-test` workspace:
+Yarn will first look at the remote NPM registry for the `nakama-js` version specified. If that is not found,
+it will symlink the local `nakama-js` workspace into `node_modules` which is necessary for running tests
+against local changes.
+
 ### Protocol Buffer Web Socket Adapter
 
-To update the generated Typescript required for using the protocol buffer adapter, run the following:
+To update the generated Typescript required for using the protocol buffer adapter, `cd` into
+`packages/nakama-js-protobuf` and run the following:
 
 ```shell
 npx protoc \
 --plugin="./node_modules/.bin/protoc-gen-ts_proto" \
---proto_path=$GOPATH/src \
---ts_proto_out=packages/nakama-js-protobuf \
+--proto_path=$GOPATH/src/github.com/heroiclabs/nakama-common \
+--ts_proto_out=. \
 --ts_proto_opt=snakeToCamel=false \
 --ts_proto_opt=useOptionals=true \
 --ts_proto_opt=oneof=unions \
-$GOPATH/src/github.com/heroiclabs/nakama-common/api/api.proto \
-$GOPATH/src/github.com/heroiclabs/nakama-common/rtapi/realtime.proto
+--ts_proto_opt=esModuleInterop=true \
+$GOPATH/src/github.com/heroiclabs/nakama-common/rtapi/realtime.proto \
+$GOPATH/src/github.com/heroiclabs/nakama-common/api/api.proto
 ```
 
 ### Release Process

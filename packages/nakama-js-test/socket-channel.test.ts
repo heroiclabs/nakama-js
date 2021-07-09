@@ -19,6 +19,7 @@ import * as nakamajs from "@heroiclabs/nakama-js";
 import { isExportDeclaration } from "typescript";
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType} from "./utils";
+import {describe, expect, it} from '@jest/globals'
 
 describe('Channel Tests', () => {
 
@@ -57,7 +58,7 @@ describe('Channel Tests', () => {
     const response = await page.evaluate(async (customid, channelid, adapter) => {
 
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false,
+      const socket = client.createSocket(false, true,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom(customid)

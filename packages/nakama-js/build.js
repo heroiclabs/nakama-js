@@ -11,17 +11,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-const { exec } = require("child_process");
+const { execSync } = require("child_process");
 
-function build(args) {
-    exec("npx esbuild --bundle index.ts --target=es6 --global-name=nakamajs " + args)
+function esbuild(args) {
+    execSync("npx esbuild --bundle index.ts --target=es6 --global-name=nakamajs " + args)
 }
 
 // emit .d.ts files and perform type checking
-exec("npx typescript --project packages/nakama-js/tsconfig.json")
+execSync("npx typescript --project tsconfig.json", {stdio: 'inherit'})
 
-build(" --format=cjs --outfile=dist/nakama-js.cjs.js")
-build(" --format=esm --outfile=dist/nakama-js.esm.js")
-build(" --format=iife --outfile=dist/nakama-js.iife.js")
+esbuild(" --format=cjs --outfile=dist/nakama-js.cjs.js")
+esbuild(" --format=esm --outfile=dist/nakama-js.esm.js")
+esbuild(" --format=iife --outfile=dist/nakama-js.iife.js")
 
-exec("npx rollup -c")
+execSync("npx rollup -c")

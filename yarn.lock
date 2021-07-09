@@ -1757,7 +1757,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js-protobuf@workspace:packages/nakama-js-protobuf"
   dependencies:
-    ts-proto: ^1.27.1
+    ts-proto: ^1.80.1
+    ts-proto-descriptors: 1.2.1
   languageName: unknown
   linkType: soft
 
@@ -1765,13 +1766,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js-test@workspace:packages/nakama-js-test"
   dependencies:
-    "@heroiclabs/nakama-js": 2.1.3
+    "@heroiclabs/nakama-js": 2.2.0
     "@heroiclabs/nakama-js-protobuf": 1.0.3
-    "@types/expect-puppeteer": ^4.4.3
-    "@types/jest": 26.0.20
-    "@types/jest-environment-puppeteer": ^4.4.0
+    "@types/expect-puppeteer": ^4.4.5
+    "@types/jest": ^26.0.20
+    "@types/jest-environment-puppeteer": ^4.4.1
     "@types/node": 12.12.6
-    "@types/puppeteer": 5.4.2
+    "@types/puppeteer": ^5.4.2
     jest: 26.6.0
     jest-puppeteer: ^4.4.0
     jsdom: 16.3.0
@@ -1792,7 +1793,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@heroiclabs/nakama-js@2.1.4, @heroiclabs/nakama-js@workspace:packages/nakama-js":
+"@heroiclabs/nakama-js@2.2.0, @heroiclabs/nakama-js@workspace:packages/nakama-js":
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js@workspace:packages/nakama-js"
   dependencies:
@@ -1806,13 +1807,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@heroiclabs/nakama-js@npm:2.1.3":
-  version: 2.1.3
-  resolution: "@heroiclabs/nakama-js@npm:2.1.3"
+"@heroiclabs/nakama-js@npm:2.1.4":
+  version: 2.1.4
+  resolution: "@heroiclabs/nakama-js@npm:2.1.4"
   dependencies:
-    Base64: 1.0.1
+    js-base64: ^3.6.0
     whatwg-fetch: ^2.0.3
-  checksum: fd0c556a2e62901f20d66a07443853773452866bf73d1185613b420f6d10acde6f883d765a27b8411b0a19e87d2dcc56e99e8b9b0aea28a4bc76d74da24801b4
+  checksum: fb1353daebba0e8bd19c892ed4926c8f9feba41ad4f6202fb37c576c0e25665dac4e73d09f9272d3dcfe1d285f7c471031525060a5d695057a663a1b9216cbcb
   languageName: node
   linkType: hard
 
@@ -2981,7 +2982,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/expect-puppeteer@npm:^4.4.3":
+"@types/expect-puppeteer@npm:^4.4.5":
   version: 4.4.5
   resolution: "@types/expect-puppeteer@npm:4.4.5"
   dependencies:
@@ -3075,7 +3076,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest-environment-puppeteer@npm:^4.4.0":
+"@types/jest-environment-puppeteer@npm:^4.4.1":
   version: 4.4.1
   resolution: "@types/jest-environment-puppeteer@npm:4.4.1"
   dependencies:
@@ -3086,7 +3087,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:*, @types/jest@npm:26.0.20, @types/jest@npm:26.x":
+"@types/jest@npm:*, @types/jest@npm:26.x, @types/jest@npm:^26.0.20":
   version: 26.0.20
   resolution: "@types/jest@npm:26.0.20"
   dependencies:
@@ -3211,7 +3212,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/puppeteer@npm:*, @types/puppeteer@npm:5.4.2":
+"@types/puppeteer@npm:*, @types/puppeteer@npm:^5.4.2":
   version: 5.4.2
   resolution: "@types/puppeteer@npm:5.4.2"
   dependencies:
@@ -3989,13 +3990,6 @@ __metadata:
   version: 2.6.0
   resolution: "@zeit/schemas@npm:2.6.0"
   checksum: 0e015fadf7006c8e4d134148321212e6179f8ed94ca41488a10178b3fbe78eb3a13d540f8b19d7438be48315b369ffd0fc6c0e222417b30b412a4409a911cc99
-  languageName: node
-  linkType: hard
-
-"Base64@npm:1.0.1":
-  version: 1.0.1
-  resolution: "Base64@npm:1.0.1"
-  checksum: e7f0f461e293650cbe5d8edd611fa250f749ae8babc89739333e728f810afbc4b714a3358455bbbf3c78321bbff8eaf6d6f650e722a6a4808466e7f37027d9ee
   languageName: node
   linkType: hard
 
@@ -19117,13 +19111,6 @@ resolve@^1.19.0:
   languageName: node
   linkType: hard
 
-"ts-imm@npm:0.4.0":
-  version: 0.4.0
-  resolution: "ts-imm@npm:0.4.0"
-  checksum: d41b6d545be7de63bf4e662abc03e81a2d8f6f0db39888e77c1ca88304c7a608d3219050d3c64cce045d2a2407a2bf8d440f26891c611284ce98cbedd19dced7
-  languageName: node
-  linkType: hard
-
 "ts-jest@npm:26.4.4":
   version: 26.4.4
   resolution: "ts-jest@npm:26.4.4"
@@ -19174,28 +19161,40 @@ resolve@^1.19.0:
   languageName: node
   linkType: hard
 
-"ts-poet@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "ts-poet@npm:1.0.1"
+"ts-poet@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "ts-poet@npm:4.5.0"
   dependencies:
+    "@types/prettier": ^1.19.0
     lodash: ^4.17.15
-    ts-imm: 0.4.0
-  checksum: 61f8e2628f98a57f5130679d44a5e802f8e4cf5f635a90fc6bc0445d8e75b6937ac7bde02df5741ffca658771d01c75308a6dafee087b05eac0161ef65e6a5ad
+    prettier: ^2.0.2
+  checksum: 8d8e59a29d8ff3d693cb970df1bd294946ee560ee19ed7eb405cf4b2871c51a4de861988be1b65fc03dc2fb4b60f7d41917dd05cfad79cb48a18c137336a297c
   languageName: node
   linkType: hard
 
-"ts-proto@npm:^1.27.1":
-  version: 1.41.1
-  resolution: "ts-proto@npm:1.41.1"
+"ts-proto-descriptors@npm:1.2.1, ts-proto-descriptors@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "ts-proto-descriptors@npm:1.2.1"
+  dependencies:
+    long: ^4.0.0
+    protobufjs: ^6.8.8
+  checksum: ad62bdf0a3b86a71e6e76d12f89601b9e037df7430225181dfd4546cd62740a9284ba0f94a4bec69fed6a4c938e35ba52089c85edfeebb119d568193d90ba8f5
+  languageName: node
+  linkType: hard
+
+"ts-proto@npm:^1.80.1":
+  version: 1.80.1
+  resolution: "ts-proto@npm:1.80.1"
   dependencies:
     "@types/object-hash": ^1.3.0
     dataloader: ^1.4.0
     object-hash: ^1.3.1
     protobufjs: ^6.8.8
-    ts-poet: ^1.0.1
+    ts-poet: ^4.5.0
+    ts-proto-descriptors: ^1.2.1
   bin:
     protoc-gen-ts_proto: protoc-gen-ts_proto
-  checksum: 352f01662460bcb90d65d5e87f3e9b5ad78f18838f9d4d00bc4f19b1404a5fcabf4cbfe0b8dfb7e5161abdee4e808ece5ff94a59ed6887f90e46822797b55a1d
+  checksum: 530103b09ffdac79cfa4f4382e4424127b6c9c73f3d4243007b663dbbc35a26302ab7fda6b4cb6cabd39e59dde793d3803c888394a7cc3a0b9869ceef40c5ee6
   languageName: node
   linkType: hard
 

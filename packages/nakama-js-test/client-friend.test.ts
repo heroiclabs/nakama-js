@@ -17,6 +17,7 @@
 import {Page} from "puppeteer"
 import * as nakamajs from "@heroiclabs/nakama-js/client";
 import {createFacebookInstantGameAuthToken, createPage, generateid} from "./utils";
+import {describe, expect, it} from '@jest/globals'
 
 describe('Friend Tests', () => {
 
@@ -126,7 +127,7 @@ describe('Friend Tests', () => {
     expect(result.friends!.length).toBe(0);
   });
 
-  it('should add friend authenticated via facebook instant, then list', async () => {
+  it.skip('should add friend authenticated via facebook instant, then list', async () => {
     const page : Page = await createPage();
 
     const customid1 = generateid();

@@ -15,7 +15,7 @@
  */
 
 import { WebSocketAdapter, SocketCloseHandler, SocketErrorHandler, SocketMessageHandler, SocketOpenHandler } from "../nakama-js/web_socket_adapter"
-import * as tsproto from "./github.com/heroiclabs/nakama-common/rtapi/realtime"
+import * as tsproto from "./rtapi/realtime"
 
 /**
  * A protocol buffer socket adapter that accepts and transmits payloads using the protobuf binary wire format.

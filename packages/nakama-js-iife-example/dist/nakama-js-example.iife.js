@@ -1491,7 +1491,7 @@
       };
       this.adapter.onMessage = (message) => {
         if (this.verbose && window && window.console) {
-          console.log("Response: %o", message);
+          console.log("Response: ", message);
         }
         if (message.cid == void 0) {
           if (message.notifications) {

@@ -42,7 +42,7 @@ export interface WebSocketAdapter {
     readonly isConnected: boolean;
     close() : void;
     connect(scheme: string, host: string, port : string, createStatus: boolean, token : string) : void;
-    send(msg : any) : void;
+    send(message: any) : void;
 }
 
 /**
@@ -140,10 +140,11 @@ export class WebSocketAdapterText implements WebSocketAdapter {
     }
 
     send(msg: any): void {
-        if (msg.match_data_send)
-        {
+        if (msg.match_data_send) {
             // according to protobuf docs, int64 is encoded to JSON as string.
             msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+        } else if (msg.party_data_send) {
+            msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
         }
 
         this._socket!.send(JSON.stringify(msg));

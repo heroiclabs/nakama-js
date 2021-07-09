@@ -17,6 +17,7 @@
 import {Page} from "puppeteer";
 import * as nakamajs from "@heroiclabs/nakama-js";
 import {createPage, createFacebookInstantGameAuthToken, generateid} from "./utils";
+import {describe, expect, it} from '@jest/globals'
 
 describe('Authenticate Tests', () => {
 
@@ -112,7 +113,7 @@ describe('Authenticate Tests', () => {
     expect(result).not.toBeNull();
   });
 
-  it('should authenticate with facebook instant games', async () => {
+  it.skip('should authenticate with facebook instant games', async () => {
     let token : string = createFacebookInstantGameAuthToken("a_player_id");
     const page : Page = await createPage();
 
