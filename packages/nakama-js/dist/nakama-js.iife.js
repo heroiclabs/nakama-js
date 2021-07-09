@@ -24,6 +24,7 @@ var nakamajs = (() => {
     return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
   var __export = (target, all) => {
+    __markAsModule(target);
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
   };
@@ -2177,7 +2178,8 @@ var nakamajs = (() => {
         var result = {
           messages: [],
           next_cursor: response.next_cursor,
-          prev_cursor: response.prev_cursor
+          prev_cursor: response.prev_cursor,
+          cacheable_cursor: response.cacheable_cursor
         };
         if (response.messages == null) {
           return Promise.resolve(result);
