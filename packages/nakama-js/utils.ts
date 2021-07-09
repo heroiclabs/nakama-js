@@ -1,24 +1,5 @@
 import {encode, decode} from "js-base64"
 
-export function buildFullUrl(basePath: string, fragment: string, queryParams: Map<string, any>)
-{
-    let fullPath = basePath + fragment + "?";
-
-    for (let [k, v] of queryParams) {
-        if (v instanceof Array) {
-            fullPath += v.reduce((prev: any, curr: any) => {
-              return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-            }, "");
-        } else {
-            if (v != null) {
-                fullPath += encodeURIComponent(k) + "=" + encodeURIComponent(v) + "&";
-            }
-        }
-    }
-
-    return fullPath;
-}
-
 export function buildFetchOptions(method: string, options: any, bodyJson: string) {
     const fetchOptions = {...{ method: method }, ...options};
     fetchOptions.headers = {...options.headers};

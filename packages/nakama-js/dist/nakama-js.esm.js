@@ -545,21 +545,6 @@ var _unURI = (a) => _tidyB64(a.replace(/[-_]/g, (m0) => m0 == "-" ? "+" : "/"));
 var decode = (src) => _decode(_unURI(src));
 
 // utils.ts
-function buildFullUrl(basePath, fragment, queryParams) {
-  let fullPath = basePath + fragment + "?";
-  for (let [k, v] of queryParams) {
-    if (v instanceof Array) {
-      fullPath += v.reduce((prev, curr) => {
-        return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-      }, "");
-    } else {
-      if (v != null) {
-        fullPath += encodeURIComponent(k) + "=" + encodeURIComponent(v) + "&";
-      }
-    }
-  }
-  return fullPath;
-}
 function buildFetchOptions(method, options, bodyJson) {
   const fetchOptions = __spreadValues(__spreadValues({}, { method }), options);
   fetchOptions.headers = __spreadValues({}, options.headers);
@@ -625,7 +610,7 @@ var NakamaApi = class {
     const urlPath = "/healthcheck";
     const queryParams = new Map();
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -645,7 +630,7 @@ var NakamaApi = class {
     const urlPath = "/v2/account";
     const queryParams = new Map();
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -669,7 +654,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -695,7 +680,7 @@ var NakamaApi = class {
     queryParams.set("username", username);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
     return Promise.race([
@@ -721,7 +706,7 @@ var NakamaApi = class {
     queryParams.set("username", username);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
     return Promise.race([
@@ -747,7 +732,7 @@ var NakamaApi = class {
     queryParams.set("username", username);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
     return Promise.race([
@@ -773,7 +758,7 @@ var NakamaApi = class {
     queryParams.set("username", username);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
     return Promise.race([
@@ -800,7 +785,7 @@ var NakamaApi = class {
     queryParams.set("sync", sync);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
     return Promise.race([
@@ -826,7 +811,7 @@ var NakamaApi = class {
     queryParams.set("username", username);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
     return Promise.race([
@@ -852,7 +837,7 @@ var NakamaApi = class {
     queryParams.set("username", username);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
     return Promise.race([
@@ -878,7 +863,7 @@ var NakamaApi = class {
     queryParams.set("username", username);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
     return Promise.race([
@@ -905,7 +890,7 @@ var NakamaApi = class {
     queryParams.set("sync", sync);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
     return Promise.race([
@@ -929,7 +914,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -953,7 +938,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -977,7 +962,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1001,7 +986,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1026,7 +1011,7 @@ var NakamaApi = class {
     queryParams.set("sync", sync);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1050,7 +1035,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1074,7 +1059,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1098,7 +1083,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1122,7 +1107,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1146,7 +1131,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
     return Promise.race([
@@ -1170,7 +1155,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1194,7 +1179,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1218,7 +1203,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1242,7 +1227,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1266,7 +1251,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1290,7 +1275,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1314,7 +1299,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1338,7 +1323,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1362,7 +1347,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1388,7 +1373,7 @@ var NakamaApi = class {
     queryParams.set("forward", forward);
     queryParams.set("cursor", cursor);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1412,7 +1397,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1434,7 +1419,7 @@ var NakamaApi = class {
     queryParams.set("ids", ids);
     queryParams.set("usernames", usernames);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1457,7 +1442,7 @@ var NakamaApi = class {
     queryParams.set("state", state);
     queryParams.set("cursor", cursor);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1479,7 +1464,7 @@ var NakamaApi = class {
     queryParams.set("ids", ids);
     queryParams.set("usernames", usernames);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1501,7 +1486,7 @@ var NakamaApi = class {
     queryParams.set("ids", ids);
     queryParams.set("usernames", usernames);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1526,7 +1511,7 @@ var NakamaApi = class {
     queryParams.set("reset", reset);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1551,7 +1536,7 @@ var NakamaApi = class {
     queryParams.set("reset", reset);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1574,7 +1559,7 @@ var NakamaApi = class {
     queryParams.set("cursor", cursor);
     queryParams.set("limit", limit);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1598,7 +1583,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1621,7 +1606,7 @@ var NakamaApi = class {
     const urlPath = "/v2/group/{groupId}".replace("{groupId}", encodeURIComponent(String(groupId)));
     const queryParams = new Map();
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1648,7 +1633,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1672,7 +1657,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     queryParams.set("user_ids", userIds);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1696,7 +1681,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     queryParams.set("user_ids", userIds);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1723,7 +1708,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     queryParams.set("user_ids", userIds);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1746,7 +1731,7 @@ var NakamaApi = class {
     const urlPath = "/v2/group/{groupId}/join".replace("{groupId}", encodeURIComponent(String(groupId)));
     const queryParams = new Map();
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1770,7 +1755,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     queryParams.set("user_ids", userIds);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1793,7 +1778,7 @@ var NakamaApi = class {
     const urlPath = "/v2/group/{groupId}/leave".replace("{groupId}", encodeURIComponent(String(groupId)));
     const queryParams = new Map();
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1817,7 +1802,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     queryParams.set("user_ids", userIds);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1843,7 +1828,7 @@ var NakamaApi = class {
     queryParams.set("state", state);
     queryParams.set("cursor", cursor);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1867,7 +1852,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1891,7 +1876,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1915,7 +1900,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1938,7 +1923,7 @@ var NakamaApi = class {
     const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
     const queryParams = new Map();
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1965,7 +1950,7 @@ var NakamaApi = class {
     queryParams.set("cursor", cursor);
     queryParams.set("expiry", expiry);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -1992,7 +1977,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2020,7 +2005,7 @@ var NakamaApi = class {
     queryParams.set("limit", limit);
     queryParams.set("expiry", expiry);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2046,7 +2031,7 @@ var NakamaApi = class {
     queryParams.set("maxSize", maxSize);
     queryParams.set("query", query);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2067,7 +2052,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     queryParams.set("ids", ids);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2089,7 +2074,7 @@ var NakamaApi = class {
     queryParams.set("limit", limit);
     queryParams.set("cacheableCursor", cacheableCursor);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2114,7 +2099,7 @@ var NakamaApi = class {
     queryParams.set("payload", payload);
     queryParams.set("httpKey", httpKey);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2142,7 +2127,7 @@ var NakamaApi = class {
     queryParams.set("httpKey", httpKey);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2166,7 +2151,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2190,7 +2175,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2214,7 +2199,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2238,7 +2223,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2264,7 +2249,7 @@ var NakamaApi = class {
     queryParams.set("limit", limit);
     queryParams.set("cursor", cursor);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2292,7 +2277,7 @@ var NakamaApi = class {
     queryParams.set("limit", limit);
     queryParams.set("cursor", cursor);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2318,7 +2303,7 @@ var NakamaApi = class {
     queryParams.set("limit", limit);
     queryParams.set("cursor", cursor);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2345,7 +2330,7 @@ var NakamaApi = class {
     queryParams.set("cursor", cursor);
     queryParams.set("expiry", expiry);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2372,7 +2357,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2399,7 +2384,7 @@ var NakamaApi = class {
     const queryParams = new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2422,7 +2407,7 @@ var NakamaApi = class {
     const urlPath = "/v2/tournament/{tournamentId}/join".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
     const queryParams = new Map();
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2450,7 +2435,7 @@ var NakamaApi = class {
     queryParams.set("limit", limit);
     queryParams.set("expiry", expiry);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2473,7 +2458,7 @@ var NakamaApi = class {
     queryParams.set("usernames", usernames);
     queryParams.set("facebookIds", facebookIds);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2499,7 +2484,7 @@ var NakamaApi = class {
     queryParams.set("state", state);
     queryParams.set("cursor", cursor);
     let bodyJson = "";
-    const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -2514,6 +2499,21 @@ var NakamaApi = class {
       }),
       new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
     ]);
+  }
+  buildFullUrl(basePath, fragment, queryParams) {
+    let fullPath = basePath + fragment + "?";
+    for (let [k, v] of queryParams) {
+      if (v instanceof Array) {
+        fullPath += v.reduce((prev, curr) => {
+          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+        }, "");
+      } else {
+        if (v != null) {
+          fullPath += encodeURIComponent(k) + "=" + encodeURIComponent(v) + "&";
+        }
+      }
+    }
+    return fullPath;
   }
 };
 

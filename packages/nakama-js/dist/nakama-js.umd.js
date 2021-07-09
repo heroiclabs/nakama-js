@@ -753,36 +753,6 @@
    */
   const decode = (src) => _decode(_unURI(src));
 
-  function buildFullUrl(basePath, fragment, queryParams) {
-      var e_1, _a;
-      var fullPath = basePath + fragment + "?";
-      var _loop_1 = function (k, v) {
-          if (v instanceof Array) {
-              fullPath += v.reduce(function (prev, curr) {
-                  return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-              }, "");
-          }
-          else {
-              if (v != null) {
-                  fullPath += encodeURIComponent(k) + "=" + encodeURIComponent(v) + "&";
-              }
-          }
-      };
-      try {
-          for (var queryParams_1 = __values(queryParams), queryParams_1_1 = queryParams_1.next(); !queryParams_1_1.done; queryParams_1_1 = queryParams_1.next()) {
-              var _b = __read(queryParams_1_1.value, 2), k = _b[0], v = _b[1];
-              _loop_1(k, v);
-          }
-      }
-      catch (e_1_1) { e_1 = { error: e_1_1 }; }
-      finally {
-          try {
-              if (queryParams_1_1 && !queryParams_1_1.done && (_a = queryParams_1.return)) _a.call(queryParams_1);
-          }
-          finally { if (e_1) throw e_1.error; }
-      }
-      return fullPath;
-  }
   function buildFetchOptions(method, options, bodyJson) {
       var fetchOptions = __assign({ method: method }, options);
       fetchOptions.headers = __assign({}, options.headers);
@@ -849,7 +819,7 @@
           var urlPath = "/healthcheck";
           var queryParams = new Map();
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -875,7 +845,7 @@
           var urlPath = "/v2/account";
           var queryParams = new Map();
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -905,7 +875,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("PUT", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -937,7 +907,7 @@
           queryParams.set("username", username);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
           return Promise.race([
@@ -969,7 +939,7 @@
           queryParams.set("username", username);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
           return Promise.race([
@@ -1001,7 +971,7 @@
           queryParams.set("username", username);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
           return Promise.race([
@@ -1033,7 +1003,7 @@
           queryParams.set("username", username);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
           return Promise.race([
@@ -1066,7 +1036,7 @@
           queryParams.set("sync", sync);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
           return Promise.race([
@@ -1098,7 +1068,7 @@
           queryParams.set("username", username);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
           return Promise.race([
@@ -1130,7 +1100,7 @@
           queryParams.set("username", username);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
           return Promise.race([
@@ -1162,7 +1132,7 @@
           queryParams.set("username", username);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
           return Promise.race([
@@ -1195,7 +1165,7 @@
           queryParams.set("sync", sync);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
           return Promise.race([
@@ -1225,7 +1195,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1255,7 +1225,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1285,7 +1255,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1315,7 +1285,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1346,7 +1316,7 @@
           queryParams.set("sync", sync);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1376,7 +1346,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1406,7 +1376,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1436,7 +1406,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1466,7 +1436,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1496,7 +1466,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
           return Promise.race([
@@ -1526,7 +1496,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1556,7 +1526,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1586,7 +1556,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1616,7 +1586,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1646,7 +1616,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1676,7 +1646,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1706,7 +1676,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1736,7 +1706,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1766,7 +1736,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1799,7 +1769,7 @@
           queryParams.set("forward", forward);
           queryParams.set("cursor", cursor);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1829,7 +1799,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1857,7 +1827,7 @@
           queryParams.set("ids", ids);
           queryParams.set("usernames", usernames);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1886,7 +1856,7 @@
           queryParams.set("state", state);
           queryParams.set("cursor", cursor);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1914,7 +1884,7 @@
           queryParams.set("ids", ids);
           queryParams.set("usernames", usernames);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1942,7 +1912,7 @@
           queryParams.set("ids", ids);
           queryParams.set("usernames", usernames);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -1973,7 +1943,7 @@
           queryParams.set("reset", reset);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2004,7 +1974,7 @@
           queryParams.set("reset", reset);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2033,7 +2003,7 @@
           queryParams.set("cursor", cursor);
           queryParams.set("limit", limit);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2063,7 +2033,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2093,7 +2063,7 @@
               .replace("{groupId}", encodeURIComponent(String(groupId)));
           var queryParams = new Map();
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2127,7 +2097,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("PUT", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2158,7 +2128,7 @@
           var queryParams = new Map();
           queryParams.set("user_ids", userIds);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2189,7 +2159,7 @@
           var queryParams = new Map();
           queryParams.set("user_ids", userIds);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2223,7 +2193,7 @@
           var queryParams = new Map();
           queryParams.set("user_ids", userIds);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2253,7 +2223,7 @@
               .replace("{groupId}", encodeURIComponent(String(groupId)));
           var queryParams = new Map();
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2284,7 +2254,7 @@
           var queryParams = new Map();
           queryParams.set("user_ids", userIds);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2314,7 +2284,7 @@
               .replace("{groupId}", encodeURIComponent(String(groupId)));
           var queryParams = new Map();
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2345,7 +2315,7 @@
           var queryParams = new Map();
           queryParams.set("user_ids", userIds);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2378,7 +2348,7 @@
           queryParams.set("state", state);
           queryParams.set("cursor", cursor);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2408,7 +2378,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2438,7 +2408,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2468,7 +2438,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2498,7 +2468,7 @@
               .replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
           var queryParams = new Map();
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2532,7 +2502,7 @@
           queryParams.set("cursor", cursor);
           queryParams.set("expiry", expiry);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2566,7 +2536,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2602,7 +2572,7 @@
           queryParams.set("limit", limit);
           queryParams.set("expiry", expiry);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2634,7 +2604,7 @@
           queryParams.set("maxSize", maxSize);
           queryParams.set("query", query);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2661,7 +2631,7 @@
           var queryParams = new Map();
           queryParams.set("ids", ids);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2689,7 +2659,7 @@
           queryParams.set("limit", limit);
           queryParams.set("cacheableCursor", cacheableCursor);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2721,7 +2691,7 @@
           queryParams.set("payload", payload);
           queryParams.set("httpKey", httpKey);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2756,7 +2726,7 @@
           queryParams.set("httpKey", httpKey);
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2786,7 +2756,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2816,7 +2786,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2846,7 +2816,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("PUT", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2876,7 +2846,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("PUT", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2909,7 +2879,7 @@
           queryParams.set("limit", limit);
           queryParams.set("cursor", cursor);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2945,7 +2915,7 @@
           queryParams.set("limit", limit);
           queryParams.set("cursor", cursor);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -2977,7 +2947,7 @@
           queryParams.set("limit", limit);
           queryParams.set("cursor", cursor);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -3011,7 +2981,7 @@
           queryParams.set("cursor", cursor);
           queryParams.set("expiry", expiry);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -3045,7 +3015,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -3079,7 +3049,7 @@
           var queryParams = new Map();
           var bodyJson = "";
           bodyJson = JSON.stringify(body || {});
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("PUT", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -3109,7 +3079,7 @@
               .replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
           var queryParams = new Map();
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -3145,7 +3115,7 @@
           queryParams.set("limit", limit);
           queryParams.set("expiry", expiry);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -3174,7 +3144,7 @@
           queryParams.set("usernames", usernames);
           queryParams.set("facebookIds", facebookIds);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -3207,7 +3177,7 @@
           queryParams.set("state", state);
           queryParams.set("cursor", cursor);
           var bodyJson = "";
-          var fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
+          var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
           return Promise.race([
@@ -3226,6 +3196,36 @@
                   return setTimeout(reject, _this.timeoutMs, "Request timed out.");
               }),
           ]);
+      };
+      NakamaApi.prototype.buildFullUrl = function (basePath, fragment, queryParams) {
+          var e_1, _a;
+          var fullPath = basePath + fragment + "?";
+          var _loop_1 = function (k, v) {
+              if (v instanceof Array) {
+                  fullPath += v.reduce(function (prev, curr) {
+                      return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                  }, "");
+              }
+              else {
+                  if (v != null) {
+                      fullPath += encodeURIComponent(k) + "=" + encodeURIComponent(v) + "&";
+                  }
+              }
+          };
+          try {
+              for (var queryParams_1 = __values(queryParams), queryParams_1_1 = queryParams_1.next(); !queryParams_1_1.done; queryParams_1_1 = queryParams_1.next()) {
+                  var _b = __read(queryParams_1_1.value, 2), k = _b[0], v = _b[1];
+                  _loop_1(k, v);
+              }
+          }
+          catch (e_1_1) { e_1 = { error: e_1_1 }; }
+          finally {
+              try {
+                  if (queryParams_1_1 && !queryParams_1_1.done && (_a = queryParams_1.return)) _a.call(queryParams_1);
+              }
+              finally { if (e_1) throw e_1.error; }
+          }
+          return fullPath;
       };
       return NakamaApi;
   }());
