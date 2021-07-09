@@ -22,6 +22,9 @@ const base64url = require("base64url");
 // automatically assigned by puppeteer + Jest
 declare var browser : Browser;
 
+// automatically assigned by puppeteer + Jest
+declare var browser : Browser;
+
 // util to generate a random id.
 export function generateid(): string {
     const arr: string[] = [];
