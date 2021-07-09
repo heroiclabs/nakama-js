@@ -10,17 +10,25 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 - Added an `ApiOverrideOperator` to leaderboard writes.
 - Added ability to logout of a session with `sessionLogout`.
 - Added realtime party support
-- Allowed for importing of steam friends through `importSteamFriends`.
-- Shipped type definitions with the protobuf adapter.
+- Added type definitions with the protobuf adapter.
+- Added realtime party support.
 
 ### Changed
 - Removes the deprecated generalist `socket.Send` function for sending data. Use the other exported Socket methods
 such as `socket.addMatchmaker` for better type checking.
 - Changed the return type from `socket.addMatchmaker` to a `MatchmakerTicket` rather than a `MatchmakerMatched`.
 - Changed signature of `authenticateSteam` and `linkSteam` to allow for a `sync` option.
-- Upgraded ts-proto dependency
 - Sessions that are close to expiration will now be automatically refreshed. You can configure this behavior
 via the `autoRefreshSession` parameter in the `Client` constructor and the `expiredTimespanMs` expiration buffer value on the client.
+- Allowed for importing of steam friends through `importSteamFriends`.
+
+### [2.1.7]
+### Fixed
+- Fixed cacheable cursor parsing in `ChannelMessageList`.
+
+### [2.1.6]
+### Added
+- Added a cachable cursor to `ChannelMessageList`.
 
 ### [2.1.5]
 ### Fixed

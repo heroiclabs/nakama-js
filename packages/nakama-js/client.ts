@@ -278,6 +278,8 @@ export interface ChannelMessage {
 
 /** A list of channel messages, usually a result of a list operation. */
 export interface ChannelMessageList {
+  // Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
+  cacheable_cursor?: string;
   // A list of messages.
   messages?: Array<ChannelMessage>;
   // The cursor to send when retireving the next page, if any.
@@ -906,7 +908,8 @@ export class Client {
       var result: ChannelMessageList = {
         messages: [],
         next_cursor: response.next_cursor,
-        prev_cursor: response.prev_cursor
+        prev_cursor: response.prev_cursor,
+        cacheable_cursor: response.cacheable_cursor
       };
 
       if (response.messages == null) {
