@@ -1491,7 +1491,6 @@ var NakamaApi = class {
     queryParams.set("usernames", usernames);
     let bodyJson = "";
     const fullUrl = buildFullUrl(this.basePath, urlPath, queryParams);
-    console.log("full url " + fullUrl);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
     fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
@@ -3402,7 +3401,8 @@ var Client = class {
         var result = {
           messages: [],
           next_cursor: response.next_cursor,
-          prev_cursor: response.prev_cursor
+          prev_cursor: response.prev_cursor,
+          cacheable_cursor: response.cacheable_cursor
         };
         if (response.messages == null) {
           return Promise.resolve(result);

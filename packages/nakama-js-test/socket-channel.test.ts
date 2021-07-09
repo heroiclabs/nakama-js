@@ -16,6 +16,7 @@
 
 
 import * as nakamajs from "@heroiclabs/nakama-js";
+import { isExportDeclaration } from "typescript";
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType} from "./utils";
 import {describe, expect, it} from '@jest/globals'
@@ -57,7 +58,7 @@ describe('Channel Tests', () => {
     const response = await page.evaluate(async (customid, channelid, adapter) => {
 
       const client = new nakamajs.Client();
-      const socket = client.createSocket(false, false,
+      const socket = client.createSocket(false, true,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
       const session = await client.authenticateCustom(customid)
@@ -166,9 +167,13 @@ describe('Channel Tests', () => {
       return await client.listChannelMessages(session, ack2.channel_id, 10)
     }, customid, channelid, payload, updatedPayload, adapter);
 
+    console.log(response);
+
     expect(response).not.toBeNull();
     expect(response.messages).not.toBeNull();
     expect(response.messages.length).toBe(1);
+    expect(response.cacheable_cursor).not.toBeNull();
+    expect(response.cacheable_cursor).not.toBeUndefined();
 
     response.messages.forEach(message => {
       expect(message.content).toEqual(updatedPayload);

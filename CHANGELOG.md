@@ -3,15 +3,15 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
-### [Unreleased]
+### [2.2.0]
 
 ### Added
 - Added purchase validation for Apple, Google and Huawei.
 - Added an `ApiOverrideOperator` to leaderboard writes.
 - Added ability to logout of a session with `sessionLogout`.
-- Added realtime party support
+- Added realtime party support.
 - Allowed for importing of steam friends through `importSteamFriends`.
-- Shipped type definitions with the protobuf adapter.
+- Upgraded ts-proto dependency and shipped type definitions with the protobuf adapter.
 
 ### Changed
 - Removes the deprecated generalist `socket.Send` function for sending data. Use the other exported Socket methods
@@ -22,9 +22,18 @@ such as `socket.addMatchmaker` for better type checking.
 - Sessions that are close to expiration will now be automatically refreshed. You can configure this behavior
 via the `autoRefreshSession` parameter in the `Client` constructor and the `expiredTimespanMs` expiration buffer value on the client.
 - Removed `session` parameter from `rpcGet` and renamed it to `rpcHttpKey`. This function should be used with an http key rather than a session.
+- Changed the return type from `socket.addMatchmaker` to a `MatchmakerTicket` rather than a `MatchmakerMatched`.
 
 ### Fixed
 - 401 Unauthorized errors while renewing sessions.
+
+### [2.1.7]
+### Fixed
+- Fixed cacheable cursor parsing in `ChannelMessageList`.
+
+### [2.1.6]
+### Added
+- Added a cachable cursor to `ChannelMessageList`.
 
 ### [2.1.5]
 ### Fixed

@@ -108,6 +108,7 @@ export interface ChannelMessage {
     username?: string;
 }
 export interface ChannelMessageList {
+    cacheable_cursor?: string;
     messages?: Array<ChannelMessage>;
     next_cursor?: string;
     prev_cursor?: string;
