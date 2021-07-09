@@ -14,10 +14,11 @@
     "noEmitHelpers": false,
     "importHelpers": false,
     "baseUrl": "./",
-
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
-    "./test/*",
+    "./*",
   ],
   "exclude": []
 }

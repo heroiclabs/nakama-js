@@ -59,6 +59,7 @@ When authenticated the server responds with an auth token (JWT) which contains u
 
 ```js
 console.info(session.token); // raw JWT token
+console.info(session.refreshToken); // refresh token
 console.info(session.userId);
 console.info(session.username);
 console.info("Session has expired?", session.isexpired(Date.now() / 1000));
@@ -71,9 +72,23 @@ It is recommended to store the auth token from the session and check at startup 
 ```js
 // Assume we've stored the auth token in browser Web Storage.
 const authtoken = window.localStorage.getItem("nkauthtoken");
-const session = nakamajs.Session.restore(authtoken);
-if (session.isexpired(Date.now() / 1000)) {
-    console.warn("Session has expired. Must reauthenticate.");
+const refreshtoken = window.localStorage.getItem("nkrefreshtoken");
+
+let session = nakamajs.Session.restore(authtoken, refreshtoken);
+
+// Check whether a session is close to expiry.
+
+const unixTimeInFuture = Date.now() + 8.64e+7; // one day from now
+
+if (session.isexpired(unixTimeInFuture / 1000)) {
+    try
+    {
+        session = await client.sessionRefresh(session);
+    }
+    catch (e)
+    {
+        console.info("Session can no longer be refreshed. Must reauthenticate!");
+    }
 }
 ```
 

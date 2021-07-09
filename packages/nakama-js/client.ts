@@ -52,6 +52,8 @@ import {
   NakamaApi,
   ApiSession,
   ApiAccountApple,
+  ApiLinkSteamRequest,
+  ApiValidatePurchaseResponse,
 } from "./api.gen";
 
 import { Session } from "./session";
@@ -62,6 +64,7 @@ const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = "7350";
 const DEFAULT_SERVER_KEY = "defaultkey";
 const DEFAULT_TIMEOUT_MS = 7000;
+const DEFAULT_EXPIRED_TIMESPAN_MS = 5 * 60 * 1000;
 
 /** Response for an RPC function executed on the server. */
 export interface RpcResponse {
@@ -441,6 +444,10 @@ export interface NotificationList {
 
 /** A client for Nakama server. */
 export class Client {
+
+  // The expired timespan used to check session lifetime.
+  public expiredTimespanMs = DEFAULT_EXPIRED_TIMESPAN_MS;
+
   // The low level API client for Nakama server.
   private readonly apiClient: NakamaApi;
   // The server configuration.
@@ -451,7 +458,8 @@ export class Client {
       readonly host = DEFAULT_HOST,
       readonly port = DEFAULT_PORT,
       readonly useSSL = false,
-      readonly timeout = DEFAULT_TIMEOUT_MS) {
+      readonly timeout = DEFAULT_TIMEOUT_MS,
+      readonly autoRefreshSession = true) {
     const scheme = (useSSL) ? "https://" : "http://";
     const basePath = `${scheme}${host}:${port}`;
     this.configuration = {
@@ -460,27 +468,42 @@ export class Client {
       password: "",
       timeoutMs: timeout,
     };
+
     this.apiClient = new NakamaApi(this.configuration);
   }
 
   /** Add users to a group, or accept their join requests. */
-  addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+  async addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.addGroupUsers(groupId, ids).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Add friends by ID or username to a user's account. */
-  addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
+  async addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
+
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.addFriends(ids, usernames).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Authenticate a user with an Apple ID against the server. */
-  authenticateApple(token: string, create?: boolean, username?: string, vars: Map<string, string> = new Map<string, string>(), options: any = {}) {
+  async authenticateApple(token: string, create?: boolean, username?: string, vars: Map<string, string> = new Map<string, string>(), options: any = {}) {
 
     const request = {
       "token": token,
@@ -488,7 +511,7 @@ export class Client {
     };
 
     return this.apiClient.authenticateApple(request, create, username, options).then((apiSession : ApiSession) => {
-      return Session.restore(apiSession.token || "");
+      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
 
@@ -499,7 +522,7 @@ export class Client {
       "vars": vars
     };
     return this.apiClient.authenticateCustom(request, create, username, options).then((apiSession : ApiSession) => {
-      return Session.restore(apiSession.token || "");
+      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
 
@@ -511,7 +534,7 @@ export class Client {
     };
 
     return this.apiClient.authenticateDevice(request, create, username).then((apiSession : ApiSession) => {
-      return Session.restore(apiSession.token || "");
+      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
 
@@ -524,7 +547,7 @@ export class Client {
     };
 
     return this.apiClient.authenticateEmail(request, create, username).then((apiSession : ApiSession) => {
-      return Session.restore(apiSession.token || "");
+      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
 
@@ -537,7 +560,7 @@ export class Client {
 
     return this.apiClient.authenticateFacebookInstantGame(
       {signed_player_info: request.signed_player_info, vars: request.vars}, create, username, options).then((apiSession : ApiSession) => {
-        return Session.restore(apiSession.token || "");
+        return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
       });
   }
 
@@ -549,7 +572,7 @@ export class Client {
     };
 
     return this.apiClient.authenticateFacebook(request, create, username, sync, options).then((apiSession : ApiSession) => {
-      return Session.restore(apiSession.token || "");
+      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
 
@@ -561,7 +584,7 @@ export class Client {
     };
 
     return this.apiClient.authenticateGoogle(request, create, username, options).then((apiSession : ApiSession) => {
-      return Session.restore(apiSession.token || "");
+      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
 
@@ -573,41 +596,60 @@ export class Client {
     };
 
     return this.apiClient.authenticateGameCenter(request, create, username).then((apiSession : ApiSession) => {
-      return Session.restore(apiSession.token || "");
+      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
 
   /** Authenticate a user with Steam against the server. */
-  authenticateSteam(token : string, create?: boolean, username?: string, vars? : Map<string, string>) : Promise<Session> {
+  async authenticateSteam(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Map<string, string>) : Promise<Session> {
     const request = {
       "token": token,
-      "vars": vars
+      "vars": vars,
+      "sync": sync
     };
 
     return this.apiClient.authenticateSteam(request, create, username).then((apiSession : ApiSession) => {
-      return Session.restore(apiSession.token || "");
+      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
 
     /** Ban users from a group. */
-    banGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
-      this.configuration.bearerToken = (session && session.token);
-      return this.apiClient.banGroupUsers(groupId, ids).then((response: any) => {
-        return response !== undefined;
-      });
+ async banGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
     }
 
-  /** Block one or more users by ID or username. */
-  blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
     this.configuration.bearerToken = (session && session.token);
+
+    return this.apiClient.banGroupUsers(groupId, ids).then((response: any) => {
+        return response !== undefined;
+    });
+  }
+
+  /** Block one or more users by ID or username. */
+  async blockFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
+    this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.blockFriends(ids, usernames).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Create a new group with the current user as the creator and superadmin. */
-  createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group> {
+  async createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.createGroup(request).then((response: ApiGroup) => {
       return Promise.resolve({
         avatar_url: response.avatar_url,
@@ -632,68 +674,139 @@ export class Client {
   }
 
   /** Delete one or more users by ID or username. */
-  deleteFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
+  async deleteFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.deleteFriends(ids, usernames).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Delete a group the user is part of and has permissions to delete. */
-  deleteGroup(session: Session, groupId: string): Promise<boolean> {
+  async deleteGroup(session: Session, groupId: string): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.deleteGroup(groupId).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Delete one or more notifications */
-  deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean> {
+  async deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.deleteNotifications(ids).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Delete one or more storage objects */
-  deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean> {
+  async deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.deleteStorageObjects(request).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Demote a set of users in a group to the next role down. */
-  demoteGroupUsers(session: Session, groupId: string, ids: Array<string>): Promise<boolean> {
+  async demoteGroupUsers(session: Session, groupId: string, ids: Array<string>): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
-    return this.apiClient.demoteGroupUsers(groupId, ids);
+
+    return this.apiClient.demoteGroupUsers(groupId, ids).then((response: any) => {
+        return Promise.resolve(response != undefined);
+    });
   }
 
   /** Submit an event for processing in the server's registered runtime custom events handler. */
-  emitEvent(session: Session, request: ApiEvent): Promise<boolean> {
+  async emitEvent(session: Session, request: ApiEvent): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.event(request).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Fetch the current user's account. */
-  getAccount(session: Session): Promise<ApiAccount> {
+  async getAccount(session: Session): Promise<ApiAccount> {
+
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.getAccount();
   }
 
   /** Import Facebook friends and add them to a user's account. */
-  importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean> {
+  async importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.importFacebookFriends(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
-  /** Fetch zero or more users by ID and/or username. */
-  getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<Users> {
+    /** Import Steam friends and add them to a user's account. */
+  async importSteamFriends(session: Session, request: ApiAccountSteam, reset: boolean): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
+    return this.apiClient.importSteamFriends(request, reset).then((response: any) => {
+        return response !== undefined;
+    });
+}
+
+  /** Fetch zero or more users by ID and/or username. */
+  async getUsers(session: Session, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>): Promise<Users> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
+    this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.getUsers(ids, usernames, facebookIds).then((response: ApiUsers) => {
       var result: Users = {
         users: []
@@ -728,39 +841,69 @@ export class Client {
   }
 
   /** Join a group that's open, or send a request to join a group that is closed. */
-  joinGroup(session: Session, groupId: string): Promise<boolean> {
+  async joinGroup(session: Session, groupId: string): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.joinGroup(groupId, {}).then((response: any) => {
       return response !== undefined;
     });
   }
 
-  joinTournament(session: Session, tournamentId: string): Promise<boolean> {
+  async joinTournament(session: Session, tournamentId: string): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.joinTournament(tournamentId, {}).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Kick users from a group, or decline their join requests. */
-  kickGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+  async kickGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.kickGroupUsers(groupId, ids).then((response: any) => {
       return Promise.resolve(response != undefined);
     });
   }
 
   /** Leave a group the user is part of. */
-  leaveGroup(session: Session, groupId: string): Promise<boolean> {
+  async leaveGroup(session: Session, groupId: string): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.leaveGroup(groupId, {}).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** List a channel's message history. */
-  listChannelMessages(session: Session, channelId: string, limit?: number, forward?: boolean, cursor?: string): Promise<ChannelMessageList> {
+  async listChannelMessages(session: Session, channelId: string, limit?: number, forward?: boolean, cursor?: string): Promise<ChannelMessageList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then((response: ApiChannelMessageList) => {
       var result: ChannelMessageList = {
         messages: [],
@@ -795,8 +938,14 @@ export class Client {
   }
 
   /** List a group's users. */
-  listGroupUsers(session: Session, groupId: string, state?: number, limit?: number, cursor?: string): Promise<GroupUserList> {
+  async listGroupUsers(session: Session, groupId: string, state?: number, limit?: number, cursor?: string): Promise<GroupUserList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listGroupUsers(groupId, limit, state, cursor).then((response: ApiGroupUserList) => {
       var result: GroupUserList = {
         group_users: [],
@@ -835,8 +984,14 @@ export class Client {
   }
 
   /** List a user's groups. */
-  listUserGroups(session: Session, userId: string, state?: number, limit?: number, cursor?: string,): Promise<UserGroupList> {
+  async listUserGroups(session: Session, userId: string, state?: number, limit?: number, cursor?: string,): Promise<UserGroupList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listUserGroups(userId, state, limit, cursor).then((response: ApiUserGroupList) => {
       var result: UserGroupList = {
         user_groups: [],
@@ -871,8 +1026,14 @@ export class Client {
   }
 
   /** List groups based on given filters. */
-  listGroups(session: Session, name?: string, cursor?: string, limit?: number): Promise<GroupList> {
+  async listGroups(session: Session, name?: string, cursor?: string, limit?: number): Promise<GroupList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listGroups(name, cursor, limit).then((response: ApiGroupList) => {
       var result: GroupList = {
         groups: []
@@ -904,80 +1065,140 @@ export class Client {
   }
 
   /** Add an Apple ID to the social profiles on the current user's account. */
-  linkApple(session: Session, request: ApiAccountApple): Promise<boolean> {
+  async linkApple(session: Session, request: ApiAccountApple): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.linkApple(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Add a custom ID to the social profiles on the current user's account. */
-  linkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
+  async linkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.linkCustom(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Add a device ID to the social profiles on the current user's account. */
-  linkDevice(session: Session, request: ApiAccountDevice): Promise<boolean> {
+  async linkDevice(session: Session, request: ApiAccountDevice): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.linkDevice(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Add an email+password to the social profiles on the current user's account. */
-  linkEmail(session: Session, request: ApiAccountEmail): Promise<boolean> {
+  async linkEmail(session: Session, request: ApiAccountEmail): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.linkEmail(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Add Facebook to the social profiles on the current user's account. */
-  linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
+  async linkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.linkFacebook(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Add Facebook Instant to the social profiles on the current user's account. */
-  linkFacebookInstantGame(session: Session, request: ApiAccountFacebookInstantGame): Promise<boolean> {
+  async linkFacebookInstantGame(session: Session, request: ApiAccountFacebookInstantGame): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.linkFacebookInstantGame(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Add Google to the social profiles on the current user's account. */
-  linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
+  async linkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.linkGoogle(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Add GameCenter to the social profiles on the current user's account. */
-  linkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean> {
+  async linkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.linkGameCenter(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Add Steam to the social profiles on the current user's account. */
-  linkSteam(session: Session, request: ApiAccountSteam): Promise<boolean> {
+  async linkSteam(session: Session, request: ApiLinkSteamRequest): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.linkSteam(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** List all friends for the current user. */
-  listFriends(session: Session, state?: number, limit?: number, cursor?: string): Promise<Friends> {
+  async listFriends(session: Session, state?: number, limit?: number, cursor?: string): Promise<Friends> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listFriends(limit, state, cursor).then((response: ApiFriendList) => {
 
       var result: Friends = {
@@ -1018,8 +1239,14 @@ export class Client {
   }
 
   /** List leaderboard records */
-  listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string,): Promise<LeaderboardRecordList> {
+  async listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string,): Promise<LeaderboardRecordList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry).then((response: ApiLeaderboardRecordList) => {
       var list: LeaderboardRecordList = {
         next_cursor: response.next_cursor,
@@ -1068,8 +1295,14 @@ export class Client {
     });
   }
 
-  listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number, expiry?: string): Promise<LeaderboardRecordList> {
+  async listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number, expiry?: string): Promise<LeaderboardRecordList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry).then((response: ApiLeaderboardRecordList) => {
       var list: LeaderboardRecordList = {
         next_cursor: response.next_cursor,
@@ -1119,14 +1352,26 @@ export class Client {
   }
 
   /** Fetch list of running matches. */
-  listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, query?: string): Promise<ApiMatchList> {
+  async listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, query?: string): Promise<ApiMatchList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize, query);
   }
 
   /** Fetch list of notifications. */
-  listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<NotificationList> {
+  async listNotifications(session: Session, limit?: number, cacheableCursor?: string): Promise<NotificationList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listNotifications(limit, cacheableCursor).then((response: ApiNotificationList) => {
       var result: NotificationList = {
         cacheable_cursor: response.cacheable_cursor,
@@ -1153,8 +1398,14 @@ export class Client {
   }
 
   /** List storage objects. */
-  listStorageObjects(session: Session, collection: string, userId?: string, limit?: number, cursor?: string): Promise<StorageObjectList> {
+  async listStorageObjects(session: Session, collection: string, userId?: string, limit?: number, cursor?: string): Promise<StorageObjectList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listStorageObjects(collection, userId, limit, cursor).then((response: ApiStorageObjectList) => {
       var result: StorageObjectList = {
         objects: [],
@@ -1183,8 +1434,14 @@ export class Client {
   }
 
   /** List current or upcoming tournaments. */
-  listTournaments(session: Session, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string): Promise<TournamentList> {
+  async listTournaments(session: Session, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string): Promise<TournamentList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor).then((response: ApiTournamentList) => {
       var list: TournamentList = {
         cursor: response.cursor,
@@ -1220,8 +1477,14 @@ export class Client {
   }
 
   /** List tournament records from a given tournament. */
-  listTournamentRecords(session: Session, tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string): Promise<TournamentRecordList> {
+  async listTournamentRecords(session: Session, tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string): Promise<TournamentRecordList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry).then((response: ApiTournamentRecordList) => {
       var list: TournamentRecordList = {
         next_cursor: response.next_cursor,
@@ -1271,8 +1534,14 @@ export class Client {
   }
 
   /** List tournament records from a given tournament around the owner. */
-  listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number, expiry?: string): Promise<TournamentRecordList> {
+  async listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number, expiry?: string): Promise<TournamentRecordList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry).then((response: ApiTournamentRecordList) => {
       var list: TournamentRecordList = {
         next_cursor: response.next_cursor,
@@ -1322,14 +1591,26 @@ export class Client {
   }
 
   /** Promote users in a group to the next role up. */
-  promoteGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+  async promoteGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.promoteGroupUsers(groupId, ids);
   }
 
   /** Fetch storage objects. */
-  readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects> {
+  async readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.readStorageObjects(request).then((response: ApiStorageObjects) => {
       var result: StorageObjects = {objects: []};
 
@@ -1355,8 +1636,14 @@ export class Client {
   }
 
   /** Execute a Lua function on the server. */
-  rpc(session: Session, id: string, input: object): Promise<RpcResponse> {
+  async rpc(session: Session, id: string, input: object): Promise<RpcResponse> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.rpcFunc(id, JSON.stringify(input)).then((response: ApiRpc) => {
       return Promise.resolve({
         id: response.id,
@@ -1366,7 +1653,12 @@ export class Client {
   }
 
   /** Execute a Lua function on the server. */
-  rpcGet(id: string, session?: Session, httpKey?: string, input?: object): Promise<RpcResponse> {
+  async rpcGet(id: string, session?: Session, httpKey?: string, input?: object): Promise<RpcResponse> {
+    if (session && this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     if (!httpKey || httpKey == "") {
       this.configuration.bearerToken = (session && session.token);
     } else {
@@ -1387,9 +1679,50 @@ export class Client {
       });
   }
 
-  /** Remove the Apple ID from the social profiles on the current user's account. */
-  unlinkApple(session: Session, request: ApiAccountApple): Promise<boolean> {
+  /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
+  async sessionLogout(session: Session, token: string, refreshToken: string, ) : Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
+    return this.apiClient.sessionLogout({refresh_token: refreshToken, token: token}).then((response: any) => {
+        return response !== undefined;
+    });
+  }
+
+  /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
+  async sessionRefresh(session: Session, vars: Map<string, string> = new Map<string, string>()) : Promise<Session> {
+
+    if (!session) {
+        console.error("Cannot refresh a null session.");
+        return session;
+    }
+
+    if (session.created && session.expires_at! - session.created_at < 70) {
+        console.warn("Session lifetime too short, please set '--session.token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+    }
+
+    if (session.created && session.refresh_expires_at! - session.created_at < 3700) {
+        console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+    }
+
+    const apiSession = await this.apiClient.sessionRefresh({token: session.refresh_token, vars: vars});
+    session.update(apiSession.token!, apiSession.refresh_token!);
+    return session;
+  }
+
+  /** Remove the Apple ID from the social profiles on the current user's account. */
+  async unlinkApple(session: Session, request: ApiAccountApple): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
+    this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.unlinkApple(request).then((response: any) => {
       return response !== undefined;
     });
@@ -1397,88 +1730,190 @@ export class Client {
 
 
   /** Remove custom ID from the social profiles on the current user's account. */
-  unlinkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
+  async unlinkCustom(session: Session, request: ApiAccountCustom): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.unlinkCustom(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Remove a device ID from the social profiles on the current user's account. */
-  unlinkDevice(session: Session, request: ApiAccountDevice): Promise<boolean> {
+  async unlinkDevice(session: Session, request: ApiAccountDevice): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.unlinkDevice(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Remove an email+password from the social profiles on the current user's account. */
-  unlinkEmail(session: Session, request: ApiAccountEmail): Promise<boolean> {
+  async unlinkEmail(session: Session, request: ApiAccountEmail): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.unlinkEmail(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Remove Facebook from the social profiles on the current user's account. */
-  unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
+  async unlinkFacebook(session: Session, request: ApiAccountFacebook): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.unlinkFacebook(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Remove Facebook Instant social profiles from the current user's account. */
-  unlinkFacebookInstantGame(session: Session, request: ApiAccountFacebookInstantGame): Promise<boolean> {
+  async unlinkFacebookInstantGame(session: Session, request: ApiAccountFacebookInstantGame): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.unlinkFacebookInstantGame(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Remove Google from the social profiles on the current user's account. */
-  unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
+  async unlinkGoogle(session: Session, request: ApiAccountGoogle): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.unlinkGoogle(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Remove GameCenter from the social profiles on the current user's account. */
-  unlinkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean> {
+  async unlinkGameCenter(session: Session, request: ApiAccountGameCenter): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.unlinkGameCenter(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Remove Steam from the social profiles on the current user's account. */
-  unlinkSteam(session: Session, request: ApiAccountSteam): Promise<boolean> {
+  async unlinkSteam(session: Session, request: ApiAccountSteam): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.unlinkSteam(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Update fields in the current user's account. */
-  updateAccount(session: Session, request: ApiUpdateAccountRequest): Promise<boolean> {
+  async updateAccount(session: Session, request: ApiUpdateAccountRequest): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.updateAccount(request).then((response: any) => {
       return response !== undefined;
     });
   }
 
   /** Update a group the user is part of and has permissions to update. */
-  updateGroup(session: Session, groupId: string, request: ApiUpdateGroupRequest): Promise<boolean> {
+  async updateGroup(session: Session, groupId: string, request: ApiUpdateGroupRequest): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.updateGroup(groupId, request).then((response: any) => {
       return response !== undefined;
     });
   }
 
-  /** Write a record to a leaderboard. */
-  writeLeaderboardRecord(session: Session, leaderboardId: string, request: WriteLeaderboardRecord): Promise<LeaderboardRecord> {
+  /** Validate an Apple IAP receipt. */
+  async validatePurchaseApple(session: Session, receipt?: string)  : Promise<ApiValidatePurchaseResponse> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
+
+    return this.apiClient.validatePurchaseApple({receipt: receipt})
+  }
+
+  /** Validate a Google IAP receipt. */
+  async validatePurchaseGoogle(session: Session, purchase?: string)  : Promise<ApiValidatePurchaseResponse> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
+    this.configuration.bearerToken = (session && session.token);
+
+    return this.apiClient.validatePurchaseGoogle({purchase: purchase})
+  }
+
+  /** Validate a Huawei IAP receipt. */
+  async validatePurchaseHuawei(session: Session, purchase?: string, signature?: string) : Promise<ApiValidatePurchaseResponse> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
+    this.configuration.bearerToken = (session && session.token);
+
+    return this.apiClient.validatePurchaseHuawei({purchase: purchase, signature: signature})
+  }
+
+  /** Write a record to a leaderboard. */
+  async writeLeaderboardRecord(session: Session, leaderboardId: string, request: WriteLeaderboardRecord): Promise<LeaderboardRecord> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
+    this.configuration.bearerToken = (session && session.token);
+
     return this.apiClient.writeLeaderboardRecord(leaderboardId, {
       metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
       score: request.score,
@@ -1501,7 +1936,12 @@ export class Client {
   }
 
   /** Write storage objects. */
-  writeStorageObjects(session: Session, objects: Array<WriteStorageObject>): Promise<ApiStorageObjectAcks> {
+  async writeStorageObjects(session: Session, objects: Array<WriteStorageObject>): Promise<ApiStorageObjectAcks> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
     this.configuration.bearerToken = (session && session.token);
 
     var request: ApiWriteStorageObjectsRequest = {objects: []};
@@ -1520,7 +1960,7 @@ export class Client {
   }
 
   /** Write a record to a tournament. */
-  writeTournamentRecord(session: Session, tournamentId: string, request: WriteTournamentRecord): Promise<LeaderboardRecord> {
+  async writeTournamentRecord(session: Session, tournamentId: string, request: WriteTournamentRecord): Promise<LeaderboardRecord> {
     this.configuration.bearerToken = (session && session.token);
     return this.apiClient.writeTournamentRecord(tournamentId, {
       metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
