@@ -18,7 +18,9 @@ import { Page, Browser} from "puppeteer";
 const fs = require("fs");
 const crypto = require("crypto");
 const base64url = require("base64url");
-import global from "jest-environment-puppeteer"
+
+// automatically assigned by puppeteer + Jest
+declare var browser : Browser;
 
 // automatically assigned by puppeteer + Jest
 declare var browser : Browser;
@@ -47,6 +49,11 @@ export async function createPage(): Promise<Page> {
 
     await page.evaluateOnNewDocument(nakamaJsLib);
     await page.evaluateOnNewDocument(nakamaJsProtobufLib);
+    await page.evaluateOnNewDocument(() => {
+        globalThis.timeoutPromise = function(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    })
 
     await page.goto('about:blank');
 

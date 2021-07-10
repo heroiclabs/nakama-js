@@ -3,24 +3,27 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
-### [Unreleased]
+### [2.2.0]
 
 ### Added
 - Added purchase validation for Apple, Google and Huawei.
 - Added an `ApiOverrideOperator` to leaderboard writes.
 - Added ability to logout of a session with `sessionLogout`.
-- Added realtime party support
-- Added type definitions with the protobuf adapter.
 - Added realtime party support.
+- Added ability to import steam friends through `importSteamFriends`.
 
 ### Changed
 - Removes the deprecated generalist `socket.Send` function for sending data. Use the other exported Socket methods
 such as `socket.addMatchmaker` for better type checking.
 - Changed the return type from `socket.addMatchmaker` to a `MatchmakerTicket` rather than a `MatchmakerMatched`.
 - Changed signature of `authenticateSteam` and `linkSteam` to allow for a `sync` option.
+- Upgraded ts-proto dependency and shipped type definitions with the protobuf adapter.
 - Sessions that are close to expiration will now be automatically refreshed. You can configure this behavior
 via the `autoRefreshSession` parameter in the `Client` constructor and the `expiredTimespanMs` expiration buffer value on the client.
-- Allowed for importing of steam friends through `importSteamFriends`.
+- Removed `session` parameter from `rpcGet` and renamed it to `rpcHttpKey`. This function should be used with an http key rather than a session.
+
+### Fixed
+- 401 Unauthorized errors while renewing sessions.
 
 ### [2.1.7]
 ### Fixed

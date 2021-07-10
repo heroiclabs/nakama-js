@@ -199,7 +199,6 @@ export declare class Client {
     readonly autoRefreshSession: boolean;
     expiredTimespanMs: number;
     private readonly apiClient;
-    private readonly configuration;
     constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number, autoRefreshSession?: boolean);
     addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
@@ -255,7 +254,7 @@ export declare class Client {
     promoteGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     readStorageObjects(session: Session, request: ApiReadStorageObjectsRequest): Promise<StorageObjects>;
     rpc(session: Session, id: string, input: object): Promise<RpcResponse>;
-    rpcGet(id: string, session?: Session, httpKey?: string, input?: object): Promise<RpcResponse>;
+    rpcHttpKey(id: string, httpKey?: string, input?: object): Promise<RpcResponse>;
     sessionLogout(session: Session, token: string, refreshToken: string): Promise<boolean>;
     sessionRefresh(session: Session, vars?: Map<string, string>): Promise<Session>;
     unlinkApple(session: Session, request: ApiAccountApple): Promise<boolean>;

@@ -555,6 +555,41 @@ var _decode = _hasBuffer ? (a) => Buffer.from(a, "base64").toString("utf8") : _T
 var _unURI = (a) => _tidyB64(a.replace(/[-_]/g, (m0) => m0 == "-" ? "+" : "/"));
 var decode = (src) => _decode(_unURI(src));
 
+// utils.ts
+function buildFetchOptions(method, options, bodyJson) {
+  const fetchOptions = __spreadValues(__spreadValues({}, { method }), options);
+  fetchOptions.headers = __spreadValues({}, options.headers);
+  const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+  if (!(descriptor == null ? void 0 : descriptor.set)) {
+    fetchOptions.credentials = "cocos-ignore";
+  }
+  if (!Object.keys(fetchOptions.headers).includes("Accept")) {
+    fetchOptions.headers["Accept"] = "application/json";
+  }
+  if (!Object.keys(fetchOptions.headers).includes("Content-Type")) {
+    fetchOptions.headers["Content-Type"] = "application/json";
+  }
+  Object.keys(fetchOptions.headers).forEach((key) => {
+    if (!fetchOptions.headers[key]) {
+      delete fetchOptions.headers[key];
+    }
+  });
+  if (bodyJson) {
+    fetchOptions.body = bodyJson;
+  }
+  return fetchOptions;
+}
+function b64EncodeUnicode(str) {
+  return encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
+    return String.fromCharCode(Number("0x" + p1));
+  }));
+}
+function b64DecodeUnicode(str) {
+  return decodeURIComponent(decode(str).split("").map(function(c) {
+    return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(""));
+}
+
 // api.gen.ts
 var ValidatedPurchaseEnvironment;
 (function(ValidatedPurchaseEnvironment2) {
@@ -577,46 +612,20 @@ var ApiOverrideOperator;
   ApiOverrideOperator2[ApiOverrideOperator2["DECREMENT"] = 4] = "DECREMENT";
 })(ApiOverrideOperator || (ApiOverrideOperator = {}));
 var NakamaApi = class {
-  constructor(configuration) {
-    this.configuration = configuration;
+  constructor(serverKey, basePath, timeoutMs) {
+    this.serverKey = serverKey;
+    this.basePath = basePath;
+    this.timeoutMs = timeoutMs;
   }
-  doFetch(urlPath, method, queryParams, body, options) {
-    const urlQuery = "?" + Object.keys(queryParams).map((k) => {
-      if (queryParams[k] instanceof Array) {
-        return queryParams[k].reduce((prev, curr) => {
-          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-        }, "");
-      } else {
-        if (queryParams[k] != null) {
-          return encodeURIComponent(k) + "=" + encodeURIComponent(queryParams[k]) + "&";
-        }
-      }
-    }).join("");
-    const fetchOptions = __spreadValues(__spreadValues({}, { method }), options);
-    fetchOptions.headers = __spreadValues({}, options.headers);
-    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
-    if (!(descriptor == null ? void 0 : descriptor.set)) {
-      fetchOptions.credentials = "cocos-ignore";
-    }
-    if (this.configuration.bearerToken) {
-      fetchOptions.headers["Authorization"] = "Bearer " + this.configuration.bearerToken;
-    } else if (this.configuration.username) {
-      fetchOptions.headers["Authorization"] = "Basic " + encode(this.configuration.username + ":" + this.configuration.password);
-    }
-    if (!Object.keys(fetchOptions.headers).includes("Accept")) {
-      fetchOptions.headers["Accept"] = "application/json";
-    }
-    if (!Object.keys(fetchOptions.headers).includes("Content-Type")) {
-      fetchOptions.headers["Content-Type"] = "application/json";
-    }
-    Object.keys(fetchOptions.headers).forEach((key) => {
-      if (!fetchOptions.headers[key]) {
-        delete fetchOptions.headers[key];
-      }
-    });
-    fetchOptions.body = body;
+  healthcheck(bearerToken, options = {}) {
+    const urlPath = "/healthcheck";
+    const queryParams = new Map();
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     return Promise.race([
-      fetch(this.configuration.basePath + urlPath + urlQuery, fetchOptions).then((response) => {
+      fetch(fullUrl, fetchOptions).then((response) => {
         if (response.status == 204) {
           return response;
         } else if (response.status >= 200 && response.status < 300) {
@@ -625,456 +634,1006 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.configuration.timeoutMs, "Request timed out."))
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
     ]);
   }
-  healthcheck(options = {}) {
-    const urlPath = "/healthcheck";
-    const queryParams = {};
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
-  }
-  getAccount(options = {}) {
+  getAccount(bearerToken, options = {}) {
     const urlPath = "/v2/account";
-    const queryParams = {};
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  updateAccount(body, options = {}) {
+  updateAccount(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  authenticateApple(body, create, username, options = {}) {
+  authenticateApple(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/apple";
-    const queryParams = {
-      create,
-      username
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("create", create);
+    queryParams.set("username", username);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  authenticateCustom(body, create, username, options = {}) {
+  authenticateCustom(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/custom";
-    const queryParams = {
-      create,
-      username
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("create", create);
+    queryParams.set("username", username);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  authenticateDevice(body, create, username, options = {}) {
+  authenticateDevice(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/device";
-    const queryParams = {
-      create,
-      username
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("create", create);
+    queryParams.set("username", username);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  authenticateEmail(body, create, username, options = {}) {
+  authenticateEmail(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/email";
-    const queryParams = {
-      create,
-      username
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("create", create);
+    queryParams.set("username", username);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  authenticateFacebook(body, create, username, sync, options = {}) {
+  authenticateFacebook(basicAuthUsername, basicAuthPassword, body, create, username, sync, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/facebook";
-    const queryParams = {
-      create,
-      username,
-      sync
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("create", create);
+    queryParams.set("username", username);
+    queryParams.set("sync", sync);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  authenticateFacebookInstantGame(body, create, username, options = {}) {
+  authenticateFacebookInstantGame(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/facebookinstantgame";
-    const queryParams = {
-      create,
-      username
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("create", create);
+    queryParams.set("username", username);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  authenticateGameCenter(body, create, username, options = {}) {
+  authenticateGameCenter(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/gamecenter";
-    const queryParams = {
-      create,
-      username
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("create", create);
+    queryParams.set("username", username);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  authenticateGoogle(body, create, username, options = {}) {
+  authenticateGoogle(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/google";
-    const queryParams = {
-      create,
-      username
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("create", create);
+    queryParams.set("username", username);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  authenticateSteam(body, create, username, sync, options = {}) {
+  authenticateSteam(basicAuthUsername, basicAuthPassword, body, create, username, sync, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/steam";
-    const queryParams = {
-      create,
-      username,
-      sync
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("create", create);
+    queryParams.set("username", username);
+    queryParams.set("sync", sync);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  linkApple(body, options = {}) {
+  linkApple(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/apple";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  linkCustom(body, options = {}) {
+  linkCustom(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/custom";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  linkDevice(body, options = {}) {
+  linkDevice(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/device";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  linkEmail(body, options = {}) {
+  linkEmail(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/email";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  linkFacebook(body, sync, options = {}) {
+  linkFacebook(bearerToken, body, sync, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/facebook";
-    const queryParams = {
-      sync
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("sync", sync);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  linkFacebookInstantGame(body, options = {}) {
+  linkFacebookInstantGame(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/facebookinstantgame";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  linkGameCenter(body, options = {}) {
+  linkGameCenter(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/gamecenter";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  linkGoogle(body, options = {}) {
+  linkGoogle(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/google";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  linkSteam(body, options = {}) {
+  linkSteam(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/steam";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  sessionRefresh(body, options = {}) {
+  sessionRefresh(basicAuthUsername, basicAuthPassword, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/session/refresh";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  unlinkApple(body, options = {}) {
+  unlinkApple(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/apple";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  unlinkCustom(body, options = {}) {
+  unlinkCustom(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/custom";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  unlinkDevice(body, options = {}) {
+  unlinkDevice(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/device";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  unlinkEmail(body, options = {}) {
+  unlinkEmail(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/email";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  unlinkFacebook(body, options = {}) {
+  unlinkFacebook(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/facebook";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  unlinkFacebookInstantGame(body, options = {}) {
+  unlinkFacebookInstantGame(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/facebookinstantgame";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  unlinkGameCenter(body, options = {}) {
+  unlinkGameCenter(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/gamecenter";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  unlinkGoogle(body, options = {}) {
+  unlinkGoogle(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/google";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  unlinkSteam(body, options = {}) {
+  unlinkSteam(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/steam";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listChannelMessages(channelId, limit, forward, cursor, options = {}) {
+  listChannelMessages(bearerToken, channelId, limit, forward, cursor, options = {}) {
     if (channelId === null || channelId === void 0) {
       throw new Error("'channelId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/channel/{channelId}".replace("{channelId}", encodeURIComponent(String(channelId)));
-    const queryParams = {
-      limit,
-      forward,
-      cursor
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("limit", limit);
+    queryParams.set("forward", forward);
+    queryParams.set("cursor", cursor);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  event(body, options = {}) {
+  event(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/event";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  deleteFriends(ids, usernames, options = {}) {
+  deleteFriends(bearerToken, ids, usernames, options = {}) {
     const urlPath = "/v2/friend";
-    const queryParams = {
-      ids,
-      usernames
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("ids", ids);
+    queryParams.set("usernames", usernames);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listFriends(limit, state, cursor, options = {}) {
+  listFriends(bearerToken, limit, state, cursor, options = {}) {
     const urlPath = "/v2/friend";
-    const queryParams = {
-      limit,
-      state,
-      cursor
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("limit", limit);
+    queryParams.set("state", state);
+    queryParams.set("cursor", cursor);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  addFriends(ids, usernames, options = {}) {
+  addFriends(bearerToken, ids, usernames, options = {}) {
     const urlPath = "/v2/friend";
-    const queryParams = {
-      ids,
-      usernames
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("ids", ids);
+    queryParams.set("usernames", usernames);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  blockFriends(ids, usernames, options = {}) {
+  blockFriends(bearerToken, ids, usernames, options = {}) {
     const urlPath = "/v2/friend/block";
-    const queryParams = {
-      ids,
-      usernames
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("ids", ids);
+    queryParams.set("usernames", usernames);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  importFacebookFriends(body, reset, options = {}) {
+  importFacebookFriends(bearerToken, body, reset, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/friend/facebook";
-    const queryParams = {
-      reset
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("reset", reset);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  importSteamFriends(body, reset, options = {}) {
+  importSteamFriends(bearerToken, body, reset, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/friend/steam";
-    const queryParams = {
-      reset
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("reset", reset);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listGroups(name, cursor, limit, options = {}) {
+  listGroups(bearerToken, name, cursor, limit, options = {}) {
     const urlPath = "/v2/group";
-    const queryParams = {
-      name,
-      cursor,
-      limit
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("name", name);
+    queryParams.set("cursor", cursor);
+    queryParams.set("limit", limit);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  createGroup(body, options = {}) {
+  createGroup(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  deleteGroup(groupId, options = {}) {
+  deleteGroup(bearerToken, groupId, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = {};
-    let _body = null;
-    return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  updateGroup(groupId, body, options = {}) {
+  updateGroup(bearerToken, groupId, body, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -1082,34 +1641,74 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  addGroupUsers(groupId, userIds, options = {}) {
+  addGroupUsers(bearerToken, groupId, userIds, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/add".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = {
-      user_ids: userIds
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("user_ids", userIds);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  banGroupUsers(groupId, userIds, options = {}) {
+  banGroupUsers(bearerToken, groupId, userIds, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/ban".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = {
-      user_ids: userIds
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("user_ids", userIds);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  demoteGroupUsers(groupId, userIds, options = {}) {
+  demoteGroupUsers(bearerToken, groupId, userIds, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -1117,119 +1716,268 @@ var NakamaApi = class {
       throw new Error("'userIds' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/demote".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = {
-      user_ids: userIds
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("user_ids", userIds);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  joinGroup(groupId, options = {}) {
+  joinGroup(bearerToken, groupId, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/join".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = {};
-    let _body = null;
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  kickGroupUsers(groupId, userIds, options = {}) {
+  kickGroupUsers(bearerToken, groupId, userIds, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/kick".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = {
-      user_ids: userIds
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("user_ids", userIds);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  leaveGroup(groupId, options = {}) {
+  leaveGroup(bearerToken, groupId, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/leave".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = {};
-    let _body = null;
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  promoteGroupUsers(groupId, userIds, options = {}) {
+  promoteGroupUsers(bearerToken, groupId, userIds, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/promote".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = {
-      user_ids: userIds
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("user_ids", userIds);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listGroupUsers(groupId, limit, state, cursor, options = {}) {
+  listGroupUsers(bearerToken, groupId, limit, state, cursor, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/user".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = {
-      limit,
-      state,
-      cursor
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("limit", limit);
+    queryParams.set("state", state);
+    queryParams.set("cursor", cursor);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  validatePurchaseApple(body, options = {}) {
+  validatePurchaseApple(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/iap/purchase/apple";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  validatePurchaseGoogle(body, options = {}) {
+  validatePurchaseGoogle(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/iap/purchase/google";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  validatePurchaseHuawei(body, options = {}) {
+  validatePurchaseHuawei(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/iap/purchase/huawei";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  deleteLeaderboardRecord(leaderboardId, options = {}) {
+  deleteLeaderboardRecord(bearerToken, leaderboardId, options = {}) {
     if (leaderboardId === null || leaderboardId === void 0) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-    const queryParams = {};
-    let _body = null;
-    return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry, options = {}) {
+  listLeaderboardRecords(bearerToken, leaderboardId, ownerIds, limit, cursor, expiry, options = {}) {
     if (leaderboardId === null || leaderboardId === void 0) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-    const queryParams = {
-      ownerIds,
-      limit,
-      cursor,
-      expiry
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("ownerIds", ownerIds);
+    queryParams.set("limit", limit);
+    queryParams.set("cursor", cursor);
+    queryParams.set("expiry", expiry);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  writeLeaderboardRecord(leaderboardId, body, options = {}) {
+  writeLeaderboardRecord(bearerToken, leaderboardId, body, options = {}) {
     if (leaderboardId === null || leaderboardId === void 0) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
     }
@@ -1237,12 +1985,26 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry, options = {}) {
+  listLeaderboardRecordsAroundOwner(bearerToken, leaderboardId, ownerId, limit, expiry, options = {}) {
     if (leaderboardId === null || leaderboardId === void 0) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
     }
@@ -1250,56 +2012,121 @@ var NakamaApi = class {
       throw new Error("'ownerId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/leaderboard/{leaderboardId}/owner/{ownerId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId))).replace("{ownerId}", encodeURIComponent(String(ownerId)));
-    const queryParams = {
-      limit,
-      expiry
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("limit", limit);
+    queryParams.set("expiry", expiry);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listMatches(limit, authoritative, label, minSize, maxSize, query, options = {}) {
+  listMatches(bearerToken, limit, authoritative, label, minSize, maxSize, query, options = {}) {
     const urlPath = "/v2/match";
-    const queryParams = {
-      limit,
-      authoritative,
-      label,
-      minSize,
-      maxSize,
-      query
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("limit", limit);
+    queryParams.set("authoritative", authoritative);
+    queryParams.set("label", label);
+    queryParams.set("minSize", minSize);
+    queryParams.set("maxSize", maxSize);
+    queryParams.set("query", query);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  deleteNotifications(ids, options = {}) {
+  deleteNotifications(bearerToken, ids, options = {}) {
     const urlPath = "/v2/notification";
-    const queryParams = {
-      ids
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "DELETE", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("ids", ids);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listNotifications(limit, cacheableCursor, options = {}) {
+  listNotifications(bearerToken, limit, cacheableCursor, options = {}) {
     const urlPath = "/v2/notification";
-    const queryParams = {
-      limit,
-      cacheableCursor
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("limit", limit);
+    queryParams.set("cacheableCursor", cacheableCursor);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  rpcFunc2(id, payload, httpKey, options = {}) {
+  rpcFunc2(bearerToken, id, payload, httpKey, options = {}) {
     if (id === null || id === void 0) {
       throw new Error("'id' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/rpc/{id}".replace("{id}", encodeURIComponent(String(id)));
-    const queryParams = {
-      payload,
-      httpKey
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("payload", payload);
+    queryParams.set("httpKey", httpKey);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  rpcFunc(id, body, httpKey, options = {}) {
+  rpcFunc(bearerToken, id, body, httpKey, options = {}) {
     if (id === null || id === void 0) {
       throw new Error("'id' is a required parameter but is null or undefined.");
     }
@@ -1307,67 +2134,149 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/rpc/{id}".replace("{id}", encodeURIComponent(String(id)));
-    const queryParams = {
-      httpKey
-    };
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("httpKey", httpKey);
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  sessionLogout(body, options = {}) {
+  sessionLogout(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/session/logout";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  readStorageObjects(body, options = {}) {
+  readStorageObjects(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/storage";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  writeStorageObjects(body, options = {}) {
+  writeStorageObjects(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/storage";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  deleteStorageObjects(body, options = {}) {
+  deleteStorageObjects(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/storage/delete";
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listStorageObjects(collection, userId, limit, cursor, options = {}) {
+  listStorageObjects(bearerToken, collection, userId, limit, cursor, options = {}) {
     if (collection === null || collection === void 0) {
       throw new Error("'collection' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/storage/{collection}".replace("{collection}", encodeURIComponent(String(collection)));
-    const queryParams = {
-      userId,
-      limit,
-      cursor
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("userId", userId);
+    queryParams.set("limit", limit);
+    queryParams.set("cursor", cursor);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listStorageObjects2(collection, userId, limit, cursor, options = {}) {
+  listStorageObjects2(bearerToken, collection, userId, limit, cursor, options = {}) {
     if (collection === null || collection === void 0) {
       throw new Error("'collection' is a required parameter but is null or undefined.");
     }
@@ -1375,41 +2284,80 @@ var NakamaApi = class {
       throw new Error("'userId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/storage/{collection}/{userId}".replace("{collection}", encodeURIComponent(String(collection))).replace("{userId}", encodeURIComponent(String(userId)));
-    const queryParams = {
-      limit,
-      cursor
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("limit", limit);
+    queryParams.set("cursor", cursor);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor, options = {}) {
+  listTournaments(bearerToken, categoryStart, categoryEnd, startTime, endTime, limit, cursor, options = {}) {
     const urlPath = "/v2/tournament";
-    const queryParams = {
-      categoryStart,
-      categoryEnd,
-      startTime,
-      endTime,
-      limit,
-      cursor
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("categoryStart", categoryStart);
+    queryParams.set("categoryEnd", categoryEnd);
+    queryParams.set("startTime", startTime);
+    queryParams.set("endTime", endTime);
+    queryParams.set("limit", limit);
+    queryParams.set("cursor", cursor);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry, options = {}) {
+  listTournamentRecords(bearerToken, tournamentId, ownerIds, limit, cursor, expiry, options = {}) {
     if (tournamentId === null || tournamentId === void 0) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-    const queryParams = {
-      ownerIds,
-      limit,
-      cursor,
-      expiry
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("ownerIds", ownerIds);
+    queryParams.set("limit", limit);
+    queryParams.set("cursor", cursor);
+    queryParams.set("expiry", expiry);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  writeTournamentRecord2(tournamentId, body, options = {}) {
+  writeTournamentRecord2(bearerToken, tournamentId, body, options = {}) {
     if (tournamentId === null || tournamentId === void 0) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
@@ -1417,12 +2365,26 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  writeTournamentRecord(tournamentId, body, options = {}) {
+  writeTournamentRecord(bearerToken, tournamentId, body, options = {}) {
     if (tournamentId === null || tournamentId === void 0) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
@@ -1430,21 +2392,49 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-    const queryParams = {};
-    let _body = null;
-    _body = JSON.stringify(body || {});
-    return this.doFetch(urlPath, "PUT", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  joinTournament(tournamentId, options = {}) {
+  joinTournament(bearerToken, tournamentId, options = {}) {
     if (tournamentId === null || tournamentId === void 0) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/tournament/{tournamentId}/join".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-    const queryParams = {};
-    let _body = null;
-    return this.doFetch(urlPath, "POST", queryParams, _body, options);
+    const queryParams = new Map();
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry, options = {}) {
+  listTournamentRecordsAroundOwner(bearerToken, tournamentId, ownerId, limit, expiry, options = {}) {
     if (tournamentId === null || tournamentId === void 0) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
@@ -1452,35 +2442,89 @@ var NakamaApi = class {
       throw new Error("'ownerId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/tournament/{tournamentId}/owner/{ownerId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId))).replace("{ownerId}", encodeURIComponent(String(ownerId)));
-    const queryParams = {
-      limit,
-      expiry
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("limit", limit);
+    queryParams.set("expiry", expiry);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  getUsers(ids, usernames, facebookIds, options = {}) {
+  getUsers(bearerToken, ids, usernames, facebookIds, options = {}) {
     const urlPath = "/v2/user";
-    const queryParams = {
-      ids,
-      usernames,
-      facebookIds
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("ids", ids);
+    queryParams.set("usernames", usernames);
+    queryParams.set("facebookIds", facebookIds);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
   }
-  listUserGroups(userId, limit, state, cursor, options = {}) {
+  listUserGroups(bearerToken, userId, limit, state, cursor, options = {}) {
     if (userId === null || userId === void 0) {
       throw new Error("'userId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/user/{userId}/group".replace("{userId}", encodeURIComponent(String(userId)));
-    const queryParams = {
-      limit,
-      state,
-      cursor
-    };
-    let _body = null;
-    return this.doFetch(urlPath, "GET", queryParams, _body, options);
+    const queryParams = new Map();
+    queryParams.set("limit", limit);
+    queryParams.set("state", state);
+    queryParams.set("cursor", cursor);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+    ]);
+  }
+  buildFullUrl(basePath, fragment, queryParams) {
+    let fullPath = basePath + fragment + "?";
+    for (let [k, v] of queryParams) {
+      if (v instanceof Array) {
+        fullPath += v.reduce((prev, curr) => {
+          return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+        }, "");
+      } else {
+        if (v != null) {
+          fullPath += encodeURIComponent(k) + "=" + encodeURIComponent(v) + "&";
+        }
+      }
+    }
+    return fullPath;
   }
 };
 
@@ -1585,18 +2629,6 @@ var WebSocketAdapterText = class {
     this._socket.send(JSON.stringify(msg));
   }
 };
-
-// utils.ts
-function b64EncodeUnicode(str) {
-  return encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
-    return String.fromCharCode(Number("0x" + p1));
-  }));
-}
-function b64DecodeUnicode(str) {
-  return decodeURIComponent(decode(str).split("").map(function(c) {
-    return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(""));
-}
 
 // socket.ts
 var DefaultSocket = class {
@@ -2041,21 +3073,14 @@ var Client = class {
     this.expiredTimespanMs = DEFAULT_EXPIRED_TIMESPAN_MS;
     const scheme = useSSL ? "https://" : "http://";
     const basePath = `${scheme}${host}:${port}`;
-    this.configuration = {
-      basePath,
-      username: serverkey,
-      password: "",
-      timeoutMs: timeout
-    };
-    this.apiClient = new NakamaApi(this.configuration);
+    this.apiClient = new NakamaApi(serverkey, basePath, timeout);
   }
   addGroupUsers(session, groupId, ids) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.addGroupUsers(groupId, ids).then((response) => {
+      return this.apiClient.addGroupUsers(session.token, groupId, ids).then((response) => {
         return response !== void 0;
       });
     });
@@ -2065,8 +3090,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.addFriends(ids, usernames).then((response) => {
+      return this.apiClient.addFriends(session.token, ids, usernames).then((response) => {
         return response !== void 0;
       });
     });
@@ -2077,7 +3101,7 @@ var Client = class {
         "token": token,
         "vars": vars
       };
-      return this.apiClient.authenticateApple(request, create, username, options).then((apiSession) => {
+      return this.apiClient.authenticateApple(this.serverkey, "", request, create, username, options).then((apiSession) => {
         return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
       });
     });
@@ -2087,7 +3111,7 @@ var Client = class {
       "id": id,
       "vars": vars
     };
-    return this.apiClient.authenticateCustom(request, create, username, options).then((apiSession) => {
+    return this.apiClient.authenticateCustom(this.serverkey, "", request, create, username, options).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -2096,7 +3120,7 @@ var Client = class {
       "id": id,
       "vars": vars
     };
-    return this.apiClient.authenticateDevice(request, create, username).then((apiSession) => {
+    return this.apiClient.authenticateDevice(this.serverkey, "", request, create, username).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -2106,7 +3130,7 @@ var Client = class {
       "password": password,
       "vars": vars
     };
-    return this.apiClient.authenticateEmail(request, create, username).then((apiSession) => {
+    return this.apiClient.authenticateEmail(this.serverkey, "", request, create, username).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -2115,7 +3139,7 @@ var Client = class {
       "signed_player_info": signedPlayerInfo,
       "vars": vars
     };
-    return this.apiClient.authenticateFacebookInstantGame({ signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then((apiSession) => {
+    return this.apiClient.authenticateFacebookInstantGame(this.serverkey, "", { signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -2124,7 +3148,7 @@ var Client = class {
       "token": token,
       "vars": vars
     };
-    return this.apiClient.authenticateFacebook(request, create, username, sync, options).then((apiSession) => {
+    return this.apiClient.authenticateFacebook(this.serverkey, "", request, create, username, sync, options).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -2133,7 +3157,7 @@ var Client = class {
       "token": token,
       "vars": vars
     };
-    return this.apiClient.authenticateGoogle(request, create, username, options).then((apiSession) => {
+    return this.apiClient.authenticateGoogle(this.serverkey, "", request, create, username, options).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -2142,7 +3166,7 @@ var Client = class {
       "token": token,
       "vars": vars
     };
-    return this.apiClient.authenticateGameCenter(request, create, username).then((apiSession) => {
+    return this.apiClient.authenticateGameCenter(this.serverkey, "", request, create, username).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
@@ -2153,7 +3177,7 @@ var Client = class {
         "vars": vars,
         "sync": sync
       };
-      return this.apiClient.authenticateSteam(request, create, username).then((apiSession) => {
+      return this.apiClient.authenticateSteam(this.serverkey, "", request, create, username).then((apiSession) => {
         return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
       });
     });
@@ -2163,8 +3187,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.banGroupUsers(groupId, ids).then((response) => {
+      return this.apiClient.banGroupUsers(session.token, groupId, ids).then((response) => {
         return response !== void 0;
       });
     });
@@ -2174,8 +3197,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.blockFriends(ids, usernames).then((response) => {
+      return this.apiClient.blockFriends(session.token, ids, usernames).then((response) => {
         return Promise.resolve(response != void 0);
       });
     });
@@ -2185,8 +3207,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.createGroup(request).then((response) => {
+      return this.apiClient.createGroup(session.token, request).then((response) => {
         return Promise.resolve({
           avatar_url: response.avatar_url,
           create_time: response.create_time,
@@ -2212,8 +3233,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.deleteFriends(ids, usernames).then((response) => {
+      return this.apiClient.deleteFriends(session.token, ids, usernames).then((response) => {
         return response !== void 0;
       });
     });
@@ -2223,8 +3243,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.deleteGroup(groupId).then((response) => {
+      return this.apiClient.deleteGroup(session.token, groupId).then((response) => {
         return response !== void 0;
       });
     });
@@ -2234,8 +3253,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.deleteNotifications(ids).then((response) => {
+      return this.apiClient.deleteNotifications(session.token, ids).then((response) => {
         return Promise.resolve(response != void 0);
       });
     });
@@ -2245,8 +3263,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.deleteStorageObjects(request).then((response) => {
+      return this.apiClient.deleteStorageObjects(session.token, request).then((response) => {
         return Promise.resolve(response != void 0);
       });
     });
@@ -2256,8 +3273,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.demoteGroupUsers(groupId, ids).then((response) => {
+      return this.apiClient.demoteGroupUsers(session.token, groupId, ids).then((response) => {
         return Promise.resolve(response != void 0);
       });
     });
@@ -2267,8 +3283,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.event(request).then((response) => {
+      return this.apiClient.event(session.token, request).then((response) => {
         return Promise.resolve(response != void 0);
       });
     });
@@ -2278,8 +3293,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.getAccount();
+      return this.apiClient.getAccount(session.token);
     });
   }
   importFacebookFriends(session, request) {
@@ -2287,8 +3301,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.importFacebookFriends(request).then((response) => {
+      return this.apiClient.importFacebookFriends(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -2298,8 +3311,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.importSteamFriends(request, reset).then((response) => {
+      return this.apiClient.importSteamFriends(session.token, request, reset).then((response) => {
         return response !== void 0;
       });
     });
@@ -2309,8 +3321,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.getUsers(ids, usernames, facebookIds).then((response) => {
+      return this.apiClient.getUsers(session.token, ids, usernames, facebookIds).then((response) => {
         var result = {
           users: []
         };
@@ -2346,8 +3357,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.joinGroup(groupId, {}).then((response) => {
+      return this.apiClient.joinGroup(session.token, groupId, {}).then((response) => {
         return response !== void 0;
       });
     });
@@ -2357,8 +3367,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.joinTournament(tournamentId, {}).then((response) => {
+      return this.apiClient.joinTournament(session.token, tournamentId, {}).then((response) => {
         return response !== void 0;
       });
     });
@@ -2368,8 +3377,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.kickGroupUsers(groupId, ids).then((response) => {
+      return this.apiClient.kickGroupUsers(session.token, groupId, ids).then((response) => {
         return Promise.resolve(response != void 0);
       });
     });
@@ -2379,8 +3387,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.leaveGroup(groupId, {}).then((response) => {
+      return this.apiClient.leaveGroup(session.token, groupId, {}).then((response) => {
         return response !== void 0;
       });
     });
@@ -2390,8 +3397,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listChannelMessages(channelId, limit, forward, cursor).then((response) => {
+      return this.apiClient.listChannelMessages(session.token, channelId, limit, forward, cursor).then((response) => {
         var result = {
           messages: [],
           next_cursor: response.next_cursor,
@@ -2427,8 +3433,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listGroupUsers(groupId, limit, state, cursor).then((response) => {
+      return this.apiClient.listGroupUsers(session.token, groupId, limit, state, cursor).then((response) => {
         var result = {
           group_users: [],
           cursor: response.cursor
@@ -2468,8 +3473,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listUserGroups(userId, state, limit, cursor).then((response) => {
+      return this.apiClient.listUserGroups(session.token, userId, state, limit, cursor).then((response) => {
         var result = {
           user_groups: [],
           cursor: response.cursor
@@ -2505,8 +3509,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listGroups(name, cursor, limit).then((response) => {
+      return this.apiClient.listGroups(session.token, name, cursor, limit).then((response) => {
         var result = {
           groups: []
         };
@@ -2539,8 +3542,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkApple(request).then((response) => {
+      return this.apiClient.linkApple(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -2550,8 +3552,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkCustom(request).then((response) => {
+      return this.apiClient.linkCustom(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -2561,8 +3562,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkDevice(request).then((response) => {
+      return this.apiClient.linkDevice(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -2572,8 +3572,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkEmail(request).then((response) => {
+      return this.apiClient.linkEmail(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -2583,8 +3582,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkFacebook(request).then((response) => {
+      return this.apiClient.linkFacebook(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -2594,8 +3592,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkFacebookInstantGame(request).then((response) => {
+      return this.apiClient.linkFacebookInstantGame(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -2605,8 +3602,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkGoogle(request).then((response) => {
+      return this.apiClient.linkGoogle(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -2616,8 +3612,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkGameCenter(request).then((response) => {
+      return this.apiClient.linkGameCenter(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -2627,8 +3622,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.linkSteam(request).then((response) => {
+      return this.apiClient.linkSteam(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -2638,8 +3632,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listFriends(limit, state, cursor).then((response) => {
+      return this.apiClient.listFriends(session.token, limit, state, cursor).then((response) => {
         var result = {
           friends: [],
           cursor: response.cursor
@@ -2680,8 +3673,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listLeaderboardRecords(leaderboardId, ownerIds, limit, cursor, expiry).then((response) => {
+      return this.apiClient.listLeaderboardRecords(session.token, leaderboardId, ownerIds, limit, cursor, expiry).then((response) => {
         var list = {
           next_cursor: response.next_cursor,
           prev_cursor: response.prev_cursor,
@@ -2731,8 +3723,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listLeaderboardRecordsAroundOwner(leaderboardId, ownerId, limit, expiry).then((response) => {
+      return this.apiClient.listLeaderboardRecordsAroundOwner(session.token, leaderboardId, ownerId, limit, expiry).then((response) => {
         var list = {
           next_cursor: response.next_cursor,
           prev_cursor: response.prev_cursor,
@@ -2782,8 +3773,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listMatches(limit, authoritative, label, minSize, maxSize, query);
+      return this.apiClient.listMatches(session.token, limit, authoritative, label, minSize, maxSize, query);
     });
   }
   listNotifications(session, limit, cacheableCursor) {
@@ -2791,8 +3781,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listNotifications(limit, cacheableCursor).then((response) => {
+      return this.apiClient.listNotifications(session.token, limit, cacheableCursor).then((response) => {
         var result = {
           cacheable_cursor: response.cacheable_cursor,
           notifications: []
@@ -2820,8 +3809,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listStorageObjects(collection, userId, limit, cursor).then((response) => {
+      return this.apiClient.listStorageObjects(session.token, collection, userId, limit, cursor).then((response) => {
         var result = {
           objects: [],
           cursor: response.cursor
@@ -2851,8 +3839,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listTournaments(categoryStart, categoryEnd, startTime, endTime, limit, cursor).then((response) => {
+      return this.apiClient.listTournaments(session.token, categoryStart, categoryEnd, startTime, endTime, limit, cursor).then((response) => {
         var list = {
           cursor: response.cursor,
           tournaments: []
@@ -2889,8 +3876,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listTournamentRecords(tournamentId, ownerIds, limit, cursor, expiry).then((response) => {
+      return this.apiClient.listTournamentRecords(session.token, tournamentId, ownerIds, limit, cursor, expiry).then((response) => {
         var list = {
           next_cursor: response.next_cursor,
           prev_cursor: response.prev_cursor,
@@ -2940,8 +3926,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.listTournamentRecordsAroundOwner(tournamentId, ownerId, limit, expiry).then((response) => {
+      return this.apiClient.listTournamentRecordsAroundOwner(session.token, tournamentId, ownerId, limit, expiry).then((response) => {
         var list = {
           next_cursor: response.next_cursor,
           prev_cursor: response.prev_cursor,
@@ -2991,8 +3976,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.promoteGroupUsers(groupId, ids);
+      return this.apiClient.promoteGroupUsers(session.token, groupId, ids);
     });
   }
   readStorageObjects(session, request) {
@@ -3000,8 +3984,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.readStorageObjects(request).then((response) => {
+      return this.apiClient.readStorageObjects(session.token, request).then((response) => {
         var result = { objects: [] };
         if (response.objects == null) {
           return Promise.resolve(result);
@@ -3028,8 +4011,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.rpcFunc(id, JSON.stringify(input)).then((response) => {
+      return this.apiClient.rpcFunc(session.token, id, JSON.stringify(input)).then((response) => {
         return Promise.resolve({
           id: response.id,
           payload: !response.payload ? void 0 : JSON.parse(response.payload)
@@ -3037,25 +4019,14 @@ var Client = class {
       });
     });
   }
-  rpcGet(id, session, httpKey, input) {
+  rpcHttpKey(id, httpKey, input) {
     return __async(this, null, function* () {
-      if (session && this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
-        yield this.sessionRefresh(session);
-      }
-      if (!httpKey || httpKey == "") {
-        this.configuration.bearerToken = session && session.token;
-      } else {
-        this.configuration.username = void 0;
-        this.configuration.bearerToken = void 0;
-      }
       return this.apiClient.rpcFunc2(id, input && JSON.stringify(input) || "", httpKey).then((response) => {
-        this.configuration.username = this.serverkey;
         return Promise.resolve({
           id: response.id,
           payload: !response.payload ? void 0 : JSON.parse(response.payload)
         });
       }).catch((err) => {
-        this.configuration.username = this.serverkey;
         throw err;
       });
     });
@@ -3065,8 +4036,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.sessionLogout({ refresh_token: refreshToken, token }).then((response) => {
+      return this.apiClient.sessionLogout(session.token, { refresh_token: refreshToken, token }).then((response) => {
         return response !== void 0;
       });
     });
@@ -3083,7 +4053,7 @@ var Client = class {
       if (session.created && session.refresh_expires_at - session.created_at < 3700) {
         console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
       }
-      const apiSession = yield this.apiClient.sessionRefresh({ token: session.refresh_token, vars });
+      const apiSession = yield this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars });
       session.update(apiSession.token, apiSession.refresh_token);
       return session;
     });
@@ -3093,8 +4063,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkApple(request).then((response) => {
+      return this.apiClient.unlinkApple(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -3104,8 +4073,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkCustom(request).then((response) => {
+      return this.apiClient.unlinkCustom(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -3115,8 +4083,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkDevice(request).then((response) => {
+      return this.apiClient.unlinkDevice(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -3126,8 +4093,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkEmail(request).then((response) => {
+      return this.apiClient.unlinkEmail(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -3137,8 +4103,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkFacebook(request).then((response) => {
+      return this.apiClient.unlinkFacebook(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -3148,8 +4113,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkFacebookInstantGame(request).then((response) => {
+      return this.apiClient.unlinkFacebookInstantGame(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -3159,8 +4123,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkGoogle(request).then((response) => {
+      return this.apiClient.unlinkGoogle(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -3170,8 +4133,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkGameCenter(request).then((response) => {
+      return this.apiClient.unlinkGameCenter(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -3181,8 +4143,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.unlinkSteam(request).then((response) => {
+      return this.apiClient.unlinkSteam(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -3192,8 +4153,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.updateAccount(request).then((response) => {
+      return this.apiClient.updateAccount(session.token, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -3203,8 +4163,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.updateGroup(groupId, request).then((response) => {
+      return this.apiClient.updateGroup(session.token, groupId, request).then((response) => {
         return response !== void 0;
       });
     });
@@ -3214,8 +4173,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.validatePurchaseApple({ receipt });
+      return this.apiClient.validatePurchaseApple(session.token, { receipt });
     });
   }
   validatePurchaseGoogle(session, purchase) {
@@ -3223,8 +4181,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.validatePurchaseGoogle({ purchase });
+      return this.apiClient.validatePurchaseGoogle(session.token, { purchase });
     });
   }
   validatePurchaseHuawei(session, purchase, signature) {
@@ -3232,8 +4189,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.validatePurchaseHuawei({ purchase, signature });
+      return this.apiClient.validatePurchaseHuawei(session.token, { purchase, signature });
     });
   }
   writeLeaderboardRecord(session, leaderboardId, request) {
@@ -3241,8 +4197,7 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.writeLeaderboardRecord(leaderboardId, {
+      return this.apiClient.writeLeaderboardRecord(session.token, leaderboardId, {
         metadata: request.metadata ? JSON.stringify(request.metadata) : void 0,
         score: request.score,
         subscore: request.subscore
@@ -3268,7 +4223,6 @@ var Client = class {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
-      this.configuration.bearerToken = session && session.token;
       var request = { objects: [] };
       objects.forEach((o) => {
         request.objects.push({
@@ -3280,13 +4234,12 @@ var Client = class {
           version: o.version
         });
       });
-      return this.apiClient.writeStorageObjects(request);
+      return this.apiClient.writeStorageObjects(session.token, request);
     });
   }
   writeTournamentRecord(session, tournamentId, request) {
     return __async(this, null, function* () {
-      this.configuration.bearerToken = session && session.token;
-      return this.apiClient.writeTournamentRecord(tournamentId, {
+      return this.apiClient.writeTournamentRecord(session.token, tournamentId, {
         metadata: request.metadata ? JSON.stringify(request.metadata) : void 0,
         score: request.score,
         subscore: request.subscore

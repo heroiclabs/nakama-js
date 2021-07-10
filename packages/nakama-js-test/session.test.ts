@@ -76,6 +76,8 @@ describe('Session Tests', () => {
     const customId = generateid();
 
     const tokens : any = await page.evaluate(async (customId) => {
+
+        /* @ts-ignore */
         function timeoutPromise(ms : number) : Promise<void> {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
@@ -83,6 +85,7 @@ describe('Session Tests', () => {
         const client = new nakamajs.Client();
         const session = await client.authenticateCustom(customId);
         const firstToken = session.token;
+
         await timeoutPromise(1000);
         const secondSession = await client.sessionRefresh(session);
         const secondToken = secondSession.token;
@@ -98,7 +101,7 @@ describe('Session Tests', () => {
     const page : Page = await createPage();
     const customId = generateid();
 
-    const exception : any = await page.evaluate(async (customId) => {
+    const status : any = await page.evaluate(async (customId) => {
         const client = new nakamajs.Client();
         const session = await client.authenticateCustom(customId);
         await client.sessionLogout(session, session.token, session.refresh_token);
@@ -114,13 +117,11 @@ describe('Session Tests', () => {
             await client.writeStorageObjects(session, [obj]);
             return null;
         } catch (e) {
-            return e;
+            return e.status;
         }
     }, customId);
 
-    expect(exception).toBeDefined;
-    expect(exception).not.toBeNull;
-    expect(exception.status).toEqual(401);
+    expect(status).toEqual(401);
   });
 
   it("should autorefresh session", async () => {
@@ -128,6 +129,7 @@ describe('Session Tests', () => {
     const customId = generateid();
 
     const tokens : any = await page.evaluate(async (customId) => {
+
         function timeoutPromise(ms : number) : Promise<void> {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
@@ -136,7 +138,9 @@ describe('Session Tests', () => {
         const session = await client.authenticateCustom(customId);
         const firstToken = session.token;
         session.expires_at = (Date.now() + client.expiredTimespanMs)/1000 - 1;
-        await timeoutPromise(500);
+
+        /* @ts-ignore */
+        await timeoutPromise(1000);
 
         const obj = {
             "collection": "collection",

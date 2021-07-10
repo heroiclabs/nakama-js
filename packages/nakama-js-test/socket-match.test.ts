@@ -271,7 +271,7 @@ describe('Match Tests', () => {
     }, customid, ID, adapter);
   });
 
-  it.each(adapters)('should create authoritative match, list matches', async (adapter) => {
+  it.each(adapters)('should create authoritative match, list matches without querying', async (adapter) => {
     const page = await createPage();
 
     const customid = generateid();
