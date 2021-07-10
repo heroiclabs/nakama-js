@@ -101,7 +101,7 @@ describe('Session Tests', () => {
     const page : Page = await createPage();
     const customId = generateid();
 
-    const exception : any = await page.evaluate(async (customId) => {
+    const status : any = await page.evaluate(async (customId) => {
         const client = new nakamajs.Client();
         const session = await client.authenticateCustom(customId);
         await client.sessionLogout(session, session.token, session.refresh_token);
@@ -117,13 +117,11 @@ describe('Session Tests', () => {
             await client.writeStorageObjects(session, [obj]);
             return null;
         } catch (e) {
-            return e;
+            return e.status;
         }
     }, customId);
 
-    expect(exception).toBeDefined;
-    expect(exception).not.toBeNull;
-    expect(exception.status).toEqual(401);
+    expect(status).toEqual(401);
   });
 
   it("should autorefresh session", async () => {
@@ -142,7 +140,7 @@ describe('Session Tests', () => {
         session.expires_at = (Date.now() + client.expiredTimespanMs)/1000 - 1;
 
         /* @ts-ignore */
-        await timeoutPromise(500);
+        await timeoutPromise(1000);
 
         const obj = {
             "collection": "collection",
