@@ -130,7 +130,7 @@ export class NakamaApi {
     {{ $parameter.Type }},
       {{- end -}}
   {{- end }}
-        options: any = {}): Promise<{{- if $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- else -}} any {{- end}}> {
+      options: any = {}): Promise<{{- if $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- else -}} any {{- end}}> {
     {{ range $parameter := $operation.Parameters}}
     {{- $snakeToCamel := $parameter.Name | snakeToCamel}}
     {{- if $parameter.Required }}
@@ -151,7 +151,7 @@ export class NakamaApi {
     {{- range $parameter := $operation.Parameters}}
     {{- $camelToSnake := $parameter.Name | camelToSnake}}
     {{- if eq $parameter.In "query"}}
-    queryParams.set("{{$parameter.Name}}", {{$parameter.Name | snakeToCamel}});
+    queryParams.set("{{$parameter.Name | camelToSnake }}", {{$parameter.Name | snakeToCamel}});
     {{- end}}
     {{- end}}
 
@@ -171,12 +171,16 @@ export class NakamaApi {
                       {{- if eq $key "BasicAuth" }}
     fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
                       {{- else if eq $key "HttpKeyAuth" }}
-    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
-                      {{- end }}
+    if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
+                    {{- end }}
                 {{- end }}
             {{- end }}
           {{- else }}
-    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
           {{- end }}
 
     return Promise.race([

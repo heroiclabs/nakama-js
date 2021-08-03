@@ -3,6 +3,18 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [2.3.0]
+
+### Fixed
+- Fixed 401 Unauthorized Responses from the server in response to `rpcHttpKey`.
+
+### Changed
+- Changed parameter list optionals and sequencing in `rpcHttpKey`.
+    - The signature is now listed as follows: `rpcHttpKey(httpKey: string, id: string, input?: object);`
+
+- Renamed `ApiOverrideOperator` to `ApiOperator`.
+- Query params are now formatted with snake case rather than camel case internally by client.
+
 ### [2.2.0]
 
 ### Added

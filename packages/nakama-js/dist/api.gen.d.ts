@@ -18,13 +18,13 @@ export declare enum ValidatedPurchaseStore {
 }
 export interface WriteLeaderboardRecordRequestLeaderboardRecordWrite {
     metadata?: string;
-    operator?: ApiOverrideOperator;
+    operator?: ApiOperator;
     score?: string;
     subscore?: string;
 }
 export interface WriteTournamentRecordRequestTournamentRecordWrite {
     metadata?: string;
-    operator?: ApiOverrideOperator;
+    operator?: ApiOperator;
     score?: string;
     subscore?: string;
 }
@@ -201,7 +201,7 @@ export interface ApiNotificationList {
     cacheable_cursor?: string;
     notifications?: Array<ApiNotification>;
 }
-export declare enum ApiOverrideOperator {
+export declare enum ApiOperator {
     NO_OVERRIDE = 0,
     BEST = 1,
     SET = 2,
@@ -274,6 +274,8 @@ export interface ApiTournament {
     max_size?: number;
     metadata?: string;
     next_reset?: number;
+    operator?: ApiOperator;
+    prev_reset?: number;
     size?: number;
     sort_order?: number;
     start_active?: number;
@@ -420,7 +422,7 @@ export declare class NakamaApi {
     blockFriends(bearerToken: string, ids?: Array<string>, usernames?: Array<string>, options?: any): Promise<any>;
     importFacebookFriends(bearerToken: string, body: ApiAccountFacebook, reset?: boolean, options?: any): Promise<any>;
     importSteamFriends(bearerToken: string, body: ApiAccountSteam, reset?: boolean, options?: any): Promise<any>;
-    listGroups(bearerToken: string, name?: string, cursor?: string, limit?: number, options?: any): Promise<ApiGroupList>;
+    listGroups(bearerToken: string, name?: string, cursor?: string, limit?: number, langTag?: string, members?: number, open?: boolean, options?: any): Promise<ApiGroupList>;
     createGroup(bearerToken: string, body: ApiCreateGroupRequest, options?: any): Promise<ApiGroup>;
     deleteGroup(bearerToken: string, groupId: string, options?: any): Promise<any>;
     updateGroup(bearerToken: string, groupId: string, body: ApiUpdateGroupRequest, options?: any): Promise<any>;

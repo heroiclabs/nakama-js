@@ -605,14 +605,14 @@ var nakamajs = (() => {
     ValidatedPurchaseStore2[ValidatedPurchaseStore2["GOOGLE_PLAY_STORE"] = 1] = "GOOGLE_PLAY_STORE";
     ValidatedPurchaseStore2[ValidatedPurchaseStore2["HUAWEI_APP_GALLERY"] = 2] = "HUAWEI_APP_GALLERY";
   })(ValidatedPurchaseStore || (ValidatedPurchaseStore = {}));
-  var ApiOverrideOperator;
-  (function(ApiOverrideOperator2) {
-    ApiOverrideOperator2[ApiOverrideOperator2["NO_OVERRIDE"] = 0] = "NO_OVERRIDE";
-    ApiOverrideOperator2[ApiOverrideOperator2["BEST"] = 1] = "BEST";
-    ApiOverrideOperator2[ApiOverrideOperator2["SET"] = 2] = "SET";
-    ApiOverrideOperator2[ApiOverrideOperator2["INCREMENT"] = 3] = "INCREMENT";
-    ApiOverrideOperator2[ApiOverrideOperator2["DECREMENT"] = 4] = "DECREMENT";
-  })(ApiOverrideOperator || (ApiOverrideOperator = {}));
+  var ApiOperator;
+  (function(ApiOperator2) {
+    ApiOperator2[ApiOperator2["NO_OVERRIDE"] = 0] = "NO_OVERRIDE";
+    ApiOperator2[ApiOperator2["BEST"] = 1] = "BEST";
+    ApiOperator2[ApiOperator2["SET"] = 2] = "SET";
+    ApiOperator2[ApiOperator2["INCREMENT"] = 3] = "INCREMENT";
+    ApiOperator2[ApiOperator2["DECREMENT"] = 4] = "DECREMENT";
+  })(ApiOperator || (ApiOperator = {}));
   var NakamaApi = class {
     constructor(serverKey, basePath, timeoutMs) {
       this.serverKey = serverKey;
@@ -625,7 +625,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -645,7 +647,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -669,7 +673,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -929,7 +935,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -953,7 +961,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -977,7 +987,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1001,7 +1013,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1026,7 +1040,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1050,7 +1066,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1074,7 +1092,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1098,7 +1118,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1122,7 +1144,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1170,7 +1194,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1194,7 +1220,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1218,7 +1246,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1242,7 +1272,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1266,7 +1298,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1290,7 +1324,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1314,7 +1350,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1338,7 +1376,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1362,7 +1402,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1388,7 +1430,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1412,7 +1456,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1434,7 +1480,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1457,7 +1505,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1479,7 +1529,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1501,7 +1553,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1526,7 +1580,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1551,7 +1607,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1565,16 +1623,21 @@ var nakamajs = (() => {
         new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
       ]);
     }
-    listGroups(bearerToken, name, cursor, limit, options = {}) {
+    listGroups(bearerToken, name, cursor, limit, langTag, members, open, options = {}) {
       const urlPath = "/v2/group";
       const queryParams = new Map();
       queryParams.set("name", name);
       queryParams.set("cursor", cursor);
       queryParams.set("limit", limit);
+      queryParams.set("lang_tag", langTag);
+      queryParams.set("members", members);
+      queryParams.set("open", open);
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1598,7 +1661,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1621,7 +1686,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1648,7 +1715,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1672,7 +1741,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1696,7 +1767,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1723,7 +1796,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1746,7 +1821,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1770,7 +1847,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1793,7 +1872,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1817,7 +1898,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1843,7 +1926,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1867,7 +1952,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1891,7 +1978,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1915,7 +2004,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1938,7 +2029,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1958,14 +2051,16 @@ var nakamajs = (() => {
       }
       const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
       const queryParams = new Map();
-      queryParams.set("ownerIds", ownerIds);
+      queryParams.set("owner_ids", ownerIds);
       queryParams.set("limit", limit);
       queryParams.set("cursor", cursor);
       queryParams.set("expiry", expiry);
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1992,7 +2087,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2020,7 +2117,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2040,13 +2139,15 @@ var nakamajs = (() => {
       queryParams.set("limit", limit);
       queryParams.set("authoritative", authoritative);
       queryParams.set("label", label);
-      queryParams.set("minSize", minSize);
-      queryParams.set("maxSize", maxSize);
+      queryParams.set("min_size", minSize);
+      queryParams.set("max_size", maxSize);
       queryParams.set("query", query);
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2067,7 +2168,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2085,11 +2188,13 @@ var nakamajs = (() => {
       const urlPath = "/v2/notification";
       const queryParams = new Map();
       queryParams.set("limit", limit);
-      queryParams.set("cacheableCursor", cacheableCursor);
+      queryParams.set("cacheable_cursor", cacheableCursor);
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2110,11 +2215,13 @@ var nakamajs = (() => {
       const urlPath = "/v2/rpc/{id}".replace("{id}", encodeURIComponent(String(id)));
       const queryParams = new Map();
       queryParams.set("payload", payload);
-      queryParams.set("httpKey", httpKey);
+      queryParams.set("http_key", httpKey);
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2137,12 +2244,14 @@ var nakamajs = (() => {
       }
       const urlPath = "/v2/rpc/{id}".replace("{id}", encodeURIComponent(String(id)));
       const queryParams = new Map();
-      queryParams.set("httpKey", httpKey);
+      queryParams.set("http_key", httpKey);
       let bodyJson = "";
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2166,7 +2275,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2190,7 +2301,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2214,7 +2327,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2238,7 +2353,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2258,13 +2375,15 @@ var nakamajs = (() => {
       }
       const urlPath = "/v2/storage/{collection}".replace("{collection}", encodeURIComponent(String(collection)));
       const queryParams = new Map();
-      queryParams.set("userId", userId);
+      queryParams.set("user_id", userId);
       queryParams.set("limit", limit);
       queryParams.set("cursor", cursor);
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2292,7 +2411,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2309,16 +2430,18 @@ var nakamajs = (() => {
     listTournaments(bearerToken, categoryStart, categoryEnd, startTime, endTime, limit, cursor, options = {}) {
       const urlPath = "/v2/tournament";
       const queryParams = new Map();
-      queryParams.set("categoryStart", categoryStart);
-      queryParams.set("categoryEnd", categoryEnd);
-      queryParams.set("startTime", startTime);
-      queryParams.set("endTime", endTime);
+      queryParams.set("category_start", categoryStart);
+      queryParams.set("category_end", categoryEnd);
+      queryParams.set("start_time", startTime);
+      queryParams.set("end_time", endTime);
       queryParams.set("limit", limit);
       queryParams.set("cursor", cursor);
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2338,14 +2461,16 @@ var nakamajs = (() => {
       }
       const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
       const queryParams = new Map();
-      queryParams.set("ownerIds", ownerIds);
+      queryParams.set("owner_ids", ownerIds);
       queryParams.set("limit", limit);
       queryParams.set("cursor", cursor);
       queryParams.set("expiry", expiry);
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2372,7 +2497,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2399,7 +2526,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2422,7 +2551,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2450,7 +2581,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2469,11 +2602,13 @@ var nakamajs = (() => {
       const queryParams = new Map();
       queryParams.set("ids", ids);
       queryParams.set("usernames", usernames);
-      queryParams.set("facebookIds", facebookIds);
+      queryParams.set("facebook_ids", facebookIds);
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -2499,7 +2634,9 @@ var nakamajs = (() => {
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -4021,9 +4158,9 @@ var nakamajs = (() => {
         });
       });
     }
-    rpcHttpKey(id, httpKey, input) {
+    rpcHttpKey(httpKey, id, input) {
       return __async(this, null, function* () {
-        return this.apiClient.rpcFunc2(id, input && JSON.stringify(input) || "", httpKey).then((response) => {
+        return this.apiClient.rpcFunc2("", id, input && JSON.stringify(input) || "", httpKey).then((response) => {
           return Promise.resolve({
             id: response.id,
             payload: !response.payload ? void 0 : JSON.parse(response.payload)
