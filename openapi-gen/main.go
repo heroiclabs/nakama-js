@@ -111,24 +111,24 @@ export class NakamaApi {
     bearerToken: string,
   {{- end }}
   {{- range $parameter := $operation.Parameters}}
-  	{{ $parameter.Name | snakeToCamel }}{{- if not $parameter.Required }}?{{- end -}}:
-  		{{- if eq $parameter.In "path" -}}
+      {{ $parameter.Name | snakeToCamel }}{{- if not $parameter.Required }}?{{- end -}}:
+          {{- if eq $parameter.In "path" -}}
     {{ $parameter.Type }},
-  		{{- else if eq $parameter.In "body" -}}
-    	{{- if eq $parameter.Schema.Type "string" -}}
+          {{- else if eq $parameter.In "body" -}}
+        {{- if eq $parameter.Schema.Type "string" -}}
     {{ $parameter.Schema.Type }},
-    	{{- else -}}
+        {{- else -}}
     {{ $parameter.Schema.Ref | cleanRef }},
-    	{{- end }}
-	{{- else if eq $parameter.Type "array" -}}
+        {{- end }}
+    {{- else if eq $parameter.Type "array" -}}
     Array<{{$parameter.Items.Type}}>,
-  	{{- else if eq $parameter.Type "object" -}}
+      {{- else if eq $parameter.Type "object" -}}
     Map<{{$parameter.AdditionalProperties.Type}}>,
-  	{{- else if eq $parameter.Type "integer" -}}
+      {{- else if eq $parameter.Type "integer" -}}
     number,
-  	{{- else -}}
+      {{- else -}}
     {{ $parameter.Type }},
-  	{{- end -}}
+      {{- end -}}
   {{- end }}
         options: any = {}): Promise<{{- if $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- $operation.Responses.Ok.Schema.Ref | cleanRef -}} {{- else -}} any {{- end}}> {
     {{ range $parameter := $operation.Parameters}}
@@ -151,7 +151,7 @@ export class NakamaApi {
     {{- range $parameter := $operation.Parameters}}
     {{- $camelToSnake := $parameter.Name | camelToSnake}}
     {{- if eq $parameter.In "query"}}
-	queryParams.set("{{$parameter.Name}}", {{$parameter.Name | snakeToCamel}});
+    queryParams.set("{{$parameter.Name}}", {{$parameter.Name | snakeToCamel}});
     {{- end}}
     {{- end}}
 
@@ -165,19 +165,19 @@ export class NakamaApi {
 
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("{{- $method | uppercase}}", options, bodyJson);
-			{{- if $operation.Security }}
-    		{{- with (index $operation.Security 0) }}
-        		{{- range $key, $value := . }}
-          			{{- if eq $key "BasicAuth" }}
-	fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
-          			{{- else if eq $key "HttpKeyAuth" }}
-	fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
-          			{{- end }}
-        		{{- end }}
-    		{{- end }}
-  		{{- else }}
-	fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
-  		{{- end }}
+            {{- if $operation.Security }}
+            {{- with (index $operation.Security 0) }}
+                {{- range $key, $value := . }}
+                      {{- if eq $key "BasicAuth" }}
+    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+                      {{- else if eq $key "HttpKeyAuth" }}
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+                      {{- end }}
+                {{- end }}
+            {{- end }}
+          {{- else }}
+    fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          {{- end }}
 
     return Promise.race([
       fetch(fullUrl, fetchOptions).then((response) => {
@@ -198,23 +198,23 @@ export class NakamaApi {
   {{- end}}
 {{- end}}
 
-	buildFullUrl(basePath: string, fragment: string, queryParams: Map<string, any>) {
-		let fullPath = basePath + fragment + "?";
+    buildFullUrl(basePath: string, fragment: string, queryParams: Map<string, any>) {
+        let fullPath = basePath + fragment + "?";
 
-		for (let [k, v] of queryParams) {
-			if (v instanceof Array) {
-				fullPath += v.reduce((prev: any, curr: any) => {
-				return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
-				}, "");
-			} else {
-				if (v != null) {
-					fullPath += encodeURIComponent(k) + "=" + encodeURIComponent(v) + "&";
-				}
-			}
-		}
+        for (let [k, v] of queryParams) {
+            if (v instanceof Array) {
+                fullPath += v.reduce((prev: any, curr: any) => {
+                return prev + encodeURIComponent(k) + "=" + encodeURIComponent(curr) + "&";
+                }, "");
+            } else {
+                if (v != null) {
+                    fullPath += encodeURIComponent(k) + "=" + encodeURIComponent(v) + "&";
+                }
+            }
+        }
 
-		return fullPath;
-	}
+        return fullPath;
+    }
 };
 `
 
