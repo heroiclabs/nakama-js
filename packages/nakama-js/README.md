@@ -211,6 +211,16 @@ To release onto NPM if you have access to the "@heroiclabs" organization you can
 yarn workspace <workspace> run build && yarn workspace <workspace> npm publish --access=public
 ```
 
+### Generate Docs
+
+API docs are generated with typedoc and deployed to GitHub pages.
+
+To run typedoc:
+
+```
+yarn workspace @heroiclabs/nakama-js install && yarn workspace @heroiclabs/nakama-js docs
+```
+
 ### License
 
 This project is licensed under the [Apache-2 License](https://github.com/heroiclabs/nakama-js/blob/master/LICENSE).

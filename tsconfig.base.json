@@ -10,7 +10,7 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "sourceMap": true,
-    "removeComments": true,
+    "removeComments": false,
     "downlevelIteration": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
