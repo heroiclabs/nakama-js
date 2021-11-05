@@ -2,7 +2,8 @@
     "name": "@heroiclabs/nakama-js",
     "version": "2.3.0",
     "scripts": {
-        "build": "node build.js"
+        "build": "node build.js",
+        "docs": "typedoc index.ts --gaID UA-89839802-1 --out ../../docs"
     },
     "description": "JavaScript client for Nakama server written in TypeScript.",
     "main": "dist/nakama-js.cjs.js",
@@ -41,6 +42,7 @@
         "@rollup/plugin-node-resolve": "^11.2.0",
         "@rollup/plugin-typescript": "^6.1.0",
         "rollup": "latest",
-        "tslib": "^2.0.3"
+        "tslib": "^2.0.3",
+        "typedoc": "^0.22.10"
     }
 }

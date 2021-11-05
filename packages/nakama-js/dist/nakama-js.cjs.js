@@ -591,26 +591,6 @@ function b64DecodeUnicode(str) {
 }
 
 // api.gen.ts
-var ValidatedPurchaseEnvironment;
-(function(ValidatedPurchaseEnvironment2) {
-  ValidatedPurchaseEnvironment2[ValidatedPurchaseEnvironment2["UNKNOWN"] = 0] = "UNKNOWN";
-  ValidatedPurchaseEnvironment2[ValidatedPurchaseEnvironment2["SANDBOX"] = 1] = "SANDBOX";
-  ValidatedPurchaseEnvironment2[ValidatedPurchaseEnvironment2["PRODUCTION"] = 2] = "PRODUCTION";
-})(ValidatedPurchaseEnvironment || (ValidatedPurchaseEnvironment = {}));
-var ValidatedPurchaseStore;
-(function(ValidatedPurchaseStore2) {
-  ValidatedPurchaseStore2[ValidatedPurchaseStore2["APPLE_APP_STORE"] = 0] = "APPLE_APP_STORE";
-  ValidatedPurchaseStore2[ValidatedPurchaseStore2["GOOGLE_PLAY_STORE"] = 1] = "GOOGLE_PLAY_STORE";
-  ValidatedPurchaseStore2[ValidatedPurchaseStore2["HUAWEI_APP_GALLERY"] = 2] = "HUAWEI_APP_GALLERY";
-})(ValidatedPurchaseStore || (ValidatedPurchaseStore = {}));
-var ApiOperator;
-(function(ApiOperator2) {
-  ApiOperator2[ApiOperator2["NO_OVERRIDE"] = 0] = "NO_OVERRIDE";
-  ApiOperator2[ApiOperator2["BEST"] = 1] = "BEST";
-  ApiOperator2[ApiOperator2["SET"] = 2] = "SET";
-  ApiOperator2[ApiOperator2["INCREMENT"] = 3] = "INCREMENT";
-  ApiOperator2[ApiOperator2["DECREMENT"] = 4] = "DECREMENT";
-})(ApiOperator || (ApiOperator = {}));
 var NakamaApi = class {
   constructor(serverKey, basePath, timeoutMs) {
     this.serverKey = serverKey;
@@ -619,7 +599,7 @@ var NakamaApi = class {
   }
   healthcheck(bearerToken, options = {}) {
     const urlPath = "/healthcheck";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
@@ -641,7 +621,7 @@ var NakamaApi = class {
   }
   getAccount(bearerToken, options = {}) {
     const urlPath = "/v2/account";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
@@ -666,7 +646,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -692,7 +672,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/apple";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("create", create);
     queryParams.set("username", username);
     let bodyJson = "";
@@ -718,7 +698,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/custom";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("create", create);
     queryParams.set("username", username);
     let bodyJson = "";
@@ -744,7 +724,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/device";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("create", create);
     queryParams.set("username", username);
     let bodyJson = "";
@@ -770,7 +750,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/email";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("create", create);
     queryParams.set("username", username);
     let bodyJson = "";
@@ -796,7 +776,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/facebook";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("create", create);
     queryParams.set("username", username);
     queryParams.set("sync", sync);
@@ -823,7 +803,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/facebookinstantgame";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("create", create);
     queryParams.set("username", username);
     let bodyJson = "";
@@ -849,7 +829,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/gamecenter";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("create", create);
     queryParams.set("username", username);
     let bodyJson = "";
@@ -875,7 +855,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/google";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("create", create);
     queryParams.set("username", username);
     let bodyJson = "";
@@ -901,7 +881,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/authenticate/steam";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("create", create);
     queryParams.set("username", username);
     queryParams.set("sync", sync);
@@ -928,7 +908,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/apple";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -954,7 +934,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/custom";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -980,7 +960,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/device";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1006,7 +986,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/email";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1032,7 +1012,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/facebook";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("sync", sync);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
@@ -1059,7 +1039,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/facebookinstantgame";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1085,7 +1065,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/gamecenter";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1111,7 +1091,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/google";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1137,7 +1117,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/link/steam";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1163,7 +1143,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/session/refresh";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1187,7 +1167,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/apple";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1213,7 +1193,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/custom";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1239,7 +1219,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/device";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1265,7 +1245,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/email";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1291,7 +1271,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/facebook";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1317,7 +1297,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/facebookinstantgame";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1343,7 +1323,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/gamecenter";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1369,7 +1349,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/google";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1395,7 +1375,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/account/unlink/steam";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1421,7 +1401,7 @@ var NakamaApi = class {
       throw new Error("'channelId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/channel/{channelId}".replace("{channelId}", encodeURIComponent(String(channelId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("limit", limit);
     queryParams.set("forward", forward);
     queryParams.set("cursor", cursor);
@@ -1449,7 +1429,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/event";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1472,7 +1452,7 @@ var NakamaApi = class {
   }
   deleteFriends(bearerToken, ids, usernames, options = {}) {
     const urlPath = "/v2/friend";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("ids", ids);
     queryParams.set("usernames", usernames);
     let bodyJson = "";
@@ -1496,7 +1476,7 @@ var NakamaApi = class {
   }
   listFriends(bearerToken, limit, state, cursor, options = {}) {
     const urlPath = "/v2/friend";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("limit", limit);
     queryParams.set("state", state);
     queryParams.set("cursor", cursor);
@@ -1521,7 +1501,7 @@ var NakamaApi = class {
   }
   addFriends(bearerToken, ids, usernames, options = {}) {
     const urlPath = "/v2/friend";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("ids", ids);
     queryParams.set("usernames", usernames);
     let bodyJson = "";
@@ -1545,7 +1525,7 @@ var NakamaApi = class {
   }
   blockFriends(bearerToken, ids, usernames, options = {}) {
     const urlPath = "/v2/friend/block";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("ids", ids);
     queryParams.set("usernames", usernames);
     let bodyJson = "";
@@ -1572,7 +1552,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/friend/facebook";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("reset", reset);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
@@ -1599,7 +1579,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/friend/steam";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("reset", reset);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
@@ -1623,7 +1603,7 @@ var NakamaApi = class {
   }
   listGroups(bearerToken, name, cursor, limit, langTag, members, open, options = {}) {
     const urlPath = "/v2/group";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("name", name);
     queryParams.set("cursor", cursor);
     queryParams.set("limit", limit);
@@ -1654,7 +1634,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1680,7 +1660,7 @@ var NakamaApi = class {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
@@ -1708,7 +1688,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1734,7 +1714,7 @@ var NakamaApi = class {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/add".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("user_ids", userIds);
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1760,7 +1740,7 @@ var NakamaApi = class {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/ban".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("user_ids", userIds);
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1789,7 +1769,7 @@ var NakamaApi = class {
       throw new Error("'userIds' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/demote".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("user_ids", userIds);
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1815,7 +1795,7 @@ var NakamaApi = class {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/join".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
@@ -1840,7 +1820,7 @@ var NakamaApi = class {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/kick".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("user_ids", userIds);
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1866,7 +1846,7 @@ var NakamaApi = class {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/leave".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
@@ -1891,7 +1871,7 @@ var NakamaApi = class {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/promote".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("user_ids", userIds);
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1917,7 +1897,7 @@ var NakamaApi = class {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/group/{groupId}/user".replace("{groupId}", encodeURIComponent(String(groupId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("limit", limit);
     queryParams.set("state", state);
     queryParams.set("cursor", cursor);
@@ -1945,7 +1925,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/iap/purchase/apple";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1971,7 +1951,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/iap/purchase/google";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -1997,7 +1977,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/iap/purchase/huawei";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -2023,7 +2003,7 @@ var NakamaApi = class {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
@@ -2048,7 +2028,7 @@ var NakamaApi = class {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("owner_ids", ownerIds);
     queryParams.set("limit", limit);
     queryParams.set("cursor", cursor);
@@ -2080,7 +2060,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -2109,7 +2089,7 @@ var NakamaApi = class {
       throw new Error("'ownerId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/leaderboard/{leaderboardId}/owner/{ownerId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId))).replace("{ownerId}", encodeURIComponent(String(ownerId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("limit", limit);
     queryParams.set("expiry", expiry);
     let bodyJson = "";
@@ -2133,7 +2113,7 @@ var NakamaApi = class {
   }
   listMatches(bearerToken, limit, authoritative, label, minSize, maxSize, query, options = {}) {
     const urlPath = "/v2/match";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("limit", limit);
     queryParams.set("authoritative", authoritative);
     queryParams.set("label", label);
@@ -2161,7 +2141,7 @@ var NakamaApi = class {
   }
   deleteNotifications(bearerToken, ids, options = {}) {
     const urlPath = "/v2/notification";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("ids", ids);
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -2184,7 +2164,7 @@ var NakamaApi = class {
   }
   listNotifications(bearerToken, limit, cacheableCursor, options = {}) {
     const urlPath = "/v2/notification";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("limit", limit);
     queryParams.set("cacheable_cursor", cacheableCursor);
     let bodyJson = "";
@@ -2211,7 +2191,7 @@ var NakamaApi = class {
       throw new Error("'id' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/rpc/{id}".replace("{id}", encodeURIComponent(String(id)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("payload", payload);
     queryParams.set("http_key", httpKey);
     let bodyJson = "";
@@ -2241,7 +2221,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/rpc/{id}".replace("{id}", encodeURIComponent(String(id)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("http_key", httpKey);
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
@@ -2268,7 +2248,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/session/logout";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -2294,7 +2274,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/storage";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -2320,7 +2300,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/storage";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -2346,7 +2326,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/storage/delete";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -2372,7 +2352,7 @@ var NakamaApi = class {
       throw new Error("'collection' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/storage/{collection}".replace("{collection}", encodeURIComponent(String(collection)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("user_id", userId);
     queryParams.set("limit", limit);
     queryParams.set("cursor", cursor);
@@ -2403,7 +2383,7 @@ var NakamaApi = class {
       throw new Error("'userId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/storage/{collection}/{userId}".replace("{collection}", encodeURIComponent(String(collection))).replace("{userId}", encodeURIComponent(String(userId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("limit", limit);
     queryParams.set("cursor", cursor);
     let bodyJson = "";
@@ -2427,7 +2407,7 @@ var NakamaApi = class {
   }
   listTournaments(bearerToken, categoryStart, categoryEnd, startTime, endTime, limit, cursor, options = {}) {
     const urlPath = "/v2/tournament";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("category_start", categoryStart);
     queryParams.set("category_end", categoryEnd);
     queryParams.set("start_time", startTime);
@@ -2458,7 +2438,7 @@ var NakamaApi = class {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("owner_ids", ownerIds);
     queryParams.set("limit", limit);
     queryParams.set("cursor", cursor);
@@ -2490,7 +2470,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -2519,7 +2499,7 @@ var NakamaApi = class {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     bodyJson = JSON.stringify(body || {});
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
@@ -2545,7 +2525,7 @@ var NakamaApi = class {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/tournament/{tournamentId}/join".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
@@ -2573,7 +2553,7 @@ var NakamaApi = class {
       throw new Error("'ownerId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/tournament/{tournamentId}/owner/{ownerId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId))).replace("{ownerId}", encodeURIComponent(String(ownerId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("limit", limit);
     queryParams.set("expiry", expiry);
     let bodyJson = "";
@@ -2597,7 +2577,7 @@ var NakamaApi = class {
   }
   getUsers(bearerToken, ids, usernames, facebookIds, options = {}) {
     const urlPath = "/v2/user";
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("ids", ids);
     queryParams.set("usernames", usernames);
     queryParams.set("facebook_ids", facebookIds);
@@ -2625,7 +2605,7 @@ var NakamaApi = class {
       throw new Error("'userId' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/user/{userId}/group".replace("{userId}", encodeURIComponent(String(userId)));
-    const queryParams = new Map();
+    const queryParams = /* @__PURE__ */ new Map();
     queryParams.set("limit", limit);
     queryParams.set("state", state);
     queryParams.set("cursor", cursor);
@@ -3233,7 +3213,7 @@ var Client = class {
     });
   }
   authenticateApple(_0, _1, _2) {
-    return __async(this, arguments, function* (token, create, username, vars = new Map(), options = {}) {
+    return __async(this, arguments, function* (token, create, username, vars = /* @__PURE__ */ new Map(), options = {}) {
       const request = {
         "token": token,
         "vars": vars
@@ -3243,7 +3223,7 @@ var Client = class {
       });
     });
   }
-  authenticateCustom(id, create, username, vars = new Map(), options = {}) {
+  authenticateCustom(id, create, username, vars = /* @__PURE__ */ new Map(), options = {}) {
     const request = {
       "id": id,
       "vars": vars
@@ -4179,7 +4159,7 @@ var Client = class {
     });
   }
   sessionRefresh(_0) {
-    return __async(this, arguments, function* (session, vars = new Map()) {
+    return __async(this, arguments, function* (session, vars = /* @__PURE__ */ new Map()) {
       if (!session) {
         console.error("Cannot refresh a null session.");
         return session;

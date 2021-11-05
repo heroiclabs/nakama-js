@@ -1753,7 +1753,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@heroiclabs/nakama-js-protobuf@1.0.3, @heroiclabs/nakama-js-protobuf@workspace:packages/nakama-js-protobuf":
+"@heroiclabs/nakama-js-protobuf@npm:1.0.3":
+  version: 1.0.3
+  resolution: "@heroiclabs/nakama-js-protobuf@npm:1.0.3"
+  checksum: fecb93a80c8c8bd6aec08e7afe04e96ff846ff719bd57c11cc7202aaabaf86932f3c87c1d53aa3ed752ed705d383dcbc2947e2fe7ef50000a9ea7aa3ae02b9b5
+  languageName: node
+  linkType: hard
+
+"@heroiclabs/nakama-js-protobuf@workspace:packages/nakama-js-protobuf":
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js-protobuf@workspace:packages/nakama-js-protobuf"
   dependencies:
@@ -1793,20 +1800,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@heroiclabs/nakama-js@2.2.0, @heroiclabs/nakama-js@workspace:packages/nakama-js":
-  version: 0.0.0-use.local
-  resolution: "@heroiclabs/nakama-js@workspace:packages/nakama-js"
-  dependencies:
-    "@babel/runtime": ^7.12.5
-    "@rollup/plugin-node-resolve": ^11.2.0
-    "@rollup/plugin-typescript": ^6.1.0
-    js-base64: ^3.6.0
-    rollup: latest
-    tslib: ^2.0.3
-    whatwg-fetch: ^2.0.3
-  languageName: unknown
-  linkType: soft
-
 "@heroiclabs/nakama-js@npm:2.1.4":
   version: 2.1.4
   resolution: "@heroiclabs/nakama-js@npm:2.1.4"
@@ -1816,6 +1809,31 @@ __metadata:
   checksum: fb1353daebba0e8bd19c892ed4926c8f9feba41ad4f6202fb37c576c0e25665dac4e73d09f9272d3dcfe1d285f7c471031525060a5d695057a663a1b9216cbcb
   languageName: node
   linkType: hard
+
+"@heroiclabs/nakama-js@npm:2.2.0":
+  version: 2.2.0
+  resolution: "@heroiclabs/nakama-js@npm:2.2.0"
+  dependencies:
+    js-base64: ^3.6.0
+    whatwg-fetch: ^2.0.3
+  checksum: 1096e91d43e0c760bc735728df1e11014842726151bdf8bead18ed8f0b0756ba2b721d9700ce1ca0c5dfda17c3065fee03f82c0237160b0ac4bf2ab200399051
+  languageName: node
+  linkType: hard
+
+"@heroiclabs/nakama-js@workspace:packages/nakama-js":
+  version: 0.0.0-use.local
+  resolution: "@heroiclabs/nakama-js@workspace:packages/nakama-js"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+    "@rollup/plugin-node-resolve": ^11.2.0
+    "@rollup/plugin-typescript": ^6.1.0
+    js-base64: ^3.6.0
+    rollup: latest
+    tslib: ^2.0.3
+    typedoc: ^0.22.10
+    whatwg-fetch: ^2.0.3
+  languageName: unknown
+  linkType: soft
 
 "@istanbuljs/load-nyc-config@npm:^1.0.0":
   version: 1.1.0
@@ -9537,6 +9555,20 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"glob@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "glob@npm:7.2.0"
+  dependencies:
+    fs.realpath: ^1.0.0
+    inflight: ^1.0.4
+    inherits: 2
+    minimatch: ^3.0.4
+    once: ^1.3.0
+    path-is-absolute: ^1.0.0
+  checksum: 1171c3d7b1f5a367499e498826cddafc642aa55ef21e810031a287d3199612a889059d7d2c276a04c636c3ac2fd5943896bfc309110b21fafaeb8a1e0a199d6e
+  languageName: node
+  linkType: hard
+
 "global-modules@npm:2.0.0":
   version: 2.0.0
   resolution: "global-modules@npm:2.0.0"
@@ -12335,6 +12367,13 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"jsonc-parser@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "jsonc-parser@npm:3.0.0"
+  checksum: 36b9080a7e25f5052c7d551109c4ead564f3102d7ca0c5ee4a2f7debc18b2cd31896e0e369cfd1442d9d2d71fc1defaf094ba885bc9b43a6a3f2b3a9083fd2cb
+  languageName: node
+  linkType: hard
+
 "jsonfile@npm:^2.1.0":
   version: 2.4.0
   resolution: "jsonfile@npm:2.4.0"
@@ -12810,6 +12849,13 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"lunr@npm:^2.3.9":
+  version: 2.3.9
+  resolution: "lunr@npm:2.3.9"
+  checksum: a2b66320c2f6632322b91c43621eed9e623c0f1b81e7c2d74c238884a02229698baa4478bd238e9b32d7abf0db5ae9233b311c28e1edbcc481774e1ce83bec6f
+  languageName: node
+  linkType: hard
+
 "lz-string@npm:^1.4.4":
   version: 1.4.4
   resolution: "lz-string@npm:1.4.4"
@@ -12885,6 +12931,15 @@ fsevents@~2.1.2:
   bin:
     marked: ./bin/marked
   checksum: a73c9953305a88be38e646bfa578c5342b29ddd34502d28bcc37466eb9376c1312d9f1fd8245db28bfa6d5bfb46818794dfd2e8ab65e1085d36afa3d925b0558
+  languageName: node
+  linkType: hard
+
+"marked@npm:^3.0.8":
+  version: 3.0.8
+  resolution: "marked@npm:3.0.8"
+  bin:
+    marked: bin/marked
+  checksum: a56e571e9a407a39a45045cdc21a1d13e2382c253a4e0014d785bc613f8f8b48cda3aa0a5e47f304e49ae0d5d9bae5bc9e3480594584658a0ea9df854120f000
   languageName: node
   linkType: hard
 
@@ -17841,6 +17896,17 @@ resolve@^1.19.0:
   languageName: node
   linkType: hard
 
+"shiki@npm:^0.9.12":
+  version: 0.9.14
+  resolution: "shiki@npm:0.9.14"
+  dependencies:
+    jsonc-parser: ^3.0.0
+    vscode-oniguruma: ^1.6.1
+    vscode-textmate: 5.2.0
+  checksum: e24c54254fc5e3a1b6903966075d3eaf510682b75685b6da1d9114990c8c2ca5abbcce28a67518ca583f0892fed786b13edd19d93827787f7d508eb9ea7f3412
+  languageName: node
+  linkType: hard
+
 "side-channel@npm:^1.0.2, side-channel@npm:^1.0.3":
   version: 1.0.4
   resolution: "side-channel@npm:1.0.4"
@@ -19392,6 +19458,23 @@ resolve@^1.19.0:
   languageName: node
   linkType: hard
 
+"typedoc@npm:^0.22.10":
+  version: 0.22.10
+  resolution: "typedoc@npm:0.22.10"
+  dependencies:
+    glob: ^7.2.0
+    lunr: ^2.3.9
+    marked: ^3.0.8
+    minimatch: ^3.0.4
+    shiki: ^0.9.12
+  peerDependencies:
+    typescript: 4.0.x || 4.1.x || 4.2.x || 4.3.x || 4.4.x || 4.5.x
+  bin:
+    typedoc: bin/typedoc
+  checksum: dfbace10980ab52a44e9c0186203f0390070a62ea603efaefe3c854630db5ee5f771f3174ad3932a26f585b798d068d11570c55fc2124f94328a3e312c221f19
+  languageName: node
+  linkType: hard
+
 typescript@3.2.x:
   version: 3.2.4
   resolution: "typescript@npm:3.2.4"
@@ -19878,6 +19961,20 @@ typescript@^4.1.3:
   version: 1.1.2
   resolution: "vm-browserify@npm:1.1.2"
   checksum: fc571a62d2cf797ae8773ebb3cb0d2bea50ed02059e128dd9087975929fce4c80a6485ce1aaf7d44ef69db99dfdcde50b6be5d5eb73b296660d761c32fb544fe
+  languageName: node
+  linkType: hard
+
+"vscode-oniguruma@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "vscode-oniguruma@npm:1.6.1"
+  checksum: ae73f0b470c620568290ca0dffd49eb28a61d50696b419635f9ed32fb233ee2172af81000cb02bbd2a13dbc41b39c71fb0e874d3089c230c1d71276e932e2d59
+  languageName: node
+  linkType: hard
+
+"vscode-textmate@npm:5.2.0":
+  version: 5.2.0
+  resolution: "vscode-textmate@npm:5.2.0"
+  checksum: 67ec1fed58690b6d21fb75462694ebfeefe93d9a4091dfbea9db4e1b718d172ac2e60e3944a0dd88c53ff50e7604dfcccde19d8a4d25616c0b2df330052df2b9
   languageName: node
   linkType: hard
 

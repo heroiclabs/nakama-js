@@ -2,7 +2,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.nakamajs = {}));
-}(this, (function (exports) { 'use strict';
+})(this, (function (exports) { 'use strict';
 
   (function(self) {
 
@@ -757,8 +757,10 @@
       var fetchOptions = __assign({ method: method }, options);
       fetchOptions.headers = __assign({}, options.headers);
       var descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+      // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+      // polyfill avoid writing to it.
       if (!(descriptor === null || descriptor === void 0 ? void 0 : descriptor.set)) {
-          fetchOptions.credentials = 'cocos-ignore';
+          fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
       }
       if (!Object.keys(fetchOptions.headers).includes("Accept")) {
           fetchOptions.headers["Accept"] = "application/json";
@@ -787,32 +789,54 @@
       }).join(''));
   }
 
+  // tslint:disable
+  /**
+  * Environment where the purchase took place
+  */
   var ValidatedPurchaseEnvironment;
   (function (ValidatedPurchaseEnvironment) {
+      /* - UNKNOWN: Unknown environment. */
       ValidatedPurchaseEnvironment[ValidatedPurchaseEnvironment["UNKNOWN"] = 0] = "UNKNOWN";
+      /*  - SANDBOX: Sandbox/test environment. */
       ValidatedPurchaseEnvironment[ValidatedPurchaseEnvironment["SANDBOX"] = 1] = "SANDBOX";
+      /*  - PRODUCTION: Production environment. */
       ValidatedPurchaseEnvironment[ValidatedPurchaseEnvironment["PRODUCTION"] = 2] = "PRODUCTION";
   })(ValidatedPurchaseEnvironment || (ValidatedPurchaseEnvironment = {}));
+  /**
+  * Validation Provider
+  */
   var ValidatedPurchaseStore;
   (function (ValidatedPurchaseStore) {
+      /* - APPLE_APP_STORE: Apple App Store */
       ValidatedPurchaseStore[ValidatedPurchaseStore["APPLE_APP_STORE"] = 0] = "APPLE_APP_STORE";
+      /*  - GOOGLE_PLAY_STORE: Google Play Store */
       ValidatedPurchaseStore[ValidatedPurchaseStore["GOOGLE_PLAY_STORE"] = 1] = "GOOGLE_PLAY_STORE";
+      /*  - HUAWEI_APP_GALLERY: Huawei App Gallery */
       ValidatedPurchaseStore[ValidatedPurchaseStore["HUAWEI_APP_GALLERY"] = 2] = "HUAWEI_APP_GALLERY";
   })(ValidatedPurchaseStore || (ValidatedPurchaseStore = {}));
+  /**
+  * Operator that can be used to override the one set in the leaderboard.
+  */
   var ApiOperator;
   (function (ApiOperator) {
+      /*  - NO_OVERRIDE: Do not override the leaderboard operator. */
       ApiOperator[ApiOperator["NO_OVERRIDE"] = 0] = "NO_OVERRIDE";
+      /*  - BEST: Override the leaderboard operator with BEST. */
       ApiOperator[ApiOperator["BEST"] = 1] = "BEST";
+      /*  - SET: Override the leaderboard operator with SET. */
       ApiOperator[ApiOperator["SET"] = 2] = "SET";
+      /*  - INCREMENT: Override the leaderboard operator with INCREMENT. */
       ApiOperator[ApiOperator["INCREMENT"] = 3] = "INCREMENT";
+      /*  - DECREMENT: Override the leaderboard operator with DECREMENT. */
       ApiOperator[ApiOperator["DECREMENT"] = 4] = "DECREMENT";
   })(ApiOperator || (ApiOperator = {}));
-  var NakamaApi = (function () {
+  var NakamaApi = /** @class */ (function () {
       function NakamaApi(serverKey, basePath, timeoutMs) {
           this.serverKey = serverKey;
           this.basePath = basePath;
           this.timeoutMs = timeoutMs;
       }
+      /** A healthcheck which load balancers can use to check the service. */
       NakamaApi.prototype.healthcheck = function (bearerToken, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -841,6 +865,7 @@
               }),
           ]);
       };
+      /** Fetch the current user's account. */
       NakamaApi.prototype.getAccount = function (bearerToken, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -869,6 +894,7 @@
               }),
           ]);
       };
+      /** Update fields in the current user's account. */
       NakamaApi.prototype.updateAccount = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -901,6 +927,7 @@
               }),
           ]);
       };
+      /** Authenticate a user with an Apple ID against the server. */
       NakamaApi.prototype.authenticateApple = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -933,6 +960,7 @@
               }),
           ]);
       };
+      /** Authenticate a user with a custom id against the server. */
       NakamaApi.prototype.authenticateCustom = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -965,6 +993,7 @@
               }),
           ]);
       };
+      /** Authenticate a user with a device id against the server. */
       NakamaApi.prototype.authenticateDevice = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -997,6 +1026,7 @@
               }),
           ]);
       };
+      /** Authenticate a user with an email+password against the server. */
       NakamaApi.prototype.authenticateEmail = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1029,6 +1059,7 @@
               }),
           ]);
       };
+      /** Authenticate a user with a Facebook OAuth token against the server. */
       NakamaApi.prototype.authenticateFacebook = function (basicAuthUsername, basicAuthPassword, body, create, username, sync, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1062,6 +1093,7 @@
               }),
           ]);
       };
+      /** Authenticate a user with a Facebook Instant Game token against the server. */
       NakamaApi.prototype.authenticateFacebookInstantGame = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1094,6 +1126,7 @@
               }),
           ]);
       };
+      /** Authenticate a user with Apple's GameCenter against the server. */
       NakamaApi.prototype.authenticateGameCenter = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1126,6 +1159,7 @@
               }),
           ]);
       };
+      /** Authenticate a user with Google against the server. */
       NakamaApi.prototype.authenticateGoogle = function (basicAuthUsername, basicAuthPassword, body, create, username, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1158,6 +1192,7 @@
               }),
           ]);
       };
+      /** Authenticate a user with Steam against the server. */
       NakamaApi.prototype.authenticateSteam = function (basicAuthUsername, basicAuthPassword, body, create, username, sync, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1191,6 +1226,7 @@
               }),
           ]);
       };
+      /** Add an Apple ID to the social profiles on the current user's account. */
       NakamaApi.prototype.linkApple = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1223,6 +1259,7 @@
               }),
           ]);
       };
+      /** Add a custom ID to the social profiles on the current user's account. */
       NakamaApi.prototype.linkCustom = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1255,6 +1292,7 @@
               }),
           ]);
       };
+      /** Add a device ID to the social profiles on the current user's account. */
       NakamaApi.prototype.linkDevice = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1287,6 +1325,7 @@
               }),
           ]);
       };
+      /** Add an email+password to the social profiles on the current user's account. */
       NakamaApi.prototype.linkEmail = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1319,6 +1358,7 @@
               }),
           ]);
       };
+      /** Add Facebook to the social profiles on the current user's account. */
       NakamaApi.prototype.linkFacebook = function (bearerToken, body, sync, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1352,6 +1392,7 @@
               }),
           ]);
       };
+      /** Add Facebook Instant Game to the social profiles on the current user's account. */
       NakamaApi.prototype.linkFacebookInstantGame = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1384,6 +1425,7 @@
               }),
           ]);
       };
+      /** Add Apple's GameCenter to the social profiles on the current user's account. */
       NakamaApi.prototype.linkGameCenter = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1416,6 +1458,7 @@
               }),
           ]);
       };
+      /** Add Google to the social profiles on the current user's account. */
       NakamaApi.prototype.linkGoogle = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1448,6 +1491,7 @@
               }),
           ]);
       };
+      /** Add Steam to the social profiles on the current user's account. */
       NakamaApi.prototype.linkSteam = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1480,6 +1524,7 @@
               }),
           ]);
       };
+      /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
       NakamaApi.prototype.sessionRefresh = function (basicAuthUsername, basicAuthPassword, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1510,6 +1555,7 @@
               }),
           ]);
       };
+      /** Remove the Apple ID from the social profiles on the current user's account. */
       NakamaApi.prototype.unlinkApple = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1542,6 +1588,7 @@
               }),
           ]);
       };
+      /** Remove the custom ID from the social profiles on the current user's account. */
       NakamaApi.prototype.unlinkCustom = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1574,6 +1621,7 @@
               }),
           ]);
       };
+      /** Remove the device ID from the social profiles on the current user's account. */
       NakamaApi.prototype.unlinkDevice = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1606,6 +1654,7 @@
               }),
           ]);
       };
+      /** Remove the email+password from the social profiles on the current user's account. */
       NakamaApi.prototype.unlinkEmail = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1638,6 +1687,7 @@
               }),
           ]);
       };
+      /** Remove Facebook from the social profiles on the current user's account. */
       NakamaApi.prototype.unlinkFacebook = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1670,6 +1720,7 @@
               }),
           ]);
       };
+      /** Remove Facebook Instant Game profile from the social profiles on the current user's account. */
       NakamaApi.prototype.unlinkFacebookInstantGame = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1702,6 +1753,7 @@
               }),
           ]);
       };
+      /** Remove Apple's GameCenter from the social profiles on the current user's account. */
       NakamaApi.prototype.unlinkGameCenter = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1734,6 +1786,7 @@
               }),
           ]);
       };
+      /** Remove Google from the social profiles on the current user's account. */
       NakamaApi.prototype.unlinkGoogle = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1766,6 +1819,7 @@
               }),
           ]);
       };
+      /** Remove Steam from the social profiles on the current user's account. */
       NakamaApi.prototype.unlinkSteam = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1798,6 +1852,7 @@
               }),
           ]);
       };
+      /** List a channel's message history. */
       NakamaApi.prototype.listChannelMessages = function (bearerToken, channelId, limit, forward, cursor, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1833,6 +1888,7 @@
               }),
           ]);
       };
+      /** Submit an event for processing in the server's registered runtime custom events handler. */
       NakamaApi.prototype.event = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1865,6 +1921,7 @@
               }),
           ]);
       };
+      /** Delete one or more users by ID or username. */
       NakamaApi.prototype.deleteFriends = function (bearerToken, ids, usernames, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1895,6 +1952,7 @@
               }),
           ]);
       };
+      /** List all friends for the current user. */
       NakamaApi.prototype.listFriends = function (bearerToken, limit, state, cursor, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1926,6 +1984,7 @@
               }),
           ]);
       };
+      /** Add friends by ID or username to a user's account. */
       NakamaApi.prototype.addFriends = function (bearerToken, ids, usernames, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1956,6 +2015,7 @@
               }),
           ]);
       };
+      /** Block one or more users by ID or username. */
       NakamaApi.prototype.blockFriends = function (bearerToken, ids, usernames, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -1986,6 +2046,7 @@
               }),
           ]);
       };
+      /** Import Facebook friends and add them to a user's account. */
       NakamaApi.prototype.importFacebookFriends = function (bearerToken, body, reset, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2019,6 +2080,7 @@
               }),
           ]);
       };
+      /** Import Steam friends and add them to a user's account. */
       NakamaApi.prototype.importSteamFriends = function (bearerToken, body, reset, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2052,6 +2114,7 @@
               }),
           ]);
       };
+      /** List groups based on given filters. */
       NakamaApi.prototype.listGroups = function (bearerToken, name, cursor, limit, langTag, members, open, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2086,6 +2149,7 @@
               }),
           ]);
       };
+      /** Create a new group with the current user as the owner. */
       NakamaApi.prototype.createGroup = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2118,6 +2182,7 @@
               }),
           ]);
       };
+      /** Delete a group by ID. */
       NakamaApi.prototype.deleteGroup = function (bearerToken, groupId, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2150,6 +2215,7 @@
               }),
           ]);
       };
+      /** Update fields in a given group. */
       NakamaApi.prototype.updateGroup = function (bearerToken, groupId, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2186,6 +2252,7 @@
               }),
           ]);
       };
+      /** Add users to a group. */
       NakamaApi.prototype.addGroupUsers = function (bearerToken, groupId, userIds, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2219,6 +2286,7 @@
               }),
           ]);
       };
+      /** Ban a set of users from a group. */
       NakamaApi.prototype.banGroupUsers = function (bearerToken, groupId, userIds, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2252,6 +2320,7 @@
               }),
           ]);
       };
+      /** Demote a set of users in a group to the next role down. */
       NakamaApi.prototype.demoteGroupUsers = function (bearerToken, groupId, userIds, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2288,6 +2357,7 @@
               }),
           ]);
       };
+      /** Immediately join an open group, or request to join a closed one. */
       NakamaApi.prototype.joinGroup = function (bearerToken, groupId, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2320,6 +2390,7 @@
               }),
           ]);
       };
+      /** Kick a set of users from a group. */
       NakamaApi.prototype.kickGroupUsers = function (bearerToken, groupId, userIds, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2353,6 +2424,7 @@
               }),
           ]);
       };
+      /** Leave a group the user is a member of. */
       NakamaApi.prototype.leaveGroup = function (bearerToken, groupId, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2385,6 +2457,7 @@
               }),
           ]);
       };
+      /** Promote a set of users in a group to the next role up. */
       NakamaApi.prototype.promoteGroupUsers = function (bearerToken, groupId, userIds, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2418,6 +2491,7 @@
               }),
           ]);
       };
+      /** List all users that are part of a group. */
       NakamaApi.prototype.listGroupUsers = function (bearerToken, groupId, limit, state, cursor, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2453,6 +2527,7 @@
               }),
           ]);
       };
+      /** Validate Apple IAP Receipt */
       NakamaApi.prototype.validatePurchaseApple = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2485,6 +2560,7 @@
               }),
           ]);
       };
+      /** Validate Google IAP Receipt */
       NakamaApi.prototype.validatePurchaseGoogle = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2517,6 +2593,7 @@
               }),
           ]);
       };
+      /** Validate Huawei IAP Receipt */
       NakamaApi.prototype.validatePurchaseHuawei = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2549,6 +2626,7 @@
               }),
           ]);
       };
+      /** Delete a leaderboard record. */
       NakamaApi.prototype.deleteLeaderboardRecord = function (bearerToken, leaderboardId, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2581,6 +2659,7 @@
               }),
           ]);
       };
+      /** List leaderboard records. */
       NakamaApi.prototype.listLeaderboardRecords = function (bearerToken, leaderboardId, ownerIds, limit, cursor, expiry, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2617,6 +2696,7 @@
               }),
           ]);
       };
+      /** Write a record to a leaderboard. */
       NakamaApi.prototype.writeLeaderboardRecord = function (bearerToken, leaderboardId, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2653,6 +2733,7 @@
               }),
           ]);
       };
+      /** List leaderboard records that belong to a user. */
       NakamaApi.prototype.listLeaderboardRecordsAroundOwner = function (bearerToken, leaderboardId, ownerId, limit, expiry, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2691,6 +2772,7 @@
               }),
           ]);
       };
+      /** Fetch list of running matches. */
       NakamaApi.prototype.listMatches = function (bearerToken, limit, authoritative, label, minSize, maxSize, query, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2725,6 +2807,7 @@
               }),
           ]);
       };
+      /** Delete one or more notifications for the current user. */
       NakamaApi.prototype.deleteNotifications = function (bearerToken, ids, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2754,6 +2837,7 @@
               }),
           ]);
       };
+      /** Fetch list of notifications. */
       NakamaApi.prototype.listNotifications = function (bearerToken, limit, cacheableCursor, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2784,6 +2868,7 @@
               }),
           ]);
       };
+      /** Execute a Lua function on the server. */
       NakamaApi.prototype.rpcFunc2 = function (bearerToken, id, payload, httpKey, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2818,6 +2903,7 @@
               }),
           ]);
       };
+      /** Execute a Lua function on the server. */
       NakamaApi.prototype.rpcFunc = function (bearerToken, id, body, httpKey, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2855,6 +2941,7 @@
               }),
           ]);
       };
+      /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
       NakamaApi.prototype.sessionLogout = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2887,6 +2974,7 @@
               }),
           ]);
       };
+      /** Get storage objects. */
       NakamaApi.prototype.readStorageObjects = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2919,6 +3007,7 @@
               }),
           ]);
       };
+      /** Write objects into the storage engine. */
       NakamaApi.prototype.writeStorageObjects = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2951,6 +3040,7 @@
               }),
           ]);
       };
+      /** Delete one or more objects by ID or username. */
       NakamaApi.prototype.deleteStorageObjects = function (bearerToken, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -2983,6 +3073,7 @@
               }),
           ]);
       };
+      /** List publicly readable storage objects in a given collection. */
       NakamaApi.prototype.listStorageObjects = function (bearerToken, collection, userId, limit, cursor, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -3018,6 +3109,7 @@
               }),
           ]);
       };
+      /** List publicly readable storage objects in a given collection. */
       NakamaApi.prototype.listStorageObjects2 = function (bearerToken, collection, userId, limit, cursor, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -3056,6 +3148,7 @@
               }),
           ]);
       };
+      /** List current or upcoming tournaments. */
       NakamaApi.prototype.listTournaments = function (bearerToken, categoryStart, categoryEnd, startTime, endTime, limit, cursor, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -3090,6 +3183,7 @@
               }),
           ]);
       };
+      /** List tournament records. */
       NakamaApi.prototype.listTournamentRecords = function (bearerToken, tournamentId, ownerIds, limit, cursor, expiry, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -3126,6 +3220,7 @@
               }),
           ]);
       };
+      /** Write a record to a tournament. */
       NakamaApi.prototype.writeTournamentRecord2 = function (bearerToken, tournamentId, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -3162,6 +3257,7 @@
               }),
           ]);
       };
+      /** Write a record to a tournament. */
       NakamaApi.prototype.writeTournamentRecord = function (bearerToken, tournamentId, body, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -3198,6 +3294,7 @@
               }),
           ]);
       };
+      /** Attempt to join an open and running tournament. */
       NakamaApi.prototype.joinTournament = function (bearerToken, tournamentId, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -3230,6 +3327,7 @@
               }),
           ]);
       };
+      /** List tournament records for a given owner. */
       NakamaApi.prototype.listTournamentRecordsAroundOwner = function (bearerToken, tournamentId, ownerId, limit, expiry, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -3268,6 +3366,7 @@
               }),
           ]);
       };
+      /** Fetch zero or more users by ID and/or username. */
       NakamaApi.prototype.getUsers = function (bearerToken, ids, usernames, facebookIds, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -3299,6 +3398,7 @@
               }),
           ]);
       };
+      /** List groups the current user belongs to. */
       NakamaApi.prototype.listUserGroups = function (bearerToken, userId, limit, state, cursor, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
@@ -3367,7 +3467,22 @@
       return NakamaApi;
   }());
 
-  var Session = (function () {
+  /**
+   * Copyright 2017 The Nakama Authors
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *     http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   */
+  var Session = /** @class */ (function () {
       function Session(token, refresh_token, created) {
           this.created = created;
           this.token = token;
@@ -3386,14 +3501,16 @@
           if (tokenParts.length != 3) {
               throw 'jwt is not valid.';
           }
-          var tokenDecoded = JSON.parse(atob(tokenParts[1]));
+          var tokenDecoded = JSON.parse(atob(tokenParts[1])); // FIXME: use base64 polyfill for React Native.
           var tokenExpiresAt = Math.floor(parseInt(tokenDecoded['exp']));
+          // clients that have just updated to the refresh tokens
+          // client release will not have a cached refresh token
           if (refreshToken) {
               var refreshTokenParts = refreshToken.split('.');
               if (refreshTokenParts.length != 3) {
                   throw 'refresh jwt is not valid.';
               }
-              var refreshTokenDecoded = JSON.parse(atob(refreshTokenParts[1]));
+              var refreshTokenDecoded = JSON.parse(atob(refreshTokenParts[1])); // FIXME: use base64 polyfill for React Native.
               var refreshTokenExpiresAt = Math.floor(parseInt(refreshTokenDecoded['exp']));
               this.refresh_expires_at = refreshTokenExpiresAt;
               this.refresh_token = refreshToken;
@@ -3410,7 +3527,25 @@
       return Session;
   }());
 
-  var WebSocketAdapterText = (function () {
+  /**
+   * Copyright 2020 The Nakama Authors
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *     http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   */
+  /**
+   * A text-based socket adapter that accepts and transmits payloads over UTF-8.
+   */
+  var WebSocketAdapterText = /** @class */ (function () {
       function WebSocketAdapterText() {
           this._isConnected = false;
       }
@@ -3481,6 +3616,7 @@
       };
       WebSocketAdapterText.prototype.send = function (msg) {
           if (msg.match_data_send) {
+              // according to protobuf docs, int64 is encoded to JSON as string.
               msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
           }
           else if (msg.party_data_send) {
@@ -3491,7 +3627,23 @@
       return WebSocketAdapterText;
   }());
 
-  var DefaultSocket = (function () {
+  /**
+   * Copyright 2020 The Nakama Authors
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *     http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   */
+  /** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
+  var DefaultSocket = /** @class */ (function () {
       function DefaultSocket(host, port, useSSL, verbose, adapter) {
           if (useSSL === void 0) { useSSL = false; }
           if (verbose === void 0) { verbose = false; }
@@ -3527,6 +3679,7 @@
               if (_this.verbose && window && window.console) {
                   console.log("Response: %o", JSON.stringify(message));
               }
+              // Inbound message from server.
               if (message.cid == undefined) {
                   if (message.notifications) {
                       message.notifications.notifications.forEach(function (n) {
@@ -3754,6 +3907,7 @@
                       }
                       var cid = _this.generatecid();
                       _this.cIds[cid] = { resolve: resolve, reject: reject };
+                      // Add id for promise executor.
                       untypedMessage.cid = cid;
                       _this.adapter.send(untypedMessage);
                   }
@@ -3771,7 +3925,7 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({
+                      case 0: return [4 /*yield*/, this.send({
                               "matchmaker_add": {
                                   min_count: min_count,
                                   max_count: max_count,
@@ -3782,7 +3936,7 @@
                           })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.matchmaker_ticket];
+                          return [2 /*return*/, response.matchmaker_ticket];
                   }
               });
           });
@@ -3792,7 +3946,7 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({
+                      case 0: return [4 /*yield*/, this.send({
                               party_matchmaker_add: {
                                   party_id: party_id,
                                   min_count: min_count,
@@ -3804,7 +3958,7 @@
                           })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.party_matchmaker_ticket];
+                          return [2 /*return*/, response.party_matchmaker_ticket];
                   }
               });
           });
@@ -3813,8 +3967,8 @@
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({ party_close: { party_id: party_id } })];
-                      case 1: return [2, _a.sent()];
+                      case 0: return [4 /*yield*/, this.send({ party_close: { party_id: party_id } })];
+                      case 1: return [2 /*return*/, _a.sent()];
                   }
               });
           });
@@ -3824,10 +3978,10 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({ match_create: {} })];
+                      case 0: return [4 /*yield*/, this.send({ match_create: {} })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.match];
+                          return [2 /*return*/, response.match];
                   }
               });
           });
@@ -3837,10 +3991,10 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({ party_create: { open: open, max_size: max_size } })];
+                      case 0: return [4 /*yield*/, this.send({ party_create: { open: open, max_size: max_size } })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.party];
+                          return [2 /*return*/, response.party];
                   }
               });
           });
@@ -3850,10 +4004,10 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({ status_follow: { user_ids: userIds } })];
+                      case 0: return [4 /*yield*/, this.send({ status_follow: { user_ids: userIds } })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.status];
+                          return [2 /*return*/, response.status];
                   }
               });
           });
@@ -3863,7 +4017,7 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({
+                      case 0: return [4 /*yield*/, this.send({
                               channel_join: {
                                   target: target,
                                   type: type,
@@ -3873,7 +4027,7 @@
                           })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.channel];
+                          return [2 /*return*/, response.channel];
                   }
               });
           });
@@ -3891,10 +4045,10 @@
                           else {
                               join.match_join.match_id = match_id;
                           }
-                          return [4, this.send(join)];
+                          return [4 /*yield*/, this.send(join)];
                       case 1:
                           response = _a.sent();
-                          return [2, response.match];
+                          return [2 /*return*/, response.match];
                   }
               });
           });
@@ -3903,8 +4057,8 @@
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({ party_join: { party_id: party_id } })];
-                      case 1: return [2, _a.sent()];
+                      case 0: return [4 /*yield*/, this.send({ party_join: { party_id: party_id } })];
+                      case 1: return [2 /*return*/, _a.sent()];
                   }
               });
           });
@@ -3923,10 +4077,10 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({ party_join_request_list: { party_id: party_id } })];
+                      case 0: return [4 /*yield*/, this.send({ party_join_request_list: { party_id: party_id } })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.party_join_request];
+                          return [2 /*return*/, response.party_join_request];
                   }
               });
           });
@@ -3936,10 +4090,10 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({ party_promote: { party_id: party_id, presence: party_member } })];
+                      case 0: return [4 /*yield*/, this.send({ party_promote: { party_id: party_id, presence: party_member } })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.party_leader];
+                          return [2 /*return*/, response.party_leader];
                   }
               });
           });
@@ -3949,7 +4103,7 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({
+                      case 0: return [4 /*yield*/, this.send({
                               channel_message_remove: {
                                   channel_id: channel_id,
                                   message_id: message_id
@@ -3957,7 +4111,7 @@
                           })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.channel_message_ack];
+                          return [2 /*return*/, response.channel_message_ack];
                   }
               });
           });
@@ -3976,7 +4130,7 @@
       DefaultSocket.prototype.removePartyMember = function (party_id, member) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
-                  return [2, this.send({ party_remove: {
+                  return [2 /*return*/, this.send({ party_remove: {
                               party_id: party_id,
                               presence: member
                           } })];
@@ -3988,7 +4142,7 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({
+                      case 0: return [4 /*yield*/, this.send({
                               rpc: {
                                   id: id,
                                   payload: payload,
@@ -3997,7 +4151,7 @@
                           })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.rpc];
+                          return [2 /*return*/, response.rpc];
                   }
               });
           });
@@ -4005,7 +4159,7 @@
       DefaultSocket.prototype.sendMatchState = function (matchId, opCode, data, presences) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
-                  return [2, this.send({
+                  return [2 /*return*/, this.send({
                           match_data_send: {
                               match_id: matchId,
                               op_code: opCode,
@@ -4027,10 +4181,10 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({ channel_message_update: { channel_id: channel_id, message_id: message_id, content: content } })];
+                      case 0: return [4 /*yield*/, this.send({ channel_message_update: { channel_id: channel_id, message_id: message_id, content: content } })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.channel_message_ack];
+                          return [2 /*return*/, response.channel_message_ack];
                   }
               });
           });
@@ -4043,10 +4197,10 @@
               var response;
               return __generator(this, function (_a) {
                   switch (_a.label) {
-                      case 0: return [4, this.send({ channel_message_send: { channel_id: channel_id, content: content } })];
+                      case 0: return [4 /*yield*/, this.send({ channel_message_send: { channel_id: channel_id, content: content } })];
                       case 1:
                           response = _a.sent();
-                          return [2, response.channel_message_ack];
+                          return [2 /*return*/, response.channel_message_ack];
                   }
               });
           });
@@ -4054,12 +4208,28 @@
       return DefaultSocket;
   }());
 
+  /**
+   * Copyright 2020 The Nakama Authors
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *     http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   */
   var DEFAULT_HOST = "127.0.0.1";
   var DEFAULT_PORT = "7350";
   var DEFAULT_SERVER_KEY = "defaultkey";
   var DEFAULT_TIMEOUT_MS = 7000;
   var DEFAULT_EXPIRED_TIMESPAN_MS = 5 * 60 * 1000;
-  var Client = (function () {
+  /** A client for Nakama server. */
+  var Client = /** @class */ (function () {
       function Client(serverkey, host, port, useSSL, timeout, autoRefreshSession) {
           if (serverkey === void 0) { serverkey = DEFAULT_SERVER_KEY; }
           if (host === void 0) { host = DEFAULT_HOST; }
@@ -4073,47 +4243,51 @@
           this.useSSL = useSSL;
           this.timeout = timeout;
           this.autoRefreshSession = autoRefreshSession;
+          // The expired timespan used to check session lifetime.
           this.expiredTimespanMs = DEFAULT_EXPIRED_TIMESPAN_MS;
           var scheme = (useSSL) ? "https://" : "http://";
           var basePath = "" + scheme + host + ":" + port;
           this.apiClient = new NakamaApi(serverkey, basePath, timeout);
       }
+      /** Add users to a group, or accept their join requests. */
       Client.prototype.addGroupUsers = function (session, groupId, ids) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.addGroupUsers(session.token, groupId, ids).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.addGroupUsers(session.token, groupId, ids).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Add friends by ID or username to a user's account. */
       Client.prototype.addFriends = function (session, ids, usernames) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.addFriends(session.token, ids, usernames).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.addFriends(session.token, ids, usernames).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Authenticate a user with an Apple ID against the server. */
       Client.prototype.authenticateApple = function (token, create, username, vars, options) {
           if (vars === void 0) { vars = new Map(); }
           if (options === void 0) { options = {}; }
@@ -4124,12 +4298,13 @@
                       "token": token,
                       "vars": vars
                   };
-                  return [2, this.apiClient.authenticateApple(this.serverkey, "", request, create, username, options).then(function (apiSession) {
+                  return [2 /*return*/, this.apiClient.authenticateApple(this.serverkey, "", request, create, username, options).then(function (apiSession) {
                           return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
                       })];
               });
           });
       };
+      /** Authenticate a user with a custom id against the server. */
       Client.prototype.authenticateCustom = function (id, create, username, vars, options) {
           if (vars === void 0) { vars = new Map(); }
           if (options === void 0) { options = {}; }
@@ -4141,6 +4316,7 @@
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
+      /** Authenticate a user with a device id against the server. */
       Client.prototype.authenticateDevice = function (id, create, username, vars) {
           var request = {
               "id": id,
@@ -4150,6 +4326,7 @@
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
+      /** Authenticate a user with an email+password against the server. */
       Client.prototype.authenticateEmail = function (email, password, create, username, vars) {
           var request = {
               "email": email,
@@ -4160,6 +4337,7 @@
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
+      /** Authenticate a user with a Facebook Instant Game token against the server. */
       Client.prototype.authenticateFacebookInstantGame = function (signedPlayerInfo, create, username, vars, options) {
           if (options === void 0) { options = {}; }
           var request = {
@@ -4170,6 +4348,7 @@
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
+      /** Authenticate a user with a Facebook OAuth token against the server. */
       Client.prototype.authenticateFacebook = function (token, create, username, sync, vars, options) {
           if (options === void 0) { options = {}; }
           var request = {
@@ -4180,6 +4359,7 @@
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
+      /** Authenticate a user with Google against the server. */
       Client.prototype.authenticateGoogle = function (token, create, username, vars, options) {
           if (options === void 0) { options = {}; }
           var request = {
@@ -4190,6 +4370,7 @@
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
+      /** Authenticate a user with GameCenter against the server. */
       Client.prototype.authenticateGameCenter = function (token, create, username, vars) {
           var request = {
               "token": token,
@@ -4199,6 +4380,7 @@
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
           });
       };
+      /** Authenticate a user with Steam against the server. */
       Client.prototype.authenticateSteam = function (token, create, username, sync, vars) {
           return __awaiter(this, void 0, void 0, function () {
               var request;
@@ -4208,60 +4390,63 @@
                       "vars": vars,
                       "sync": sync
                   };
-                  return [2, this.apiClient.authenticateSteam(this.serverkey, "", request, create, username).then(function (apiSession) {
+                  return [2 /*return*/, this.apiClient.authenticateSteam(this.serverkey, "", request, create, username).then(function (apiSession) {
                           return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
                       })];
               });
           });
       };
+      /** Ban users from a group. */
       Client.prototype.banGroupUsers = function (session, groupId, ids) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.banGroupUsers(session.token, groupId, ids).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.banGroupUsers(session.token, groupId, ids).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Block one or more users by ID or username. */
       Client.prototype.blockFriends = function (session, ids, usernames) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.blockFriends(session.token, ids, usernames).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.blockFriends(session.token, ids, usernames).then(function (response) {
                               return Promise.resolve(response != undefined);
                           })];
                   }
               });
           });
       };
+      /** Create a new group with the current user as the creator and superadmin. */
       Client.prototype.createGroup = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.createGroup(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.createGroup(session.token, request).then(function (response) {
                               return Promise.resolve({
                                   avatar_url: response.avatar_url,
                                   create_time: response.create_time,
@@ -4281,184 +4466,195 @@
               });
           });
       };
+      /** A socket created with the client's configuration. */
       Client.prototype.createSocket = function (useSSL, verbose, adapter) {
           if (useSSL === void 0) { useSSL = false; }
           if (verbose === void 0) { verbose = false; }
           if (adapter === void 0) { adapter = new WebSocketAdapterText(); }
           return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter);
       };
+      /** Delete one or more users by ID or username. */
       Client.prototype.deleteFriends = function (session, ids, usernames) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.deleteFriends(session.token, ids, usernames).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.deleteFriends(session.token, ids, usernames).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Delete a group the user is part of and has permissions to delete. */
       Client.prototype.deleteGroup = function (session, groupId) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.deleteGroup(session.token, groupId).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.deleteGroup(session.token, groupId).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Delete one or more notifications */
       Client.prototype.deleteNotifications = function (session, ids) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.deleteNotifications(session.token, ids).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.deleteNotifications(session.token, ids).then(function (response) {
                               return Promise.resolve(response != undefined);
                           })];
                   }
               });
           });
       };
+      /** Delete one or more storage objects */
       Client.prototype.deleteStorageObjects = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.deleteStorageObjects(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.deleteStorageObjects(session.token, request).then(function (response) {
                               return Promise.resolve(response != undefined);
                           })];
                   }
               });
           });
       };
+      /** Demote a set of users in a group to the next role down. */
       Client.prototype.demoteGroupUsers = function (session, groupId, ids) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.demoteGroupUsers(session.token, groupId, ids).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.demoteGroupUsers(session.token, groupId, ids).then(function (response) {
                               return Promise.resolve(response != undefined);
                           })];
                   }
               });
           });
       };
+      /** Submit an event for processing in the server's registered runtime custom events handler. */
       Client.prototype.emitEvent = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.event(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.event(session.token, request).then(function (response) {
                               return Promise.resolve(response != undefined);
                           })];
                   }
               });
           });
       };
+      /** Fetch the current user's account. */
       Client.prototype.getAccount = function (session) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.getAccount(session.token)];
+                      case 2: return [2 /*return*/, this.apiClient.getAccount(session.token)];
                   }
               });
           });
       };
+      /** Import Facebook friends and add them to a user's account. */
       Client.prototype.importFacebookFriends = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.importFacebookFriends(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.importFacebookFriends(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Import Steam friends and add them to a user's account. */
       Client.prototype.importSteamFriends = function (session, request, reset) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.importSteamFriends(session.token, request, reset).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.importSteamFriends(session.token, request, reset).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Fetch zero or more users by ID and/or username. */
       Client.prototype.getUsers = function (session, ids, usernames, facebookIds) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.getUsers(session.token, ids, usernames, facebookIds).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.getUsers(session.token, ids, usernames, facebookIds).then(function (response) {
                               var result = {
                                   users: []
                               };
@@ -4491,18 +4687,19 @@
               });
           });
       };
+      /** Join a group that's open, or send a request to join a group that is closed. */
       Client.prototype.joinGroup = function (session, groupId) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.joinGroup(session.token, groupId, {}).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.joinGroup(session.token, groupId, {}).then(function (response) {
                               return response !== undefined;
                           })];
                   }
@@ -4515,66 +4712,69 @@
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.joinTournament(session.token, tournamentId, {}).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.joinTournament(session.token, tournamentId, {}).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Kick users from a group, or decline their join requests. */
       Client.prototype.kickGroupUsers = function (session, groupId, ids) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.kickGroupUsers(session.token, groupId, ids).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.kickGroupUsers(session.token, groupId, ids).then(function (response) {
                               return Promise.resolve(response != undefined);
                           })];
                   }
               });
           });
       };
+      /** Leave a group the user is part of. */
       Client.prototype.leaveGroup = function (session, groupId) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.leaveGroup(session.token, groupId, {}).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.leaveGroup(session.token, groupId, {}).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** List a channel's message history. */
       Client.prototype.listChannelMessages = function (session, channelId, limit, forward, cursor) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listChannelMessages(session.token, channelId, limit, forward, cursor).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listChannelMessages(session.token, channelId, limit, forward, cursor).then(function (response) {
                               var result = {
                                   messages: [],
                                   next_cursor: response.next_cursor,
@@ -4607,18 +4807,19 @@
               });
           });
       };
+      /** List a group's users. */
       Client.prototype.listGroupUsers = function (session, groupId, state, limit, cursor) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listGroupUsers(session.token, groupId, limit, state, cursor).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listGroupUsers(session.token, groupId, limit, state, cursor).then(function (response) {
                               var result = {
                                   group_users: [],
                                   cursor: response.cursor
@@ -4655,18 +4856,19 @@
               });
           });
       };
+      /** List a user's groups. */
       Client.prototype.listUserGroups = function (session, userId, state, limit, cursor) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listUserGroups(session.token, userId, state, limit, cursor).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listUserGroups(session.token, userId, state, limit, cursor).then(function (response) {
                               var result = {
                                   user_groups: [],
                                   cursor: response.cursor,
@@ -4699,18 +4901,19 @@
               });
           });
       };
+      /** List groups based on given filters. */
       Client.prototype.listGroups = function (session, name, cursor, limit) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listGroups(session.token, name, cursor, limit).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listGroups(session.token, name, cursor, limit).then(function (response) {
                               var result = {
                                   groups: []
                               };
@@ -4740,180 +4943,190 @@
               });
           });
       };
+      /** Add an Apple ID to the social profiles on the current user's account. */
       Client.prototype.linkApple = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.linkApple(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.linkApple(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Add a custom ID to the social profiles on the current user's account. */
       Client.prototype.linkCustom = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.linkCustom(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.linkCustom(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Add a device ID to the social profiles on the current user's account. */
       Client.prototype.linkDevice = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.linkDevice(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.linkDevice(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Add an email+password to the social profiles on the current user's account. */
       Client.prototype.linkEmail = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.linkEmail(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.linkEmail(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Add Facebook to the social profiles on the current user's account. */
       Client.prototype.linkFacebook = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.linkFacebook(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.linkFacebook(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Add Facebook Instant to the social profiles on the current user's account. */
       Client.prototype.linkFacebookInstantGame = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.linkFacebookInstantGame(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.linkFacebookInstantGame(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Add Google to the social profiles on the current user's account. */
       Client.prototype.linkGoogle = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.linkGoogle(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.linkGoogle(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Add GameCenter to the social profiles on the current user's account. */
       Client.prototype.linkGameCenter = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.linkGameCenter(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.linkGameCenter(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Add Steam to the social profiles on the current user's account. */
       Client.prototype.linkSteam = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.linkSteam(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.linkSteam(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** List all friends for the current user. */
       Client.prototype.listFriends = function (session, state, limit, cursor) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listFriends(session.token, limit, state, cursor).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listFriends(session.token, limit, state, cursor).then(function (response) {
                               var result = {
                                   friends: [],
                                   cursor: response.cursor
@@ -4951,18 +5164,19 @@
               });
           });
       };
+      /** List leaderboard records */
       Client.prototype.listLeaderboardRecords = function (session, leaderboardId, ownerIds, limit, cursor, expiry) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listLeaderboardRecords(session.token, leaderboardId, ownerIds, limit, cursor, expiry).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listLeaderboardRecords(session.token, leaderboardId, ownerIds, limit, cursor, expiry).then(function (response) {
                               var list = {
                                   next_cursor: response.next_cursor,
                                   prev_cursor: response.prev_cursor,
@@ -5015,12 +5229,12 @@
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listLeaderboardRecordsAroundOwner(session.token, leaderboardId, ownerId, limit, expiry).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listLeaderboardRecordsAroundOwner(session.token, leaderboardId, ownerId, limit, expiry).then(function (response) {
                               var list = {
                                   next_cursor: response.next_cursor,
                                   prev_cursor: response.prev_cursor,
@@ -5067,34 +5281,36 @@
               });
           });
       };
+      /** Fetch list of running matches. */
       Client.prototype.listMatches = function (session, limit, authoritative, label, minSize, maxSize, query) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listMatches(session.token, limit, authoritative, label, minSize, maxSize, query)];
+                      case 2: return [2 /*return*/, this.apiClient.listMatches(session.token, limit, authoritative, label, minSize, maxSize, query)];
                   }
               });
           });
       };
+      /** Fetch list of notifications. */
       Client.prototype.listNotifications = function (session, limit, cacheableCursor) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listNotifications(session.token, limit, cacheableCursor).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listNotifications(session.token, limit, cacheableCursor).then(function (response) {
                               var result = {
                                   cacheable_cursor: response.cacheable_cursor,
                                   notifications: [],
@@ -5119,18 +5335,19 @@
               });
           });
       };
+      /** List storage objects. */
       Client.prototype.listStorageObjects = function (session, collection, userId, limit, cursor) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listStorageObjects(session.token, collection, userId, limit, cursor).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listStorageObjects(session.token, collection, userId, limit, cursor).then(function (response) {
                               var result = {
                                   objects: [],
                                   cursor: response.cursor
@@ -5157,18 +5374,19 @@
               });
           });
       };
+      /** List current or upcoming tournaments. */
       Client.prototype.listTournaments = function (session, categoryStart, categoryEnd, startTime, endTime, limit, cursor) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listTournaments(session.token, categoryStart, categoryEnd, startTime, endTime, limit, cursor).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listTournaments(session.token, categoryStart, categoryEnd, startTime, endTime, limit, cursor).then(function (response) {
                               var list = {
                                   cursor: response.cursor,
                                   tournaments: [],
@@ -5202,18 +5420,19 @@
               });
           });
       };
+      /** List tournament records from a given tournament. */
       Client.prototype.listTournamentRecords = function (session, tournamentId, ownerIds, limit, cursor, expiry) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listTournamentRecords(session.token, tournamentId, ownerIds, limit, cursor, expiry).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listTournamentRecords(session.token, tournamentId, ownerIds, limit, cursor, expiry).then(function (response) {
                               var list = {
                                   next_cursor: response.next_cursor,
                                   prev_cursor: response.prev_cursor,
@@ -5260,18 +5479,19 @@
               });
           });
       };
+      /** List tournament records from a given tournament around the owner. */
       Client.prototype.listTournamentRecordsAroundOwner = function (session, tournamentId, ownerId, limit, expiry) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.listTournamentRecordsAroundOwner(session.token, tournamentId, ownerId, limit, expiry).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.listTournamentRecordsAroundOwner(session.token, tournamentId, ownerId, limit, expiry).then(function (response) {
                               var list = {
                                   next_cursor: response.next_cursor,
                                   prev_cursor: response.prev_cursor,
@@ -5318,34 +5538,36 @@
               });
           });
       };
+      /** Promote users in a group to the next role up. */
       Client.prototype.promoteGroupUsers = function (session, groupId, ids) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.promoteGroupUsers(session.token, groupId, ids)];
+                      case 2: return [2 /*return*/, this.apiClient.promoteGroupUsers(session.token, groupId, ids)];
                   }
               });
           });
       };
+      /** Fetch storage objects. */
       Client.prototype.readStorageObjects = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.readStorageObjects(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.readStorageObjects(session.token, request).then(function (response) {
                               var result = { objects: [] };
                               if (response.objects == null) {
                                   return Promise.resolve(result);
@@ -5369,18 +5591,19 @@
               });
           });
       };
+      /** Execute an RPC function on the server. */
       Client.prototype.rpc = function (session, id, input) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.rpcFunc(session.token, id, JSON.stringify(input)).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.rpcFunc(session.token, id, JSON.stringify(input)).then(function (response) {
                               return Promise.resolve({
                                   id: response.id,
                                   payload: (!response.payload) ? undefined : JSON.parse(response.payload)
@@ -5390,10 +5613,11 @@
               });
           });
       };
+      /** Execute an RPC function on the server. */
       Client.prototype.rpcHttpKey = function (httpKey, id, input) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
-                  return [2, this.apiClient.rpcFunc2("", id, input && JSON.stringify(input) || "", httpKey)
+                  return [2 /*return*/, this.apiClient.rpcFunc2("", id, input && JSON.stringify(input) || "", httpKey)
                           .then(function (response) {
                           return Promise.resolve({
                               id: response.id,
@@ -5405,24 +5629,26 @@
               });
           });
       };
+      /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
       Client.prototype.sessionLogout = function (session, token, refreshToken) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.sessionLogout(session.token, { refresh_token: refreshToken, token: token }).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.sessionLogout(session.token, { refresh_token: refreshToken, token: token }).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
       Client.prototype.sessionRefresh = function (session, vars) {
           if (vars === void 0) { vars = new Map(); }
           return __awaiter(this, void 0, void 0, function () {
@@ -5432,7 +5658,7 @@
                       case 0:
                           if (!session) {
                               console.error("Cannot refresh a null session.");
-                              return [2, session];
+                              return [2 /*return*/, session];
                           }
                           if (session.created && session.expires_at - session.created_at < 70) {
                               console.warn("Session lifetime too short, please set '--session.token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
@@ -5440,273 +5666,288 @@
                           if (session.created && session.refresh_expires_at - session.created_at < 3700) {
                               console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
                           }
-                          return [4, this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars: vars })];
+                          return [4 /*yield*/, this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars: vars })];
                       case 1:
                           apiSession = _a.sent();
                           session.update(apiSession.token, apiSession.refresh_token);
-                          return [2, session];
+                          return [2 /*return*/, session];
                   }
               });
           });
       };
+      /** Remove the Apple ID from the social profiles on the current user's account. */
       Client.prototype.unlinkApple = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.unlinkApple(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.unlinkApple(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Remove custom ID from the social profiles on the current user's account. */
       Client.prototype.unlinkCustom = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.unlinkCustom(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.unlinkCustom(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Remove a device ID from the social profiles on the current user's account. */
       Client.prototype.unlinkDevice = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.unlinkDevice(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.unlinkDevice(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Remove an email+password from the social profiles on the current user's account. */
       Client.prototype.unlinkEmail = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.unlinkEmail(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.unlinkEmail(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Remove Facebook from the social profiles on the current user's account. */
       Client.prototype.unlinkFacebook = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.unlinkFacebook(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.unlinkFacebook(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Remove Facebook Instant social profiles from the current user's account. */
       Client.prototype.unlinkFacebookInstantGame = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.unlinkFacebookInstantGame(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.unlinkFacebookInstantGame(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Remove Google from the social profiles on the current user's account. */
       Client.prototype.unlinkGoogle = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.unlinkGoogle(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.unlinkGoogle(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Remove GameCenter from the social profiles on the current user's account. */
       Client.prototype.unlinkGameCenter = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.unlinkGameCenter(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.unlinkGameCenter(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Remove Steam from the social profiles on the current user's account. */
       Client.prototype.unlinkSteam = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.unlinkSteam(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.unlinkSteam(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Update fields in the current user's account. */
       Client.prototype.updateAccount = function (session, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.updateAccount(session.token, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.updateAccount(session.token, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Update a group the user is part of and has permissions to update. */
       Client.prototype.updateGroup = function (session, groupId, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.updateGroup(session.token, groupId, request).then(function (response) {
+                      case 2: return [2 /*return*/, this.apiClient.updateGroup(session.token, groupId, request).then(function (response) {
                               return response !== undefined;
                           })];
                   }
               });
           });
       };
+      /** Validate an Apple IAP receipt. */
       Client.prototype.validatePurchaseApple = function (session, receipt) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.validatePurchaseApple(session.token, { receipt: receipt })];
+                      case 2: return [2 /*return*/, this.apiClient.validatePurchaseApple(session.token, { receipt: receipt })];
                   }
               });
           });
       };
+      /** Validate a Google IAP receipt. */
       Client.prototype.validatePurchaseGoogle = function (session, purchase) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.validatePurchaseGoogle(session.token, { purchase: purchase })];
+                      case 2: return [2 /*return*/, this.apiClient.validatePurchaseGoogle(session.token, { purchase: purchase })];
                   }
               });
           });
       };
+      /** Validate a Huawei IAP receipt. */
       Client.prototype.validatePurchaseHuawei = function (session, purchase, signature) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.validatePurchaseHuawei(session.token, { purchase: purchase, signature: signature })];
+                      case 2: return [2 /*return*/, this.apiClient.validatePurchaseHuawei(session.token, { purchase: purchase, signature: signature })];
                   }
               });
           });
       };
+      /** Write a record to a leaderboard. */
       Client.prototype.writeLeaderboardRecord = function (session, leaderboardId, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2, this.apiClient.writeLeaderboardRecord(session.token, leaderboardId, {
+                      case 2: return [2 /*return*/, this.apiClient.writeLeaderboardRecord(session.token, leaderboardId, {
                               metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
                               score: request.score,
                               subscore: request.subscore
@@ -5729,6 +5970,7 @@
               });
           });
       };
+      /** Write storage objects. */
       Client.prototype.writeStorageObjects = function (session, objects) {
           return __awaiter(this, void 0, void 0, function () {
               var request;
@@ -5736,8 +5978,8 @@
                   switch (_a.label) {
                       case 0:
                           if (!(this.autoRefreshSession && session.refresh_token &&
-                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3, 2];
-                          return [4, this.sessionRefresh(session)];
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
                       case 1:
                           _a.sent();
                           _a.label = 2;
@@ -5753,15 +5995,16 @@
                                   version: o.version
                               });
                           });
-                          return [2, this.apiClient.writeStorageObjects(session.token, request)];
+                          return [2 /*return*/, this.apiClient.writeStorageObjects(session.token, request)];
                   }
               });
           });
       };
+      /** Write a record to a tournament. */
       Client.prototype.writeTournamentRecord = function (session, tournamentId, request) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
-                  return [2, this.apiClient.writeTournamentRecord(session.token, tournamentId, {
+                  return [2 /*return*/, this.apiClient.writeTournamentRecord(session.token, tournamentId, {
                           metadata: request.metadata ? JSON.stringify(request.metadata) : undefined,
                           score: request.score,
                           subscore: request.subscore
@@ -5793,4 +6036,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
