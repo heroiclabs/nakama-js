@@ -3,7 +3,14 @@
     "version": "1.1.0",
     "description": "Websocket adapter adding protocol buffer support to the Nakama Javascript client.",
     "main": "dist/nakama-js-protobuf.cjs.js",
-    "module": "dist/nakama-js-protobuf.esm.js",
+    "module": "dist/nakama-js-protobuf.esm.mjs",
+    "exports": {
+        "./package.json": "./package.json",
+        ".": {
+            "import": "./dist/nakama-js-protobuf.esm.mjs",
+            "require": "./dist/nakama-js-protobuf.cjs.js"
+        }
+    },
     "scripts": {
         "build": "node build.js"
     },
