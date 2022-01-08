@@ -21,7 +21,7 @@ function esbuild(args) {
 execSync("npx typescript --project tsconfig.json", {stdio: 'inherit'})
 
 esbuild(" --format=cjs --outfile=dist/nakama-js.cjs.js")
-esbuild(" --format=esm --outfile=dist/nakama-js.esm.js")
+esbuild(" --format=esm --outfile=dist/nakama-js.esm.mjs")
 esbuild(" --format=iife --outfile=dist/nakama-js.iife.js")
 
 execSync("npx rollup -c")
