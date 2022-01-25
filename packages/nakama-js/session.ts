@@ -16,7 +16,7 @@
 
  /** A nakama session. */
 export interface ISession {
-  // Claims
+  /** Claims */
   token: string;
   created: boolean
   readonly created_at: number;
@@ -27,7 +27,7 @@ export interface ISession {
   user_id?: string;
   vars?: object;
 
-  // Validate token
+  /** Validate token */
   isexpired(currenttime: number): boolean;
   isrefreshexpired(currenttime: number): boolean;
 }
@@ -71,8 +71,8 @@ export class Session implements ISession {
     const tokenDecoded = JSON.parse(atob(tokenParts[1])); // FIXME: use base64 polyfill for React Native.
     const tokenExpiresAt = Math.floor(parseInt(tokenDecoded['exp']));
 
-    // clients that have just updated to the refresh tokens
-    // client release will not have a cached refresh token
+    /** clients that have just updated to the refresh tokens */
+    /** client release will not have a cached refresh token */
     if (refreshToken) {
 
         const refreshTokenParts = refreshToken.split('.');

@@ -233,7 +233,7 @@ interface MatchDataSend {
   match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
 }
 
-// Incoming information about a party.
+/** Incoming information about a party. */
 export interface Party {
   party_id : string;
   open : boolean;
@@ -243,7 +243,7 @@ export interface Party {
   presences : Presence[];
 }
 
-// Create a party.
+/** Create a party. */
 export interface PartyCreate {
   party_create: {
     open : boolean;
@@ -251,21 +251,21 @@ export interface PartyCreate {
   }
 }
 
-// Join a party.
+/** Join a party. */
 interface PartyJoin {
   party_join: {
     party_id : string;
   }
 }
 
-// Leave a party.
+/** Leave a party. */
 interface PartyLeave {
   party_leave: {
     party_id : string;
   }
 }
 
-// Promote a new party leader.
+/** Promote a new party leader. */
 interface PartyPromote {
   party_promote: {
     party_id : string;
@@ -273,13 +273,13 @@ interface PartyPromote {
   }
 }
 
-// Announcement of a new party leader.
+/** Announcement of a new party leader. */
 export interface PartyLeader {
   party_id : string;
   presence : Presence;
 }
 
-// Accept a request to join.
+/** Accept a request to join. */
 interface PartyAccept {
   party_accept: {
     party_id : string;
@@ -287,14 +287,14 @@ interface PartyAccept {
   }
 }
 
-// End a party, kicking all party members and closing it.
+/** End a party, kicking all party members and closing it. */
 interface PartyClose {
   party_close: {
     party_id : string;
   }
 }
 
-// Incoming party data delivered from the server.
+/** Incoming party data delivered from the server. */
 export interface PartyData {
   party_id: string;
   presence: Presence;
@@ -302,7 +302,7 @@ export interface PartyData {
   data: any;
 }
 
-// A client to server request to send data to a party.
+/** A client to server request to send data to a party. */
 interface PartyDataSend {
   party_data_send: {
     party_id : string;
@@ -311,20 +311,20 @@ interface PartyDataSend {
   }
 }
 
-// Incoming notification for one or more new presences attempting to join the party.
+/** Incoming notification for one or more new presences attempting to join the party. */
 export interface PartyJoinRequest {
   party_id : string;
   presences : Presence[];
 }
 
-// Request a list of pending join requests for a party.
+/** Request a list of pending join requests for a party. */
 export interface PartyJoinRequestList {
   party_join_request_list: {
     party_id : string;
   }
 }
 
-// Begin matchmaking as a party.
+/** Begin matchmaking as a party. */
 interface PartyMatchmakerAdd {
   party_matchmaker_add: {
     party_id : string;
@@ -336,7 +336,7 @@ interface PartyMatchmakerAdd {
   }
 }
 
-// Cancel a party matchmaking process using a ticket.
+/** Cancel a party matchmaking process using a ticket. */
 interface PartyMatchmakerRemove {
   party_matchmaker_remove: {
     party_id : string;
@@ -344,20 +344,20 @@ interface PartyMatchmakerRemove {
   }
 }
 
-// A response from starting a new party matchmaking process.
+/** A response from starting a new party matchmaking process. */
 export interface PartyMatchmakerTicket {
   party_id: string;
   ticket: string;
 }
 
-// Presence update for a particular party.
+/** Presence update for a particular party. */
 export interface PartyPresenceEvent {
   party_id : string;
   joins : Presence[];
   leaves : Presence[];
 }
 
-// Kick a party member, or decline a request to join.
+/** Kick a party member, or decline a request to join. */
 interface PartyRemove {
   party_remove: {
     party_id : string;
@@ -398,158 +398,158 @@ interface StatusUpdate {
 
 /** A socket connection to Nakama server. */
 export interface Socket {
-  // Connect to the server.
+  /** Connect to the server. */
   connect(session: Session, createStatus: boolean): Promise<Session>;
 
-  // Disconnect from the server.
+  /** Disconnect from the server. */
   disconnect(fireDisconnectEvent: boolean): void;
 
-  // Accept a request to join.
+  /** Accept a request to join. */
   acceptPartyMember(party_id : string, presence : Presence) : Promise<void>;
 
-  /// Join the matchmaker pool and search for opponents on the server.
+  /** Join the matchmaker pool and search for opponents on the server. */
   addMatchmaker(query : string, minCount : number, maxCount : number,
     stringProperties? : Record<string, string>, numericProperties? : Record<string, number>)
     : Promise<MatchmakerTicket>;
 
-  // Begin matchmaking as a party.
+  /** Begin matchmaking as a party. */
   addMatchmakerParty(party_id: string, query : string, min_count : number, max_count : number,
     string_properties? : Record<string, string>, numericProperties? : Record<string, number>)
     : Promise<PartyMatchmakerTicket>;
 
-  // End a party, kicking all party members and closing it.
+  /** End a party, kicking all party members and closing it. */
   closeParty(party_id : string) : Promise<void>;
 
-  // Create a multiplayer match on the server.
+  /** Create a multiplayer match on the server. */
   createMatch() : Promise<Match>;
 
-  // Create a party.
+  /** Create a party. */
   createParty(open : boolean, max_size : number) : Promise<Party>;
 
-  // Subscribe to one or more users for their status updates.
+  /** Subscribe to one or more users for their status updates. */
   followUsers(user_ids: string[]) : Promise<Status>;
 
-  // Join a chat channel on the server.
+  /** Join a chat channel on the server. */
   joinChat(target: string, type: number, persistence: boolean, hidden: boolean) : Promise<Channel>;
 
-  // Join a party.
+  /** Join a party. */
   joinParty(party_id: string) : Promise<void>;
 
-  // Join a multiplayer match.
+  /** Join a multiplayer match. */
   joinMatch(match_id?: string, token?: string, metadata?: {}) : Promise<Match>;
 
-  // Leave a chat channel on the server.
+  /** Leave a chat channel on the server. */
   leaveChat(channel_id: string) : Promise<void>;
 
-  // Leave a multiplayer match on the server.
+  /** Leave a multiplayer match on the server. */
   leaveMatch(matchId : string) : Promise<void>;
 
-  // Leave a party.
+  /** Leave a party. */
   leaveParty(party_id: string) : Promise<void>;
 
-  // Request a list of pending join requests for a party.
+  /** Request a list of pending join requests for a party. */
   listPartyJoinRequests(party_id : string) : Promise<PartyJoinRequest>;
 
-  // Promote a new party leader.
+  /** Promote a new party leader. */
   promotePartyMember(party_id : string, party_member : Presence) : Promise<PartyLeader>;
 
-  // Remove a chat message from a chat channel on the server.
+  /** Remove a chat message from a chat channel on the server. */
   removeChatMessage(channel_id: string, message_id: string) : Promise<ChannelMessageAck>;
 
-  // Leave the matchmaker pool with the provided ticket.
+  /** Leave the matchmaker pool with the provided ticket. */
   removeMatchmaker(ticket : string) : Promise<void>;
 
-  // Cancel a party matchmaking process using a ticket.
+  /** Cancel a party matchmaking process using a ticket. */
   removeMatchmakerParty(party_id : string, ticket : string) : Promise<void>;
 
-  // Kick a party member, or decline a request to join.
+  /** Kick a party member, or decline a request to join. */
   removePartyMember(party_id : string, presence : Presence) : Promise<void>;
 
-  // Execute an RPC function to the server.
+  /** Execute an RPC function to the server. */
   rpc(id?: string, payload?: string, http_key?: string) : Promise<ApiRpc>
 
-  // Send input to a multiplayer match on the server.
-  // When no presences are supplied the new match state will be sent to all presences.
+  /** Send input to a multiplayer match on the server. */
+  /** When no presences are supplied the new match state will be sent to all presences. */
   sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence[]) : Promise<void>;
 
-  // Send data to a party.
+  /** Send data to a party. */
   sendPartyData(party_id : string, opcode : number, data : any) : Promise<void>;
 
-  // Unfollow one or more users from their status updates.
+  /** Unfollow one or more users from their status updates. */
   unfollowUsers(user_ids : string[]) : Promise<void>;
 
-  // Update a chat message on a chat channel in the server.
+  /** Update a chat message on a chat channel in the server. */
   updateChatMessage(channel_id: string, message_id : string, content: any) : Promise<ChannelMessageAck>;
 
-  // Update the status for the current user online.
+  /** Update the status for the current user online. */
   updateStatus(status? : string) : Promise<void>;
 
-  // Send a chat message to a chat channel on the server.
+  /** Send a chat message to a chat channel on the server. */
   writeChatMessage(channel_id: string, content: any) : Promise<ChannelMessageAck>;
 
-  // Handle disconnect events received from the socket.
+  /** Handle disconnect events received from the socket. */
   ondisconnect: (evt: Event) => void;
 
-  // Handle error events received from the socket.
+  /** Handle error events received from the socket. */
   onerror: (evt: Event) => void;
 
-  // Receive notifications from the socket.
+  /** Receive notifications from the socket. */
   onnotification: (notification: Notification) => void;
 
-  // Receive match data updates.
+  /** Receive match data updates. */
   onmatchdata: (matchData: MatchData) => void;
 
-  // Receive match presence updates.
+  /** Receive match presence updates. */
   onmatchpresence: (matchPresence: MatchPresenceEvent) => void;
 
-  // Receive a matchmaker ticket.
+  /** Receive a matchmaker ticket. */
   onmatchmakerticket: (matchmakerTicket: MatchmakerTicket) => void;
 
-  // Receive matchmaking results.
+  /** Receive matchmaking results. */
   onmatchmakermatched: (matchmakerMatched: MatchmakerMatched) => void;
 
-  // Receive party events.
+  /** Receive party events. */
   onparty: (party : Party) => void;
 
-  // Receive party close events.
+  /** Receive party close events. */
   onpartyclose: (partyClose : PartyClose) => void;
 
-  // Receive party data updates.
+  /** Receive party data updates. */
   onpartydata: (partyData: PartyData) => void;
 
-  // Receive party join requests, if party leader.
+  /** Receive party join requests, if party leader. */
   onpartyjoinrequest: (partyJoinRequest: PartyJoinRequest) => void;
 
-  // Receive announcements of a new party leader.
+  /** Receive announcements of a new party leader. */
   onpartyleader: (partyLeader : PartyLeader) => void;
 
-  // Receive a presence update for a party.
+  /** Receive a presence update for a party. */
   onpartypresence: (partyPresence : PartyPresenceEvent) => void;
 
-  // Receive matchmaking results.
+  /** Receive matchmaking results. */
   onpartymatchmakerticket: (partyMatchmakerMatched: PartyMatchmakerTicket) => void;
 
-  // Receive status presence updates.
+  /** Receive status presence updates. */
   onstatuspresence: (statusPresence: StatusPresenceEvent) => void;
 
-  // Receive stream presence updates.
+  /** Receive stream presence updates. */
   onstreampresence: (streamPresence: StreamPresenceEvent) => void;
 
-  // Receive stream data.
+  /** Receive stream data. */
   onstreamdata: (streamData: StreamData) => void;
 
-  // Receive channel message.
+  /** Receive channel message. */
   onchannelmessage: (channelMessage: ChannelMessage) => void;
 
-  // Receive channel presence updates.
+  /** Receive channel presence updates. */
   onchannelpresence: (channelPresence: ChannelPresenceEvent) => void;
 }
 
 /** Reports an error received from a socket message. */
 export interface SocketError {
-  // The error code.
+  /** The error code. */
   code: number;
-  // A message in English to help developers debug the response.
+  /** A message in English to help developers debug the response. */
   message: string;
 }
 
@@ -596,7 +596,7 @@ export class DefaultSocket implements Socket {
         console.log("Response: %o", JSON.stringify(message));
       }
 
-      // Inbound message from server.
+      /** Inbound message from server. */
       if (message.cid == undefined) {
         if (message.notifications) {
           message.notifications.notifications.forEach((n: ApiNotification) => {
@@ -834,7 +834,7 @@ export class DefaultSocket implements Socket {
           const cid = this.generatecid();
           this.cIds[cid] = {resolve, reject};
 
-          // Add id for promise executor.
+          /** Add id for promise executor. */
           untypedMessage.cid = cid;
           this.adapter.send(untypedMessage);
         }
