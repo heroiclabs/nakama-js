@@ -69,8 +69,8 @@ export interface {{$classname | title}} {
                 {{- end}}
               {{- else if eq $property.Type "object"}}
                 {{- if eq $property.AdditionalProperties.Type "string"}}
-  {{$fieldname}}?: Map<string, string>;
-                {{- else if eq $property.AdditionalPrgioperties.Type "integer"}}
+  {{$fieldname}}?: {[key: string]: string};
+                {{- else if eq $property.AdditionalProperties.Type "integer"}}
   {{$fieldname}}?: Map<string, integer>;
                 {{- else if eq $property.AdditionalProperties.Type "boolean"}}
   {{$fieldname}}?: Map<string, boolean>;
