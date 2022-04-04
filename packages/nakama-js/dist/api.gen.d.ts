@@ -51,33 +51,45 @@ export interface ApiAccount {
 /** Send a Apple Sign In token to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountApple {
     token?: string;
-    vars?: Map<string, string>;
+    vars?: {
+        [key: string]: string;
+    };
 }
 /** Send a custom ID to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountCustom {
     id?: string;
-    vars?: Map<string, string>;
+    vars?: {
+        [key: string]: string;
+    };
 }
 /** Send a device to the server. Used with authenticate/link/unlink and user. */
 export interface ApiAccountDevice {
     id?: string;
-    vars?: Map<string, string>;
+    vars?: {
+        [key: string]: string;
+    };
 }
 /** Send an email with password to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountEmail {
     email?: string;
     password?: string;
-    vars?: Map<string, string>;
+    vars?: {
+        [key: string]: string;
+    };
 }
 /** Send a Facebook token to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountFacebook {
     token?: string;
-    vars?: Map<string, string>;
+    vars?: {
+        [key: string]: string;
+    };
 }
 /** Send a Facebook Instant Game token to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountFacebookInstantGame {
     signed_player_info?: string;
-    vars?: Map<string, string>;
+    vars?: {
+        [key: string]: string;
+    };
 }
 /** Send Apple's Game Center account credentials to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountGameCenter {
@@ -87,17 +99,23 @@ export interface ApiAccountGameCenter {
     salt?: string;
     signature?: string;
     timestamp_seconds?: string;
-    vars?: Map<string, string>;
+    vars?: {
+        [key: string]: string;
+    };
 }
 /** Send a Google token to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountGoogle {
     token?: string;
-    vars?: Map<string, string>;
+    vars?: {
+        [key: string]: string;
+    };
 }
 /** Send a Steam token to the server. Used with authenticate/link/unlink. */
 export interface ApiAccountSteam {
     token?: string;
-    vars?: Map<string, string>;
+    vars?: {
+        [key: string]: string;
+    };
 }
 /** A message sent on a channel. */
 export interface ApiChannelMessage {
@@ -145,7 +163,9 @@ export interface ApiDeleteStorageObjectsRequest {
 export interface ApiEvent {
     external?: boolean;
     name?: string;
-    properties?: Map<string, string>;
+    properties?: {
+        [key: string]: string;
+    };
     timestamp?: string;
 }
 /** A friend of a user. */
@@ -279,7 +299,9 @@ export interface ApiSessionLogoutRequest {
 /** Authenticate against the server with a refresh token. */
 export interface ApiSessionRefreshRequest {
     token?: string;
-    vars?: Map<string, string>;
+    vars?: {
+        [key: string]: string;
+    };
 }
 /** An object within the storage engine. */
 export interface ApiStorageObject {
@@ -419,6 +441,7 @@ export interface ApiValidatedPurchase {
     product_id?: string;
     provider_response?: string;
     purchase_time?: string;
+    seen_before?: boolean;
     store?: ValidatedPurchaseStore;
     transaction_id?: string;
     update_time?: string;

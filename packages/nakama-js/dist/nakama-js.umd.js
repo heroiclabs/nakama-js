@@ -2,7 +2,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.nakamajs = {}));
-})(this, (function (exports) { 'use strict';
+}(this, (function (exports) { 'use strict';
 
   (function(self) {
 
@@ -787,6 +787,27 @@
       return decodeURIComponent(decode(str).split('').map(function (c) {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
+  }
+  function mapToObject(map) {
+      var e_1, _a;
+      if (!map) {
+          return undefined;
+      }
+      var obj = {};
+      try {
+          for (var _b = __values(map.keys()), _c = _b.next(); !_c.done; _c = _b.next()) {
+              var key = _c.value;
+              obj[key] = map.get(key);
+          }
+      }
+      catch (e_1_1) { e_1 = { error: e_1_1 }; }
+      finally {
+          try {
+              if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+          }
+          finally { if (e_1) throw e_1.error; }
+      }
+      return obj;
   }
 
   // tslint:disable
@@ -3503,8 +3524,8 @@
           }
           var tokenDecoded = JSON.parse(atob(tokenParts[1])); // FIXME: use base64 polyfill for React Native.
           var tokenExpiresAt = Math.floor(parseInt(tokenDecoded['exp']));
-          // clients that have just updated to the refresh tokens
-          // client release will not have a cached refresh token
+          /** clients that have just updated to the refresh tokens */
+          /** client release will not have a cached refresh token */
           if (refreshToken) {
               var refreshTokenParts = refreshToken.split('.');
               if (refreshTokenParts.length != 3) {
@@ -3679,7 +3700,7 @@
               if (_this.verbose && window && window.console) {
                   console.log("Response: %o", JSON.stringify(message));
               }
-              // Inbound message from server.
+              /** Inbound message from server. */
               if (message.cid == undefined) {
                   if (message.notifications) {
                       message.notifications.notifications.forEach(function (n) {
@@ -3907,7 +3928,7 @@
                       }
                       var cid = _this.generatecid();
                       _this.cIds[cid] = { resolve: resolve, reject: reject };
-                      // Add id for promise executor.
+                      /** Add id for promise executor. */
                       untypedMessage.cid = cid;
                       _this.adapter.send(untypedMessage);
                   }
@@ -4243,7 +4264,7 @@
           this.useSSL = useSSL;
           this.timeout = timeout;
           this.autoRefreshSession = autoRefreshSession;
-          // The expired timespan used to check session lifetime.
+          /** The expired timespan used to check session lifetime. */
           this.expiredTimespanMs = DEFAULT_EXPIRED_TIMESPAN_MS;
           var scheme = (useSSL) ? "https://" : "http://";
           var basePath = "" + scheme + host + ":" + port;
@@ -4296,7 +4317,7 @@
               return __generator(this, function (_a) {
                   request = {
                       "token": token,
-                      "vars": vars
+                      "vars": mapToObject(vars)
                   };
                   return [2 /*return*/, this.apiClient.authenticateApple(this.serverkey, "", request, create, username, options).then(function (apiSession) {
                           return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4310,7 +4331,7 @@
           if (options === void 0) { options = {}; }
           var request = {
               "id": id,
-              "vars": vars
+              "vars": mapToObject(vars)
           };
           return this.apiClient.authenticateCustom(this.serverkey, "", request, create, username, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4320,7 +4341,7 @@
       Client.prototype.authenticateDevice = function (id, create, username, vars) {
           var request = {
               "id": id,
-              "vars": vars
+              "vars": mapToObject(vars)
           };
           return this.apiClient.authenticateDevice(this.serverkey, "", request, create, username).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4331,7 +4352,7 @@
           var request = {
               "email": email,
               "password": password,
-              "vars": vars
+              "vars": mapToObject(vars)
           };
           return this.apiClient.authenticateEmail(this.serverkey, "", request, create, username).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4342,7 +4363,7 @@
           if (options === void 0) { options = {}; }
           var request = {
               "signed_player_info": signedPlayerInfo,
-              "vars": vars
+              "vars": mapToObject(vars)
           };
           return this.apiClient.authenticateFacebookInstantGame(this.serverkey, "", { signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4353,7 +4374,7 @@
           if (options === void 0) { options = {}; }
           var request = {
               "token": token,
-              "vars": vars
+              "vars": mapToObject(vars)
           };
           return this.apiClient.authenticateFacebook(this.serverkey, "", request, create, username, sync, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4364,7 +4385,7 @@
           if (options === void 0) { options = {}; }
           var request = {
               "token": token,
-              "vars": vars
+              "vars": mapToObject(vars)
           };
           return this.apiClient.authenticateGoogle(this.serverkey, "", request, create, username, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4374,7 +4395,7 @@
       Client.prototype.authenticateGameCenter = function (token, create, username, vars) {
           var request = {
               "token": token,
-              "vars": vars
+              "vars": mapToObject(vars)
           };
           return this.apiClient.authenticateGameCenter(this.serverkey, "", request, create, username).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4387,7 +4408,7 @@
               return __generator(this, function (_a) {
                   request = {
                       "token": token,
-                      "vars": vars,
+                      "vars": mapToObject(vars),
                       "sync": sync
                   };
                   return [2 /*return*/, this.apiClient.authenticateSteam(this.serverkey, "", request, create, username).then(function (apiSession) {
@@ -5661,12 +5682,12 @@
                               return [2 /*return*/, session];
                           }
                           if (session.created && session.expires_at - session.created_at < 70) {
-                              console.warn("Session lifetime too short, please set '--session.token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+                              console.warn("Session lifetime too short, please set '--session.token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/nakama/getting-started/configuration/#session");
                           }
                           if (session.created && session.refresh_expires_at - session.created_at < 3700) {
-                              console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+                              console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/nakama/getting-started/configuration/#session");
                           }
-                          return [4 /*yield*/, this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars: vars })];
+                          return [4 /*yield*/, this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars: mapToObject(vars) })];
                       case 1:
                           apiSession = _a.sent();
                           session.update(apiSession.token, apiSession.refresh_token);
@@ -6036,4 +6057,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));

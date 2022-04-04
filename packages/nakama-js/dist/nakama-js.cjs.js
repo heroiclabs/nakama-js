@@ -18,26 +18,23 @@ var __spreadValues = (a, b) => {
     }
   return a;
 };
-var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
 var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 var __export = (target, all) => {
-  __markAsModule(target);
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-var __reExport = (target, module2, desc) => {
-  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
-    for (let key of __getOwnPropNames(module2))
-      if (!__hasOwnProp.call(target, key) && key !== "default")
-        __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
   }
-  return target;
+  return to;
 };
-var __toModule = (module2) => {
-  return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
-};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -465,13 +462,15 @@ var require_fetch = __commonJS({
 });
 
 // index.ts
-__export(exports, {
+var nakama_js_exports = {};
+__export(nakama_js_exports, {
   Client: () => Client,
   DefaultSocket: () => DefaultSocket,
   Session: () => Session,
   WebSocketAdapterText: () => WebSocketAdapterText
 });
-var import_whatwg_fetch = __toModule(require_fetch());
+module.exports = __toCommonJS(nakama_js_exports);
+var import_whatwg_fetch = __toESM(require_fetch());
 
 // node_modules/js-base64/base64.mjs
 var _hasatob = typeof atob === "function";
@@ -588,6 +587,16 @@ function b64DecodeUnicode(str) {
   return decodeURIComponent(decode(str).split("").map(function(c) {
     return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
   }).join(""));
+}
+function mapToObject(map) {
+  if (!map) {
+    return void 0;
+  }
+  let obj = {};
+  for (const key of map.keys()) {
+    obj[key] = map.get(key);
+  }
+  return obj;
 }
 
 // api.gen.ts
@@ -3216,7 +3225,7 @@ var Client = class {
     return __async(this, arguments, function* (token, create, username, vars = /* @__PURE__ */ new Map(), options = {}) {
       const request = {
         "token": token,
-        "vars": vars
+        "vars": mapToObject(vars)
       };
       return this.apiClient.authenticateApple(this.serverkey, "", request, create, username, options).then((apiSession) => {
         return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -3226,7 +3235,7 @@ var Client = class {
   authenticateCustom(id, create, username, vars = /* @__PURE__ */ new Map(), options = {}) {
     const request = {
       "id": id,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
     return this.apiClient.authenticateCustom(this.serverkey, "", request, create, username, options).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -3235,7 +3244,7 @@ var Client = class {
   authenticateDevice(id, create, username, vars) {
     const request = {
       "id": id,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
     return this.apiClient.authenticateDevice(this.serverkey, "", request, create, username).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -3245,7 +3254,7 @@ var Client = class {
     const request = {
       "email": email,
       "password": password,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
     return this.apiClient.authenticateEmail(this.serverkey, "", request, create, username).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -3254,7 +3263,7 @@ var Client = class {
   authenticateFacebookInstantGame(signedPlayerInfo, create, username, vars, options = {}) {
     const request = {
       "signed_player_info": signedPlayerInfo,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
     return this.apiClient.authenticateFacebookInstantGame(this.serverkey, "", { signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -3263,7 +3272,7 @@ var Client = class {
   authenticateFacebook(token, create, username, sync, vars, options = {}) {
     const request = {
       "token": token,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
     return this.apiClient.authenticateFacebook(this.serverkey, "", request, create, username, sync, options).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -3272,7 +3281,7 @@ var Client = class {
   authenticateGoogle(token, create, username, vars, options = {}) {
     const request = {
       "token": token,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
     return this.apiClient.authenticateGoogle(this.serverkey, "", request, create, username, options).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -3281,7 +3290,7 @@ var Client = class {
   authenticateGameCenter(token, create, username, vars) {
     const request = {
       "token": token,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
     return this.apiClient.authenticateGameCenter(this.serverkey, "", request, create, username).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -3291,7 +3300,7 @@ var Client = class {
     return __async(this, null, function* () {
       const request = {
         "token": token,
-        "vars": vars,
+        "vars": mapToObject(vars),
         "sync": sync
       };
       return this.apiClient.authenticateSteam(this.serverkey, "", request, create, username).then((apiSession) => {
@@ -4165,12 +4174,12 @@ var Client = class {
         return session;
       }
       if (session.created && session.expires_at - session.created_at < 70) {
-        console.warn("Session lifetime too short, please set '--session.token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+        console.warn("Session lifetime too short, please set '--session.token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/nakama/getting-started/configuration/#session");
       }
       if (session.created && session.refresh_expires_at - session.created_at < 3700) {
-        console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+        console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/nakama/getting-started/configuration/#session");
       }
-      const apiSession = yield this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars });
+      const apiSession = yield this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars: mapToObject(vars) });
       session.update(apiSession.token, apiSession.refresh_token);
       return session;
     });

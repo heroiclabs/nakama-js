@@ -15,6 +15,7 @@
  */
 /** A nakama session. */
 export interface ISession {
+    /** Claims */
     token: string;
     created: boolean;
     readonly created_at: number;
@@ -24,6 +25,7 @@ export interface ISession {
     username?: string;
     user_id?: string;
     vars?: object;
+    /** Validate token */
     isexpired(currenttime: number): boolean;
     isrefreshexpired(currenttime: number): boolean;
 }
