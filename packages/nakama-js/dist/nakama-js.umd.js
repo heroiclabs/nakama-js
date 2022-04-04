@@ -788,27 +788,6 @@
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
   }
-  function mapToObject(map) {
-      var e_1, _a;
-      if (!map) {
-          return undefined;
-      }
-      var obj = {};
-      try {
-          for (var _b = __values(map.keys()), _c = _b.next(); !_c.done; _c = _b.next()) {
-              var key = _c.value;
-              obj[key] = map.get(key);
-          }
-      }
-      catch (e_1_1) { e_1 = { error: e_1_1 }; }
-      finally {
-          try {
-              if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-          }
-          finally { if (e_1) throw e_1.error; }
-      }
-      return obj;
-  }
 
   // tslint:disable
   /**
@@ -4310,14 +4289,14 @@
       };
       /** Authenticate a user with an Apple ID against the server. */
       Client.prototype.authenticateApple = function (token, create, username, vars, options) {
-          if (vars === void 0) { vars = new Map(); }
+          if (vars === void 0) { vars = {}; }
           if (options === void 0) { options = {}; }
           return __awaiter(this, void 0, void 0, function () {
               var request;
               return __generator(this, function (_a) {
                   request = {
                       "token": token,
-                      "vars": mapToObject(vars)
+                      "vars": vars
                   };
                   return [2 /*return*/, this.apiClient.authenticateApple(this.serverkey, "", request, create, username, options).then(function (apiSession) {
                           return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4327,11 +4306,11 @@
       };
       /** Authenticate a user with a custom id against the server. */
       Client.prototype.authenticateCustom = function (id, create, username, vars, options) {
-          if (vars === void 0) { vars = new Map(); }
+          if (vars === void 0) { vars = {}; }
           if (options === void 0) { options = {}; }
           var request = {
               "id": id,
-              "vars": mapToObject(vars)
+              "vars": vars
           };
           return this.apiClient.authenticateCustom(this.serverkey, "", request, create, username, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4341,7 +4320,7 @@
       Client.prototype.authenticateDevice = function (id, create, username, vars) {
           var request = {
               "id": id,
-              "vars": mapToObject(vars)
+              "vars": vars
           };
           return this.apiClient.authenticateDevice(this.serverkey, "", request, create, username).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4352,7 +4331,7 @@
           var request = {
               "email": email,
               "password": password,
-              "vars": mapToObject(vars)
+              "vars": vars
           };
           return this.apiClient.authenticateEmail(this.serverkey, "", request, create, username).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4363,7 +4342,7 @@
           if (options === void 0) { options = {}; }
           var request = {
               "signed_player_info": signedPlayerInfo,
-              "vars": mapToObject(vars)
+              "vars": vars
           };
           return this.apiClient.authenticateFacebookInstantGame(this.serverkey, "", { signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4374,7 +4353,7 @@
           if (options === void 0) { options = {}; }
           var request = {
               "token": token,
-              "vars": mapToObject(vars)
+              "vars": vars
           };
           return this.apiClient.authenticateFacebook(this.serverkey, "", request, create, username, sync, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4385,7 +4364,7 @@
           if (options === void 0) { options = {}; }
           var request = {
               "token": token,
-              "vars": mapToObject(vars)
+              "vars": vars
           };
           return this.apiClient.authenticateGoogle(this.serverkey, "", request, create, username, options).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4395,7 +4374,7 @@
       Client.prototype.authenticateGameCenter = function (token, create, username, vars) {
           var request = {
               "token": token,
-              "vars": mapToObject(vars)
+              "vars": vars
           };
           return this.apiClient.authenticateGameCenter(this.serverkey, "", request, create, username).then(function (apiSession) {
               return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -4408,7 +4387,7 @@
               return __generator(this, function (_a) {
                   request = {
                       "token": token,
-                      "vars": mapToObject(vars),
+                      "vars": vars,
                       "sync": sync
                   };
                   return [2 /*return*/, this.apiClient.authenticateSteam(this.serverkey, "", request, create, username).then(function (apiSession) {
@@ -5671,7 +5650,7 @@
       };
       /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
       Client.prototype.sessionRefresh = function (session, vars) {
-          if (vars === void 0) { vars = new Map(); }
+          if (vars === void 0) { vars = {}; }
           return __awaiter(this, void 0, void 0, function () {
               var apiSession;
               return __generator(this, function (_a) {
@@ -5687,7 +5666,7 @@
                           if (session.created && session.refresh_expires_at - session.created_at < 3700) {
                               console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/nakama/getting-started/configuration/#session");
                           }
-                          return [4 /*yield*/, this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars: mapToObject(vars) })];
+                          return [4 /*yield*/, this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars: vars })];
                       case 1:
                           apiSession = _a.sent();
                           session.update(apiSession.token, apiSession.refresh_token);

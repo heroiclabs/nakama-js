@@ -385,23 +385,23 @@ export declare class Client {
     /** Add friends by ID or username to a user's account. */
     addFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     /** Authenticate a user with an Apple ID against the server. */
-    authenticateApple(token: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
+    authenticateApple(token: string, create?: boolean, username?: string, vars?: Record<string, string>, options?: any): Promise<Session>;
     /** Authenticate a user with a custom id against the server. */
-    authenticateCustom(id: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
+    authenticateCustom(id: string, create?: boolean, username?: string, vars?: Record<string, string>, options?: any): Promise<Session>;
     /** Authenticate a user with a device id against the server. */
-    authenticateDevice(id: string, create?: boolean, username?: string, vars?: Map<string, string>): Promise<Session>;
+    authenticateDevice(id: string, create?: boolean, username?: string, vars?: Record<string, string>): Promise<Session>;
     /** Authenticate a user with an email+password against the server. */
-    authenticateEmail(email: string, password: string, create?: boolean, username?: string, vars?: Map<string, string>): Promise<Session>;
+    authenticateEmail(email: string, password: string, create?: boolean, username?: string, vars?: Record<string, string>): Promise<Session>;
     /** Authenticate a user with a Facebook Instant Game token against the server. */
-    authenticateFacebookInstantGame(signedPlayerInfo: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
+    authenticateFacebookInstantGame(signedPlayerInfo: string, create?: boolean, username?: string, vars?: Record<string, string>, options?: any): Promise<Session>;
     /** Authenticate a user with a Facebook OAuth token against the server. */
-    authenticateFacebook(token: string, create?: boolean, username?: string, sync?: boolean, vars?: Map<string, string>, options?: any): Promise<Session>;
+    authenticateFacebook(token: string, create?: boolean, username?: string, sync?: boolean, vars?: Record<string, string>, options?: any): Promise<Session>;
     /** Authenticate a user with Google against the server. */
-    authenticateGoogle(token: string, create?: boolean, username?: string, vars?: Map<string, string>, options?: any): Promise<Session>;
+    authenticateGoogle(token: string, create?: boolean, username?: string, vars?: Record<string, string>, options?: any): Promise<Session>;
     /** Authenticate a user with GameCenter against the server. */
-    authenticateGameCenter(token: string, create?: boolean, username?: string, vars?: Map<string, string>): Promise<Session>;
+    authenticateGameCenter(token: string, create?: boolean, username?: string, vars?: Record<string, string>): Promise<Session>;
     /** Authenticate a user with Steam against the server. */
-    authenticateSteam(token: string, create?: boolean, username?: string, sync?: boolean, vars?: Map<string, string>): Promise<Session>;
+    authenticateSteam(token: string, create?: boolean, username?: string, sync?: boolean, vars?: Record<string, string>): Promise<Session>;
     /** Ban users from a group. */
     banGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     /** Block one or more users by ID or username. */
@@ -491,7 +491,7 @@ export declare class Client {
     /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
     sessionLogout(session: Session, token: string, refreshToken: string): Promise<boolean>;
     /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
-    sessionRefresh(session: Session, vars?: Map<string, string>): Promise<Session>;
+    sessionRefresh(session: Session, vars?: Record<string, string>): Promise<Session>;
     /** Remove the Apple ID from the social profiles on the current user's account. */
     unlinkApple(session: Session, request: ApiAccountApple): Promise<boolean>;
     /** Remove custom ID from the social profiles on the current user's account. */

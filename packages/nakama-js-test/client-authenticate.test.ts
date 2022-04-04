@@ -72,8 +72,8 @@ describe('Authenticate Tests', () => {
     const customUsername = generateid();
 
     const session = await page.evaluate((customid, customUsername) => {
-      let vars = new Map<string, string>();
-      vars.set("testString", "testValue");
+      let vars = {};
+      vars["testString"] = "testValue";
 
       const client = new nakamajs.Client();
       return client.authenticateCustom(customid, true, customUsername, vars);

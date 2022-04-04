@@ -93,7 +93,7 @@ export interface ApiAccountApple {
   // The ID token received from Apple to validate.
   token?: string;
   // Extra information that will be bundled in the session token.
-  vars?: {[key: string]: string};
+  vars?: Record<string, string>;
 }
 
 /** Send a custom ID to the server. Used with authenticate/link/unlink. */
@@ -101,7 +101,7 @@ export interface ApiAccountCustom {
   // A custom identifier.
   id?: string;
   // Extra information that will be bundled in the session token.
-  vars?: {[key: string]: string};
+  vars?: Record<string, string>;
 }
 
 /** Send a device to the server. Used with authenticate/link/unlink and user. */
@@ -109,7 +109,7 @@ export interface ApiAccountDevice {
   // A device identifier. Should be obtained by a platform-specific device API.
   id?: string;
   // Extra information that will be bundled in the session token.
-  vars?: {[key: string]: string};
+  vars?: Record<string, string>;
 }
 
 /** Send an email with password to the server. Used with authenticate/link/unlink. */
@@ -119,7 +119,7 @@ export interface ApiAccountEmail {
   // A password for the user account.
   password?: string;
   // Extra information that will be bundled in the session token.
-  vars?: {[key: string]: string};
+  vars?: Record<string, string>;
 }
 
 /** Send a Facebook token to the server. Used with authenticate/link/unlink. */
@@ -127,7 +127,7 @@ export interface ApiAccountFacebook {
   // The OAuth token received from Facebook to access their profile API.
   token?: string;
   // Extra information that will be bundled in the session token.
-  vars?: {[key: string]: string};
+  vars?: Record<string, string>;
 }
 
 /** Send a Facebook Instant Game token to the server. Used with authenticate/link/unlink. */
@@ -135,7 +135,7 @@ export interface ApiAccountFacebookInstantGame {
   // 
   signed_player_info?: string;
   // Extra information that will be bundled in the session token.
-  vars?: {[key: string]: string};
+  vars?: Record<string, string>;
 }
 
 /** Send Apple's Game Center account credentials to the server. Used with authenticate/link/unlink. */
@@ -153,7 +153,7 @@ export interface ApiAccountGameCenter {
   // Time since UNIX epoch when the signature was created.
   timestamp_seconds?: string;
   // Extra information that will be bundled in the session token.
-  vars?: {[key: string]: string};
+  vars?: Record<string, string>;
 }
 
 /** Send a Google token to the server. Used with authenticate/link/unlink. */
@@ -161,7 +161,7 @@ export interface ApiAccountGoogle {
   // The OAuth token received from Google to access their profile API.
   token?: string;
   // Extra information that will be bundled in the session token.
-  vars?: {[key: string]: string};
+  vars?: Record<string, string>;
 }
 
 /** Send a Steam token to the server. Used with authenticate/link/unlink. */
@@ -169,7 +169,7 @@ export interface ApiAccountSteam {
   // The account token received from Steam to access their profile API.
   token?: string;
   // Extra information that will be bundled in the session token.
-  vars?: {[key: string]: string};
+  vars?: Record<string, string>;
 }
 
 /** A message sent on a channel. */
@@ -253,7 +253,7 @@ export interface ApiEvent {
   // An event name, type, category, or identifier.
   name?: string;
   // Arbitrary event property values.
-  properties?: {[key: string]: string};
+  properties?: Record<string, string>;
   // The time when the event was triggered.
   timestamp?: string;
 }
@@ -482,7 +482,7 @@ export interface ApiSessionRefreshRequest {
   // Refresh token.
   token?: string;
   // Extra information that will be bundled in the session token.
-  vars?: {[key: string]: string};
+  vars?: Record<string, string>;
 }
 
 /** An object within the storage engine. */

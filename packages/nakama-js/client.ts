@@ -57,7 +57,6 @@ import {
 
 import { Session } from "./session";
 import { DefaultSocket, Socket } from "./socket";
-import { mapToObject } from "./utils";
 import { WebSocketAdapter, WebSocketAdapterText } from "./web_socket_adapter";
 
 const DEFAULT_HOST = "127.0.0.1";
@@ -491,11 +490,11 @@ export class Client {
   }
 
   /** Authenticate a user with an Apple ID against the server. */
-  async authenticateApple(token: string, create?: boolean, username?: string, vars: Map<string, string> = new Map<string, string>(), options: any = {}) {
+  async authenticateApple(token: string, create?: boolean, username?: string, vars: Record<string, string> = {}, options: any = {}) {
 
     const request = {
       "token": token,
-      "vars": mapToObject(vars)
+      "vars": vars
     };
 
     return this.apiClient.authenticateApple(this.serverkey, "", request, create, username, options).then((apiSession : ApiSession) => {
@@ -504,10 +503,10 @@ export class Client {
   }
 
   /** Authenticate a user with a custom id against the server. */
-  authenticateCustom(id: string, create?: boolean, username?: string, vars: Map<string, string> = new Map<string, string>(), options: any = {}): Promise<Session> {
+  authenticateCustom(id: string, create?: boolean, username?: string, vars: Record<string, string> = {}, options: any = {}): Promise<Session> {
     const request = {
       "id": id,
-      "vars": mapToObject(vars)
+      "vars": vars
     };
     return this.apiClient.authenticateCustom(this.serverkey, "", request, create, username, options).then((apiSession : ApiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -515,10 +514,10 @@ export class Client {
   }
 
   /** Authenticate a user with a device id against the server. */
-  authenticateDevice(id : string, create?: boolean, username?: string, vars? : Map<string, string>): Promise<Session> {
+  authenticateDevice(id : string, create?: boolean, username?: string, vars? : Record<string, string>): Promise<Session> {
     const request = {
       "id": id,
-      "vars": mapToObject(vars)
+      "vars": vars
     };
 
     return this.apiClient.authenticateDevice(this.serverkey, "", request, create, username).then((apiSession : ApiSession) => {
@@ -527,11 +526,11 @@ export class Client {
   }
 
   /** Authenticate a user with an email+password against the server. */
-  authenticateEmail(email: string, password: string, create?: boolean, username?: string, vars?: Map<string,string>): Promise<Session> {
+  authenticateEmail(email: string, password: string, create?: boolean, username?: string, vars?: Record<string,string>): Promise<Session> {
     const request = {
       "email": email,
       "password": password,
-      "vars": mapToObject(vars)
+      "vars": vars
     };
 
     return this.apiClient.authenticateEmail(this.serverkey, "", request, create, username).then((apiSession : ApiSession) => {
@@ -540,10 +539,10 @@ export class Client {
   }
 
   /** Authenticate a user with a Facebook Instant Game token against the server. */
-  authenticateFacebookInstantGame(signedPlayerInfo: string, create?: boolean, username?: string, vars?: Map<string, string>, options: any = {}): Promise<Session> {
+  authenticateFacebookInstantGame(signedPlayerInfo: string, create?: boolean, username?: string, vars?: Record<string, string>, options: any = {}): Promise<Session> {
     const request = {
       "signed_player_info": signedPlayerInfo,
-      "vars": mapToObject(vars)
+      "vars": vars
     };
 
     return this.apiClient.authenticateFacebookInstantGame(this.serverkey, "",
@@ -553,10 +552,10 @@ export class Client {
   }
 
   /** Authenticate a user with a Facebook OAuth token against the server. */
-  authenticateFacebook(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Map<string, string>, options: any = {}): Promise<Session> {
+  authenticateFacebook(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Record<string, string>, options: any = {}): Promise<Session> {
     const request = {
       "token": token,
-      "vars": mapToObject(vars)
+      "vars": vars
     };
 
     return this.apiClient.authenticateFacebook(this.serverkey, "", request, create, username, sync, options).then((apiSession : ApiSession) => {
@@ -565,10 +564,10 @@ export class Client {
   }
 
   /** Authenticate a user with Google against the server. */
-  authenticateGoogle(token : string, create?: boolean, username?: string, vars?: Map<string, string>, options: any = {}): Promise<Session> {
+  authenticateGoogle(token : string, create?: boolean, username?: string, vars?: Record<string, string>, options: any = {}): Promise<Session> {
     const request = {
       "token": token,
-      "vars": mapToObject(vars)
+      "vars": vars
     };
 
     return this.apiClient.authenticateGoogle(this.serverkey, "", request, create, username, options).then((apiSession : ApiSession) => {
@@ -577,10 +576,10 @@ export class Client {
   }
 
   /** Authenticate a user with GameCenter against the server. */
-  authenticateGameCenter(token: string, create?: boolean, username? :string, vars?: Map<string, string>): Promise<Session> {
+  authenticateGameCenter(token: string, create?: boolean, username? :string, vars?: Record<string, string>): Promise<Session> {
     const request = {
       "token": token,
-      "vars": mapToObject(vars)
+      "vars": vars
     };
 
     return this.apiClient.authenticateGameCenter(this.serverkey, "", request, create, username).then((apiSession : ApiSession) => {
@@ -589,10 +588,10 @@ export class Client {
   }
 
   /** Authenticate a user with Steam against the server. */
-  async authenticateSteam(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Map<string, string>) : Promise<Session> {
+  async authenticateSteam(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Record<string, string>) : Promise<Session> {
     const request = {
       "token": token,
-      "vars": mapToObject(vars),
+      "vars": vars,
       "sync": sync
     };
 
@@ -1582,7 +1581,7 @@ export class Client {
   }
 
   /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
-  async sessionRefresh(session: Session, vars: Map<string, string> = new Map<string, string>()) : Promise<Session> {
+  async sessionRefresh(session: Session, vars: Record<string, string> = {}) : Promise<Session> {
 
     if (!session) {
         console.error("Cannot refresh a null session.");
@@ -1597,7 +1596,7 @@ export class Client {
         console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/nakama/getting-started/configuration/#session");
     }
 
-    const apiSession = await this.apiClient.sessionRefresh(this.serverkey, "", {token: session.refresh_token, vars: mapToObject(vars)});
+    const apiSession = await this.apiClient.sessionRefresh(this.serverkey, "", {token: session.refresh_token, vars: vars});
     session.update(apiSession.token!, apiSession.refresh_token!);
     return session;
   }

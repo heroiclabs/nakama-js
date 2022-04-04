@@ -69,13 +69,13 @@ export interface {{$classname | title}} {
                 {{- end}}
               {{- else if eq $property.Type "object"}}
                 {{- if eq $property.AdditionalProperties.Type "string"}}
-  {{$fieldname}}?: {[key: string]: string};
+  {{$fieldname}}?: Record<string, string>;
                 {{- else if eq $property.AdditionalProperties.Type "integer"}}
-  {{$fieldname}}?: Map<string, integer>;
+  {{$fieldname}}?: Record<string, integer>;
                 {{- else if eq $property.AdditionalProperties.Type "boolean"}}
-  {{$fieldname}}?: Map<string, boolean>;
-                {{- else}}
-  {{$fieldname}}?: Map<{{$property.AdditionalProperties | cleanRef}}>;
+  {{$fieldname}}?: Record<string, boolean>;
+                {{- else }}
+  {{$fieldname}}?: Record<{{$property.AdditionalProperties | cleanRef}}>;
                 {{- end}}
               {{- else if eq $property.Type "string"}}
   {{$fieldname}}?: string;
