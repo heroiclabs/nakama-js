@@ -57,6 +57,7 @@ import {
 
 import { Session } from "./session";
 import { DefaultSocket, Socket } from "./socket";
+import { mapToObject } from "./utils";
 import { WebSocketAdapter, WebSocketAdapterText } from "./web_socket_adapter";
 
 const DEFAULT_HOST = "127.0.0.1";
@@ -494,7 +495,7 @@ export class Client {
 
     const request = {
       "token": token,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
 
     return this.apiClient.authenticateApple(this.serverkey, "", request, create, username, options).then((apiSession : ApiSession) => {
@@ -506,7 +507,7 @@ export class Client {
   authenticateCustom(id: string, create?: boolean, username?: string, vars: Map<string, string> = new Map<string, string>(), options: any = {}): Promise<Session> {
     const request = {
       "id": id,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
     return this.apiClient.authenticateCustom(this.serverkey, "", request, create, username, options).then((apiSession : ApiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
@@ -517,7 +518,7 @@ export class Client {
   authenticateDevice(id : string, create?: boolean, username?: string, vars? : Map<string, string>): Promise<Session> {
     const request = {
       "id": id,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
 
     return this.apiClient.authenticateDevice(this.serverkey, "", request, create, username).then((apiSession : ApiSession) => {
@@ -530,7 +531,7 @@ export class Client {
     const request = {
       "email": email,
       "password": password,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
 
     return this.apiClient.authenticateEmail(this.serverkey, "", request, create, username).then((apiSession : ApiSession) => {
@@ -542,7 +543,7 @@ export class Client {
   authenticateFacebookInstantGame(signedPlayerInfo: string, create?: boolean, username?: string, vars?: Map<string, string>, options: any = {}): Promise<Session> {
     const request = {
       "signed_player_info": signedPlayerInfo,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
 
     return this.apiClient.authenticateFacebookInstantGame(this.serverkey, "",
@@ -555,7 +556,7 @@ export class Client {
   authenticateFacebook(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Map<string, string>, options: any = {}): Promise<Session> {
     const request = {
       "token": token,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
 
     return this.apiClient.authenticateFacebook(this.serverkey, "", request, create, username, sync, options).then((apiSession : ApiSession) => {
@@ -567,7 +568,7 @@ export class Client {
   authenticateGoogle(token : string, create?: boolean, username?: string, vars?: Map<string, string>, options: any = {}): Promise<Session> {
     const request = {
       "token": token,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
 
     return this.apiClient.authenticateGoogle(this.serverkey, "", request, create, username, options).then((apiSession : ApiSession) => {
@@ -579,7 +580,7 @@ export class Client {
   authenticateGameCenter(token: string, create?: boolean, username? :string, vars?: Map<string, string>): Promise<Session> {
     const request = {
       "token": token,
-      "vars": vars
+      "vars": mapToObject(vars)
     };
 
     return this.apiClient.authenticateGameCenter(this.serverkey, "", request, create, username).then((apiSession : ApiSession) => {
@@ -591,7 +592,7 @@ export class Client {
   async authenticateSteam(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Map<string, string>) : Promise<Session> {
     const request = {
       "token": token,
-      "vars": vars,
+      "vars": mapToObject(vars),
       "sync": sync
     };
 
@@ -1596,7 +1597,7 @@ export class Client {
         console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/nakama/getting-started/configuration/#session");
     }
 
-    const apiSession = await this.apiClient.sessionRefresh(this.serverkey, "", {token: session.refresh_token, vars: vars});
+    const apiSession = await this.apiClient.sessionRefresh(this.serverkey, "", {token: session.refresh_token, vars: mapToObject(vars)});
     session.update(apiSession.token!, apiSession.refresh_token!);
     return session;
   }

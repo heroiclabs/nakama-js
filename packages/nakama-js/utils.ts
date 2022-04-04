@@ -45,3 +45,17 @@ export function b64DecodeUnicode(str: string) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
 }
+
+export function mapToObject(map : Map<string, string> | undefined) {
+    if (!map) {
+        return undefined;
+    }
+
+    let obj : {[key: string]: string} = {};
+
+    for (const key of map.keys()) {
+        obj[key] = map.get(key)!;
+    }
+
+    return obj;
+}

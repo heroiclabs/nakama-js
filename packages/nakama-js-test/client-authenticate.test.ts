@@ -65,6 +65,27 @@ describe('Authenticate Tests', () => {
     expect(session.token).not.toBeNull();
   });
 
+  it('should authenticate with user variables', async () => {
+    const page : Page = await createPage();
+
+    const customid = generateid();
+    const customUsername = generateid();
+
+    const session = await page.evaluate((customid, customUsername) => {
+      let vars = new Map<string, string>();
+      vars.set("testString", "testValue");
+
+      const client = new nakamajs.Client();
+      return client.authenticateCustom(customid, true, customUsername, vars);
+    }, customid, customUsername);
+
+    expect(session).not.toBeNull();
+    expect(session.token).not.toBeNull();
+    expect(session.vars).not.toBeNull();
+    expect(session.vars["testString"]).toBe("testValue");
+
+  });
+
   it('should fail to authenticate with new custom id', async () => {
     const page : Page = await createPage();
 
