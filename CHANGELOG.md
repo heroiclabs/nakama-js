@@ -3,6 +3,12 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### Unreleased
+
+### Changed
+- Changed data structure used to pass session variables to authentication methods. The old structure used was a `Map<string, string>`. We now use the `Record<string, string>` for serialization support.
+
+
 ### [2.3.0]
 
 ### Fixed
