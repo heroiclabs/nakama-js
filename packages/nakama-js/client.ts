@@ -490,7 +490,7 @@ export class Client {
   }
 
   /** Authenticate a user with an Apple ID against the server. */
-  async authenticateApple(token: string, create?: boolean, username?: string, vars: Map<string, string> = new Map<string, string>(), options: any = {}) {
+  async authenticateApple(token: string, create?: boolean, username?: string, vars: Record<string, string> = {}, options: any = {}) {
 
     const request = {
       "token": token,
@@ -503,7 +503,7 @@ export class Client {
   }
 
   /** Authenticate a user with a custom id against the server. */
-  authenticateCustom(id: string, create?: boolean, username?: string, vars: Map<string, string> = new Map<string, string>(), options: any = {}): Promise<Session> {
+  authenticateCustom(id: string, create?: boolean, username?: string, vars: Record<string, string> = {}, options: any = {}): Promise<Session> {
     const request = {
       "id": id,
       "vars": vars
@@ -514,7 +514,7 @@ export class Client {
   }
 
   /** Authenticate a user with a device id against the server. */
-  authenticateDevice(id : string, create?: boolean, username?: string, vars? : Map<string, string>): Promise<Session> {
+  authenticateDevice(id : string, create?: boolean, username?: string, vars? : Record<string, string>): Promise<Session> {
     const request = {
       "id": id,
       "vars": vars
@@ -526,7 +526,7 @@ export class Client {
   }
 
   /** Authenticate a user with an email+password against the server. */
-  authenticateEmail(email: string, password: string, create?: boolean, username?: string, vars?: Map<string,string>): Promise<Session> {
+  authenticateEmail(email: string, password: string, create?: boolean, username?: string, vars?: Record<string,string>): Promise<Session> {
     const request = {
       "email": email,
       "password": password,
@@ -539,7 +539,7 @@ export class Client {
   }
 
   /** Authenticate a user with a Facebook Instant Game token against the server. */
-  authenticateFacebookInstantGame(signedPlayerInfo: string, create?: boolean, username?: string, vars?: Map<string, string>, options: any = {}): Promise<Session> {
+  authenticateFacebookInstantGame(signedPlayerInfo: string, create?: boolean, username?: string, vars?: Record<string, string>, options: any = {}): Promise<Session> {
     const request = {
       "signed_player_info": signedPlayerInfo,
       "vars": vars
@@ -552,7 +552,7 @@ export class Client {
   }
 
   /** Authenticate a user with a Facebook OAuth token against the server. */
-  authenticateFacebook(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Map<string, string>, options: any = {}): Promise<Session> {
+  authenticateFacebook(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Record<string, string>, options: any = {}): Promise<Session> {
     const request = {
       "token": token,
       "vars": vars
@@ -564,7 +564,7 @@ export class Client {
   }
 
   /** Authenticate a user with Google against the server. */
-  authenticateGoogle(token : string, create?: boolean, username?: string, vars?: Map<string, string>, options: any = {}): Promise<Session> {
+  authenticateGoogle(token : string, create?: boolean, username?: string, vars?: Record<string, string>, options: any = {}): Promise<Session> {
     const request = {
       "token": token,
       "vars": vars
@@ -576,7 +576,7 @@ export class Client {
   }
 
   /** Authenticate a user with GameCenter against the server. */
-  authenticateGameCenter(token: string, create?: boolean, username? :string, vars?: Map<string, string>): Promise<Session> {
+  authenticateGameCenter(token: string, create?: boolean, username? :string, vars?: Record<string, string>): Promise<Session> {
     const request = {
       "token": token,
       "vars": vars
@@ -588,7 +588,7 @@ export class Client {
   }
 
   /** Authenticate a user with Steam against the server. */
-  async authenticateSteam(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Map<string, string>) : Promise<Session> {
+  async authenticateSteam(token : string, create?: boolean, username?: string, sync?: boolean, vars? : Record<string, string>) : Promise<Session> {
     const request = {
       "token": token,
       "vars": vars,
@@ -1581,7 +1581,7 @@ export class Client {
   }
 
   /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
-  async sessionRefresh(session: Session, vars: Map<string, string> = new Map<string, string>()) : Promise<Session> {
+  async sessionRefresh(session: Session, vars: Record<string, string> = {}) : Promise<Session> {
 
     if (!session) {
         console.error("Cannot refresh a null session.");

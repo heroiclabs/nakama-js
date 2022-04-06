@@ -2,7 +2,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.nakamajs = {}));
-})(this, (function (exports) { 'use strict';
+}(this, (function (exports) { 'use strict';
 
   (function(self) {
 
@@ -3503,8 +3503,8 @@
           }
           var tokenDecoded = JSON.parse(atob(tokenParts[1])); // FIXME: use base64 polyfill for React Native.
           var tokenExpiresAt = Math.floor(parseInt(tokenDecoded['exp']));
-          // clients that have just updated to the refresh tokens
-          // client release will not have a cached refresh token
+          /** clients that have just updated to the refresh tokens */
+          /** client release will not have a cached refresh token */
           if (refreshToken) {
               var refreshTokenParts = refreshToken.split('.');
               if (refreshTokenParts.length != 3) {
@@ -3679,7 +3679,7 @@
               if (_this.verbose && window && window.console) {
                   console.log("Response: %o", JSON.stringify(message));
               }
-              // Inbound message from server.
+              /** Inbound message from server. */
               if (message.cid == undefined) {
                   if (message.notifications) {
                       message.notifications.notifications.forEach(function (n) {
@@ -3907,7 +3907,7 @@
                       }
                       var cid = _this.generatecid();
                       _this.cIds[cid] = { resolve: resolve, reject: reject };
-                      // Add id for promise executor.
+                      /** Add id for promise executor. */
                       untypedMessage.cid = cid;
                       _this.adapter.send(untypedMessage);
                   }
@@ -4243,7 +4243,7 @@
           this.useSSL = useSSL;
           this.timeout = timeout;
           this.autoRefreshSession = autoRefreshSession;
-          // The expired timespan used to check session lifetime.
+          /** The expired timespan used to check session lifetime. */
           this.expiredTimespanMs = DEFAULT_EXPIRED_TIMESPAN_MS;
           var scheme = (useSSL) ? "https://" : "http://";
           var basePath = "" + scheme + host + ":" + port;
@@ -4289,7 +4289,7 @@
       };
       /** Authenticate a user with an Apple ID against the server. */
       Client.prototype.authenticateApple = function (token, create, username, vars, options) {
-          if (vars === void 0) { vars = new Map(); }
+          if (vars === void 0) { vars = {}; }
           if (options === void 0) { options = {}; }
           return __awaiter(this, void 0, void 0, function () {
               var request;
@@ -4306,7 +4306,7 @@
       };
       /** Authenticate a user with a custom id against the server. */
       Client.prototype.authenticateCustom = function (id, create, username, vars, options) {
-          if (vars === void 0) { vars = new Map(); }
+          if (vars === void 0) { vars = {}; }
           if (options === void 0) { options = {}; }
           var request = {
               "id": id,
@@ -5650,7 +5650,7 @@
       };
       /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
       Client.prototype.sessionRefresh = function (session, vars) {
-          if (vars === void 0) { vars = new Map(); }
+          if (vars === void 0) { vars = {}; }
           return __awaiter(this, void 0, void 0, function () {
               var apiSession;
               return __generator(this, function (_a) {
@@ -5661,10 +5661,10 @@
                               return [2 /*return*/, session];
                           }
                           if (session.created && session.expires_at - session.created_at < 70) {
-                              console.warn("Session lifetime too short, please set '--session.token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+                              console.warn("Session lifetime too short, please set '--session.token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/nakama/getting-started/configuration/#session");
                           }
                           if (session.created && session.refresh_expires_at - session.created_at < 3700) {
-                              console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+                              console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/nakama/getting-started/configuration/#session");
                           }
                           return [4 /*yield*/, this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars: vars })];
                       case 1:
@@ -6036,4 +6036,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
