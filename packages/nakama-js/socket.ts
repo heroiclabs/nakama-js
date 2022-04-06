@@ -28,27 +28,38 @@ interface PromiseExecutor {
   resolve: (value?: any) => void;
   reject: (reason?: any) => void;
 }
-
+/** An object which represents a connected user in the server. */
 export interface Presence {
+  /** The id of the user. */
   user_id: string;
+  /** The session id of the user. */
   session_id: string;
+  /** The username of the user. */
   username: string;
+  /** The node the user is connected to. */
   node: string;
 }
 
-/** A response fron a channel join operation. */
+/** A response from a channel join operation. */
 export interface Channel {
+  /** The server-assigned channel id. */
   id: string;
+  /** The presences visible on the chat channel. */
   presences: Presence[];
+  /** The presence of the current user, i.e. yourself. */
   self: Presence;
 }
 
 /** Join a realtime chat channel. */
 interface ChannelJoin {
   channel_join: {
+    /** The name of the channel to join. */
     target: string;
+    /** The channel type: 1 = Room, 2 = Direct Message, 3 = Group. */
     type: number;
+    /** Whether channel messages are persisted in the database. */
     persistence: boolean;
+    /** Whether the user's channel presence is hidden when joining. */
     hidden: boolean;
   };
 }
@@ -56,42 +67,65 @@ interface ChannelJoin {
 /** Leave a realtime chat channel. */
 interface ChannelLeave {
   channel_leave: {
+    /** The id of the channel to leave. */
     channel_id: string;
   };
 }
 
 /** An incoming message on a realtime chat channel. */
 export interface ChannelMessage {
+  /** The channel this message belongs to. */
   channel_id: string;
+  /** The unique ID of this message. */
   message_id: string;
+  /** The unique ID of this message. */
   code: number;
+  /** Message sender, usually a user ID. */
   sender_id: string;
+  /** The username of the message sender, if any. */
   username: string;
+  /** The content payload. */
   content: any;
+  /** The UNIX time when the message was created. */
   create_time: string;
+  /** The UNIX time when the message was last updated. */
   update_time: string;
+  /** True if the message was persisted to the channel's history, false otherwise. */
   persistent: boolean;
+  /** The ID of the group, or an empty string if this message was not sent through a group channel. */
   group_id: string;
+  /** The name of the chat room, or an empty string if this message was not sent through a chat room. */
   room_name: string;
+  /** The ID of the first DM user, or an empty string if this message was not sent through a DM chat. */
   user_id_one: string;
+  /** The ID of the second DM user, or an empty string if this message was not sent through a DM chat. */
   user_id_two: string;
 }
 
 /** An acknowledgement received in response to sending a message on a chat channel. */
 export interface ChannelMessageAck {
+  /** The server-assigned channel ID. */
   channel_id: string;
+  /** A unique ID for the chat message. */
   message_id: string;
+  /** A user-defined code for the chat message. */
   code: number;
+  /** The username of the sender of the message. */
   username: string;
+  /** The UNIX time when the message was created. */
   create_time: string;
+  /** The UNIX time when the message was updated. */
   update_time: string;
+  /** True if the chat message has been stored in history. */
   persistence: boolean;
 }
 
 /** Send a message to a realtime chat channel. */
 interface ChannelMessageSend {
   channel_message_send: {
+    /** The server-assigned channel ID. */
     channel_id: string;
+    /** The content payload. */
     content: any;
   };
 }
@@ -99,8 +133,11 @@ interface ChannelMessageSend {
 /** Update a message previously sent to a realtime chat channel. */
 interface ChannelMessageUpdate {
   channel_message_update: {
+    /** The server-assigned channel ID. */
     channel_id: string,
+    /** A unique ID for the chat message to be updated. */
     message_id: string,
+    /** The content payload. */
     content: any;
   };
 }
@@ -108,94 +145,134 @@ interface ChannelMessageUpdate {
 /** Remove a message previously sent to a realtime chat channel. */
 interface ChannelMessageRemove {
   channel_message_remove: {
+    /** The server-assigned channel ID. */
     channel_id: string;
+    /** A unique ID for the chat message to be removed. */
     message_id: string;
   };
 }
 
 /** Presence update for a particular realtime chat channel. */
 export interface ChannelPresenceEvent {
+  /** The unique identifier of the chat channel. */
   channel_id: string;
+  /** Presences of the users who joined the channel. */
   joins: Presence[];
+  /** Presences of users who left the channel. */
   leaves: Presence[];
 }
 
 /** Stream identifier */
 export interface StreamId {
+  /** The type of stream (e.g. chat). */
   mode: number;
+  /** The primary stream subject, usually a user id. */
   subject: string;
+  /** A secondary stream subject, for example for a direct chat. */
   descriptor: string;
+  /** Meta-information (e.g. chat room name). */
   label: string;
 }
 
 /** Stream data. */
 export interface StreamData {
+  /** The stream identifier. */
   stream: StreamId;
+  /** Array of presences to receive stream data. */
   stream_presence: Presence;
+  /** The data to send. */
   data: string;
 }
 
 /** Presence updates. */
 export interface StreamPresenceEvent {
+  /** The stream identifier. */
   stream: StreamId;
+  /** Presences of users who joined the stream. */
   joins: Presence[];
+  /** Presences of users who left the stream. */
   leaves: Presence[];
 }
 
 /** Match presence updates. */
 export interface MatchPresenceEvent {
+  /** The unique match identifier. */
   match_id: string;
+  /** Presences of users who joined the match. */
   joins: Presence[];
+  /** Presences of users who left the match. */
   leaves: Presence[];
 }
 
 /** Start a matchmaking process. */
 interface MatchmakerAdd {
   matchmaker_add: {
+    /** The minimum number of opponents for a successful match. */
     min_count: number;
+    /** The maximum number of opponents for a successful match. */
     max_count: number;
+    /** Criteria for eligible opponents. Use wildcard '*' for any. */
     query: string;
+    /** Key-value pairs describing the user (e.g. region). */
     string_properties?: Record<string, string>;
+    /** Key-value pairs describing the user (e.g. rank). */
     numeric_properties?: Record<string, number>;
   };
 }
 
 /** The matchmaker ticket received from the server. */
 export interface MatchmakerTicket {
+  /** The ticket generated by the matchmaker. */
     ticket : string;
 }
 
 /** Cancel a matchmaking process. */
 interface MatchmakerRemove {
   matchmaker_remove: {
+    /** The matchmaker ticket to be removed. */
     ticket: string;
   };
 }
 
 /** A reference to a user and their matchmaking properties. */
 export interface MatchmakerUser {
+  /** User information for the user being matched. */
   presence: Presence;
+  /** Party identifier, if this user was matched as a party member. */
   party_id : string;
+  /** String properties describing the user. */
   string_properties?: Record<string, string>;
+  /** Numeric properties describing the user. */
   numeric_properties?: Record<string, number>;
 }
 
-/** Matchmaking result. */
+/** The result of a successful matchmaker operation sent to the server. */
 export interface MatchmakerMatched {
+  /** The ticket sent by the server when the user requested to matchmake for other players. */
   ticket: string;
+  /** A match ID used to join the match. */
   match_id: string;
+  /** The token used to join a match. */
   token: string;
+  /** The other users matched with this user and the parameters they sent. */
   users: MatchmakerUser[];
+  /** The current user who matched with opponents. */
   self: MatchmakerUser;
 }
 
-/** A realtime match */
+/** A realtime multiplayer match. */
 export interface Match {
+  /** The unique match identifier. */
   match_id: string;
+  /** If this match has an authoritative handler on the server. */
   authoritative: boolean;
+  /** A label for the match which can be filtered on. */
   label?: string;
+  /** The number of users currently in the match. */
   size: number;
+  /** The presences already in the match. */
   presences: Presence[];
+  /** The current user in this match, i.e. yourself. */
   self: Presence;
 }
 
@@ -207,8 +284,11 @@ interface CreateMatch {
 /** Join a multiplayer match. */
 interface JoinMatch {
   match_join: {
+    /** The unique identifier of the match to join. */
     match_id?: string;
+    /** The token used to join the match. */
     token?: string;
+    /** An optional set of key-value metadata pairs to be passed to the match handler. */
     metadata?: {};
   };
 }
@@ -216,37 +296,50 @@ interface JoinMatch {
 /** Leave a multiplayer match. */
 interface LeaveMatch {
   match_leave: {
+    /** The unique identifier of the match to leave. */
     match_id: string;
   };
 }
 
 /** Match data */
 export interface MatchData {
+  /** The unique match identifier. */
   match_id: string;
+  /** Operation code value. */
   op_code: number;
+  /** Data payload, if any. */
   data: any;
+  /** A reference to the user presences that sent this data, if any. */
   presences: Presence[];
 }
 
-/** Send a message contains match data. */
+/** Send a message that contains match data. */
 interface MatchDataSend {
   match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
 }
 
 /** Incoming information about a party. */
 export interface Party {
+  /** The unique party identifier. */
   party_id : string;
+  /** True, if the party is open to join. */
   open : boolean;
+  /** The maximum number of party members. */
   max_size : number;
+  /** The current user in this party, i.e. yourself. */
   self : Presence;
+  /** The current party leader. */
   leader : Presence;
+  /** All members currently in the party. */
   presences : Presence[];
 }
 
 /** Create a party. */
 export interface PartyCreate {
   party_create: {
+    /** True, if the party is open to join. */
     open : boolean;
+    /** The maximum number of party members. */
     max_size : number;
   }
 }
@@ -254,6 +347,7 @@ export interface PartyCreate {
 /** Join a party. */
 interface PartyJoin {
   party_join: {
+    /** The unique party identifier. */
     party_id : string;
   }
 }
@@ -261,6 +355,7 @@ interface PartyJoin {
 /** Leave a party. */
 interface PartyLeave {
   party_leave: {
+    /** The unique party identifier. */
     party_id : string;
   }
 }
@@ -268,21 +363,27 @@ interface PartyLeave {
 /** Promote a new party leader. */
 interface PartyPromote {
   party_promote: {
+    /** The unique party identifier. */
     party_id : string;
+    /** The user presence being promoted to leader. */
     presence : Presence;
   }
 }
 
 /** Announcement of a new party leader. */
 export interface PartyLeader {
+  /** The unique party identifier. */
   party_id : string;
+  /** The presence of the new party leader. */
   presence : Presence;
 }
 
 /** Accept a request to join. */
 interface PartyAccept {
   party_accept: {
+    /** The unique party identifier. */
     party_id : string;
+    /** The presence being accepted to join the party. */
     presence : Presence;
   }
 }
@@ -290,36 +391,47 @@ interface PartyAccept {
 /** End a party, kicking all party members and closing it. */
 interface PartyClose {
   party_close: {
+    /** The unique party identifier. */
     party_id : string;
   }
 }
 
 /** Incoming party data delivered from the server. */
 export interface PartyData {
+  /** The unique party identifier. */
   party_id: string;
+  /** A reference to the user presence that sent this data, if any. */
   presence: Presence;
+  /** The operation code the message was sent with. */
   op_code: number;
+  /** Data payload, if any. */
   data: any;
 }
 
 /** A client to server request to send data to a party. */
 interface PartyDataSend {
   party_data_send: {
+    /** The unique party identifier. */
     party_id : string;
+    /** The operation code the message was sent with. */
     op_code : number;
+    /** Data payload, if any. */
     data : any;
   }
 }
 
 /** Incoming notification for one or more new presences attempting to join the party. */
 export interface PartyJoinRequest {
+  /** The ID of the party to get a list of join requests for. */
   party_id : string;
+  /** Presences attempting to join, or who have joined. */
   presences : Presence[];
 }
 
 /** Request a list of pending join requests for a party. */
 export interface PartyJoinRequestList {
   party_join_request_list: {
+    /** The ID of the party to get a list of join requests for. */
     party_id : string;
   }
 }
@@ -327,11 +439,17 @@ export interface PartyJoinRequestList {
 /** Begin matchmaking as a party. */
 interface PartyMatchmakerAdd {
   party_matchmaker_add: {
+    /** The ID of the party to create a matchmaker ticket for. */
     party_id : string;
+    /** Minimum total user count to match together. */
     min_count : number;
+    /** Maximum total user count to match together. */
     max_count : number;
+    /** Filter query used to identify suitable users. */
     query : string;
+    /** String properties describing the party (e.g. region). */
     string_properties? : Record<string, string>;
+    /** Numeric properties describing the party (e.g. rank). */
     numeric_properties? : Record<string, number>;
   }
 }
@@ -339,28 +457,37 @@ interface PartyMatchmakerAdd {
 /** Cancel a party matchmaking process using a ticket. */
 interface PartyMatchmakerRemove {
   party_matchmaker_remove: {
+    /** The ID of the party to cancel a matchmaker ticket for. */
     party_id : string;
+    /** The ticket to remove. */
     ticket : string;
   }
 }
 
 /** A response from starting a new party matchmaking process. */
 export interface PartyMatchmakerTicket {
+  /** The ID of the party. */
   party_id: string;
+  /** The matchmaker ticket created. */
   ticket: string;
 }
 
 /** Presence update for a particular party. */
 export interface PartyPresenceEvent {
+  /** The ID of the party. */
   party_id : string;
+  /** The user presences that have just joined the party. */
   joins : Presence[];
+  /** The user presences that have just left the party. */
   leaves : Presence[];
 }
 
 /** Kick a party member, or decline a request to join. */
 interface PartyRemove {
   party_remove: {
+    /** The ID of the party to remove/reject from. */
     party_id : string;
+    /** The presence to remove/reject. */
     presence : Presence;
   }
 }
@@ -372,27 +499,33 @@ interface Rpc {
 
 /** A snapshot of statuses for some set of users. */
 export interface Status {
+  /** The user presences to view statuses of. */
   presences: Presence[];
 }
 
 /** Start receiving status updates for some set of users. */
 interface StatusFollow {
+  /** The IDs of the users to follow. */
   status_follow: {user_ids: string[];}
 }
 
 /** A batch of status updates for a given user. */
 export interface StatusPresenceEvent {
+  /** This join information is in response to a subscription made to be notified when a user comes online. */
   joins: Presence[];
+  /** This join information is in response to a subscription made to be notified when a user goes offline. */
   leaves: Presence[];
 }
 
 /** Stop receiving status updates for some set of users. */
 interface StatusUnfollow {
+  /** The IDs of user to unfollow. */
   status_unfollow: {user_ids: string[];};
 }
 
 /** Set the user's own status. */
 interface StatusUpdate {
+  /** Status string to set, if not present the user will appear offline. */
   status_update: {status?: string;};
 }
 
