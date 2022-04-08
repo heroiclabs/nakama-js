@@ -167,7 +167,7 @@ describe('Party Tests', () => {
     const customid1 = generateid();
     const customid2 = generateid();
 
-    const response : PartyData = await page.evaluate(async (customid1, customid2, adapter) => {
+    const response : string = await page.evaluate(async (customid1, customid2, adapter) => {
 
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
@@ -210,17 +210,14 @@ describe('Party Tests', () => {
         }
       });
 
-      socket1.sendPartyData(presenceEvent.party_id, 1, {"hello": "world"});
+      socket1.sendPartyData(presenceEvent.party_id, 1, JSON.stringify({"hello": "world"}));
 
-      return socket2DataPromise;
-
+      const matchData = await socket2DataPromise;
+      return new TextDecoder().decode(matchData.data);
     }, customid1, customid2, adapter);
 
     expect(response).toBeDefined();
-    expect(response.party_id).toBeDefined();
-    expect(response.op_code == 1);
-    expect(response.data).toBeDefined();
-    expect(response.data.hello).toEqual("world");
+    expect(JSON.parse(response).hello).toEqual("world");
   });
 
   it.each(adapters)('should create closed party and have member join and then removed', async (adapter) => {

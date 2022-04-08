@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import * as base64 from "base64-arraybuffer";
+
 /**
  * An interface used by Nakama's web socket to determine the payload protocol.
  */
@@ -107,6 +109,13 @@ export class WebSocketAdapterText implements WebSocketAdapter {
         if (value) {
             this._socket!.onmessage = (evt: MessageEvent) => {
                 const message: any = JSON.parse(evt.data);
+
+                if (message.match_data && message.match_data.data) {
+                    message.match_data.data = new Uint8Array(base64.decode(message.match_data.data));
+                } else if (message.party_data && message.party_data.data) {
+                    message.party_data.data = new Uint8Array(base64.decode(message.party_data.data));
+                }
+
                 value!(message);
             };
         }
@@ -143,8 +152,15 @@ export class WebSocketAdapterText implements WebSocketAdapter {
         if (msg.match_data_send) {
             // according to protobuf docs, int64 is encoded to JSON as string.
             msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+            if (msg.match_data_send.data) {
+                msg.match_data_send.data = base64.encode(msg.match_data_send.data.buffer);
+            }
         } else if (msg.party_data_send) {
+            // according to protobuf docs, int64 is encoded to JSON as string.
             msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
+            if (msg.party_data_send.data) {
+                msg.party_data_send.data = base64.encode(msg.party_data_send.data.buffer);
+            }
         }
 
         this._socket!.send(JSON.stringify(msg));

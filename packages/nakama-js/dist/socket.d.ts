@@ -276,7 +276,7 @@ export interface MatchData {
     /** Operation code value. */
     op_code: number;
     /** Data payload, if any. */
-    data: any;
+    data: Uint8Array;
     /** A reference to the user presences that sent this data, if any. */
     presences: Presence[];
 }
@@ -363,7 +363,7 @@ export interface PartyData {
     /** The operation code the message was sent with. */
     op_code: number;
     /** Data payload, if any. */
-    data: any;
+    data: Uint8Array;
 }
 /** A client to server request to send data to a party. */
 interface PartyDataSend {
@@ -526,9 +526,9 @@ export interface Socket {
     rpc(id?: string, payload?: string, http_key?: string): Promise<ApiRpc>;
     /** Send input to a multiplayer match on the server. */
     /** When no presences are supplied the new match state will be sent to all presences. */
-    sendMatchState(matchId: string, opCode: number, data: any, presence?: Presence[]): Promise<void>;
+    sendMatchState(matchId: string, opCode: number, data: string | Uint8Array, presence?: Presence[]): Promise<void>;
     /** Send data to a party. */
-    sendPartyData(party_id: string, opcode: number, data: any): Promise<void>;
+    sendPartyData(party_id: string, opcode: number, data: string | Uint8Array): Promise<void>;
     /** Unfollow one or more users from their status updates. */
     unfollowUsers(user_ids: string[]): Promise<void>;
     /** Update a chat message on a chat channel in the server. */
@@ -636,8 +636,8 @@ export declare class DefaultSocket implements Socket {
     removeMatchmakerParty(party_id: string, ticket: string): Promise<void>;
     removePartyMember(party_id: string, member: Presence): Promise<void>;
     rpc(id?: string, payload?: string, http_key?: string): Promise<ApiRpc>;
-    sendMatchState(matchId: string, opCode: number, data: any, presences?: Presence[]): Promise<void>;
-    sendPartyData(party_id: string, op_code: number, data: any): Promise<void>;
+    sendMatchState(matchId: string, opCode: number, data: string | Uint8Array, presences?: Presence[]): Promise<void>;
+    sendPartyData(party_id: string, op_code: number, data: string | Uint8Array): Promise<void>;
     unfollowUsers(user_ids: string[]): Promise<void>;
     updateChatMessage(channel_id: string, message_id: string, content: any): Promise<ChannelMessageAck>;
     updateStatus(status?: string): Promise<void>;

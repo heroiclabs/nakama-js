@@ -222,11 +222,11 @@ var require_fetch = __commonJS({
       }
       function readArrayBufferAsText(buf) {
         var view = new Uint8Array(buf);
-        var chars = new Array(view.length);
+        var chars2 = new Array(view.length);
         for (var i = 0; i < view.length; i++) {
-          chars[i] = String.fromCharCode(view[i]);
+          chars2[i] = String.fromCharCode(view[i]);
         }
-        return chars.join("");
+        return chars2.join("");
       }
       function bufferClone(buf) {
         if (buf.slice) {
@@ -310,7 +310,7 @@ var require_fetch = __commonJS({
         };
         if (support.formData) {
           this.formData = function() {
-            return this.text().then(decode2);
+            return this.text().then(decode3);
           };
         }
         this.json = function() {
@@ -359,7 +359,7 @@ var require_fetch = __commonJS({
       Request.prototype.clone = function() {
         return new Request(this, { body: this._bodyInit });
       };
-      function decode2(body) {
+      function decode3(body) {
         var form = new FormData();
         body.trim().split("&").forEach(function(bytes) {
           if (bytes) {
@@ -473,7 +473,6 @@ module.exports = __toCommonJS(nakama_js_exports);
 var import_whatwg_fetch = __toESM(require_fetch());
 
 // node_modules/js-base64/base64.mjs
-var _hasatob = typeof atob === "function";
 var _hasbtoa = typeof btoa === "function";
 var _hasBuffer = typeof Buffer === "function";
 var _TD = typeof TextDecoder === "function" ? new TextDecoder() : void 0;
@@ -485,11 +484,9 @@ var b64tab = ((a) => {
   a.forEach((c, i) => tab[c] = i);
   return tab;
 })(b64chs);
-var b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
 var _fromCC = String.fromCharCode.bind(String);
 var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it, fn = (x) => x) => new Uint8Array(Array.prototype.slice.call(it, 0).map(fn));
 var _mkUriSafe = (src) => src.replace(/[+\/]/g, (m0) => m0 == "+" ? "-" : "_").replace(/=+$/m, "");
-var _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, "");
 var btoaPolyfill = (bin) => {
   let u32, c0, c1, c2, asc = "";
   const pad = bin.length % 3;
@@ -523,36 +520,6 @@ var re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g;
 var utob = (u) => u.replace(re_utob, cb_utob);
 var _encode = _hasBuffer ? (s) => Buffer.from(s, "utf8").toString("base64") : _TE ? (s) => _fromUint8Array(_TE.encode(s)) : (s) => _btoa(utob(s));
 var encode = (src, urlsafe = false) => urlsafe ? _mkUriSafe(_encode(src)) : _encode(src);
-var re_btou = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
-var cb_btou = (cccc) => {
-  switch (cccc.length) {
-    case 4:
-      var cp = (7 & cccc.charCodeAt(0)) << 18 | (63 & cccc.charCodeAt(1)) << 12 | (63 & cccc.charCodeAt(2)) << 6 | 63 & cccc.charCodeAt(3), offset = cp - 65536;
-      return _fromCC((offset >>> 10) + 55296) + _fromCC((offset & 1023) + 56320);
-    case 3:
-      return _fromCC((15 & cccc.charCodeAt(0)) << 12 | (63 & cccc.charCodeAt(1)) << 6 | 63 & cccc.charCodeAt(2));
-    default:
-      return _fromCC((31 & cccc.charCodeAt(0)) << 6 | 63 & cccc.charCodeAt(1));
-  }
-};
-var btou = (b) => b.replace(re_btou, cb_btou);
-var atobPolyfill = (asc) => {
-  asc = asc.replace(/\s+/g, "");
-  if (!b64re.test(asc))
-    throw new TypeError("malformed base64.");
-  asc += "==".slice(2 - (asc.length & 3));
-  let u24, bin = "", r1, r2;
-  for (let i = 0; i < asc.length; ) {
-    u24 = b64tab[asc.charAt(i++)] << 18 | b64tab[asc.charAt(i++)] << 12 | (r1 = b64tab[asc.charAt(i++)]) << 6 | (r2 = b64tab[asc.charAt(i++)]);
-    bin += r1 === 64 ? _fromCC(u24 >> 16 & 255) : r2 === 64 ? _fromCC(u24 >> 16 & 255, u24 >> 8 & 255) : _fromCC(u24 >> 16 & 255, u24 >> 8 & 255, u24 & 255);
-  }
-  return bin;
-};
-var _atob = _hasatob ? (asc) => atob(_tidyB64(asc)) : _hasBuffer ? (asc) => Buffer.from(asc, "base64").toString("binary") : atobPolyfill;
-var _toUint8Array = _hasBuffer ? (a) => _U8Afrom(Buffer.from(a, "base64")) : (a) => _U8Afrom(_atob(a), (c) => c.charCodeAt(0));
-var _decode = _hasBuffer ? (a) => Buffer.from(a, "base64").toString("utf8") : _TD ? (a) => _TD.decode(_toUint8Array(a)) : (a) => btou(_atob(a));
-var _unURI = (a) => _tidyB64(a.replace(/[-_]/g, (m0) => m0 == "-" ? "+" : "/"));
-var decode = (src) => _decode(_unURI(src));
 
 // utils.ts
 function buildFetchOptions(method, options, bodyJson) {
@@ -577,16 +544,6 @@ function buildFetchOptions(method, options, bodyJson) {
     fetchOptions.body = bodyJson;
   }
   return fetchOptions;
-}
-function b64EncodeUnicode(str) {
-  return encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
-    return String.fromCharCode(Number("0x" + p1));
-  }));
-}
-function b64DecodeUnicode(str) {
-  return decodeURIComponent(decode(str).split("").map(function(c) {
-    return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(""));
 }
 
 // api.gen.ts
@@ -2687,6 +2644,49 @@ var Session = class {
   }
 };
 
+// ../../node_modules/base64-arraybuffer/dist/base64-arraybuffer.es5.js
+var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var lookup = typeof Uint8Array === "undefined" ? [] : new Uint8Array(256);
+for (i = 0; i < chars.length; i++) {
+  lookup[chars.charCodeAt(i)] = i;
+}
+var i;
+var encode2 = function(arraybuffer) {
+  var bytes = new Uint8Array(arraybuffer), i, len = bytes.length, base64 = "";
+  for (i = 0; i < len; i += 3) {
+    base64 += chars[bytes[i] >> 2];
+    base64 += chars[(bytes[i] & 3) << 4 | bytes[i + 1] >> 4];
+    base64 += chars[(bytes[i + 1] & 15) << 2 | bytes[i + 2] >> 6];
+    base64 += chars[bytes[i + 2] & 63];
+  }
+  if (len % 3 === 2) {
+    base64 = base64.substring(0, base64.length - 1) + "=";
+  } else if (len % 3 === 1) {
+    base64 = base64.substring(0, base64.length - 2) + "==";
+  }
+  return base64;
+};
+var decode2 = function(base64) {
+  var bufferLength = base64.length * 0.75, len = base64.length, i, p = 0, encoded1, encoded2, encoded3, encoded4;
+  if (base64[base64.length - 1] === "=") {
+    bufferLength--;
+    if (base64[base64.length - 2] === "=") {
+      bufferLength--;
+    }
+  }
+  var arraybuffer = new ArrayBuffer(bufferLength), bytes = new Uint8Array(arraybuffer);
+  for (i = 0; i < len; i += 4) {
+    encoded1 = lookup[base64.charCodeAt(i)];
+    encoded2 = lookup[base64.charCodeAt(i + 1)];
+    encoded3 = lookup[base64.charCodeAt(i + 2)];
+    encoded4 = lookup[base64.charCodeAt(i + 3)];
+    bytes[p++] = encoded1 << 2 | encoded2 >> 4;
+    bytes[p++] = (encoded2 & 15) << 4 | encoded3 >> 2;
+    bytes[p++] = (encoded3 & 3) << 6 | encoded4 & 63;
+  }
+  return arraybuffer;
+};
+
 // web_socket_adapter.ts
 var WebSocketAdapterText = class {
   constructor() {
@@ -2711,6 +2711,11 @@ var WebSocketAdapterText = class {
     if (value) {
       this._socket.onmessage = (evt) => {
         const message = JSON.parse(evt.data);
+        if (message.match_data && message.match_data.data) {
+          message.match_data.data = new Uint8Array(decode2(message.match_data.data));
+        } else if (message.party_data && message.party_data.data) {
+          message.party_data.data = new Uint8Array(decode2(message.party_data.data));
+        }
         value(message);
       };
     } else {
@@ -2739,8 +2744,14 @@ var WebSocketAdapterText = class {
   send(msg) {
     if (msg.match_data_send) {
       msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+      if (msg.match_data_send.data) {
+        msg.match_data_send.data = encode2(msg.match_data_send.data.buffer);
+      }
     } else if (msg.party_data_send) {
       msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
+      if (msg.party_data_send.data) {
+        msg.party_data_send.data = encode2(msg.party_data_send.data.buffer);
+      }
     }
     this._socket.send(JSON.stringify(msg));
   }
@@ -2785,7 +2796,6 @@ var DefaultSocket = class {
             this.onnotification(n);
           });
         } else if (message.match_data) {
-          message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
           message.match_data.op_code = parseInt(message.match_data.op_code);
           this.onmatchdata(message.match_data);
         } else if (message.match_presence_event) {
@@ -2806,7 +2816,6 @@ var DefaultSocket = class {
         } else if (message.channel_presence_event) {
           this.onchannelpresence(message.channel_presence_event);
         } else if (message.party_data) {
-          message.party_data.data = message.party_data.data != null ? JSON.parse(b64DecodeUnicode(message.party_data.data)) : null;
           message.party_data.op_code = parseInt(message.party_data.op_code);
           this.onpartydata(message.party_data);
         } else if (message.on_party_close) {
@@ -2965,11 +2974,9 @@ var DefaultSocket = class {
         reject("Socket connection has not been established yet.");
       } else {
         if (untypedMessage.match_data_send) {
-          untypedMessage.match_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.match_data_send.data));
           this.adapter.send(untypedMessage);
           resolve();
         } else if (untypedMessage.party_data_send) {
-          untypedMessage.party_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.party_data_send.data));
           this.adapter.send(untypedMessage);
           resolve();
         } else {
@@ -3139,6 +3146,9 @@ var DefaultSocket = class {
   }
   sendMatchState(matchId, opCode, data, presences) {
     return __async(this, null, function* () {
+      if (typeof data == "string") {
+        data = new TextEncoder().encode(data);
+      }
       return this.send({
         match_data_send: {
           match_id: matchId,
@@ -3150,6 +3160,9 @@ var DefaultSocket = class {
     });
   }
   sendPartyData(party_id, op_code, data) {
+    if (typeof data == "string") {
+      data = new TextEncoder().encode(data);
+    }
     return this.send({ party_data_send: { party_id, op_code, data } });
   }
   unfollowUsers(user_ids) {

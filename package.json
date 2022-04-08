@@ -41,5 +41,8 @@
       "packages/nakama-js-test",
       "packages/nakama-js-webpack-example"
     ]
+  },
+  "dependencies": {
+    "base64-arraybuffer": "^1.0.2"
   }
 }

@@ -91,7 +91,7 @@ describe('Match Tests', () => {
     expect(response).not.toBeNull();
   });
 
-  it.each(adapters)('should join a match, then send data, receive data', async (adapter) => {
+  it.each([AdapterType.Protobuf])('should join a match, then send data, receive data', async (adapter) => {
     const page = await createPage();
 
     const customid1 = generateid();
@@ -108,9 +108,9 @@ describe('Match Tests', () => {
       const socket2 = client2.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
 
-      var promise1 = new Promise<MatchData>((resolve, reject) => {
+      var promise1 = new Promise<string>((resolve, reject) => {
         socket2.onmatchdata = (matchdata) => {
-          resolve(matchdata);
+          resolve(new TextDecoder().decode(matchdata.data));
         }
       });
 
@@ -121,7 +121,7 @@ describe('Match Tests', () => {
       const session2 = await client2.authenticateCustom(customid2);
       await socket2.connect(session2, false);
       await socket2.joinMatch(match.match_id);
-      await socket1.sendMatchState(match.match_id, 20,  payload);
+      await socket1.sendMatchState(match.match_id, 20, JSON.stringify(payload));
       var promise2 = new Promise<null>((resolve, reject) => {
         setTimeout(reject, 5000, "did not receive match data - timed out.")
       });
@@ -130,7 +130,7 @@ describe('Match Tests', () => {
     }, customid1, customid2, PAYLOAD, adapter);
 
     expect(matchData).not.toBeNull();
-    expect(matchData.data).toEqual(PAYLOAD);
+    expect(JSON.parse(matchData)).toEqual(PAYLOAD);
   });
 
   it.each(adapters)('should join a match, then send data to included presences', async (adapter) => {
