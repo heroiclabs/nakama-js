@@ -18,26 +18,23 @@ var __spreadValues = (a, b) => {
     }
   return a;
 };
-var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
-var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+var __commonJS = (cb, mod2) => function __require() {
+  return mod2 || (0, cb[__getOwnPropNames(cb)[0]])((mod2 = { exports: {} }).exports, mod2), mod2.exports;
 };
 var __export = (target, all) => {
-  __markAsModule(target);
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-var __reExport = (target, module2, desc) => {
-  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
-    for (let key of __getOwnPropNames(module2))
-      if (!__hasOwnProp.call(target, key) && key !== "default")
-        __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
   }
-  return target;
+  return to;
 };
-var __toModule = (module2) => {
-  return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
-};
+var __toESM = (mod2, isNodeMode, target) => (target = mod2 != null ? __create(__getProtoOf(mod2)) : {}, __copyProps(isNodeMode || !mod2 || !mod2.__esModule ? __defProp(target, "default", { value: mod2, enumerable: true }) : target, mod2));
+var __toCommonJS = (mod2) => __copyProps(__defProp({}, "__esModule", { value: true }), mod2);
 
 // node_modules/long/src/long.js
 var require_long = __commonJS({
@@ -916,8 +913,9 @@ var require_base64 = __commonJS({
     };
     var b64 = new Array(64);
     var s64 = new Array(123);
-    for (var i = 0; i < 64; )
+    for (i = 0; i < 64; )
       s64[b64[i] = i < 26 ? i + 65 : i < 52 ? i + 71 : i < 62 ? i - 4 : i - 59 | 43] = i++;
+    var i;
     base64.encode = function encode(buffer, start, end) {
       var parts = null, chunk = [];
       var i2 = 0, j = 0, t;
@@ -2173,17 +2171,19 @@ var require_minimal2 = __commonJS({
 });
 
 // index.ts
-__export(exports, {
+var nakama_js_protobuf_exports = {};
+__export(nakama_js_protobuf_exports, {
   WebSocketAdapterPb: () => WebSocketAdapterPb
 });
+module.exports = __toCommonJS(nakama_js_protobuf_exports);
 
 // rtapi/realtime.ts
-var import_long2 = __toModule(require_long());
-var import_minimal4 = __toModule(require_minimal2());
+var import_long2 = __toESM(require_long());
+var import_minimal4 = __toESM(require_minimal2());
 
 // google/protobuf/timestamp.ts
-var Long = __toModule(require_long());
-var import_minimal = __toModule(require_minimal2());
+var Long = __toESM(require_long());
+var import_minimal = __toESM(require_minimal2());
 var baseTimestamp = {
   seconds: 0,
   nanos: 0
@@ -2253,12 +2253,12 @@ if (import_minimal.util.Long !== Long) {
 }
 
 // api/api.ts
-var import_long = __toModule(require_long());
-var import_minimal3 = __toModule(require_minimal2());
+var import_long = __toESM(require_long());
+var import_minimal3 = __toESM(require_minimal2());
 
 // google/protobuf/wrappers.ts
-var Long2 = __toModule(require_long());
-var import_minimal2 = __toModule(require_minimal2());
+var Long2 = __toESM(require_long());
+var import_minimal2 = __toESM(require_minimal2());
 var baseInt32Value = {
   value: 0
 };
@@ -2403,53 +2403,6 @@ var atob = windowBase64.atob || ((b64) => Buffer.from(b64, "base64").toString("b
 var btoa = windowBase64.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
 
 // api/api.ts
-var OverrideOperator;
-(function(OverrideOperator2) {
-  OverrideOperator2[OverrideOperator2["NO_OVERRIDE"] = 0] = "NO_OVERRIDE";
-  OverrideOperator2[OverrideOperator2["BEST"] = 1] = "BEST";
-  OverrideOperator2[OverrideOperator2["SET"] = 2] = "SET";
-  OverrideOperator2[OverrideOperator2["INCREMENT"] = 3] = "INCREMENT";
-  OverrideOperator2[OverrideOperator2["DECREMENT"] = 4] = "DECREMENT";
-  OverrideOperator2[OverrideOperator2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-})(OverrideOperator || (OverrideOperator = {}));
-var Friend_State;
-(function(Friend_State2) {
-  Friend_State2[Friend_State2["FRIEND"] = 0] = "FRIEND";
-  Friend_State2[Friend_State2["INVITE_SENT"] = 1] = "INVITE_SENT";
-  Friend_State2[Friend_State2["INVITE_RECEIVED"] = 2] = "INVITE_RECEIVED";
-  Friend_State2[Friend_State2["BLOCKED"] = 3] = "BLOCKED";
-  Friend_State2[Friend_State2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-})(Friend_State || (Friend_State = {}));
-var GroupUserList_GroupUser_State;
-(function(GroupUserList_GroupUser_State2) {
-  GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["SUPERADMIN"] = 0] = "SUPERADMIN";
-  GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["ADMIN"] = 1] = "ADMIN";
-  GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["MEMBER"] = 2] = "MEMBER";
-  GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["JOIN_REQUEST"] = 3] = "JOIN_REQUEST";
-  GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-})(GroupUserList_GroupUser_State || (GroupUserList_GroupUser_State = {}));
-var UserGroupList_UserGroup_State;
-(function(UserGroupList_UserGroup_State2) {
-  UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["SUPERADMIN"] = 0] = "SUPERADMIN";
-  UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["ADMIN"] = 1] = "ADMIN";
-  UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["MEMBER"] = 2] = "MEMBER";
-  UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["JOIN_REQUEST"] = 3] = "JOIN_REQUEST";
-  UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-})(UserGroupList_UserGroup_State || (UserGroupList_UserGroup_State = {}));
-var ValidatedPurchase_Store;
-(function(ValidatedPurchase_Store2) {
-  ValidatedPurchase_Store2[ValidatedPurchase_Store2["APPLE_APP_STORE"] = 0] = "APPLE_APP_STORE";
-  ValidatedPurchase_Store2[ValidatedPurchase_Store2["GOOGLE_PLAY_STORE"] = 1] = "GOOGLE_PLAY_STORE";
-  ValidatedPurchase_Store2[ValidatedPurchase_Store2["HUAWEI_APP_GALLERY"] = 2] = "HUAWEI_APP_GALLERY";
-  ValidatedPurchase_Store2[ValidatedPurchase_Store2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-})(ValidatedPurchase_Store || (ValidatedPurchase_Store = {}));
-var ValidatedPurchase_Environment;
-(function(ValidatedPurchase_Environment2) {
-  ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["UNKNOWN"] = 0] = "UNKNOWN";
-  ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["SANDBOX"] = 1] = "SANDBOX";
-  ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["PRODUCTION"] = 2] = "PRODUCTION";
-  ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-})(ValidatedPurchase_Environment || (ValidatedPurchase_Environment = {}));
 var baseChannelMessage = {
   channel_id: "",
   message_id: "",
@@ -2898,26 +2851,6 @@ if (import_minimal3.default.util.Long !== import_long.default) {
 }
 
 // rtapi/realtime.ts
-var ChannelJoin_Type;
-(function(ChannelJoin_Type2) {
-  ChannelJoin_Type2[ChannelJoin_Type2["TYPE_UNSPECIFIED"] = 0] = "TYPE_UNSPECIFIED";
-  ChannelJoin_Type2[ChannelJoin_Type2["ROOM"] = 1] = "ROOM";
-  ChannelJoin_Type2[ChannelJoin_Type2["DIRECT_MESSAGE"] = 2] = "DIRECT_MESSAGE";
-  ChannelJoin_Type2[ChannelJoin_Type2["GROUP"] = 3] = "GROUP";
-  ChannelJoin_Type2[ChannelJoin_Type2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-})(ChannelJoin_Type || (ChannelJoin_Type = {}));
-var Error_Code;
-(function(Error_Code2) {
-  Error_Code2[Error_Code2["RUNTIME_EXCEPTION"] = 0] = "RUNTIME_EXCEPTION";
-  Error_Code2[Error_Code2["UNRECOGNIZED_PAYLOAD"] = 1] = "UNRECOGNIZED_PAYLOAD";
-  Error_Code2[Error_Code2["MISSING_PAYLOAD"] = 2] = "MISSING_PAYLOAD";
-  Error_Code2[Error_Code2["BAD_INPUT"] = 3] = "BAD_INPUT";
-  Error_Code2[Error_Code2["MATCH_NOT_FOUND"] = 4] = "MATCH_NOT_FOUND";
-  Error_Code2[Error_Code2["MATCH_JOIN_REJECTED"] = 5] = "MATCH_JOIN_REJECTED";
-  Error_Code2[Error_Code2["RUNTIME_FUNCTION_NOT_FOUND"] = 6] = "RUNTIME_FUNCTION_NOT_FOUND";
-  Error_Code2[Error_Code2["RUNTIME_FUNCTION_EXCEPTION"] = 7] = "RUNTIME_FUNCTION_EXCEPTION";
-  Error_Code2[Error_Code2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-})(Error_Code || (Error_Code = {}));
 var baseEnvelope = { cid: "" };
 var Envelope = {
   encode(message, writer = import_minimal4.default.Writer.create()) {
