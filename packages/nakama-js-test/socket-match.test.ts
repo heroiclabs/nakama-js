@@ -91,7 +91,7 @@ describe('Match Tests', () => {
     expect(response).not.toBeNull();
   });
 
-  it.each([AdapterType.Protobuf])('should join a match, then send data, receive data', async (adapter) => {
+  it.each(adapters)('should join a match, then send data, receive data', async (adapter) => {
     const page = await createPage();
 
     const customid1 = generateid();
