@@ -20,7 +20,6 @@
   "devDependencies": {
     "base64url": "^3.0.1",
     "bufferutil": "4.0.1",
-    "canvas": "2.6.1",
     "chalk": "^2.4.2",
     "esbuild": "^0.6.5",
     "merge": "^1.2.1",
