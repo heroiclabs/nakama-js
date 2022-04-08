@@ -1772,7 +1772,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js-test@workspace:packages/nakama-js-test"
   dependencies:
-    "@heroiclabs/nakama-js": 2.2.0
+    "@heroiclabs/nakama-js": 2.3.0
     "@heroiclabs/nakama-js-protobuf": 1.0.3
     "@types/expect-puppeteer": ^4.4.5
     "@types/jest": ^26.0.20
@@ -1798,27 +1798,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@heroiclabs/nakama-js@npm:2.1.4":
-  version: 2.1.4
-  resolution: "@heroiclabs/nakama-js@npm:2.1.4"
-  dependencies:
-    js-base64: ^3.6.0
-    whatwg-fetch: ^2.0.3
-  checksum: fb1353daebba0e8bd19c892ed4926c8f9feba41ad4f6202fb37c576c0e25665dac4e73d09f9272d3dcfe1d285f7c471031525060a5d695057a663a1b9216cbcb
-  languageName: node
-  linkType: hard
-
-"@heroiclabs/nakama-js@npm:2.2.0":
-  version: 2.2.0
-  resolution: "@heroiclabs/nakama-js@npm:2.2.0"
-  dependencies:
-    js-base64: ^3.6.0
-    whatwg-fetch: ^2.0.3
-  checksum: 1096e91d43e0c760bc735728df1e11014842726151bdf8bead18ed8f0b0756ba2b721d9700ce1ca0c5dfda17c3065fee03f82c0237160b0ac4bf2ab200399051
-  languageName: node
-  linkType: hard
-
-"@heroiclabs/nakama-js@workspace:packages/nakama-js":
+"@heroiclabs/nakama-js@2.3.0, @heroiclabs/nakama-js@workspace:packages/nakama-js":
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js@workspace:packages/nakama-js"
   dependencies:
@@ -1832,6 +1812,16 @@ __metadata:
     whatwg-fetch: ^2.0.3
   languageName: unknown
   linkType: soft
+
+"@heroiclabs/nakama-js@npm:2.1.4":
+  version: 2.1.4
+  resolution: "@heroiclabs/nakama-js@npm:2.1.4"
+  dependencies:
+    js-base64: ^3.6.0
+    whatwg-fetch: ^2.0.3
+  checksum: fb1353daebba0e8bd19c892ed4926c8f9feba41ad4f6202fb37c576c0e25665dac4e73d09f9272d3dcfe1d285f7c471031525060a5d695057a663a1b9216cbcb
+  languageName: node
+  linkType: hard
 
 "@istanbuljs/load-nyc-config@npm:^1.0.0":
   version: 1.1.0
