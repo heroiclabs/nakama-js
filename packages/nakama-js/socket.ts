@@ -729,7 +729,7 @@ export class DefaultSocket implements Socket {
       }
 
       /** Inbound message from server. */
-      if (message.cid == undefined) {
+      if (!message.cid) {
         if (message.notifications) {
           message.notifications.notifications.forEach((n: ApiNotification) => {
               n.content = n.content ? JSON.parse(n.content) : undefined;

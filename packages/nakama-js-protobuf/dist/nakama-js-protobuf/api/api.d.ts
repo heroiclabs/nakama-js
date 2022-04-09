@@ -2,7 +2,7 @@ import _m0 from "protobufjs/minimal";
 export declare const protobufPackage = "nakama.api";
 /** The Nakama server RPC protocol for games and apps. */
 /** Operator that can be used to override the one set in the leaderboard. */
-export declare enum OverrideOperator {
+export declare enum Operator {
     /** NO_OVERRIDE - Do not override the leaderboard operator. */
     NO_OVERRIDE = 0,
     /** BEST - Override the leaderboard operator with BEST. */
@@ -15,8 +15,8 @@ export declare enum OverrideOperator {
     DECREMENT = 4,
     UNRECOGNIZED = -1
 }
-export declare function overrideOperatorFromJSON(object: any): OverrideOperator;
-export declare function overrideOperatorToJSON(object: OverrideOperator): string;
+export declare function operatorFromJSON(object: any): Operator;
+export declare function operatorToJSON(object: Operator): string;
 /** A user with additional account details. Always the current user. */
 export interface Account {
     /** The user object. */
@@ -549,6 +549,32 @@ export interface KickGroupUsersRequest {
     /** The users to kick. */
     user_ids: string[];
 }
+/** A leaderboard on the server. */
+export interface Leaderboard {
+    /** The ID of the leaderboard. */
+    id: string;
+    /** ASC(0) or DESC(1) sort mode of scores in the leaderboard. */
+    sort_order: number;
+    /** BEST, SET, INCREMENT or DECREMENT operator mode of the leaderboard. */
+    operator: Operator;
+    /** The UNIX time when the leaderboard was previously reset. A computed value. */
+    prev_reset: number;
+    /** The UNIX time when the leaderboard is next playable. A computed value. */
+    next_reset: number;
+    /** Additional information stored as a JSON object. */
+    metadata: string;
+    /** The UNIX time when the leaderboard was created. */
+    create_time?: Date;
+    /** Wether the leaderboard was created authoritatively or not. */
+    authoritative: boolean;
+}
+/** A list of leaderboards */
+export interface LeaderboardList {
+    /** The list of leaderboards returned. */
+    leaderboards: Leaderboard[];
+    /** A pagination cursor (optional). */
+    cursor: string;
+}
 /** Represents a complete leaderboard record with all scores and associated metadata. */
 export interface LeaderboardRecord {
     /** The ID of the leaderboard this score belongs to. */
@@ -634,6 +660,12 @@ export interface ListGroupsRequest {
     cursor: string;
     /** Max number of groups to return. Between 1 and 100. */
     limit?: number;
+    /** Language tag filter */
+    lang_tag: string;
+    /** Number of group members */
+    members?: number;
+    /** Optional Open/Closed filter. */
+    open?: boolean;
 }
 /** List all users that are part of a group. */
 export interface ListGroupUsersRequest {
@@ -902,7 +934,7 @@ export interface Tournament {
     description: string;
     /** The category of the tournament. e.g. "vip" could be category 1. */
     category: number;
-    /** ASC or DESC sort mode of scores in the tournament. */
+    /** ASC (0) or DESC (1) sort mode of scores in the tournament. */
     sort_order: number;
     /** The current number of players in the tournament. */
     size: number;
@@ -928,6 +960,10 @@ export interface Tournament {
     duration: number;
     /** The UNIX time when the tournament start being active. A computed value. */
     start_active: number;
+    /** The UNIX time when the tournament was last reset. A computed value. */
+    prev_reset: number;
+    /** Operator. */
+    operator: Operator;
 }
 /** A list of tournaments. */
 export interface TournamentList {
@@ -1084,6 +1120,8 @@ export interface ValidatedPurchase {
     provider_response: string;
     /** Whether the purchase was done in production or sandbox environment. */
     environment: ValidatedPurchase_Environment;
+    /** Whether the purchase had already been validated by Nakama before. */
+    seen_before: boolean;
 }
 /** Validation Provider */
 export declare enum ValidatedPurchase_Store {
@@ -1137,7 +1175,7 @@ export interface WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
     /** Optional record metadata. */
     metadata: string;
     /** Operator override. */
-    operator: OverrideOperator;
+    operator: Operator;
 }
 /** The object to store. */
 export interface WriteStorageObject {
@@ -1175,7 +1213,7 @@ export interface WriteTournamentRecordRequest_TournamentRecordWrite {
     /** A JSON object of additional properties (optional). */
     metadata: string;
     /** Operator override. */
-    operator: OverrideOperator;
+    operator: Operator;
 }
 export declare const Account: {
     encode(message: Account, writer?: _m0.Writer): _m0.Writer;
@@ -1597,6 +1635,20 @@ export declare const KickGroupUsersRequest: {
     toJSON(message: KickGroupUsersRequest): unknown;
     fromPartial(object: DeepPartial<KickGroupUsersRequest>): KickGroupUsersRequest;
 };
+export declare const Leaderboard: {
+    encode(message: Leaderboard, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Leaderboard;
+    fromJSON(object: any): Leaderboard;
+    toJSON(message: Leaderboard): unknown;
+    fromPartial(object: DeepPartial<Leaderboard>): Leaderboard;
+};
+export declare const LeaderboardList: {
+    encode(message: LeaderboardList, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): LeaderboardList;
+    fromJSON(object: any): LeaderboardList;
+    toJSON(message: LeaderboardList): unknown;
+    fromPartial(object: DeepPartial<LeaderboardList>): LeaderboardList;
+};
 export declare const LeaderboardRecord: {
     encode(message: LeaderboardRecord, writer?: _m0.Writer): _m0.Writer;
     decode(input: _m0.Reader | Uint8Array, length?: number | undefined): LeaderboardRecord;
@@ -1976,13 +2028,7 @@ export declare const WriteTournamentRecordRequest_TournamentRecordWrite: {
     fromPartial(object: DeepPartial<WriteTournamentRecordRequest_TournamentRecordWrite>): WriteTournamentRecordRequest_TournamentRecordWrite;
 };
 declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {
-    $case: string;
-} ? {
-    [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]>;
-} & {
-    $case: T["$case"];
-} : T extends {} ? {
+export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
     [K in keyof T]?: DeepPartial<T[K]>;
 } : Partial<T>;
 export {};

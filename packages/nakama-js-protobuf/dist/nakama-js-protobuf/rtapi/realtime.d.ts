@@ -1,158 +1,108 @@
 import _m0 from "protobufjs/minimal";
-import { Notification, ChannelMessage, Rpc } from "../api/api";
+import { ChannelMessage, Rpc, Notification } from "../api/api";
 export declare const protobufPackage = "nakama.realtime";
 /** The realtime protocol for Nakama server. */
 /** An envelope for a realtime message. */
 export interface Envelope {
     cid: string;
-    message?: {
-        $case: "channel";
-        channel: Channel;
-    } | {
-        $case: "channel_join";
-        channel_join: ChannelJoin;
-    } | {
-        $case: "channel_leave";
-        channel_leave: ChannelLeave;
-    } | {
-        $case: "channel_message";
-        channel_message: ChannelMessage;
-    } | {
-        $case: "channel_message_ack";
-        channel_message_ack: ChannelMessageAck;
-    } | {
-        $case: "channel_message_send";
-        channel_message_send: ChannelMessageSend;
-    } | {
-        $case: "channel_message_update";
-        channel_message_update: ChannelMessageUpdate;
-    } | {
-        $case: "channel_message_remove";
-        channel_message_remove: ChannelMessageRemove;
-    } | {
-        $case: "channel_presence_event";
-        channel_presence_event: ChannelPresenceEvent;
-    } | {
-        $case: "error";
-        error: Error;
-    } | {
-        $case: "match";
-        match: Match;
-    } | {
-        $case: "match_create";
-        match_create: MatchCreate;
-    } | {
-        $case: "match_data";
-        match_data: MatchData;
-    } | {
-        $case: "match_data_send";
-        match_data_send: MatchDataSend;
-    } | {
-        $case: "match_join";
-        match_join: MatchJoin;
-    } | {
-        $case: "match_leave";
-        match_leave: MatchLeave;
-    } | {
-        $case: "match_presence_event";
-        match_presence_event: MatchPresenceEvent;
-    } | {
-        $case: "matchmaker_add";
-        matchmaker_add: MatchmakerAdd;
-    } | {
-        $case: "matchmaker_matched";
-        matchmaker_matched: MatchmakerMatched;
-    } | {
-        $case: "matchmaker_remove";
-        matchmaker_remove: MatchmakerRemove;
-    } | {
-        $case: "matchmaker_ticket";
-        matchmaker_ticket: MatchmakerTicket;
-    } | {
-        $case: "notifications";
-        notifications: Notifications;
-    } | {
-        $case: "rpc";
-        rpc: Rpc;
-    } | {
-        $case: "status";
-        status: Status;
-    } | {
-        $case: "status_follow";
-        status_follow: StatusFollow;
-    } | {
-        $case: "status_presence_event";
-        status_presence_event: StatusPresenceEvent;
-    } | {
-        $case: "status_unfollow";
-        status_unfollow: StatusUnfollow;
-    } | {
-        $case: "status_update";
-        status_update: StatusUpdate;
-    } | {
-        $case: "stream_data";
-        stream_data: StreamData;
-    } | {
-        $case: "stream_presence_event";
-        stream_presence_event: StreamPresenceEvent;
-    } | {
-        $case: "ping";
-        ping: Ping;
-    } | {
-        $case: "pong";
-        pong: Pong;
-    } | {
-        $case: "party";
-        party: Party;
-    } | {
-        $case: "party_create";
-        party_create: PartyCreate;
-    } | {
-        $case: "party_join";
-        party_join: PartyJoin;
-    } | {
-        $case: "party_leave";
-        party_leave: PartyLeave;
-    } | {
-        $case: "party_promote";
-        party_promote: PartyPromote;
-    } | {
-        $case: "party_leader";
-        party_leader: PartyLeader;
-    } | {
-        $case: "party_accept";
-        party_accept: PartyAccept;
-    } | {
-        $case: "party_remove";
-        party_remove: PartyRemove;
-    } | {
-        $case: "party_close";
-        party_close: PartyClose;
-    } | {
-        $case: "party_join_request_list";
-        party_join_request_list: PartyJoinRequestList;
-    } | {
-        $case: "party_join_request";
-        party_join_request: PartyJoinRequest;
-    } | {
-        $case: "party_matchmaker_add";
-        party_matchmaker_add: PartyMatchmakerAdd;
-    } | {
-        $case: "party_matchmaker_remove";
-        party_matchmaker_remove: PartyMatchmakerRemove;
-    } | {
-        $case: "party_matchmaker_ticket";
-        party_matchmaker_ticket: PartyMatchmakerTicket;
-    } | {
-        $case: "party_data";
-        party_data: PartyData;
-    } | {
-        $case: "party_data_send";
-        party_data_send: PartyDataSend;
-    } | {
-        $case: "party_presence_event";
-        party_presence_event: PartyPresenceEvent;
-    };
+    /** A response from a channel join operation. */
+    channel?: Channel | undefined;
+    /** Join a realtime chat channel. */
+    channel_join?: ChannelJoin | undefined;
+    /** Leave a realtime chat channel. */
+    channel_leave?: ChannelLeave | undefined;
+    /** An incoming message on a realtime chat channel. */
+    channel_message?: ChannelMessage | undefined;
+    /** An acknowledgement received in response to sending a message on a chat channel. */
+    channel_message_ack?: ChannelMessageAck | undefined;
+    /** Send a message to a realtime chat channel. */
+    channel_message_send?: ChannelMessageSend | undefined;
+    /** Update a message previously sent to a realtime chat channel. */
+    channel_message_update?: ChannelMessageUpdate | undefined;
+    /** Remove a message previously sent to a realtime chat channel. */
+    channel_message_remove?: ChannelMessageRemove | undefined;
+    /** Presence update for a particular realtime chat channel. */
+    channel_presence_event?: ChannelPresenceEvent | undefined;
+    /** Describes an error which occurred on the server. */
+    error?: Error | undefined;
+    /** Incoming information about a realtime match. */
+    match?: Match | undefined;
+    /** A client to server request to create a realtime match. */
+    match_create?: MatchCreate | undefined;
+    /** Incoming realtime match data delivered from the server. */
+    match_data?: MatchData | undefined;
+    /** A client to server request to send data to a realtime match. */
+    match_data_send?: MatchDataSend | undefined;
+    /** A client to server request to join a realtime match. */
+    match_join?: MatchJoin | undefined;
+    /** A client to server request to leave a realtime match. */
+    match_leave?: MatchLeave | undefined;
+    /** Presence update for a particular realtime match. */
+    match_presence_event?: MatchPresenceEvent | undefined;
+    /** Submit a new matchmaking process request. */
+    matchmaker_add?: MatchmakerAdd | undefined;
+    /** A successful matchmaking result. */
+    matchmaker_matched?: MatchmakerMatched | undefined;
+    /** Cancel a matchmaking process using a ticket. */
+    matchmaker_remove?: MatchmakerRemove | undefined;
+    /** A response from starting a new matchmaking process. */
+    matchmaker_ticket?: MatchmakerTicket | undefined;
+    /** Notifications send by the server. */
+    notifications?: Notifications | undefined;
+    /** RPC call or response. */
+    rpc?: Rpc | undefined;
+    /** An incoming status snapshot for some set of users. */
+    status?: Status | undefined;
+    /** Start following some set of users to receive their status updates. */
+    status_follow?: StatusFollow | undefined;
+    /** An incoming status update. */
+    status_presence_event?: StatusPresenceEvent | undefined;
+    /** Stop following some set of users to no longer receive their status updates. */
+    status_unfollow?: StatusUnfollow | undefined;
+    /** Set the user's own status. */
+    status_update?: StatusUpdate | undefined;
+    /** A data message delivered over a stream. */
+    stream_data?: StreamData | undefined;
+    /** Presence update for a particular stream. */
+    stream_presence_event?: StreamPresenceEvent | undefined;
+    /** Application-level heartbeat and connection check. */
+    ping?: Ping | undefined;
+    /** Application-level heartbeat and connection check response. */
+    pong?: Pong | undefined;
+    /** Incoming information about a party. */
+    party?: Party | undefined;
+    /** Create a party. */
+    party_create?: PartyCreate | undefined;
+    /** Join a party, or request to join if the party is not open. */
+    party_join?: PartyJoin | undefined;
+    /** Leave a party. */
+    party_leave?: PartyLeave | undefined;
+    /** Promote a new party leader. */
+    party_promote?: PartyPromote | undefined;
+    /** Announcement of a new party leader. */
+    party_leader?: PartyLeader | undefined;
+    /** Accept a request to join. */
+    party_accept?: PartyAccept | undefined;
+    /** Kick a party member, or decline a request to join. */
+    party_remove?: PartyRemove | undefined;
+    /** End a party, kicking all party members and closing it. */
+    party_close?: PartyClose | undefined;
+    /** Request a list of pending join requests for a party. */
+    party_join_request_list?: PartyJoinRequestList | undefined;
+    /** Incoming notification for one or more new presences attempting to join the party. */
+    party_join_request?: PartyJoinRequest | undefined;
+    /** Begin matchmaking as a party. */
+    party_matchmaker_add?: PartyMatchmakerAdd | undefined;
+    /** Cancel a party matchmaking process using a ticket. */
+    party_matchmaker_remove?: PartyMatchmakerRemove | undefined;
+    /** A response from starting a new party matchmaking process. */
+    party_matchmaker_ticket?: PartyMatchmakerTicket | undefined;
+    /** Incoming party data delivered from the server. */
+    party_data?: PartyData | undefined;
+    /** A client to server request to send data to a party. */
+    party_data_send?: PartyDataSend | undefined;
+    /** Presence update for a particular party. */
+    party_presence_event?: PartyPresenceEvent | undefined;
 }
 /** A realtime chat channel. */
 export interface Channel {
@@ -349,13 +299,10 @@ export interface MatchDataSend {
 }
 /** Join an existing realtime match. */
 export interface MatchJoin {
-    id?: {
-        $case: "match_id";
-        match_id: string;
-    } | {
-        $case: "token";
-        token: string;
-    };
+    /** The match unique ID. */
+    match_id: string | undefined;
+    /** A matchmaking result token. */
+    token: string | undefined;
     /** An optional set of key-value metadata pairs to be passed to the match handler, if any. */
     metadata: {
         [key: string]: string;
@@ -408,13 +355,10 @@ export interface MatchmakerAdd_NumericPropertiesEntry {
 export interface MatchmakerMatched {
     /** The matchmaking ticket that has completed. */
     ticket: string;
-    id?: {
-        $case: "match_id";
-        match_id: string;
-    } | {
-        $case: "token";
-        token: string;
-    };
+    /** Match ID. */
+    match_id: string | undefined;
+    /** Match join token. */
+    token: string | undefined;
     /** The users that have been matched together, and information about their matchmaking data. */
     users: MatchmakerMatched_MatchmakerUser[];
     /** A reference to the current user and their properties. */
@@ -1097,13 +1041,7 @@ export declare const UserPresence: {
     fromPartial(object: DeepPartial<UserPresence>): UserPresence;
 };
 declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {
-    $case: string;
-} ? {
-    [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]>;
-} & {
-    $case: T["$case"];
-} : T extends {} ? {
+export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
     [K in keyof T]?: DeepPartial<T[K]>;
 } : Partial<T>;
 export {};

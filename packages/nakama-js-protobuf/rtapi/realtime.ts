@@ -2,7 +2,7 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { Timestamp } from "../google/protobuf/timestamp";
-import { Notification, ChannelMessage, Rpc } from "../api/api";
+import { ChannelMessage, Rpc, Notification } from "../api/api";
 import {
   BoolValue,
   Int32Value,
@@ -16,92 +16,104 @@ export const protobufPackage = "nakama.realtime";
 /** An envelope for a realtime message. */
 export interface Envelope {
   cid: string;
-  message?:
-    | { $case: "channel"; channel: Channel }
-    | { $case: "channel_join"; channel_join: ChannelJoin }
-    | { $case: "channel_leave"; channel_leave: ChannelLeave }
-    | { $case: "channel_message"; channel_message: ChannelMessage }
-    | { $case: "channel_message_ack"; channel_message_ack: ChannelMessageAck }
-    | {
-        $case: "channel_message_send";
-        channel_message_send: ChannelMessageSend;
-      }
-    | {
-        $case: "channel_message_update";
-        channel_message_update: ChannelMessageUpdate;
-      }
-    | {
-        $case: "channel_message_remove";
-        channel_message_remove: ChannelMessageRemove;
-      }
-    | {
-        $case: "channel_presence_event";
-        channel_presence_event: ChannelPresenceEvent;
-      }
-    | { $case: "error"; error: Error }
-    | { $case: "match"; match: Match }
-    | { $case: "match_create"; match_create: MatchCreate }
-    | { $case: "match_data"; match_data: MatchData }
-    | { $case: "match_data_send"; match_data_send: MatchDataSend }
-    | { $case: "match_join"; match_join: MatchJoin }
-    | { $case: "match_leave"; match_leave: MatchLeave }
-    | {
-        $case: "match_presence_event";
-        match_presence_event: MatchPresenceEvent;
-      }
-    | { $case: "matchmaker_add"; matchmaker_add: MatchmakerAdd }
-    | { $case: "matchmaker_matched"; matchmaker_matched: MatchmakerMatched }
-    | { $case: "matchmaker_remove"; matchmaker_remove: MatchmakerRemove }
-    | { $case: "matchmaker_ticket"; matchmaker_ticket: MatchmakerTicket }
-    | { $case: "notifications"; notifications: Notifications }
-    | { $case: "rpc"; rpc: Rpc }
-    | { $case: "status"; status: Status }
-    | { $case: "status_follow"; status_follow: StatusFollow }
-    | {
-        $case: "status_presence_event";
-        status_presence_event: StatusPresenceEvent;
-      }
-    | { $case: "status_unfollow"; status_unfollow: StatusUnfollow }
-    | { $case: "status_update"; status_update: StatusUpdate }
-    | { $case: "stream_data"; stream_data: StreamData }
-    | {
-        $case: "stream_presence_event";
-        stream_presence_event: StreamPresenceEvent;
-      }
-    | { $case: "ping"; ping: Ping }
-    | { $case: "pong"; pong: Pong }
-    | { $case: "party"; party: Party }
-    | { $case: "party_create"; party_create: PartyCreate }
-    | { $case: "party_join"; party_join: PartyJoin }
-    | { $case: "party_leave"; party_leave: PartyLeave }
-    | { $case: "party_promote"; party_promote: PartyPromote }
-    | { $case: "party_leader"; party_leader: PartyLeader }
-    | { $case: "party_accept"; party_accept: PartyAccept }
-    | { $case: "party_remove"; party_remove: PartyRemove }
-    | { $case: "party_close"; party_close: PartyClose }
-    | {
-        $case: "party_join_request_list";
-        party_join_request_list: PartyJoinRequestList;
-      }
-    | { $case: "party_join_request"; party_join_request: PartyJoinRequest }
-    | {
-        $case: "party_matchmaker_add";
-        party_matchmaker_add: PartyMatchmakerAdd;
-      }
-    | {
-        $case: "party_matchmaker_remove";
-        party_matchmaker_remove: PartyMatchmakerRemove;
-      }
-    | {
-        $case: "party_matchmaker_ticket";
-        party_matchmaker_ticket: PartyMatchmakerTicket;
-      }
-    | { $case: "party_data"; party_data: PartyData }
-    | { $case: "party_data_send"; party_data_send: PartyDataSend }
-    | {
-        $case: "party_presence_event";
-        party_presence_event: PartyPresenceEvent;
-      };
+  /** A response from a channel join operation. */
+  channel?: Channel | undefined;
+  /** Join a realtime chat channel. */
+  channel_join?: ChannelJoin | undefined;
+  /** Leave a realtime chat channel. */
+  channel_leave?: ChannelLeave | undefined;
+  /** An incoming message on a realtime chat channel. */
+  channel_message?: ChannelMessage | undefined;
+  /** An acknowledgement received in response to sending a message on a chat channel. */
+  channel_message_ack?: ChannelMessageAck | undefined;
+  /** Send a message to a realtime chat channel. */
+  channel_message_send?: ChannelMessageSend | undefined;
+  /** Update a message previously sent to a realtime chat channel. */
+  channel_message_update?: ChannelMessageUpdate | undefined;
+  /** Remove a message previously sent to a realtime chat channel. */
+  channel_message_remove?: ChannelMessageRemove | undefined;
+  /** Presence update for a particular realtime chat channel. */
+  channel_presence_event?: ChannelPresenceEvent | undefined;
+  /** Describes an error which occurred on the server. */
+  error?: Error | undefined;
+  /** Incoming information about a realtime match. */
+  match?: Match | undefined;
+  /** A client to server request to create a realtime match. */
+  match_create?: MatchCreate | undefined;
+  /** Incoming realtime match data delivered from the server. */
+  match_data?: MatchData | undefined;
+  /** A client to server request to send data to a realtime match. */
+  match_data_send?: MatchDataSend | undefined;
+  /** A client to server request to join a realtime match. */
+  match_join?: MatchJoin | undefined;
+  /** A client to server request to leave a realtime match. */
+  match_leave?: MatchLeave | undefined;
+  /** Presence update for a particular realtime match. */
+  match_presence_event?: MatchPresenceEvent | undefined;
+  /** Submit a new matchmaking process request. */
+  matchmaker_add?: MatchmakerAdd | undefined;
+  /** A successful matchmaking result. */
+  matchmaker_matched?: MatchmakerMatched | undefined;
+  /** Cancel a matchmaking process using a ticket. */
+  matchmaker_remove?: MatchmakerRemove | undefined;
+  /** A response from starting a new matchmaking process. */
+  matchmaker_ticket?: MatchmakerTicket | undefined;
+  /** Notifications send by the server. */
+  notifications?: Notifications | undefined;
+  /** RPC call or response. */
+  rpc?: Rpc | undefined;
+  /** An incoming status snapshot for some set of users. */
+  status?: Status | undefined;
+  /** Start following some set of users to receive their status updates. */
+  status_follow?: StatusFollow | undefined;
+  /** An incoming status update. */
+  status_presence_event?: StatusPresenceEvent | undefined;
+  /** Stop following some set of users to no longer receive their status updates. */
+  status_unfollow?: StatusUnfollow | undefined;
+  /** Set the user's own status. */
+  status_update?: StatusUpdate | undefined;
+  /** A data message delivered over a stream. */
+  stream_data?: StreamData | undefined;
+  /** Presence update for a particular stream. */
+  stream_presence_event?: StreamPresenceEvent | undefined;
+  /** Application-level heartbeat and connection check. */
+  ping?: Ping | undefined;
+  /** Application-level heartbeat and connection check response. */
+  pong?: Pong | undefined;
+  /** Incoming information about a party. */
+  party?: Party | undefined;
+  /** Create a party. */
+  party_create?: PartyCreate | undefined;
+  /** Join a party, or request to join if the party is not open. */
+  party_join?: PartyJoin | undefined;
+  /** Leave a party. */
+  party_leave?: PartyLeave | undefined;
+  /** Promote a new party leader. */
+  party_promote?: PartyPromote | undefined;
+  /** Announcement of a new party leader. */
+  party_leader?: PartyLeader | undefined;
+  /** Accept a request to join. */
+  party_accept?: PartyAccept | undefined;
+  /** Kick a party member, or decline a request to join. */
+  party_remove?: PartyRemove | undefined;
+  /** End a party, kicking all party members and closing it. */
+  party_close?: PartyClose | undefined;
+  /** Request a list of pending join requests for a party. */
+  party_join_request_list?: PartyJoinRequestList | undefined;
+  /** Incoming notification for one or more new presences attempting to join the party. */
+  party_join_request?: PartyJoinRequest | undefined;
+  /** Begin matchmaking as a party. */
+  party_matchmaker_add?: PartyMatchmakerAdd | undefined;
+  /** Cancel a party matchmaking process using a ticket. */
+  party_matchmaker_remove?: PartyMatchmakerRemove | undefined;
+  /** A response from starting a new party matchmaking process. */
+  party_matchmaker_ticket?: PartyMatchmakerTicket | undefined;
+  /** Incoming party data delivered from the server. */
+  party_data?: PartyData | undefined;
+  /** A client to server request to send data to a party. */
+  party_data_send?: PartyDataSend | undefined;
+  /** Presence update for a particular party. */
+  party_presence_event?: PartyPresenceEvent | undefined;
 }
 
 /** A realtime chat channel. */
@@ -400,9 +412,10 @@ export interface MatchDataSend {
 
 /** Join an existing realtime match. */
 export interface MatchJoin {
-  id?:
-    | { $case: "match_id"; match_id: string }
-    | { $case: "token"; token: string };
+  /** The match unique ID. */
+  match_id: string | undefined;
+  /** A matchmaking result token. */
+  token: string | undefined;
   /** An optional set of key-value metadata pairs to be passed to the match handler, if any. */
   metadata: { [key: string]: string };
 }
@@ -456,9 +469,10 @@ export interface MatchmakerAdd_NumericPropertiesEntry {
 export interface MatchmakerMatched {
   /** The matchmaking ticket that has completed. */
   ticket: string;
-  id?:
-    | { $case: "match_id"; match_id: string }
-    | { $case: "token"; token: string };
+  /** Match ID. */
+  match_id: string | undefined;
+  /** Match join token. */
+  token: string | undefined;
   /** The users that have been matched together, and information about their matchmaking data. */
   users: MatchmakerMatched_MatchmakerUser[];
   /** A reference to the current user and their properties. */
@@ -764,276 +778,261 @@ export const Envelope = {
     if (message.cid !== "") {
       writer.uint32(10).string(message.cid);
     }
-    if (message.message?.$case === "channel") {
-      Channel.encode(
-        message.message.channel,
-        writer.uint32(18).fork()
-      ).ldelim();
+    if (message.channel !== undefined) {
+      Channel.encode(message.channel, writer.uint32(18).fork()).ldelim();
     }
-    if (message.message?.$case === "channel_join") {
+    if (message.channel_join !== undefined) {
       ChannelJoin.encode(
-        message.message.channel_join,
+        message.channel_join,
         writer.uint32(26).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "channel_leave") {
+    if (message.channel_leave !== undefined) {
       ChannelLeave.encode(
-        message.message.channel_leave,
+        message.channel_leave,
         writer.uint32(34).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "channel_message") {
+    if (message.channel_message !== undefined) {
       ChannelMessage.encode(
-        message.message.channel_message,
+        message.channel_message,
         writer.uint32(42).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "channel_message_ack") {
+    if (message.channel_message_ack !== undefined) {
       ChannelMessageAck.encode(
-        message.message.channel_message_ack,
+        message.channel_message_ack,
         writer.uint32(50).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "channel_message_send") {
+    if (message.channel_message_send !== undefined) {
       ChannelMessageSend.encode(
-        message.message.channel_message_send,
+        message.channel_message_send,
         writer.uint32(58).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "channel_message_update") {
+    if (message.channel_message_update !== undefined) {
       ChannelMessageUpdate.encode(
-        message.message.channel_message_update,
+        message.channel_message_update,
         writer.uint32(66).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "channel_message_remove") {
+    if (message.channel_message_remove !== undefined) {
       ChannelMessageRemove.encode(
-        message.message.channel_message_remove,
+        message.channel_message_remove,
         writer.uint32(74).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "channel_presence_event") {
+    if (message.channel_presence_event !== undefined) {
       ChannelPresenceEvent.encode(
-        message.message.channel_presence_event,
+        message.channel_presence_event,
         writer.uint32(82).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "error") {
-      Error.encode(message.message.error, writer.uint32(90).fork()).ldelim();
+    if (message.error !== undefined) {
+      Error.encode(message.error, writer.uint32(90).fork()).ldelim();
     }
-    if (message.message?.$case === "match") {
-      Match.encode(message.message.match, writer.uint32(98).fork()).ldelim();
+    if (message.match !== undefined) {
+      Match.encode(message.match, writer.uint32(98).fork()).ldelim();
     }
-    if (message.message?.$case === "match_create") {
+    if (message.match_create !== undefined) {
       MatchCreate.encode(
-        message.message.match_create,
+        message.match_create,
         writer.uint32(106).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "match_data") {
-      MatchData.encode(
-        message.message.match_data,
-        writer.uint32(114).fork()
-      ).ldelim();
+    if (message.match_data !== undefined) {
+      MatchData.encode(message.match_data, writer.uint32(114).fork()).ldelim();
     }
-    if (message.message?.$case === "match_data_send") {
+    if (message.match_data_send !== undefined) {
       MatchDataSend.encode(
-        message.message.match_data_send,
+        message.match_data_send,
         writer.uint32(122).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "match_join") {
-      MatchJoin.encode(
-        message.message.match_join,
-        writer.uint32(130).fork()
-      ).ldelim();
+    if (message.match_join !== undefined) {
+      MatchJoin.encode(message.match_join, writer.uint32(130).fork()).ldelim();
     }
-    if (message.message?.$case === "match_leave") {
+    if (message.match_leave !== undefined) {
       MatchLeave.encode(
-        message.message.match_leave,
+        message.match_leave,
         writer.uint32(138).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "match_presence_event") {
+    if (message.match_presence_event !== undefined) {
       MatchPresenceEvent.encode(
-        message.message.match_presence_event,
+        message.match_presence_event,
         writer.uint32(146).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "matchmaker_add") {
+    if (message.matchmaker_add !== undefined) {
       MatchmakerAdd.encode(
-        message.message.matchmaker_add,
+        message.matchmaker_add,
         writer.uint32(154).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "matchmaker_matched") {
+    if (message.matchmaker_matched !== undefined) {
       MatchmakerMatched.encode(
-        message.message.matchmaker_matched,
+        message.matchmaker_matched,
         writer.uint32(162).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "matchmaker_remove") {
+    if (message.matchmaker_remove !== undefined) {
       MatchmakerRemove.encode(
-        message.message.matchmaker_remove,
+        message.matchmaker_remove,
         writer.uint32(170).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "matchmaker_ticket") {
+    if (message.matchmaker_ticket !== undefined) {
       MatchmakerTicket.encode(
-        message.message.matchmaker_ticket,
+        message.matchmaker_ticket,
         writer.uint32(178).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "notifications") {
+    if (message.notifications !== undefined) {
       Notifications.encode(
-        message.message.notifications,
+        message.notifications,
         writer.uint32(186).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "rpc") {
-      Rpc.encode(message.message.rpc, writer.uint32(194).fork()).ldelim();
+    if (message.rpc !== undefined) {
+      Rpc.encode(message.rpc, writer.uint32(194).fork()).ldelim();
     }
-    if (message.message?.$case === "status") {
-      Status.encode(message.message.status, writer.uint32(202).fork()).ldelim();
+    if (message.status !== undefined) {
+      Status.encode(message.status, writer.uint32(202).fork()).ldelim();
     }
-    if (message.message?.$case === "status_follow") {
+    if (message.status_follow !== undefined) {
       StatusFollow.encode(
-        message.message.status_follow,
+        message.status_follow,
         writer.uint32(210).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "status_presence_event") {
+    if (message.status_presence_event !== undefined) {
       StatusPresenceEvent.encode(
-        message.message.status_presence_event,
+        message.status_presence_event,
         writer.uint32(218).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "status_unfollow") {
+    if (message.status_unfollow !== undefined) {
       StatusUnfollow.encode(
-        message.message.status_unfollow,
+        message.status_unfollow,
         writer.uint32(226).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "status_update") {
+    if (message.status_update !== undefined) {
       StatusUpdate.encode(
-        message.message.status_update,
+        message.status_update,
         writer.uint32(234).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "stream_data") {
+    if (message.stream_data !== undefined) {
       StreamData.encode(
-        message.message.stream_data,
+        message.stream_data,
         writer.uint32(242).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "stream_presence_event") {
+    if (message.stream_presence_event !== undefined) {
       StreamPresenceEvent.encode(
-        message.message.stream_presence_event,
+        message.stream_presence_event,
         writer.uint32(250).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "ping") {
-      Ping.encode(message.message.ping, writer.uint32(258).fork()).ldelim();
+    if (message.ping !== undefined) {
+      Ping.encode(message.ping, writer.uint32(258).fork()).ldelim();
     }
-    if (message.message?.$case === "pong") {
-      Pong.encode(message.message.pong, writer.uint32(266).fork()).ldelim();
+    if (message.pong !== undefined) {
+      Pong.encode(message.pong, writer.uint32(266).fork()).ldelim();
     }
-    if (message.message?.$case === "party") {
-      Party.encode(message.message.party, writer.uint32(274).fork()).ldelim();
+    if (message.party !== undefined) {
+      Party.encode(message.party, writer.uint32(274).fork()).ldelim();
     }
-    if (message.message?.$case === "party_create") {
+    if (message.party_create !== undefined) {
       PartyCreate.encode(
-        message.message.party_create,
+        message.party_create,
         writer.uint32(282).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_join") {
-      PartyJoin.encode(
-        message.message.party_join,
-        writer.uint32(290).fork()
-      ).ldelim();
+    if (message.party_join !== undefined) {
+      PartyJoin.encode(message.party_join, writer.uint32(290).fork()).ldelim();
     }
-    if (message.message?.$case === "party_leave") {
+    if (message.party_leave !== undefined) {
       PartyLeave.encode(
-        message.message.party_leave,
+        message.party_leave,
         writer.uint32(298).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_promote") {
+    if (message.party_promote !== undefined) {
       PartyPromote.encode(
-        message.message.party_promote,
+        message.party_promote,
         writer.uint32(306).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_leader") {
+    if (message.party_leader !== undefined) {
       PartyLeader.encode(
-        message.message.party_leader,
+        message.party_leader,
         writer.uint32(314).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_accept") {
+    if (message.party_accept !== undefined) {
       PartyAccept.encode(
-        message.message.party_accept,
+        message.party_accept,
         writer.uint32(322).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_remove") {
+    if (message.party_remove !== undefined) {
       PartyRemove.encode(
-        message.message.party_remove,
+        message.party_remove,
         writer.uint32(330).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_close") {
+    if (message.party_close !== undefined) {
       PartyClose.encode(
-        message.message.party_close,
+        message.party_close,
         writer.uint32(338).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_join_request_list") {
+    if (message.party_join_request_list !== undefined) {
       PartyJoinRequestList.encode(
-        message.message.party_join_request_list,
+        message.party_join_request_list,
         writer.uint32(346).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_join_request") {
+    if (message.party_join_request !== undefined) {
       PartyJoinRequest.encode(
-        message.message.party_join_request,
+        message.party_join_request,
         writer.uint32(354).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_matchmaker_add") {
+    if (message.party_matchmaker_add !== undefined) {
       PartyMatchmakerAdd.encode(
-        message.message.party_matchmaker_add,
+        message.party_matchmaker_add,
         writer.uint32(362).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_matchmaker_remove") {
+    if (message.party_matchmaker_remove !== undefined) {
       PartyMatchmakerRemove.encode(
-        message.message.party_matchmaker_remove,
+        message.party_matchmaker_remove,
         writer.uint32(370).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_matchmaker_ticket") {
+    if (message.party_matchmaker_ticket !== undefined) {
       PartyMatchmakerTicket.encode(
-        message.message.party_matchmaker_ticket,
+        message.party_matchmaker_ticket,
         writer.uint32(378).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_data") {
-      PartyData.encode(
-        message.message.party_data,
-        writer.uint32(386).fork()
-      ).ldelim();
+    if (message.party_data !== undefined) {
+      PartyData.encode(message.party_data, writer.uint32(386).fork()).ldelim();
     }
-    if (message.message?.$case === "party_data_send") {
+    if (message.party_data_send !== undefined) {
       PartyDataSend.encode(
-        message.message.party_data_send,
+        message.party_data_send,
         writer.uint32(394).fork()
       ).ldelim();
     }
-    if (message.message?.$case === "party_presence_event") {
+    if (message.party_presence_event !== undefined) {
       PartyPresenceEvent.encode(
-        message.message.party_presence_event,
+        message.party_presence_event,
         writer.uint32(402).fork()
       ).ldelim();
     }
@@ -1051,343 +1050,217 @@ export const Envelope = {
           message.cid = reader.string();
           break;
         case 2:
-          message.message = {
-            $case: "channel",
-            channel: Channel.decode(reader, reader.uint32()),
-          };
+          message.channel = Channel.decode(reader, reader.uint32());
           break;
         case 3:
-          message.message = {
-            $case: "channel_join",
-            channel_join: ChannelJoin.decode(reader, reader.uint32()),
-          };
+          message.channel_join = ChannelJoin.decode(reader, reader.uint32());
           break;
         case 4:
-          message.message = {
-            $case: "channel_leave",
-            channel_leave: ChannelLeave.decode(reader, reader.uint32()),
-          };
+          message.channel_leave = ChannelLeave.decode(reader, reader.uint32());
           break;
         case 5:
-          message.message = {
-            $case: "channel_message",
-            channel_message: ChannelMessage.decode(reader, reader.uint32()),
-          };
+          message.channel_message = ChannelMessage.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 6:
-          message.message = {
-            $case: "channel_message_ack",
-            channel_message_ack: ChannelMessageAck.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.channel_message_ack = ChannelMessageAck.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 7:
-          message.message = {
-            $case: "channel_message_send",
-            channel_message_send: ChannelMessageSend.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.channel_message_send = ChannelMessageSend.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 8:
-          message.message = {
-            $case: "channel_message_update",
-            channel_message_update: ChannelMessageUpdate.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.channel_message_update = ChannelMessageUpdate.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 9:
-          message.message = {
-            $case: "channel_message_remove",
-            channel_message_remove: ChannelMessageRemove.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.channel_message_remove = ChannelMessageRemove.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 10:
-          message.message = {
-            $case: "channel_presence_event",
-            channel_presence_event: ChannelPresenceEvent.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.channel_presence_event = ChannelPresenceEvent.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 11:
-          message.message = {
-            $case: "error",
-            error: Error.decode(reader, reader.uint32()),
-          };
+          message.error = Error.decode(reader, reader.uint32());
           break;
         case 12:
-          message.message = {
-            $case: "match",
-            match: Match.decode(reader, reader.uint32()),
-          };
+          message.match = Match.decode(reader, reader.uint32());
           break;
         case 13:
-          message.message = {
-            $case: "match_create",
-            match_create: MatchCreate.decode(reader, reader.uint32()),
-          };
+          message.match_create = MatchCreate.decode(reader, reader.uint32());
           break;
         case 14:
-          message.message = {
-            $case: "match_data",
-            match_data: MatchData.decode(reader, reader.uint32()),
-          };
+          message.match_data = MatchData.decode(reader, reader.uint32());
           break;
         case 15:
-          message.message = {
-            $case: "match_data_send",
-            match_data_send: MatchDataSend.decode(reader, reader.uint32()),
-          };
+          message.match_data_send = MatchDataSend.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 16:
-          message.message = {
-            $case: "match_join",
-            match_join: MatchJoin.decode(reader, reader.uint32()),
-          };
+          message.match_join = MatchJoin.decode(reader, reader.uint32());
           break;
         case 17:
-          message.message = {
-            $case: "match_leave",
-            match_leave: MatchLeave.decode(reader, reader.uint32()),
-          };
+          message.match_leave = MatchLeave.decode(reader, reader.uint32());
           break;
         case 18:
-          message.message = {
-            $case: "match_presence_event",
-            match_presence_event: MatchPresenceEvent.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.match_presence_event = MatchPresenceEvent.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 19:
-          message.message = {
-            $case: "matchmaker_add",
-            matchmaker_add: MatchmakerAdd.decode(reader, reader.uint32()),
-          };
+          message.matchmaker_add = MatchmakerAdd.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 20:
-          message.message = {
-            $case: "matchmaker_matched",
-            matchmaker_matched: MatchmakerMatched.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.matchmaker_matched = MatchmakerMatched.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 21:
-          message.message = {
-            $case: "matchmaker_remove",
-            matchmaker_remove: MatchmakerRemove.decode(reader, reader.uint32()),
-          };
+          message.matchmaker_remove = MatchmakerRemove.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 22:
-          message.message = {
-            $case: "matchmaker_ticket",
-            matchmaker_ticket: MatchmakerTicket.decode(reader, reader.uint32()),
-          };
+          message.matchmaker_ticket = MatchmakerTicket.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 23:
-          message.message = {
-            $case: "notifications",
-            notifications: Notifications.decode(reader, reader.uint32()),
-          };
+          message.notifications = Notifications.decode(reader, reader.uint32());
           break;
         case 24:
-          message.message = {
-            $case: "rpc",
-            rpc: Rpc.decode(reader, reader.uint32()),
-          };
+          message.rpc = Rpc.decode(reader, reader.uint32());
           break;
         case 25:
-          message.message = {
-            $case: "status",
-            status: Status.decode(reader, reader.uint32()),
-          };
+          message.status = Status.decode(reader, reader.uint32());
           break;
         case 26:
-          message.message = {
-            $case: "status_follow",
-            status_follow: StatusFollow.decode(reader, reader.uint32()),
-          };
+          message.status_follow = StatusFollow.decode(reader, reader.uint32());
           break;
         case 27:
-          message.message = {
-            $case: "status_presence_event",
-            status_presence_event: StatusPresenceEvent.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.status_presence_event = StatusPresenceEvent.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 28:
-          message.message = {
-            $case: "status_unfollow",
-            status_unfollow: StatusUnfollow.decode(reader, reader.uint32()),
-          };
+          message.status_unfollow = StatusUnfollow.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 29:
-          message.message = {
-            $case: "status_update",
-            status_update: StatusUpdate.decode(reader, reader.uint32()),
-          };
+          message.status_update = StatusUpdate.decode(reader, reader.uint32());
           break;
         case 30:
-          message.message = {
-            $case: "stream_data",
-            stream_data: StreamData.decode(reader, reader.uint32()),
-          };
+          message.stream_data = StreamData.decode(reader, reader.uint32());
           break;
         case 31:
-          message.message = {
-            $case: "stream_presence_event",
-            stream_presence_event: StreamPresenceEvent.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.stream_presence_event = StreamPresenceEvent.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 32:
-          message.message = {
-            $case: "ping",
-            ping: Ping.decode(reader, reader.uint32()),
-          };
+          message.ping = Ping.decode(reader, reader.uint32());
           break;
         case 33:
-          message.message = {
-            $case: "pong",
-            pong: Pong.decode(reader, reader.uint32()),
-          };
+          message.pong = Pong.decode(reader, reader.uint32());
           break;
         case 34:
-          message.message = {
-            $case: "party",
-            party: Party.decode(reader, reader.uint32()),
-          };
+          message.party = Party.decode(reader, reader.uint32());
           break;
         case 35:
-          message.message = {
-            $case: "party_create",
-            party_create: PartyCreate.decode(reader, reader.uint32()),
-          };
+          message.party_create = PartyCreate.decode(reader, reader.uint32());
           break;
         case 36:
-          message.message = {
-            $case: "party_join",
-            party_join: PartyJoin.decode(reader, reader.uint32()),
-          };
+          message.party_join = PartyJoin.decode(reader, reader.uint32());
           break;
         case 37:
-          message.message = {
-            $case: "party_leave",
-            party_leave: PartyLeave.decode(reader, reader.uint32()),
-          };
+          message.party_leave = PartyLeave.decode(reader, reader.uint32());
           break;
         case 38:
-          message.message = {
-            $case: "party_promote",
-            party_promote: PartyPromote.decode(reader, reader.uint32()),
-          };
+          message.party_promote = PartyPromote.decode(reader, reader.uint32());
           break;
         case 39:
-          message.message = {
-            $case: "party_leader",
-            party_leader: PartyLeader.decode(reader, reader.uint32()),
-          };
+          message.party_leader = PartyLeader.decode(reader, reader.uint32());
           break;
         case 40:
-          message.message = {
-            $case: "party_accept",
-            party_accept: PartyAccept.decode(reader, reader.uint32()),
-          };
+          message.party_accept = PartyAccept.decode(reader, reader.uint32());
           break;
         case 41:
-          message.message = {
-            $case: "party_remove",
-            party_remove: PartyRemove.decode(reader, reader.uint32()),
-          };
+          message.party_remove = PartyRemove.decode(reader, reader.uint32());
           break;
         case 42:
-          message.message = {
-            $case: "party_close",
-            party_close: PartyClose.decode(reader, reader.uint32()),
-          };
+          message.party_close = PartyClose.decode(reader, reader.uint32());
           break;
         case 43:
-          message.message = {
-            $case: "party_join_request_list",
-            party_join_request_list: PartyJoinRequestList.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.party_join_request_list = PartyJoinRequestList.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 44:
-          message.message = {
-            $case: "party_join_request",
-            party_join_request: PartyJoinRequest.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.party_join_request = PartyJoinRequest.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 45:
-          message.message = {
-            $case: "party_matchmaker_add",
-            party_matchmaker_add: PartyMatchmakerAdd.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.party_matchmaker_add = PartyMatchmakerAdd.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 46:
-          message.message = {
-            $case: "party_matchmaker_remove",
-            party_matchmaker_remove: PartyMatchmakerRemove.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.party_matchmaker_remove = PartyMatchmakerRemove.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 47:
-          message.message = {
-            $case: "party_matchmaker_ticket",
-            party_matchmaker_ticket: PartyMatchmakerTicket.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.party_matchmaker_ticket = PartyMatchmakerTicket.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 48:
-          message.message = {
-            $case: "party_data",
-            party_data: PartyData.decode(reader, reader.uint32()),
-          };
+          message.party_data = PartyData.decode(reader, reader.uint32());
           break;
         case 49:
-          message.message = {
-            $case: "party_data_send",
-            party_data_send: PartyDataSend.decode(reader, reader.uint32()),
-          };
+          message.party_data_send = PartyDataSend.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 50:
-          message.message = {
-            $case: "party_presence_event",
-            party_presence_event: PartyPresenceEvent.decode(
-              reader,
-              reader.uint32()
-            ),
-          };
+          message.party_presence_event = PartyPresenceEvent.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -1401,375 +1274,350 @@ export const Envelope = {
     const message = { ...baseEnvelope } as Envelope;
     if (object.cid !== undefined && object.cid !== null) {
       message.cid = String(object.cid);
+    } else {
+      message.cid = "";
     }
     if (object.channel !== undefined && object.channel !== null) {
-      message.message = {
-        $case: "channel",
-        channel: Channel.fromJSON(object.channel),
-      };
+      message.channel = Channel.fromJSON(object.channel);
+    } else {
+      message.channel = undefined;
     }
     if (object.channel_join !== undefined && object.channel_join !== null) {
-      message.message = {
-        $case: "channel_join",
-        channel_join: ChannelJoin.fromJSON(object.channel_join),
-      };
+      message.channel_join = ChannelJoin.fromJSON(object.channel_join);
+    } else {
+      message.channel_join = undefined;
     }
     if (object.channel_leave !== undefined && object.channel_leave !== null) {
-      message.message = {
-        $case: "channel_leave",
-        channel_leave: ChannelLeave.fromJSON(object.channel_leave),
-      };
+      message.channel_leave = ChannelLeave.fromJSON(object.channel_leave);
+    } else {
+      message.channel_leave = undefined;
     }
     if (
       object.channel_message !== undefined &&
       object.channel_message !== null
     ) {
-      message.message = {
-        $case: "channel_message",
-        channel_message: ChannelMessage.fromJSON(object.channel_message),
-      };
+      message.channel_message = ChannelMessage.fromJSON(object.channel_message);
+    } else {
+      message.channel_message = undefined;
     }
     if (
       object.channel_message_ack !== undefined &&
       object.channel_message_ack !== null
     ) {
-      message.message = {
-        $case: "channel_message_ack",
-        channel_message_ack: ChannelMessageAck.fromJSON(
-          object.channel_message_ack
-        ),
-      };
+      message.channel_message_ack = ChannelMessageAck.fromJSON(
+        object.channel_message_ack
+      );
+    } else {
+      message.channel_message_ack = undefined;
     }
     if (
       object.channel_message_send !== undefined &&
       object.channel_message_send !== null
     ) {
-      message.message = {
-        $case: "channel_message_send",
-        channel_message_send: ChannelMessageSend.fromJSON(
-          object.channel_message_send
-        ),
-      };
+      message.channel_message_send = ChannelMessageSend.fromJSON(
+        object.channel_message_send
+      );
+    } else {
+      message.channel_message_send = undefined;
     }
     if (
       object.channel_message_update !== undefined &&
       object.channel_message_update !== null
     ) {
-      message.message = {
-        $case: "channel_message_update",
-        channel_message_update: ChannelMessageUpdate.fromJSON(
-          object.channel_message_update
-        ),
-      };
+      message.channel_message_update = ChannelMessageUpdate.fromJSON(
+        object.channel_message_update
+      );
+    } else {
+      message.channel_message_update = undefined;
     }
     if (
       object.channel_message_remove !== undefined &&
       object.channel_message_remove !== null
     ) {
-      message.message = {
-        $case: "channel_message_remove",
-        channel_message_remove: ChannelMessageRemove.fromJSON(
-          object.channel_message_remove
-        ),
-      };
+      message.channel_message_remove = ChannelMessageRemove.fromJSON(
+        object.channel_message_remove
+      );
+    } else {
+      message.channel_message_remove = undefined;
     }
     if (
       object.channel_presence_event !== undefined &&
       object.channel_presence_event !== null
     ) {
-      message.message = {
-        $case: "channel_presence_event",
-        channel_presence_event: ChannelPresenceEvent.fromJSON(
-          object.channel_presence_event
-        ),
-      };
+      message.channel_presence_event = ChannelPresenceEvent.fromJSON(
+        object.channel_presence_event
+      );
+    } else {
+      message.channel_presence_event = undefined;
     }
     if (object.error !== undefined && object.error !== null) {
-      message.message = { $case: "error", error: Error.fromJSON(object.error) };
+      message.error = Error.fromJSON(object.error);
+    } else {
+      message.error = undefined;
     }
     if (object.match !== undefined && object.match !== null) {
-      message.message = { $case: "match", match: Match.fromJSON(object.match) };
+      message.match = Match.fromJSON(object.match);
+    } else {
+      message.match = undefined;
     }
     if (object.match_create !== undefined && object.match_create !== null) {
-      message.message = {
-        $case: "match_create",
-        match_create: MatchCreate.fromJSON(object.match_create),
-      };
+      message.match_create = MatchCreate.fromJSON(object.match_create);
+    } else {
+      message.match_create = undefined;
     }
     if (object.match_data !== undefined && object.match_data !== null) {
-      message.message = {
-        $case: "match_data",
-        match_data: MatchData.fromJSON(object.match_data),
-      };
+      message.match_data = MatchData.fromJSON(object.match_data);
+    } else {
+      message.match_data = undefined;
     }
     if (
       object.match_data_send !== undefined &&
       object.match_data_send !== null
     ) {
-      message.message = {
-        $case: "match_data_send",
-        match_data_send: MatchDataSend.fromJSON(object.match_data_send),
-      };
+      message.match_data_send = MatchDataSend.fromJSON(object.match_data_send);
+    } else {
+      message.match_data_send = undefined;
     }
     if (object.match_join !== undefined && object.match_join !== null) {
-      message.message = {
-        $case: "match_join",
-        match_join: MatchJoin.fromJSON(object.match_join),
-      };
+      message.match_join = MatchJoin.fromJSON(object.match_join);
+    } else {
+      message.match_join = undefined;
     }
     if (object.match_leave !== undefined && object.match_leave !== null) {
-      message.message = {
-        $case: "match_leave",
-        match_leave: MatchLeave.fromJSON(object.match_leave),
-      };
+      message.match_leave = MatchLeave.fromJSON(object.match_leave);
+    } else {
+      message.match_leave = undefined;
     }
     if (
       object.match_presence_event !== undefined &&
       object.match_presence_event !== null
     ) {
-      message.message = {
-        $case: "match_presence_event",
-        match_presence_event: MatchPresenceEvent.fromJSON(
-          object.match_presence_event
-        ),
-      };
+      message.match_presence_event = MatchPresenceEvent.fromJSON(
+        object.match_presence_event
+      );
+    } else {
+      message.match_presence_event = undefined;
     }
     if (object.matchmaker_add !== undefined && object.matchmaker_add !== null) {
-      message.message = {
-        $case: "matchmaker_add",
-        matchmaker_add: MatchmakerAdd.fromJSON(object.matchmaker_add),
-      };
+      message.matchmaker_add = MatchmakerAdd.fromJSON(object.matchmaker_add);
+    } else {
+      message.matchmaker_add = undefined;
     }
     if (
       object.matchmaker_matched !== undefined &&
       object.matchmaker_matched !== null
     ) {
-      message.message = {
-        $case: "matchmaker_matched",
-        matchmaker_matched: MatchmakerMatched.fromJSON(
-          object.matchmaker_matched
-        ),
-      };
+      message.matchmaker_matched = MatchmakerMatched.fromJSON(
+        object.matchmaker_matched
+      );
+    } else {
+      message.matchmaker_matched = undefined;
     }
     if (
       object.matchmaker_remove !== undefined &&
       object.matchmaker_remove !== null
     ) {
-      message.message = {
-        $case: "matchmaker_remove",
-        matchmaker_remove: MatchmakerRemove.fromJSON(object.matchmaker_remove),
-      };
+      message.matchmaker_remove = MatchmakerRemove.fromJSON(
+        object.matchmaker_remove
+      );
+    } else {
+      message.matchmaker_remove = undefined;
     }
     if (
       object.matchmaker_ticket !== undefined &&
       object.matchmaker_ticket !== null
     ) {
-      message.message = {
-        $case: "matchmaker_ticket",
-        matchmaker_ticket: MatchmakerTicket.fromJSON(object.matchmaker_ticket),
-      };
+      message.matchmaker_ticket = MatchmakerTicket.fromJSON(
+        object.matchmaker_ticket
+      );
+    } else {
+      message.matchmaker_ticket = undefined;
     }
     if (object.notifications !== undefined && object.notifications !== null) {
-      message.message = {
-        $case: "notifications",
-        notifications: Notifications.fromJSON(object.notifications),
-      };
+      message.notifications = Notifications.fromJSON(object.notifications);
+    } else {
+      message.notifications = undefined;
     }
     if (object.rpc !== undefined && object.rpc !== null) {
-      message.message = { $case: "rpc", rpc: Rpc.fromJSON(object.rpc) };
+      message.rpc = Rpc.fromJSON(object.rpc);
+    } else {
+      message.rpc = undefined;
     }
     if (object.status !== undefined && object.status !== null) {
-      message.message = {
-        $case: "status",
-        status: Status.fromJSON(object.status),
-      };
+      message.status = Status.fromJSON(object.status);
+    } else {
+      message.status = undefined;
     }
     if (object.status_follow !== undefined && object.status_follow !== null) {
-      message.message = {
-        $case: "status_follow",
-        status_follow: StatusFollow.fromJSON(object.status_follow),
-      };
+      message.status_follow = StatusFollow.fromJSON(object.status_follow);
+    } else {
+      message.status_follow = undefined;
     }
     if (
       object.status_presence_event !== undefined &&
       object.status_presence_event !== null
     ) {
-      message.message = {
-        $case: "status_presence_event",
-        status_presence_event: StatusPresenceEvent.fromJSON(
-          object.status_presence_event
-        ),
-      };
+      message.status_presence_event = StatusPresenceEvent.fromJSON(
+        object.status_presence_event
+      );
+    } else {
+      message.status_presence_event = undefined;
     }
     if (
       object.status_unfollow !== undefined &&
       object.status_unfollow !== null
     ) {
-      message.message = {
-        $case: "status_unfollow",
-        status_unfollow: StatusUnfollow.fromJSON(object.status_unfollow),
-      };
+      message.status_unfollow = StatusUnfollow.fromJSON(object.status_unfollow);
+    } else {
+      message.status_unfollow = undefined;
     }
     if (object.status_update !== undefined && object.status_update !== null) {
-      message.message = {
-        $case: "status_update",
-        status_update: StatusUpdate.fromJSON(object.status_update),
-      };
+      message.status_update = StatusUpdate.fromJSON(object.status_update);
+    } else {
+      message.status_update = undefined;
     }
     if (object.stream_data !== undefined && object.stream_data !== null) {
-      message.message = {
-        $case: "stream_data",
-        stream_data: StreamData.fromJSON(object.stream_data),
-      };
+      message.stream_data = StreamData.fromJSON(object.stream_data);
+    } else {
+      message.stream_data = undefined;
     }
     if (
       object.stream_presence_event !== undefined &&
       object.stream_presence_event !== null
     ) {
-      message.message = {
-        $case: "stream_presence_event",
-        stream_presence_event: StreamPresenceEvent.fromJSON(
-          object.stream_presence_event
-        ),
-      };
+      message.stream_presence_event = StreamPresenceEvent.fromJSON(
+        object.stream_presence_event
+      );
+    } else {
+      message.stream_presence_event = undefined;
     }
     if (object.ping !== undefined && object.ping !== null) {
-      message.message = { $case: "ping", ping: Ping.fromJSON(object.ping) };
+      message.ping = Ping.fromJSON(object.ping);
+    } else {
+      message.ping = undefined;
     }
     if (object.pong !== undefined && object.pong !== null) {
-      message.message = { $case: "pong", pong: Pong.fromJSON(object.pong) };
+      message.pong = Pong.fromJSON(object.pong);
+    } else {
+      message.pong = undefined;
     }
     if (object.party !== undefined && object.party !== null) {
-      message.message = { $case: "party", party: Party.fromJSON(object.party) };
+      message.party = Party.fromJSON(object.party);
+    } else {
+      message.party = undefined;
     }
     if (object.party_create !== undefined && object.party_create !== null) {
-      message.message = {
-        $case: "party_create",
-        party_create: PartyCreate.fromJSON(object.party_create),
-      };
+      message.party_create = PartyCreate.fromJSON(object.party_create);
+    } else {
+      message.party_create = undefined;
     }
     if (object.party_join !== undefined && object.party_join !== null) {
-      message.message = {
-        $case: "party_join",
-        party_join: PartyJoin.fromJSON(object.party_join),
-      };
+      message.party_join = PartyJoin.fromJSON(object.party_join);
+    } else {
+      message.party_join = undefined;
     }
     if (object.party_leave !== undefined && object.party_leave !== null) {
-      message.message = {
-        $case: "party_leave",
-        party_leave: PartyLeave.fromJSON(object.party_leave),
-      };
+      message.party_leave = PartyLeave.fromJSON(object.party_leave);
+    } else {
+      message.party_leave = undefined;
     }
     if (object.party_promote !== undefined && object.party_promote !== null) {
-      message.message = {
-        $case: "party_promote",
-        party_promote: PartyPromote.fromJSON(object.party_promote),
-      };
+      message.party_promote = PartyPromote.fromJSON(object.party_promote);
+    } else {
+      message.party_promote = undefined;
     }
     if (object.party_leader !== undefined && object.party_leader !== null) {
-      message.message = {
-        $case: "party_leader",
-        party_leader: PartyLeader.fromJSON(object.party_leader),
-      };
+      message.party_leader = PartyLeader.fromJSON(object.party_leader);
+    } else {
+      message.party_leader = undefined;
     }
     if (object.party_accept !== undefined && object.party_accept !== null) {
-      message.message = {
-        $case: "party_accept",
-        party_accept: PartyAccept.fromJSON(object.party_accept),
-      };
+      message.party_accept = PartyAccept.fromJSON(object.party_accept);
+    } else {
+      message.party_accept = undefined;
     }
     if (object.party_remove !== undefined && object.party_remove !== null) {
-      message.message = {
-        $case: "party_remove",
-        party_remove: PartyRemove.fromJSON(object.party_remove),
-      };
+      message.party_remove = PartyRemove.fromJSON(object.party_remove);
+    } else {
+      message.party_remove = undefined;
     }
     if (object.party_close !== undefined && object.party_close !== null) {
-      message.message = {
-        $case: "party_close",
-        party_close: PartyClose.fromJSON(object.party_close),
-      };
+      message.party_close = PartyClose.fromJSON(object.party_close);
+    } else {
+      message.party_close = undefined;
     }
     if (
       object.party_join_request_list !== undefined &&
       object.party_join_request_list !== null
     ) {
-      message.message = {
-        $case: "party_join_request_list",
-        party_join_request_list: PartyJoinRequestList.fromJSON(
-          object.party_join_request_list
-        ),
-      };
+      message.party_join_request_list = PartyJoinRequestList.fromJSON(
+        object.party_join_request_list
+      );
+    } else {
+      message.party_join_request_list = undefined;
     }
     if (
       object.party_join_request !== undefined &&
       object.party_join_request !== null
     ) {
-      message.message = {
-        $case: "party_join_request",
-        party_join_request: PartyJoinRequest.fromJSON(
-          object.party_join_request
-        ),
-      };
+      message.party_join_request = PartyJoinRequest.fromJSON(
+        object.party_join_request
+      );
+    } else {
+      message.party_join_request = undefined;
     }
     if (
       object.party_matchmaker_add !== undefined &&
       object.party_matchmaker_add !== null
     ) {
-      message.message = {
-        $case: "party_matchmaker_add",
-        party_matchmaker_add: PartyMatchmakerAdd.fromJSON(
-          object.party_matchmaker_add
-        ),
-      };
+      message.party_matchmaker_add = PartyMatchmakerAdd.fromJSON(
+        object.party_matchmaker_add
+      );
+    } else {
+      message.party_matchmaker_add = undefined;
     }
     if (
       object.party_matchmaker_remove !== undefined &&
       object.party_matchmaker_remove !== null
     ) {
-      message.message = {
-        $case: "party_matchmaker_remove",
-        party_matchmaker_remove: PartyMatchmakerRemove.fromJSON(
-          object.party_matchmaker_remove
-        ),
-      };
+      message.party_matchmaker_remove = PartyMatchmakerRemove.fromJSON(
+        object.party_matchmaker_remove
+      );
+    } else {
+      message.party_matchmaker_remove = undefined;
     }
     if (
       object.party_matchmaker_ticket !== undefined &&
       object.party_matchmaker_ticket !== null
     ) {
-      message.message = {
-        $case: "party_matchmaker_ticket",
-        party_matchmaker_ticket: PartyMatchmakerTicket.fromJSON(
-          object.party_matchmaker_ticket
-        ),
-      };
+      message.party_matchmaker_ticket = PartyMatchmakerTicket.fromJSON(
+        object.party_matchmaker_ticket
+      );
+    } else {
+      message.party_matchmaker_ticket = undefined;
     }
     if (object.party_data !== undefined && object.party_data !== null) {
-      message.message = {
-        $case: "party_data",
-        party_data: PartyData.fromJSON(object.party_data),
-      };
+      message.party_data = PartyData.fromJSON(object.party_data);
+    } else {
+      message.party_data = undefined;
     }
     if (
       object.party_data_send !== undefined &&
       object.party_data_send !== null
     ) {
-      message.message = {
-        $case: "party_data_send",
-        party_data_send: PartyDataSend.fromJSON(object.party_data_send),
-      };
+      message.party_data_send = PartyDataSend.fromJSON(object.party_data_send);
+    } else {
+      message.party_data_send = undefined;
     }
     if (
       object.party_presence_event !== undefined &&
       object.party_presence_event !== null
     ) {
-      message.message = {
-        $case: "party_presence_event",
-        party_presence_event: PartyPresenceEvent.fromJSON(
-          object.party_presence_event
-        ),
-      };
+      message.party_presence_event = PartyPresenceEvent.fromJSON(
+        object.party_presence_event
+      );
+    } else {
+      message.party_presence_event = undefined;
     }
     return message;
   },
@@ -1777,201 +1625,187 @@ export const Envelope = {
   toJSON(message: Envelope): unknown {
     const obj: any = {};
     message.cid !== undefined && (obj.cid = message.cid);
-    message.message?.$case === "channel" &&
-      (obj.channel = message.message?.channel
-        ? Channel.toJSON(message.message?.channel)
+    message.channel !== undefined &&
+      (obj.channel = message.channel
+        ? Channel.toJSON(message.channel)
         : undefined);
-    message.message?.$case === "channel_join" &&
-      (obj.channel_join = message.message?.channel_join
-        ? ChannelJoin.toJSON(message.message?.channel_join)
+    message.channel_join !== undefined &&
+      (obj.channel_join = message.channel_join
+        ? ChannelJoin.toJSON(message.channel_join)
         : undefined);
-    message.message?.$case === "channel_leave" &&
-      (obj.channel_leave = message.message?.channel_leave
-        ? ChannelLeave.toJSON(message.message?.channel_leave)
+    message.channel_leave !== undefined &&
+      (obj.channel_leave = message.channel_leave
+        ? ChannelLeave.toJSON(message.channel_leave)
         : undefined);
-    message.message?.$case === "channel_message" &&
-      (obj.channel_message = message.message?.channel_message
-        ? ChannelMessage.toJSON(message.message?.channel_message)
+    message.channel_message !== undefined &&
+      (obj.channel_message = message.channel_message
+        ? ChannelMessage.toJSON(message.channel_message)
         : undefined);
-    message.message?.$case === "channel_message_ack" &&
-      (obj.channel_message_ack = message.message?.channel_message_ack
-        ? ChannelMessageAck.toJSON(message.message?.channel_message_ack)
+    message.channel_message_ack !== undefined &&
+      (obj.channel_message_ack = message.channel_message_ack
+        ? ChannelMessageAck.toJSON(message.channel_message_ack)
         : undefined);
-    message.message?.$case === "channel_message_send" &&
-      (obj.channel_message_send = message.message?.channel_message_send
-        ? ChannelMessageSend.toJSON(message.message?.channel_message_send)
+    message.channel_message_send !== undefined &&
+      (obj.channel_message_send = message.channel_message_send
+        ? ChannelMessageSend.toJSON(message.channel_message_send)
         : undefined);
-    message.message?.$case === "channel_message_update" &&
-      (obj.channel_message_update = message.message?.channel_message_update
-        ? ChannelMessageUpdate.toJSON(message.message?.channel_message_update)
+    message.channel_message_update !== undefined &&
+      (obj.channel_message_update = message.channel_message_update
+        ? ChannelMessageUpdate.toJSON(message.channel_message_update)
         : undefined);
-    message.message?.$case === "channel_message_remove" &&
-      (obj.channel_message_remove = message.message?.channel_message_remove
-        ? ChannelMessageRemove.toJSON(message.message?.channel_message_remove)
+    message.channel_message_remove !== undefined &&
+      (obj.channel_message_remove = message.channel_message_remove
+        ? ChannelMessageRemove.toJSON(message.channel_message_remove)
         : undefined);
-    message.message?.$case === "channel_presence_event" &&
-      (obj.channel_presence_event = message.message?.channel_presence_event
-        ? ChannelPresenceEvent.toJSON(message.message?.channel_presence_event)
+    message.channel_presence_event !== undefined &&
+      (obj.channel_presence_event = message.channel_presence_event
+        ? ChannelPresenceEvent.toJSON(message.channel_presence_event)
         : undefined);
-    message.message?.$case === "error" &&
-      (obj.error = message.message?.error
-        ? Error.toJSON(message.message?.error)
+    message.error !== undefined &&
+      (obj.error = message.error ? Error.toJSON(message.error) : undefined);
+    message.match !== undefined &&
+      (obj.match = message.match ? Match.toJSON(message.match) : undefined);
+    message.match_create !== undefined &&
+      (obj.match_create = message.match_create
+        ? MatchCreate.toJSON(message.match_create)
         : undefined);
-    message.message?.$case === "match" &&
-      (obj.match = message.message?.match
-        ? Match.toJSON(message.message?.match)
+    message.match_data !== undefined &&
+      (obj.match_data = message.match_data
+        ? MatchData.toJSON(message.match_data)
         : undefined);
-    message.message?.$case === "match_create" &&
-      (obj.match_create = message.message?.match_create
-        ? MatchCreate.toJSON(message.message?.match_create)
+    message.match_data_send !== undefined &&
+      (obj.match_data_send = message.match_data_send
+        ? MatchDataSend.toJSON(message.match_data_send)
         : undefined);
-    message.message?.$case === "match_data" &&
-      (obj.match_data = message.message?.match_data
-        ? MatchData.toJSON(message.message?.match_data)
+    message.match_join !== undefined &&
+      (obj.match_join = message.match_join
+        ? MatchJoin.toJSON(message.match_join)
         : undefined);
-    message.message?.$case === "match_data_send" &&
-      (obj.match_data_send = message.message?.match_data_send
-        ? MatchDataSend.toJSON(message.message?.match_data_send)
+    message.match_leave !== undefined &&
+      (obj.match_leave = message.match_leave
+        ? MatchLeave.toJSON(message.match_leave)
         : undefined);
-    message.message?.$case === "match_join" &&
-      (obj.match_join = message.message?.match_join
-        ? MatchJoin.toJSON(message.message?.match_join)
+    message.match_presence_event !== undefined &&
+      (obj.match_presence_event = message.match_presence_event
+        ? MatchPresenceEvent.toJSON(message.match_presence_event)
         : undefined);
-    message.message?.$case === "match_leave" &&
-      (obj.match_leave = message.message?.match_leave
-        ? MatchLeave.toJSON(message.message?.match_leave)
+    message.matchmaker_add !== undefined &&
+      (obj.matchmaker_add = message.matchmaker_add
+        ? MatchmakerAdd.toJSON(message.matchmaker_add)
         : undefined);
-    message.message?.$case === "match_presence_event" &&
-      (obj.match_presence_event = message.message?.match_presence_event
-        ? MatchPresenceEvent.toJSON(message.message?.match_presence_event)
+    message.matchmaker_matched !== undefined &&
+      (obj.matchmaker_matched = message.matchmaker_matched
+        ? MatchmakerMatched.toJSON(message.matchmaker_matched)
         : undefined);
-    message.message?.$case === "matchmaker_add" &&
-      (obj.matchmaker_add = message.message?.matchmaker_add
-        ? MatchmakerAdd.toJSON(message.message?.matchmaker_add)
+    message.matchmaker_remove !== undefined &&
+      (obj.matchmaker_remove = message.matchmaker_remove
+        ? MatchmakerRemove.toJSON(message.matchmaker_remove)
         : undefined);
-    message.message?.$case === "matchmaker_matched" &&
-      (obj.matchmaker_matched = message.message?.matchmaker_matched
-        ? MatchmakerMatched.toJSON(message.message?.matchmaker_matched)
+    message.matchmaker_ticket !== undefined &&
+      (obj.matchmaker_ticket = message.matchmaker_ticket
+        ? MatchmakerTicket.toJSON(message.matchmaker_ticket)
         : undefined);
-    message.message?.$case === "matchmaker_remove" &&
-      (obj.matchmaker_remove = message.message?.matchmaker_remove
-        ? MatchmakerRemove.toJSON(message.message?.matchmaker_remove)
+    message.notifications !== undefined &&
+      (obj.notifications = message.notifications
+        ? Notifications.toJSON(message.notifications)
         : undefined);
-    message.message?.$case === "matchmaker_ticket" &&
-      (obj.matchmaker_ticket = message.message?.matchmaker_ticket
-        ? MatchmakerTicket.toJSON(message.message?.matchmaker_ticket)
+    message.rpc !== undefined &&
+      (obj.rpc = message.rpc ? Rpc.toJSON(message.rpc) : undefined);
+    message.status !== undefined &&
+      (obj.status = message.status ? Status.toJSON(message.status) : undefined);
+    message.status_follow !== undefined &&
+      (obj.status_follow = message.status_follow
+        ? StatusFollow.toJSON(message.status_follow)
         : undefined);
-    message.message?.$case === "notifications" &&
-      (obj.notifications = message.message?.notifications
-        ? Notifications.toJSON(message.message?.notifications)
+    message.status_presence_event !== undefined &&
+      (obj.status_presence_event = message.status_presence_event
+        ? StatusPresenceEvent.toJSON(message.status_presence_event)
         : undefined);
-    message.message?.$case === "rpc" &&
-      (obj.rpc = message.message?.rpc
-        ? Rpc.toJSON(message.message?.rpc)
+    message.status_unfollow !== undefined &&
+      (obj.status_unfollow = message.status_unfollow
+        ? StatusUnfollow.toJSON(message.status_unfollow)
         : undefined);
-    message.message?.$case === "status" &&
-      (obj.status = message.message?.status
-        ? Status.toJSON(message.message?.status)
+    message.status_update !== undefined &&
+      (obj.status_update = message.status_update
+        ? StatusUpdate.toJSON(message.status_update)
         : undefined);
-    message.message?.$case === "status_follow" &&
-      (obj.status_follow = message.message?.status_follow
-        ? StatusFollow.toJSON(message.message?.status_follow)
+    message.stream_data !== undefined &&
+      (obj.stream_data = message.stream_data
+        ? StreamData.toJSON(message.stream_data)
         : undefined);
-    message.message?.$case === "status_presence_event" &&
-      (obj.status_presence_event = message.message?.status_presence_event
-        ? StatusPresenceEvent.toJSON(message.message?.status_presence_event)
+    message.stream_presence_event !== undefined &&
+      (obj.stream_presence_event = message.stream_presence_event
+        ? StreamPresenceEvent.toJSON(message.stream_presence_event)
         : undefined);
-    message.message?.$case === "status_unfollow" &&
-      (obj.status_unfollow = message.message?.status_unfollow
-        ? StatusUnfollow.toJSON(message.message?.status_unfollow)
+    message.ping !== undefined &&
+      (obj.ping = message.ping ? Ping.toJSON(message.ping) : undefined);
+    message.pong !== undefined &&
+      (obj.pong = message.pong ? Pong.toJSON(message.pong) : undefined);
+    message.party !== undefined &&
+      (obj.party = message.party ? Party.toJSON(message.party) : undefined);
+    message.party_create !== undefined &&
+      (obj.party_create = message.party_create
+        ? PartyCreate.toJSON(message.party_create)
         : undefined);
-    message.message?.$case === "status_update" &&
-      (obj.status_update = message.message?.status_update
-        ? StatusUpdate.toJSON(message.message?.status_update)
+    message.party_join !== undefined &&
+      (obj.party_join = message.party_join
+        ? PartyJoin.toJSON(message.party_join)
         : undefined);
-    message.message?.$case === "stream_data" &&
-      (obj.stream_data = message.message?.stream_data
-        ? StreamData.toJSON(message.message?.stream_data)
+    message.party_leave !== undefined &&
+      (obj.party_leave = message.party_leave
+        ? PartyLeave.toJSON(message.party_leave)
         : undefined);
-    message.message?.$case === "stream_presence_event" &&
-      (obj.stream_presence_event = message.message?.stream_presence_event
-        ? StreamPresenceEvent.toJSON(message.message?.stream_presence_event)
+    message.party_promote !== undefined &&
+      (obj.party_promote = message.party_promote
+        ? PartyPromote.toJSON(message.party_promote)
         : undefined);
-    message.message?.$case === "ping" &&
-      (obj.ping = message.message?.ping
-        ? Ping.toJSON(message.message?.ping)
+    message.party_leader !== undefined &&
+      (obj.party_leader = message.party_leader
+        ? PartyLeader.toJSON(message.party_leader)
         : undefined);
-    message.message?.$case === "pong" &&
-      (obj.pong = message.message?.pong
-        ? Pong.toJSON(message.message?.pong)
+    message.party_accept !== undefined &&
+      (obj.party_accept = message.party_accept
+        ? PartyAccept.toJSON(message.party_accept)
         : undefined);
-    message.message?.$case === "party" &&
-      (obj.party = message.message?.party
-        ? Party.toJSON(message.message?.party)
+    message.party_remove !== undefined &&
+      (obj.party_remove = message.party_remove
+        ? PartyRemove.toJSON(message.party_remove)
         : undefined);
-    message.message?.$case === "party_create" &&
-      (obj.party_create = message.message?.party_create
-        ? PartyCreate.toJSON(message.message?.party_create)
+    message.party_close !== undefined &&
+      (obj.party_close = message.party_close
+        ? PartyClose.toJSON(message.party_close)
         : undefined);
-    message.message?.$case === "party_join" &&
-      (obj.party_join = message.message?.party_join
-        ? PartyJoin.toJSON(message.message?.party_join)
+    message.party_join_request_list !== undefined &&
+      (obj.party_join_request_list = message.party_join_request_list
+        ? PartyJoinRequestList.toJSON(message.party_join_request_list)
         : undefined);
-    message.message?.$case === "party_leave" &&
-      (obj.party_leave = message.message?.party_leave
-        ? PartyLeave.toJSON(message.message?.party_leave)
+    message.party_join_request !== undefined &&
+      (obj.party_join_request = message.party_join_request
+        ? PartyJoinRequest.toJSON(message.party_join_request)
         : undefined);
-    message.message?.$case === "party_promote" &&
-      (obj.party_promote = message.message?.party_promote
-        ? PartyPromote.toJSON(message.message?.party_promote)
+    message.party_matchmaker_add !== undefined &&
+      (obj.party_matchmaker_add = message.party_matchmaker_add
+        ? PartyMatchmakerAdd.toJSON(message.party_matchmaker_add)
         : undefined);
-    message.message?.$case === "party_leader" &&
-      (obj.party_leader = message.message?.party_leader
-        ? PartyLeader.toJSON(message.message?.party_leader)
+    message.party_matchmaker_remove !== undefined &&
+      (obj.party_matchmaker_remove = message.party_matchmaker_remove
+        ? PartyMatchmakerRemove.toJSON(message.party_matchmaker_remove)
         : undefined);
-    message.message?.$case === "party_accept" &&
-      (obj.party_accept = message.message?.party_accept
-        ? PartyAccept.toJSON(message.message?.party_accept)
+    message.party_matchmaker_ticket !== undefined &&
+      (obj.party_matchmaker_ticket = message.party_matchmaker_ticket
+        ? PartyMatchmakerTicket.toJSON(message.party_matchmaker_ticket)
         : undefined);
-    message.message?.$case === "party_remove" &&
-      (obj.party_remove = message.message?.party_remove
-        ? PartyRemove.toJSON(message.message?.party_remove)
+    message.party_data !== undefined &&
+      (obj.party_data = message.party_data
+        ? PartyData.toJSON(message.party_data)
         : undefined);
-    message.message?.$case === "party_close" &&
-      (obj.party_close = message.message?.party_close
-        ? PartyClose.toJSON(message.message?.party_close)
+    message.party_data_send !== undefined &&
+      (obj.party_data_send = message.party_data_send
+        ? PartyDataSend.toJSON(message.party_data_send)
         : undefined);
-    message.message?.$case === "party_join_request_list" &&
-      (obj.party_join_request_list = message.message?.party_join_request_list
-        ? PartyJoinRequestList.toJSON(message.message?.party_join_request_list)
-        : undefined);
-    message.message?.$case === "party_join_request" &&
-      (obj.party_join_request = message.message?.party_join_request
-        ? PartyJoinRequest.toJSON(message.message?.party_join_request)
-        : undefined);
-    message.message?.$case === "party_matchmaker_add" &&
-      (obj.party_matchmaker_add = message.message?.party_matchmaker_add
-        ? PartyMatchmakerAdd.toJSON(message.message?.party_matchmaker_add)
-        : undefined);
-    message.message?.$case === "party_matchmaker_remove" &&
-      (obj.party_matchmaker_remove = message.message?.party_matchmaker_remove
-        ? PartyMatchmakerRemove.toJSON(message.message?.party_matchmaker_remove)
-        : undefined);
-    message.message?.$case === "party_matchmaker_ticket" &&
-      (obj.party_matchmaker_ticket = message.message?.party_matchmaker_ticket
-        ? PartyMatchmakerTicket.toJSON(message.message?.party_matchmaker_ticket)
-        : undefined);
-    message.message?.$case === "party_data" &&
-      (obj.party_data = message.message?.party_data
-        ? PartyData.toJSON(message.message?.party_data)
-        : undefined);
-    message.message?.$case === "party_data_send" &&
-      (obj.party_data_send = message.message?.party_data_send
-        ? PartyDataSend.toJSON(message.message?.party_data_send)
-        : undefined);
-    message.message?.$case === "party_presence_event" &&
-      (obj.party_presence_event = message.message?.party_presence_event
-        ? PartyPresenceEvent.toJSON(message.message?.party_presence_event)
+    message.party_presence_event !== undefined &&
+      (obj.party_presence_event = message.party_presence_event
+        ? PartyPresenceEvent.toJSON(message.party_presence_event)
         : undefined);
     return obj;
   },
@@ -1980,540 +1814,358 @@ export const Envelope = {
     const message = { ...baseEnvelope } as Envelope;
     if (object.cid !== undefined && object.cid !== null) {
       message.cid = object.cid;
+    } else {
+      message.cid = "";
+    }
+    if (object.channel !== undefined && object.channel !== null) {
+      message.channel = Channel.fromPartial(object.channel);
+    } else {
+      message.channel = undefined;
+    }
+    if (object.channel_join !== undefined && object.channel_join !== null) {
+      message.channel_join = ChannelJoin.fromPartial(object.channel_join);
+    } else {
+      message.channel_join = undefined;
+    }
+    if (object.channel_leave !== undefined && object.channel_leave !== null) {
+      message.channel_leave = ChannelLeave.fromPartial(object.channel_leave);
+    } else {
+      message.channel_leave = undefined;
     }
     if (
-      object.message?.$case === "channel" &&
-      object.message?.channel !== undefined &&
-      object.message?.channel !== null
+      object.channel_message !== undefined &&
+      object.channel_message !== null
     ) {
-      message.message = {
-        $case: "channel",
-        channel: Channel.fromPartial(object.message.channel),
-      };
+      message.channel_message = ChannelMessage.fromPartial(
+        object.channel_message
+      );
+    } else {
+      message.channel_message = undefined;
     }
     if (
-      object.message?.$case === "channel_join" &&
-      object.message?.channel_join !== undefined &&
-      object.message?.channel_join !== null
+      object.channel_message_ack !== undefined &&
+      object.channel_message_ack !== null
     ) {
-      message.message = {
-        $case: "channel_join",
-        channel_join: ChannelJoin.fromPartial(object.message.channel_join),
-      };
+      message.channel_message_ack = ChannelMessageAck.fromPartial(
+        object.channel_message_ack
+      );
+    } else {
+      message.channel_message_ack = undefined;
     }
     if (
-      object.message?.$case === "channel_leave" &&
-      object.message?.channel_leave !== undefined &&
-      object.message?.channel_leave !== null
+      object.channel_message_send !== undefined &&
+      object.channel_message_send !== null
     ) {
-      message.message = {
-        $case: "channel_leave",
-        channel_leave: ChannelLeave.fromPartial(object.message.channel_leave),
-      };
+      message.channel_message_send = ChannelMessageSend.fromPartial(
+        object.channel_message_send
+      );
+    } else {
+      message.channel_message_send = undefined;
     }
     if (
-      object.message?.$case === "channel_message" &&
-      object.message?.channel_message !== undefined &&
-      object.message?.channel_message !== null
+      object.channel_message_update !== undefined &&
+      object.channel_message_update !== null
     ) {
-      message.message = {
-        $case: "channel_message",
-        channel_message: ChannelMessage.fromPartial(
-          object.message.channel_message
-        ),
-      };
+      message.channel_message_update = ChannelMessageUpdate.fromPartial(
+        object.channel_message_update
+      );
+    } else {
+      message.channel_message_update = undefined;
     }
     if (
-      object.message?.$case === "channel_message_ack" &&
-      object.message?.channel_message_ack !== undefined &&
-      object.message?.channel_message_ack !== null
+      object.channel_message_remove !== undefined &&
+      object.channel_message_remove !== null
     ) {
-      message.message = {
-        $case: "channel_message_ack",
-        channel_message_ack: ChannelMessageAck.fromPartial(
-          object.message.channel_message_ack
-        ),
-      };
+      message.channel_message_remove = ChannelMessageRemove.fromPartial(
+        object.channel_message_remove
+      );
+    } else {
+      message.channel_message_remove = undefined;
     }
     if (
-      object.message?.$case === "channel_message_send" &&
-      object.message?.channel_message_send !== undefined &&
-      object.message?.channel_message_send !== null
+      object.channel_presence_event !== undefined &&
+      object.channel_presence_event !== null
     ) {
-      message.message = {
-        $case: "channel_message_send",
-        channel_message_send: ChannelMessageSend.fromPartial(
-          object.message.channel_message_send
-        ),
-      };
+      message.channel_presence_event = ChannelPresenceEvent.fromPartial(
+        object.channel_presence_event
+      );
+    } else {
+      message.channel_presence_event = undefined;
+    }
+    if (object.error !== undefined && object.error !== null) {
+      message.error = Error.fromPartial(object.error);
+    } else {
+      message.error = undefined;
+    }
+    if (object.match !== undefined && object.match !== null) {
+      message.match = Match.fromPartial(object.match);
+    } else {
+      message.match = undefined;
+    }
+    if (object.match_create !== undefined && object.match_create !== null) {
+      message.match_create = MatchCreate.fromPartial(object.match_create);
+    } else {
+      message.match_create = undefined;
+    }
+    if (object.match_data !== undefined && object.match_data !== null) {
+      message.match_data = MatchData.fromPartial(object.match_data);
+    } else {
+      message.match_data = undefined;
     }
     if (
-      object.message?.$case === "channel_message_update" &&
-      object.message?.channel_message_update !== undefined &&
-      object.message?.channel_message_update !== null
+      object.match_data_send !== undefined &&
+      object.match_data_send !== null
     ) {
-      message.message = {
-        $case: "channel_message_update",
-        channel_message_update: ChannelMessageUpdate.fromPartial(
-          object.message.channel_message_update
-        ),
-      };
+      message.match_data_send = MatchDataSend.fromPartial(
+        object.match_data_send
+      );
+    } else {
+      message.match_data_send = undefined;
+    }
+    if (object.match_join !== undefined && object.match_join !== null) {
+      message.match_join = MatchJoin.fromPartial(object.match_join);
+    } else {
+      message.match_join = undefined;
+    }
+    if (object.match_leave !== undefined && object.match_leave !== null) {
+      message.match_leave = MatchLeave.fromPartial(object.match_leave);
+    } else {
+      message.match_leave = undefined;
     }
     if (
-      object.message?.$case === "channel_message_remove" &&
-      object.message?.channel_message_remove !== undefined &&
-      object.message?.channel_message_remove !== null
+      object.match_presence_event !== undefined &&
+      object.match_presence_event !== null
     ) {
-      message.message = {
-        $case: "channel_message_remove",
-        channel_message_remove: ChannelMessageRemove.fromPartial(
-          object.message.channel_message_remove
-        ),
-      };
+      message.match_presence_event = MatchPresenceEvent.fromPartial(
+        object.match_presence_event
+      );
+    } else {
+      message.match_presence_event = undefined;
+    }
+    if (object.matchmaker_add !== undefined && object.matchmaker_add !== null) {
+      message.matchmaker_add = MatchmakerAdd.fromPartial(object.matchmaker_add);
+    } else {
+      message.matchmaker_add = undefined;
     }
     if (
-      object.message?.$case === "channel_presence_event" &&
-      object.message?.channel_presence_event !== undefined &&
-      object.message?.channel_presence_event !== null
+      object.matchmaker_matched !== undefined &&
+      object.matchmaker_matched !== null
     ) {
-      message.message = {
-        $case: "channel_presence_event",
-        channel_presence_event: ChannelPresenceEvent.fromPartial(
-          object.message.channel_presence_event
-        ),
-      };
+      message.matchmaker_matched = MatchmakerMatched.fromPartial(
+        object.matchmaker_matched
+      );
+    } else {
+      message.matchmaker_matched = undefined;
     }
     if (
-      object.message?.$case === "error" &&
-      object.message?.error !== undefined &&
-      object.message?.error !== null
+      object.matchmaker_remove !== undefined &&
+      object.matchmaker_remove !== null
     ) {
-      message.message = {
-        $case: "error",
-        error: Error.fromPartial(object.message.error),
-      };
+      message.matchmaker_remove = MatchmakerRemove.fromPartial(
+        object.matchmaker_remove
+      );
+    } else {
+      message.matchmaker_remove = undefined;
     }
     if (
-      object.message?.$case === "match" &&
-      object.message?.match !== undefined &&
-      object.message?.match !== null
+      object.matchmaker_ticket !== undefined &&
+      object.matchmaker_ticket !== null
     ) {
-      message.message = {
-        $case: "match",
-        match: Match.fromPartial(object.message.match),
-      };
+      message.matchmaker_ticket = MatchmakerTicket.fromPartial(
+        object.matchmaker_ticket
+      );
+    } else {
+      message.matchmaker_ticket = undefined;
+    }
+    if (object.notifications !== undefined && object.notifications !== null) {
+      message.notifications = Notifications.fromPartial(object.notifications);
+    } else {
+      message.notifications = undefined;
+    }
+    if (object.rpc !== undefined && object.rpc !== null) {
+      message.rpc = Rpc.fromPartial(object.rpc);
+    } else {
+      message.rpc = undefined;
+    }
+    if (object.status !== undefined && object.status !== null) {
+      message.status = Status.fromPartial(object.status);
+    } else {
+      message.status = undefined;
+    }
+    if (object.status_follow !== undefined && object.status_follow !== null) {
+      message.status_follow = StatusFollow.fromPartial(object.status_follow);
+    } else {
+      message.status_follow = undefined;
     }
     if (
-      object.message?.$case === "match_create" &&
-      object.message?.match_create !== undefined &&
-      object.message?.match_create !== null
+      object.status_presence_event !== undefined &&
+      object.status_presence_event !== null
     ) {
-      message.message = {
-        $case: "match_create",
-        match_create: MatchCreate.fromPartial(object.message.match_create),
-      };
+      message.status_presence_event = StatusPresenceEvent.fromPartial(
+        object.status_presence_event
+      );
+    } else {
+      message.status_presence_event = undefined;
     }
     if (
-      object.message?.$case === "match_data" &&
-      object.message?.match_data !== undefined &&
-      object.message?.match_data !== null
+      object.status_unfollow !== undefined &&
+      object.status_unfollow !== null
     ) {
-      message.message = {
-        $case: "match_data",
-        match_data: MatchData.fromPartial(object.message.match_data),
-      };
+      message.status_unfollow = StatusUnfollow.fromPartial(
+        object.status_unfollow
+      );
+    } else {
+      message.status_unfollow = undefined;
+    }
+    if (object.status_update !== undefined && object.status_update !== null) {
+      message.status_update = StatusUpdate.fromPartial(object.status_update);
+    } else {
+      message.status_update = undefined;
+    }
+    if (object.stream_data !== undefined && object.stream_data !== null) {
+      message.stream_data = StreamData.fromPartial(object.stream_data);
+    } else {
+      message.stream_data = undefined;
     }
     if (
-      object.message?.$case === "match_data_send" &&
-      object.message?.match_data_send !== undefined &&
-      object.message?.match_data_send !== null
+      object.stream_presence_event !== undefined &&
+      object.stream_presence_event !== null
     ) {
-      message.message = {
-        $case: "match_data_send",
-        match_data_send: MatchDataSend.fromPartial(
-          object.message.match_data_send
-        ),
-      };
+      message.stream_presence_event = StreamPresenceEvent.fromPartial(
+        object.stream_presence_event
+      );
+    } else {
+      message.stream_presence_event = undefined;
+    }
+    if (object.ping !== undefined && object.ping !== null) {
+      message.ping = Ping.fromPartial(object.ping);
+    } else {
+      message.ping = undefined;
+    }
+    if (object.pong !== undefined && object.pong !== null) {
+      message.pong = Pong.fromPartial(object.pong);
+    } else {
+      message.pong = undefined;
+    }
+    if (object.party !== undefined && object.party !== null) {
+      message.party = Party.fromPartial(object.party);
+    } else {
+      message.party = undefined;
+    }
+    if (object.party_create !== undefined && object.party_create !== null) {
+      message.party_create = PartyCreate.fromPartial(object.party_create);
+    } else {
+      message.party_create = undefined;
+    }
+    if (object.party_join !== undefined && object.party_join !== null) {
+      message.party_join = PartyJoin.fromPartial(object.party_join);
+    } else {
+      message.party_join = undefined;
+    }
+    if (object.party_leave !== undefined && object.party_leave !== null) {
+      message.party_leave = PartyLeave.fromPartial(object.party_leave);
+    } else {
+      message.party_leave = undefined;
+    }
+    if (object.party_promote !== undefined && object.party_promote !== null) {
+      message.party_promote = PartyPromote.fromPartial(object.party_promote);
+    } else {
+      message.party_promote = undefined;
+    }
+    if (object.party_leader !== undefined && object.party_leader !== null) {
+      message.party_leader = PartyLeader.fromPartial(object.party_leader);
+    } else {
+      message.party_leader = undefined;
+    }
+    if (object.party_accept !== undefined && object.party_accept !== null) {
+      message.party_accept = PartyAccept.fromPartial(object.party_accept);
+    } else {
+      message.party_accept = undefined;
+    }
+    if (object.party_remove !== undefined && object.party_remove !== null) {
+      message.party_remove = PartyRemove.fromPartial(object.party_remove);
+    } else {
+      message.party_remove = undefined;
+    }
+    if (object.party_close !== undefined && object.party_close !== null) {
+      message.party_close = PartyClose.fromPartial(object.party_close);
+    } else {
+      message.party_close = undefined;
     }
     if (
-      object.message?.$case === "match_join" &&
-      object.message?.match_join !== undefined &&
-      object.message?.match_join !== null
+      object.party_join_request_list !== undefined &&
+      object.party_join_request_list !== null
     ) {
-      message.message = {
-        $case: "match_join",
-        match_join: MatchJoin.fromPartial(object.message.match_join),
-      };
+      message.party_join_request_list = PartyJoinRequestList.fromPartial(
+        object.party_join_request_list
+      );
+    } else {
+      message.party_join_request_list = undefined;
     }
     if (
-      object.message?.$case === "match_leave" &&
-      object.message?.match_leave !== undefined &&
-      object.message?.match_leave !== null
+      object.party_join_request !== undefined &&
+      object.party_join_request !== null
     ) {
-      message.message = {
-        $case: "match_leave",
-        match_leave: MatchLeave.fromPartial(object.message.match_leave),
-      };
+      message.party_join_request = PartyJoinRequest.fromPartial(
+        object.party_join_request
+      );
+    } else {
+      message.party_join_request = undefined;
     }
     if (
-      object.message?.$case === "match_presence_event" &&
-      object.message?.match_presence_event !== undefined &&
-      object.message?.match_presence_event !== null
+      object.party_matchmaker_add !== undefined &&
+      object.party_matchmaker_add !== null
     ) {
-      message.message = {
-        $case: "match_presence_event",
-        match_presence_event: MatchPresenceEvent.fromPartial(
-          object.message.match_presence_event
-        ),
-      };
+      message.party_matchmaker_add = PartyMatchmakerAdd.fromPartial(
+        object.party_matchmaker_add
+      );
+    } else {
+      message.party_matchmaker_add = undefined;
     }
     if (
-      object.message?.$case === "matchmaker_add" &&
-      object.message?.matchmaker_add !== undefined &&
-      object.message?.matchmaker_add !== null
+      object.party_matchmaker_remove !== undefined &&
+      object.party_matchmaker_remove !== null
     ) {
-      message.message = {
-        $case: "matchmaker_add",
-        matchmaker_add: MatchmakerAdd.fromPartial(
-          object.message.matchmaker_add
-        ),
-      };
+      message.party_matchmaker_remove = PartyMatchmakerRemove.fromPartial(
+        object.party_matchmaker_remove
+      );
+    } else {
+      message.party_matchmaker_remove = undefined;
     }
     if (
-      object.message?.$case === "matchmaker_matched" &&
-      object.message?.matchmaker_matched !== undefined &&
-      object.message?.matchmaker_matched !== null
+      object.party_matchmaker_ticket !== undefined &&
+      object.party_matchmaker_ticket !== null
     ) {
-      message.message = {
-        $case: "matchmaker_matched",
-        matchmaker_matched: MatchmakerMatched.fromPartial(
-          object.message.matchmaker_matched
-        ),
-      };
+      message.party_matchmaker_ticket = PartyMatchmakerTicket.fromPartial(
+        object.party_matchmaker_ticket
+      );
+    } else {
+      message.party_matchmaker_ticket = undefined;
+    }
+    if (object.party_data !== undefined && object.party_data !== null) {
+      message.party_data = PartyData.fromPartial(object.party_data);
+    } else {
+      message.party_data = undefined;
     }
     if (
-      object.message?.$case === "matchmaker_remove" &&
-      object.message?.matchmaker_remove !== undefined &&
-      object.message?.matchmaker_remove !== null
+      object.party_data_send !== undefined &&
+      object.party_data_send !== null
     ) {
-      message.message = {
-        $case: "matchmaker_remove",
-        matchmaker_remove: MatchmakerRemove.fromPartial(
-          object.message.matchmaker_remove
-        ),
-      };
+      message.party_data_send = PartyDataSend.fromPartial(
+        object.party_data_send
+      );
+    } else {
+      message.party_data_send = undefined;
     }
     if (
-      object.message?.$case === "matchmaker_ticket" &&
-      object.message?.matchmaker_ticket !== undefined &&
-      object.message?.matchmaker_ticket !== null
+      object.party_presence_event !== undefined &&
+      object.party_presence_event !== null
     ) {
-      message.message = {
-        $case: "matchmaker_ticket",
-        matchmaker_ticket: MatchmakerTicket.fromPartial(
-          object.message.matchmaker_ticket
-        ),
-      };
-    }
-    if (
-      object.message?.$case === "notifications" &&
-      object.message?.notifications !== undefined &&
-      object.message?.notifications !== null
-    ) {
-      message.message = {
-        $case: "notifications",
-        notifications: Notifications.fromPartial(object.message.notifications),
-      };
-    }
-    if (
-      object.message?.$case === "rpc" &&
-      object.message?.rpc !== undefined &&
-      object.message?.rpc !== null
-    ) {
-      message.message = {
-        $case: "rpc",
-        rpc: Rpc.fromPartial(object.message.rpc),
-      };
-    }
-    if (
-      object.message?.$case === "status" &&
-      object.message?.status !== undefined &&
-      object.message?.status !== null
-    ) {
-      message.message = {
-        $case: "status",
-        status: Status.fromPartial(object.message.status),
-      };
-    }
-    if (
-      object.message?.$case === "status_follow" &&
-      object.message?.status_follow !== undefined &&
-      object.message?.status_follow !== null
-    ) {
-      message.message = {
-        $case: "status_follow",
-        status_follow: StatusFollow.fromPartial(object.message.status_follow),
-      };
-    }
-    if (
-      object.message?.$case === "status_presence_event" &&
-      object.message?.status_presence_event !== undefined &&
-      object.message?.status_presence_event !== null
-    ) {
-      message.message = {
-        $case: "status_presence_event",
-        status_presence_event: StatusPresenceEvent.fromPartial(
-          object.message.status_presence_event
-        ),
-      };
-    }
-    if (
-      object.message?.$case === "status_unfollow" &&
-      object.message?.status_unfollow !== undefined &&
-      object.message?.status_unfollow !== null
-    ) {
-      message.message = {
-        $case: "status_unfollow",
-        status_unfollow: StatusUnfollow.fromPartial(
-          object.message.status_unfollow
-        ),
-      };
-    }
-    if (
-      object.message?.$case === "status_update" &&
-      object.message?.status_update !== undefined &&
-      object.message?.status_update !== null
-    ) {
-      message.message = {
-        $case: "status_update",
-        status_update: StatusUpdate.fromPartial(object.message.status_update),
-      };
-    }
-    if (
-      object.message?.$case === "stream_data" &&
-      object.message?.stream_data !== undefined &&
-      object.message?.stream_data !== null
-    ) {
-      message.message = {
-        $case: "stream_data",
-        stream_data: StreamData.fromPartial(object.message.stream_data),
-      };
-    }
-    if (
-      object.message?.$case === "stream_presence_event" &&
-      object.message?.stream_presence_event !== undefined &&
-      object.message?.stream_presence_event !== null
-    ) {
-      message.message = {
-        $case: "stream_presence_event",
-        stream_presence_event: StreamPresenceEvent.fromPartial(
-          object.message.stream_presence_event
-        ),
-      };
-    }
-    if (
-      object.message?.$case === "ping" &&
-      object.message?.ping !== undefined &&
-      object.message?.ping !== null
-    ) {
-      message.message = {
-        $case: "ping",
-        ping: Ping.fromPartial(object.message.ping),
-      };
-    }
-    if (
-      object.message?.$case === "pong" &&
-      object.message?.pong !== undefined &&
-      object.message?.pong !== null
-    ) {
-      message.message = {
-        $case: "pong",
-        pong: Pong.fromPartial(object.message.pong),
-      };
-    }
-    if (
-      object.message?.$case === "party" &&
-      object.message?.party !== undefined &&
-      object.message?.party !== null
-    ) {
-      message.message = {
-        $case: "party",
-        party: Party.fromPartial(object.message.party),
-      };
-    }
-    if (
-      object.message?.$case === "party_create" &&
-      object.message?.party_create !== undefined &&
-      object.message?.party_create !== null
-    ) {
-      message.message = {
-        $case: "party_create",
-        party_create: PartyCreate.fromPartial(object.message.party_create),
-      };
-    }
-    if (
-      object.message?.$case === "party_join" &&
-      object.message?.party_join !== undefined &&
-      object.message?.party_join !== null
-    ) {
-      message.message = {
-        $case: "party_join",
-        party_join: PartyJoin.fromPartial(object.message.party_join),
-      };
-    }
-    if (
-      object.message?.$case === "party_leave" &&
-      object.message?.party_leave !== undefined &&
-      object.message?.party_leave !== null
-    ) {
-      message.message = {
-        $case: "party_leave",
-        party_leave: PartyLeave.fromPartial(object.message.party_leave),
-      };
-    }
-    if (
-      object.message?.$case === "party_promote" &&
-      object.message?.party_promote !== undefined &&
-      object.message?.party_promote !== null
-    ) {
-      message.message = {
-        $case: "party_promote",
-        party_promote: PartyPromote.fromPartial(object.message.party_promote),
-      };
-    }
-    if (
-      object.message?.$case === "party_leader" &&
-      object.message?.party_leader !== undefined &&
-      object.message?.party_leader !== null
-    ) {
-      message.message = {
-        $case: "party_leader",
-        party_leader: PartyLeader.fromPartial(object.message.party_leader),
-      };
-    }
-    if (
-      object.message?.$case === "party_accept" &&
-      object.message?.party_accept !== undefined &&
-      object.message?.party_accept !== null
-    ) {
-      message.message = {
-        $case: "party_accept",
-        party_accept: PartyAccept.fromPartial(object.message.party_accept),
-      };
-    }
-    if (
-      object.message?.$case === "party_remove" &&
-      object.message?.party_remove !== undefined &&
-      object.message?.party_remove !== null
-    ) {
-      message.message = {
-        $case: "party_remove",
-        party_remove: PartyRemove.fromPartial(object.message.party_remove),
-      };
-    }
-    if (
-      object.message?.$case === "party_close" &&
-      object.message?.party_close !== undefined &&
-      object.message?.party_close !== null
-    ) {
-      message.message = {
-        $case: "party_close",
-        party_close: PartyClose.fromPartial(object.message.party_close),
-      };
-    }
-    if (
-      object.message?.$case === "party_join_request_list" &&
-      object.message?.party_join_request_list !== undefined &&
-      object.message?.party_join_request_list !== null
-    ) {
-      message.message = {
-        $case: "party_join_request_list",
-        party_join_request_list: PartyJoinRequestList.fromPartial(
-          object.message.party_join_request_list
-        ),
-      };
-    }
-    if (
-      object.message?.$case === "party_join_request" &&
-      object.message?.party_join_request !== undefined &&
-      object.message?.party_join_request !== null
-    ) {
-      message.message = {
-        $case: "party_join_request",
-        party_join_request: PartyJoinRequest.fromPartial(
-          object.message.party_join_request
-        ),
-      };
-    }
-    if (
-      object.message?.$case === "party_matchmaker_add" &&
-      object.message?.party_matchmaker_add !== undefined &&
-      object.message?.party_matchmaker_add !== null
-    ) {
-      message.message = {
-        $case: "party_matchmaker_add",
-        party_matchmaker_add: PartyMatchmakerAdd.fromPartial(
-          object.message.party_matchmaker_add
-        ),
-      };
-    }
-    if (
-      object.message?.$case === "party_matchmaker_remove" &&
-      object.message?.party_matchmaker_remove !== undefined &&
-      object.message?.party_matchmaker_remove !== null
-    ) {
-      message.message = {
-        $case: "party_matchmaker_remove",
-        party_matchmaker_remove: PartyMatchmakerRemove.fromPartial(
-          object.message.party_matchmaker_remove
-        ),
-      };
-    }
-    if (
-      object.message?.$case === "party_matchmaker_ticket" &&
-      object.message?.party_matchmaker_ticket !== undefined &&
-      object.message?.party_matchmaker_ticket !== null
-    ) {
-      message.message = {
-        $case: "party_matchmaker_ticket",
-        party_matchmaker_ticket: PartyMatchmakerTicket.fromPartial(
-          object.message.party_matchmaker_ticket
-        ),
-      };
-    }
-    if (
-      object.message?.$case === "party_data" &&
-      object.message?.party_data !== undefined &&
-      object.message?.party_data !== null
-    ) {
-      message.message = {
-        $case: "party_data",
-        party_data: PartyData.fromPartial(object.message.party_data),
-      };
-    }
-    if (
-      object.message?.$case === "party_data_send" &&
-      object.message?.party_data_send !== undefined &&
-      object.message?.party_data_send !== null
-    ) {
-      message.message = {
-        $case: "party_data_send",
-        party_data_send: PartyDataSend.fromPartial(
-          object.message.party_data_send
-        ),
-      };
-    }
-    if (
-      object.message?.$case === "party_presence_event" &&
-      object.message?.party_presence_event !== undefined &&
-      object.message?.party_presence_event !== null
-    ) {
-      message.message = {
-        $case: "party_presence_event",
-        party_presence_event: PartyPresenceEvent.fromPartial(
-          object.message.party_presence_event
-        ),
-      };
+      message.party_presence_event = PartyPresenceEvent.fromPartial(
+        object.party_presence_event
+      );
+    } else {
+      message.party_presence_event = undefined;
     }
     return message;
   },
@@ -2598,6 +2250,8 @@ export const Channel = {
     message.presences = [];
     if (object.id !== undefined && object.id !== null) {
       message.id = String(object.id);
+    } else {
+      message.id = "";
     }
     if (object.presences !== undefined && object.presences !== null) {
       for (const e of object.presences) {
@@ -2606,18 +2260,28 @@ export const Channel = {
     }
     if (object.self !== undefined && object.self !== null) {
       message.self = UserPresence.fromJSON(object.self);
+    } else {
+      message.self = undefined;
     }
     if (object.room_name !== undefined && object.room_name !== null) {
       message.room_name = String(object.room_name);
+    } else {
+      message.room_name = "";
     }
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     if (object.user_id_one !== undefined && object.user_id_one !== null) {
       message.user_id_one = String(object.user_id_one);
+    } else {
+      message.user_id_one = "";
     }
     if (object.user_id_two !== undefined && object.user_id_two !== null) {
       message.user_id_two = String(object.user_id_two);
+    } else {
+      message.user_id_two = "";
     }
     return message;
   },
@@ -2648,6 +2312,8 @@ export const Channel = {
     message.presences = [];
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = "";
     }
     if (object.presences !== undefined && object.presences !== null) {
       for (const e of object.presences) {
@@ -2656,18 +2322,28 @@ export const Channel = {
     }
     if (object.self !== undefined && object.self !== null) {
       message.self = UserPresence.fromPartial(object.self);
+    } else {
+      message.self = undefined;
     }
     if (object.room_name !== undefined && object.room_name !== null) {
       message.room_name = object.room_name;
+    } else {
+      message.room_name = "";
     }
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     if (object.user_id_one !== undefined && object.user_id_one !== null) {
       message.user_id_one = object.user_id_one;
+    } else {
+      message.user_id_one = "";
     }
     if (object.user_id_two !== undefined && object.user_id_two !== null) {
       message.user_id_two = object.user_id_two;
+    } else {
+      message.user_id_two = "";
     }
     return message;
   },
@@ -2732,15 +2408,23 @@ export const ChannelJoin = {
     const message = { ...baseChannelJoin } as ChannelJoin;
     if (object.target !== undefined && object.target !== null) {
       message.target = String(object.target);
+    } else {
+      message.target = "";
     }
     if (object.type !== undefined && object.type !== null) {
       message.type = Number(object.type);
+    } else {
+      message.type = 0;
     }
     if (object.persistence !== undefined && object.persistence !== null) {
       message.persistence = Boolean(object.persistence);
+    } else {
+      message.persistence = undefined;
     }
     if (object.hidden !== undefined && object.hidden !== null) {
       message.hidden = Boolean(object.hidden);
+    } else {
+      message.hidden = undefined;
     }
     return message;
   },
@@ -2759,15 +2443,23 @@ export const ChannelJoin = {
     const message = { ...baseChannelJoin } as ChannelJoin;
     if (object.target !== undefined && object.target !== null) {
       message.target = object.target;
+    } else {
+      message.target = "";
     }
     if (object.type !== undefined && object.type !== null) {
       message.type = object.type;
+    } else {
+      message.type = 0;
     }
     if (object.persistence !== undefined && object.persistence !== null) {
       message.persistence = object.persistence;
+    } else {
+      message.persistence = undefined;
     }
     if (object.hidden !== undefined && object.hidden !== null) {
       message.hidden = object.hidden;
+    } else {
+      message.hidden = undefined;
     }
     return message;
   },
@@ -2808,6 +2500,8 @@ export const ChannelLeave = {
     const message = { ...baseChannelLeave } as ChannelLeave;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = String(object.channel_id);
+    } else {
+      message.channel_id = "";
     }
     return message;
   },
@@ -2822,6 +2516,8 @@ export const ChannelLeave = {
     const message = { ...baseChannelLeave } as ChannelLeave;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = object.channel_id;
+    } else {
+      message.channel_id = "";
     }
     return message;
   },
@@ -2946,36 +2642,58 @@ export const ChannelMessageAck = {
     const message = { ...baseChannelMessageAck } as ChannelMessageAck;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = String(object.channel_id);
+    } else {
+      message.channel_id = "";
     }
     if (object.message_id !== undefined && object.message_id !== null) {
       message.message_id = String(object.message_id);
+    } else {
+      message.message_id = "";
     }
     if (object.code !== undefined && object.code !== null) {
       message.code = Number(object.code);
+    } else {
+      message.code = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = fromJsonTimestamp(object.create_time);
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = fromJsonTimestamp(object.update_time);
+    } else {
+      message.update_time = undefined;
     }
     if (object.persistent !== undefined && object.persistent !== null) {
       message.persistent = Boolean(object.persistent);
+    } else {
+      message.persistent = undefined;
     }
     if (object.room_name !== undefined && object.room_name !== null) {
       message.room_name = String(object.room_name);
+    } else {
+      message.room_name = "";
     }
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     if (object.user_id_one !== undefined && object.user_id_one !== null) {
       message.user_id_one = String(object.user_id_one);
+    } else {
+      message.user_id_one = "";
     }
     if (object.user_id_two !== undefined && object.user_id_two !== null) {
       message.user_id_two = String(object.user_id_two);
+    } else {
+      message.user_id_two = "";
     }
     return message;
   },
@@ -3004,36 +2722,58 @@ export const ChannelMessageAck = {
     const message = { ...baseChannelMessageAck } as ChannelMessageAck;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = object.channel_id;
+    } else {
+      message.channel_id = "";
     }
     if (object.message_id !== undefined && object.message_id !== null) {
       message.message_id = object.message_id;
+    } else {
+      message.message_id = "";
     }
     if (object.code !== undefined && object.code !== null) {
       message.code = object.code;
+    } else {
+      message.code = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = object.create_time;
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = object.update_time;
+    } else {
+      message.update_time = undefined;
     }
     if (object.persistent !== undefined && object.persistent !== null) {
       message.persistent = object.persistent;
+    } else {
+      message.persistent = undefined;
     }
     if (object.room_name !== undefined && object.room_name !== null) {
       message.room_name = object.room_name;
+    } else {
+      message.room_name = "";
     }
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     if (object.user_id_one !== undefined && object.user_id_one !== null) {
       message.user_id_one = object.user_id_one;
+    } else {
+      message.user_id_one = "";
     }
     if (object.user_id_two !== undefined && object.user_id_two !== null) {
       message.user_id_two = object.user_id_two;
+    } else {
+      message.user_id_two = "";
     }
     return message;
   },
@@ -3080,9 +2820,13 @@ export const ChannelMessageSend = {
     const message = { ...baseChannelMessageSend } as ChannelMessageSend;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = String(object.channel_id);
+    } else {
+      message.channel_id = "";
     }
     if (object.content !== undefined && object.content !== null) {
       message.content = String(object.content);
+    } else {
+      message.content = "";
     }
     return message;
   },
@@ -3098,9 +2842,13 @@ export const ChannelMessageSend = {
     const message = { ...baseChannelMessageSend } as ChannelMessageSend;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = object.channel_id;
+    } else {
+      message.channel_id = "";
     }
     if (object.content !== undefined && object.content !== null) {
       message.content = object.content;
+    } else {
+      message.content = "";
     }
     return message;
   },
@@ -3160,12 +2908,18 @@ export const ChannelMessageUpdate = {
     const message = { ...baseChannelMessageUpdate } as ChannelMessageUpdate;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = String(object.channel_id);
+    } else {
+      message.channel_id = "";
     }
     if (object.message_id !== undefined && object.message_id !== null) {
       message.message_id = String(object.message_id);
+    } else {
+      message.message_id = "";
     }
     if (object.content !== undefined && object.content !== null) {
       message.content = String(object.content);
+    } else {
+      message.content = "";
     }
     return message;
   },
@@ -3182,12 +2936,18 @@ export const ChannelMessageUpdate = {
     const message = { ...baseChannelMessageUpdate } as ChannelMessageUpdate;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = object.channel_id;
+    } else {
+      message.channel_id = "";
     }
     if (object.message_id !== undefined && object.message_id !== null) {
       message.message_id = object.message_id;
+    } else {
+      message.message_id = "";
     }
     if (object.content !== undefined && object.content !== null) {
       message.content = object.content;
+    } else {
+      message.content = "";
     }
     return message;
   },
@@ -3237,9 +2997,13 @@ export const ChannelMessageRemove = {
     const message = { ...baseChannelMessageRemove } as ChannelMessageRemove;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = String(object.channel_id);
+    } else {
+      message.channel_id = "";
     }
     if (object.message_id !== undefined && object.message_id !== null) {
       message.message_id = String(object.message_id);
+    } else {
+      message.message_id = "";
     }
     return message;
   },
@@ -3255,9 +3019,13 @@ export const ChannelMessageRemove = {
     const message = { ...baseChannelMessageRemove } as ChannelMessageRemove;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = object.channel_id;
+    } else {
+      message.channel_id = "";
     }
     if (object.message_id !== undefined && object.message_id !== null) {
       message.message_id = object.message_id;
+    } else {
+      message.message_id = "";
     }
     return message;
   },
@@ -3347,6 +3115,8 @@ export const ChannelPresenceEvent = {
     message.leaves = [];
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = String(object.channel_id);
+    } else {
+      message.channel_id = "";
     }
     if (object.joins !== undefined && object.joins !== null) {
       for (const e of object.joins) {
@@ -3360,15 +3130,23 @@ export const ChannelPresenceEvent = {
     }
     if (object.room_name !== undefined && object.room_name !== null) {
       message.room_name = String(object.room_name);
+    } else {
+      message.room_name = "";
     }
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     if (object.user_id_one !== undefined && object.user_id_one !== null) {
       message.user_id_one = String(object.user_id_one);
+    } else {
+      message.user_id_one = "";
     }
     if (object.user_id_two !== undefined && object.user_id_two !== null) {
       message.user_id_two = String(object.user_id_two);
+    } else {
+      message.user_id_two = "";
     }
     return message;
   },
@@ -3405,6 +3183,8 @@ export const ChannelPresenceEvent = {
     message.leaves = [];
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = object.channel_id;
+    } else {
+      message.channel_id = "";
     }
     if (object.joins !== undefined && object.joins !== null) {
       for (const e of object.joins) {
@@ -3418,15 +3198,23 @@ export const ChannelPresenceEvent = {
     }
     if (object.room_name !== undefined && object.room_name !== null) {
       message.room_name = object.room_name;
+    } else {
+      message.room_name = "";
     }
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     if (object.user_id_one !== undefined && object.user_id_one !== null) {
       message.user_id_one = object.user_id_one;
+    } else {
+      message.user_id_one = "";
     }
     if (object.user_id_two !== undefined && object.user_id_two !== null) {
       message.user_id_two = object.user_id_two;
+    } else {
+      message.user_id_two = "";
     }
     return message;
   },
@@ -3484,9 +3272,13 @@ export const Error = {
     message.context = {};
     if (object.code !== undefined && object.code !== null) {
       message.code = Number(object.code);
+    } else {
+      message.code = 0;
     }
     if (object.message !== undefined && object.message !== null) {
       message.message = String(object.message);
+    } else {
+      message.message = "";
     }
     if (object.context !== undefined && object.context !== null) {
       Object.entries(object.context).forEach(([key, value]) => {
@@ -3514,9 +3306,13 @@ export const Error = {
     message.context = {};
     if (object.code !== undefined && object.code !== null) {
       message.code = object.code;
+    } else {
+      message.code = 0;
     }
     if (object.message !== undefined && object.message !== null) {
       message.message = object.message;
+    } else {
+      message.message = "";
     }
     if (object.context !== undefined && object.context !== null) {
       Object.entries(object.context).forEach(([key, value]) => {
@@ -3570,9 +3366,13 @@ export const Error_ContextEntry = {
     const message = { ...baseError_ContextEntry } as Error_ContextEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -3588,9 +3388,13 @@ export const Error_ContextEntry = {
     const message = { ...baseError_ContextEntry } as Error_ContextEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -3663,15 +3467,23 @@ export const Match = {
     message.presences = [];
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = String(object.match_id);
+    } else {
+      message.match_id = "";
     }
     if (object.authoritative !== undefined && object.authoritative !== null) {
       message.authoritative = Boolean(object.authoritative);
+    } else {
+      message.authoritative = false;
     }
     if (object.label !== undefined && object.label !== null) {
       message.label = String(object.label);
+    } else {
+      message.label = undefined;
     }
     if (object.size !== undefined && object.size !== null) {
       message.size = Number(object.size);
+    } else {
+      message.size = 0;
     }
     if (object.presences !== undefined && object.presences !== null) {
       for (const e of object.presences) {
@@ -3680,6 +3492,8 @@ export const Match = {
     }
     if (object.self !== undefined && object.self !== null) {
       message.self = UserPresence.fromJSON(object.self);
+    } else {
+      message.self = undefined;
     }
     return message;
   },
@@ -3708,15 +3522,23 @@ export const Match = {
     message.presences = [];
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = object.match_id;
+    } else {
+      message.match_id = "";
     }
     if (object.authoritative !== undefined && object.authoritative !== null) {
       message.authoritative = object.authoritative;
+    } else {
+      message.authoritative = false;
     }
     if (object.label !== undefined && object.label !== null) {
       message.label = object.label;
+    } else {
+      message.label = undefined;
     }
     if (object.size !== undefined && object.size !== null) {
       message.size = object.size;
+    } else {
+      message.size = 0;
     }
     if (object.presences !== undefined && object.presences !== null) {
       for (const e of object.presences) {
@@ -3725,6 +3547,8 @@ export const Match = {
     }
     if (object.self !== undefined && object.self !== null) {
       message.self = UserPresence.fromPartial(object.self);
+    } else {
+      message.self = undefined;
     }
     return message;
   },
@@ -3829,18 +3653,26 @@ export const MatchData = {
     message.data = new Uint8Array();
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = String(object.match_id);
+    } else {
+      message.match_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromJSON(object.presence);
+    } else {
+      message.presence = undefined;
     }
     if (object.op_code !== undefined && object.op_code !== null) {
       message.op_code = Number(object.op_code);
+    } else {
+      message.op_code = 0;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = bytesFromBase64(object.data);
     }
     if (object.reliable !== undefined && object.reliable !== null) {
       message.reliable = Boolean(object.reliable);
+    } else {
+      message.reliable = false;
     }
     return message;
   },
@@ -3865,18 +3697,28 @@ export const MatchData = {
     const message = { ...baseMatchData } as MatchData;
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = object.match_id;
+    } else {
+      message.match_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromPartial(object.presence);
+    } else {
+      message.presence = undefined;
     }
     if (object.op_code !== undefined && object.op_code !== null) {
       message.op_code = object.op_code;
+    } else {
+      message.op_code = 0;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = object.data;
+    } else {
+      message.data = new Uint8Array();
     }
     if (object.reliable !== undefined && object.reliable !== null) {
       message.reliable = object.reliable;
+    } else {
+      message.reliable = false;
     }
     return message;
   },
@@ -3945,9 +3787,13 @@ export const MatchDataSend = {
     message.data = new Uint8Array();
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = String(object.match_id);
+    } else {
+      message.match_id = "";
     }
     if (object.op_code !== undefined && object.op_code !== null) {
       message.op_code = Number(object.op_code);
+    } else {
+      message.op_code = 0;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = bytesFromBase64(object.data);
@@ -3959,6 +3805,8 @@ export const MatchDataSend = {
     }
     if (object.reliable !== undefined && object.reliable !== null) {
       message.reliable = Boolean(object.reliable);
+    } else {
+      message.reliable = false;
     }
     return message;
   },
@@ -3987,12 +3835,18 @@ export const MatchDataSend = {
     message.presences = [];
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = object.match_id;
+    } else {
+      message.match_id = "";
     }
     if (object.op_code !== undefined && object.op_code !== null) {
       message.op_code = object.op_code;
+    } else {
+      message.op_code = 0;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = object.data;
+    } else {
+      message.data = new Uint8Array();
     }
     if (object.presences !== undefined && object.presences !== null) {
       for (const e of object.presences) {
@@ -4001,6 +3855,8 @@ export const MatchDataSend = {
     }
     if (object.reliable !== undefined && object.reliable !== null) {
       message.reliable = object.reliable;
+    } else {
+      message.reliable = false;
     }
     return message;
   },
@@ -4013,11 +3869,11 @@ export const MatchJoin = {
     message: MatchJoin,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
-    if (message.id?.$case === "match_id") {
-      writer.uint32(10).string(message.id.match_id);
+    if (message.match_id !== undefined) {
+      writer.uint32(10).string(message.match_id);
     }
-    if (message.id?.$case === "token") {
-      writer.uint32(18).string(message.id.token);
+    if (message.token !== undefined) {
+      writer.uint32(18).string(message.token);
     }
     Object.entries(message.metadata).forEach(([key, value]) => {
       MatchJoin_MetadataEntry.encode(
@@ -4037,10 +3893,10 @@ export const MatchJoin = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.id = { $case: "match_id", match_id: reader.string() };
+          message.match_id = reader.string();
           break;
         case 2:
-          message.id = { $case: "token", token: reader.string() };
+          message.token = reader.string();
           break;
         case 3:
           const entry3 = MatchJoin_MetadataEntry.decode(
@@ -4063,10 +3919,14 @@ export const MatchJoin = {
     const message = { ...baseMatchJoin } as MatchJoin;
     message.metadata = {};
     if (object.match_id !== undefined && object.match_id !== null) {
-      message.id = { $case: "match_id", match_id: String(object.match_id) };
+      message.match_id = String(object.match_id);
+    } else {
+      message.match_id = undefined;
     }
     if (object.token !== undefined && object.token !== null) {
-      message.id = { $case: "token", token: String(object.token) };
+      message.token = String(object.token);
+    } else {
+      message.token = undefined;
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       Object.entries(object.metadata).forEach(([key, value]) => {
@@ -4078,8 +3938,8 @@ export const MatchJoin = {
 
   toJSON(message: MatchJoin): unknown {
     const obj: any = {};
-    message.id?.$case === "match_id" && (obj.match_id = message.id?.match_id);
-    message.id?.$case === "token" && (obj.token = message.id?.token);
+    message.match_id !== undefined && (obj.match_id = message.match_id);
+    message.token !== undefined && (obj.token = message.token);
     obj.metadata = {};
     if (message.metadata) {
       Object.entries(message.metadata).forEach(([k, v]) => {
@@ -4092,19 +3952,15 @@ export const MatchJoin = {
   fromPartial(object: DeepPartial<MatchJoin>): MatchJoin {
     const message = { ...baseMatchJoin } as MatchJoin;
     message.metadata = {};
-    if (
-      object.id?.$case === "match_id" &&
-      object.id?.match_id !== undefined &&
-      object.id?.match_id !== null
-    ) {
-      message.id = { $case: "match_id", match_id: object.id.match_id };
+    if (object.match_id !== undefined && object.match_id !== null) {
+      message.match_id = object.match_id;
+    } else {
+      message.match_id = undefined;
     }
-    if (
-      object.id?.$case === "token" &&
-      object.id?.token !== undefined &&
-      object.id?.token !== null
-    ) {
-      message.id = { $case: "token", token: object.id.token };
+    if (object.token !== undefined && object.token !== null) {
+      message.token = object.token;
+    } else {
+      message.token = undefined;
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       Object.entries(object.metadata).forEach(([key, value]) => {
@@ -4165,9 +4021,13 @@ export const MatchJoin_MetadataEntry = {
     } as MatchJoin_MetadataEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -4187,9 +4047,13 @@ export const MatchJoin_MetadataEntry = {
     } as MatchJoin_MetadataEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -4230,6 +4094,8 @@ export const MatchLeave = {
     const message = { ...baseMatchLeave } as MatchLeave;
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = String(object.match_id);
+    } else {
+      message.match_id = "";
     }
     return message;
   },
@@ -4244,6 +4110,8 @@ export const MatchLeave = {
     const message = { ...baseMatchLeave } as MatchLeave;
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = object.match_id;
+    } else {
+      message.match_id = "";
     }
     return message;
   },
@@ -4300,6 +4168,8 @@ export const MatchPresenceEvent = {
     message.leaves = [];
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = String(object.match_id);
+    } else {
+      message.match_id = "";
     }
     if (object.joins !== undefined && object.joins !== null) {
       for (const e of object.joins) {
@@ -4340,6 +4210,8 @@ export const MatchPresenceEvent = {
     message.leaves = [];
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = object.match_id;
+    } else {
+      message.match_id = "";
     }
     if (object.joins !== undefined && object.joins !== null) {
       for (const e of object.joins) {
@@ -4436,12 +4308,18 @@ export const MatchmakerAdd = {
     message.numeric_properties = {};
     if (object.min_count !== undefined && object.min_count !== null) {
       message.min_count = Number(object.min_count);
+    } else {
+      message.min_count = 0;
     }
     if (object.max_count !== undefined && object.max_count !== null) {
       message.max_count = Number(object.max_count);
+    } else {
+      message.max_count = 0;
     }
     if (object.query !== undefined && object.query !== null) {
       message.query = String(object.query);
+    } else {
+      message.query = "";
     }
     if (
       object.string_properties !== undefined &&
@@ -4488,12 +4366,18 @@ export const MatchmakerAdd = {
     message.numeric_properties = {};
     if (object.min_count !== undefined && object.min_count !== null) {
       message.min_count = object.min_count;
+    } else {
+      message.min_count = 0;
     }
     if (object.max_count !== undefined && object.max_count !== null) {
       message.max_count = object.max_count;
+    } else {
+      message.max_count = 0;
     }
     if (object.query !== undefined && object.query !== null) {
       message.query = object.query;
+    } else {
+      message.query = "";
     }
     if (
       object.string_properties !== undefined &&
@@ -4567,9 +4451,13 @@ export const MatchmakerAdd_StringPropertiesEntry = {
     } as MatchmakerAdd_StringPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -4589,9 +4477,13 @@ export const MatchmakerAdd_StringPropertiesEntry = {
     } as MatchmakerAdd_StringPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -4645,9 +4537,13 @@ export const MatchmakerAdd_NumericPropertiesEntry = {
     } as MatchmakerAdd_NumericPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = Number(object.value);
+    } else {
+      message.value = 0;
     }
     return message;
   },
@@ -4667,9 +4563,13 @@ export const MatchmakerAdd_NumericPropertiesEntry = {
     } as MatchmakerAdd_NumericPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = 0;
     }
     return message;
   },
@@ -4685,11 +4585,11 @@ export const MatchmakerMatched = {
     if (message.ticket !== "") {
       writer.uint32(10).string(message.ticket);
     }
-    if (message.id?.$case === "match_id") {
-      writer.uint32(18).string(message.id.match_id);
+    if (message.match_id !== undefined) {
+      writer.uint32(18).string(message.match_id);
     }
-    if (message.id?.$case === "token") {
-      writer.uint32(26).string(message.id.token);
+    if (message.token !== undefined) {
+      writer.uint32(26).string(message.token);
     }
     for (const v of message.users) {
       MatchmakerMatched_MatchmakerUser.encode(
@@ -4718,10 +4618,10 @@ export const MatchmakerMatched = {
           message.ticket = reader.string();
           break;
         case 2:
-          message.id = { $case: "match_id", match_id: reader.string() };
+          message.match_id = reader.string();
           break;
         case 3:
-          message.id = { $case: "token", token: reader.string() };
+          message.token = reader.string();
           break;
         case 4:
           message.users.push(
@@ -4747,12 +4647,18 @@ export const MatchmakerMatched = {
     message.users = [];
     if (object.ticket !== undefined && object.ticket !== null) {
       message.ticket = String(object.ticket);
+    } else {
+      message.ticket = "";
     }
     if (object.match_id !== undefined && object.match_id !== null) {
-      message.id = { $case: "match_id", match_id: String(object.match_id) };
+      message.match_id = String(object.match_id);
+    } else {
+      message.match_id = undefined;
     }
     if (object.token !== undefined && object.token !== null) {
-      message.id = { $case: "token", token: String(object.token) };
+      message.token = String(object.token);
+    } else {
+      message.token = undefined;
     }
     if (object.users !== undefined && object.users !== null) {
       for (const e of object.users) {
@@ -4761,6 +4667,8 @@ export const MatchmakerMatched = {
     }
     if (object.self !== undefined && object.self !== null) {
       message.self = MatchmakerMatched_MatchmakerUser.fromJSON(object.self);
+    } else {
+      message.self = undefined;
     }
     return message;
   },
@@ -4768,8 +4676,8 @@ export const MatchmakerMatched = {
   toJSON(message: MatchmakerMatched): unknown {
     const obj: any = {};
     message.ticket !== undefined && (obj.ticket = message.ticket);
-    message.id?.$case === "match_id" && (obj.match_id = message.id?.match_id);
-    message.id?.$case === "token" && (obj.token = message.id?.token);
+    message.match_id !== undefined && (obj.match_id = message.match_id);
+    message.token !== undefined && (obj.token = message.token);
     if (message.users) {
       obj.users = message.users.map((e) =>
         e ? MatchmakerMatched_MatchmakerUser.toJSON(e) : undefined
@@ -4789,20 +4697,18 @@ export const MatchmakerMatched = {
     message.users = [];
     if (object.ticket !== undefined && object.ticket !== null) {
       message.ticket = object.ticket;
+    } else {
+      message.ticket = "";
     }
-    if (
-      object.id?.$case === "match_id" &&
-      object.id?.match_id !== undefined &&
-      object.id?.match_id !== null
-    ) {
-      message.id = { $case: "match_id", match_id: object.id.match_id };
+    if (object.match_id !== undefined && object.match_id !== null) {
+      message.match_id = object.match_id;
+    } else {
+      message.match_id = undefined;
     }
-    if (
-      object.id?.$case === "token" &&
-      object.id?.token !== undefined &&
-      object.id?.token !== null
-    ) {
-      message.id = { $case: "token", token: object.id.token };
+    if (object.token !== undefined && object.token !== null) {
+      message.token = object.token;
+    } else {
+      message.token = undefined;
     }
     if (object.users !== undefined && object.users !== null) {
       for (const e of object.users) {
@@ -4811,6 +4717,8 @@ export const MatchmakerMatched = {
     }
     if (object.self !== undefined && object.self !== null) {
       message.self = MatchmakerMatched_MatchmakerUser.fromPartial(object.self);
+    } else {
+      message.self = undefined;
     }
     return message;
   },
@@ -4898,9 +4806,13 @@ export const MatchmakerMatched_MatchmakerUser = {
     message.numeric_properties = {};
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromJSON(object.presence);
+    } else {
+      message.presence = undefined;
     }
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (
       object.string_properties !== undefined &&
@@ -4953,9 +4865,13 @@ export const MatchmakerMatched_MatchmakerUser = {
     message.numeric_properties = {};
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromPartial(object.presence);
+    } else {
+      message.presence = undefined;
     }
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (
       object.string_properties !== undefined &&
@@ -5034,9 +4950,13 @@ export const MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
     } as MatchmakerMatched_MatchmakerUser_StringPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -5058,9 +4978,13 @@ export const MatchmakerMatched_MatchmakerUser_StringPropertiesEntry = {
     } as MatchmakerMatched_MatchmakerUser_StringPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -5119,9 +5043,13 @@ export const MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
     } as MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = Number(object.value);
+    } else {
+      message.value = 0;
     }
     return message;
   },
@@ -5143,9 +5071,13 @@ export const MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry = {
     } as MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = 0;
     }
     return message;
   },
@@ -5186,6 +5118,8 @@ export const MatchmakerRemove = {
     const message = { ...baseMatchmakerRemove } as MatchmakerRemove;
     if (object.ticket !== undefined && object.ticket !== null) {
       message.ticket = String(object.ticket);
+    } else {
+      message.ticket = "";
     }
     return message;
   },
@@ -5200,6 +5134,8 @@ export const MatchmakerRemove = {
     const message = { ...baseMatchmakerRemove } as MatchmakerRemove;
     if (object.ticket !== undefined && object.ticket !== null) {
       message.ticket = object.ticket;
+    } else {
+      message.ticket = "";
     }
     return message;
   },
@@ -5240,6 +5176,8 @@ export const MatchmakerTicket = {
     const message = { ...baseMatchmakerTicket } as MatchmakerTicket;
     if (object.ticket !== undefined && object.ticket !== null) {
       message.ticket = String(object.ticket);
+    } else {
+      message.ticket = "";
     }
     return message;
   },
@@ -5254,6 +5192,8 @@ export const MatchmakerTicket = {
     const message = { ...baseMatchmakerTicket } as MatchmakerTicket;
     if (object.ticket !== undefined && object.ticket !== null) {
       message.ticket = object.ticket;
+    } else {
+      message.ticket = "";
     }
     return message;
   },
@@ -5392,18 +5332,28 @@ export const Party = {
     message.presences = [];
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.open !== undefined && object.open !== null) {
       message.open = Boolean(object.open);
+    } else {
+      message.open = false;
     }
     if (object.max_size !== undefined && object.max_size !== null) {
       message.max_size = Number(object.max_size);
+    } else {
+      message.max_size = 0;
     }
     if (object.self !== undefined && object.self !== null) {
       message.self = UserPresence.fromJSON(object.self);
+    } else {
+      message.self = undefined;
     }
     if (object.leader !== undefined && object.leader !== null) {
       message.leader = UserPresence.fromJSON(object.leader);
+    } else {
+      message.leader = undefined;
     }
     if (object.presences !== undefined && object.presences !== null) {
       for (const e of object.presences) {
@@ -5439,18 +5389,28 @@ export const Party = {
     message.presences = [];
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.open !== undefined && object.open !== null) {
       message.open = object.open;
+    } else {
+      message.open = false;
     }
     if (object.max_size !== undefined && object.max_size !== null) {
       message.max_size = object.max_size;
+    } else {
+      message.max_size = 0;
     }
     if (object.self !== undefined && object.self !== null) {
       message.self = UserPresence.fromPartial(object.self);
+    } else {
+      message.self = undefined;
     }
     if (object.leader !== undefined && object.leader !== null) {
       message.leader = UserPresence.fromPartial(object.leader);
+    } else {
+      message.leader = undefined;
     }
     if (object.presences !== undefined && object.presences !== null) {
       for (const e of object.presences) {
@@ -5502,9 +5462,13 @@ export const PartyCreate = {
     const message = { ...basePartyCreate } as PartyCreate;
     if (object.open !== undefined && object.open !== null) {
       message.open = Boolean(object.open);
+    } else {
+      message.open = false;
     }
     if (object.max_size !== undefined && object.max_size !== null) {
       message.max_size = Number(object.max_size);
+    } else {
+      message.max_size = 0;
     }
     return message;
   },
@@ -5520,9 +5484,13 @@ export const PartyCreate = {
     const message = { ...basePartyCreate } as PartyCreate;
     if (object.open !== undefined && object.open !== null) {
       message.open = object.open;
+    } else {
+      message.open = false;
     }
     if (object.max_size !== undefined && object.max_size !== null) {
       message.max_size = object.max_size;
+    } else {
+      message.max_size = 0;
     }
     return message;
   },
@@ -5563,6 +5531,8 @@ export const PartyJoin = {
     const message = { ...basePartyJoin } as PartyJoin;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     return message;
   },
@@ -5577,6 +5547,8 @@ export const PartyJoin = {
     const message = { ...basePartyJoin } as PartyJoin;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     return message;
   },
@@ -5617,6 +5589,8 @@ export const PartyLeave = {
     const message = { ...basePartyLeave } as PartyLeave;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     return message;
   },
@@ -5631,6 +5605,8 @@ export const PartyLeave = {
     const message = { ...basePartyLeave } as PartyLeave;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     return message;
   },
@@ -5677,9 +5653,13 @@ export const PartyPromote = {
     const message = { ...basePartyPromote } as PartyPromote;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromJSON(object.presence);
+    } else {
+      message.presence = undefined;
     }
     return message;
   },
@@ -5698,9 +5678,13 @@ export const PartyPromote = {
     const message = { ...basePartyPromote } as PartyPromote;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromPartial(object.presence);
+    } else {
+      message.presence = undefined;
     }
     return message;
   },
@@ -5747,9 +5731,13 @@ export const PartyLeader = {
     const message = { ...basePartyLeader } as PartyLeader;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromJSON(object.presence);
+    } else {
+      message.presence = undefined;
     }
     return message;
   },
@@ -5768,9 +5756,13 @@ export const PartyLeader = {
     const message = { ...basePartyLeader } as PartyLeader;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromPartial(object.presence);
+    } else {
+      message.presence = undefined;
     }
     return message;
   },
@@ -5817,9 +5809,13 @@ export const PartyAccept = {
     const message = { ...basePartyAccept } as PartyAccept;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromJSON(object.presence);
+    } else {
+      message.presence = undefined;
     }
     return message;
   },
@@ -5838,9 +5834,13 @@ export const PartyAccept = {
     const message = { ...basePartyAccept } as PartyAccept;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromPartial(object.presence);
+    } else {
+      message.presence = undefined;
     }
     return message;
   },
@@ -5887,9 +5887,13 @@ export const PartyRemove = {
     const message = { ...basePartyRemove } as PartyRemove;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromJSON(object.presence);
+    } else {
+      message.presence = undefined;
     }
     return message;
   },
@@ -5908,9 +5912,13 @@ export const PartyRemove = {
     const message = { ...basePartyRemove } as PartyRemove;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromPartial(object.presence);
+    } else {
+      message.presence = undefined;
     }
     return message;
   },
@@ -5951,6 +5959,8 @@ export const PartyClose = {
     const message = { ...basePartyClose } as PartyClose;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     return message;
   },
@@ -5965,6 +5975,8 @@ export const PartyClose = {
     const message = { ...basePartyClose } as PartyClose;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     return message;
   },
@@ -6008,6 +6020,8 @@ export const PartyJoinRequestList = {
     const message = { ...basePartyJoinRequestList } as PartyJoinRequestList;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     return message;
   },
@@ -6022,6 +6036,8 @@ export const PartyJoinRequestList = {
     const message = { ...basePartyJoinRequestList } as PartyJoinRequestList;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     return message;
   },
@@ -6070,6 +6086,8 @@ export const PartyJoinRequest = {
     message.presences = [];
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.presences !== undefined && object.presences !== null) {
       for (const e of object.presences) {
@@ -6097,6 +6115,8 @@ export const PartyJoinRequest = {
     message.presences = [];
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.presences !== undefined && object.presences !== null) {
       for (const e of object.presences) {
@@ -6199,15 +6219,23 @@ export const PartyMatchmakerAdd = {
     message.numeric_properties = {};
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.min_count !== undefined && object.min_count !== null) {
       message.min_count = Number(object.min_count);
+    } else {
+      message.min_count = 0;
     }
     if (object.max_count !== undefined && object.max_count !== null) {
       message.max_count = Number(object.max_count);
+    } else {
+      message.max_count = 0;
     }
     if (object.query !== undefined && object.query !== null) {
       message.query = String(object.query);
+    } else {
+      message.query = "";
     }
     if (
       object.string_properties !== undefined &&
@@ -6255,15 +6283,23 @@ export const PartyMatchmakerAdd = {
     message.numeric_properties = {};
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.min_count !== undefined && object.min_count !== null) {
       message.min_count = object.min_count;
+    } else {
+      message.min_count = 0;
     }
     if (object.max_count !== undefined && object.max_count !== null) {
       message.max_count = object.max_count;
+    } else {
+      message.max_count = 0;
     }
     if (object.query !== undefined && object.query !== null) {
       message.query = object.query;
+    } else {
+      message.query = "";
     }
     if (
       object.string_properties !== undefined &&
@@ -6340,9 +6376,13 @@ export const PartyMatchmakerAdd_StringPropertiesEntry = {
     } as PartyMatchmakerAdd_StringPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -6362,9 +6402,13 @@ export const PartyMatchmakerAdd_StringPropertiesEntry = {
     } as PartyMatchmakerAdd_StringPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -6421,9 +6465,13 @@ export const PartyMatchmakerAdd_NumericPropertiesEntry = {
     } as PartyMatchmakerAdd_NumericPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = Number(object.value);
+    } else {
+      message.value = 0;
     }
     return message;
   },
@@ -6443,9 +6491,13 @@ export const PartyMatchmakerAdd_NumericPropertiesEntry = {
     } as PartyMatchmakerAdd_NumericPropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = 0;
     }
     return message;
   },
@@ -6495,9 +6547,13 @@ export const PartyMatchmakerRemove = {
     const message = { ...basePartyMatchmakerRemove } as PartyMatchmakerRemove;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.ticket !== undefined && object.ticket !== null) {
       message.ticket = String(object.ticket);
+    } else {
+      message.ticket = "";
     }
     return message;
   },
@@ -6515,9 +6571,13 @@ export const PartyMatchmakerRemove = {
     const message = { ...basePartyMatchmakerRemove } as PartyMatchmakerRemove;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.ticket !== undefined && object.ticket !== null) {
       message.ticket = object.ticket;
+    } else {
+      message.ticket = "";
     }
     return message;
   },
@@ -6567,9 +6627,13 @@ export const PartyMatchmakerTicket = {
     const message = { ...basePartyMatchmakerTicket } as PartyMatchmakerTicket;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.ticket !== undefined && object.ticket !== null) {
       message.ticket = String(object.ticket);
+    } else {
+      message.ticket = "";
     }
     return message;
   },
@@ -6587,9 +6651,13 @@ export const PartyMatchmakerTicket = {
     const message = { ...basePartyMatchmakerTicket } as PartyMatchmakerTicket;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.ticket !== undefined && object.ticket !== null) {
       message.ticket = object.ticket;
+    } else {
+      message.ticket = "";
     }
     return message;
   },
@@ -6650,12 +6718,18 @@ export const PartyData = {
     message.data = new Uint8Array();
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromJSON(object.presence);
+    } else {
+      message.presence = undefined;
     }
     if (object.op_code !== undefined && object.op_code !== null) {
       message.op_code = Number(object.op_code);
+    } else {
+      message.op_code = 0;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = bytesFromBase64(object.data);
@@ -6682,15 +6756,23 @@ export const PartyData = {
     const message = { ...basePartyData } as PartyData;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.presence !== undefined && object.presence !== null) {
       message.presence = UserPresence.fromPartial(object.presence);
+    } else {
+      message.presence = undefined;
     }
     if (object.op_code !== undefined && object.op_code !== null) {
       message.op_code = object.op_code;
+    } else {
+      message.op_code = 0;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = object.data;
+    } else {
+      message.data = new Uint8Array();
     }
     return message;
   },
@@ -6745,9 +6827,13 @@ export const PartyDataSend = {
     message.data = new Uint8Array();
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.op_code !== undefined && object.op_code !== null) {
       message.op_code = Number(object.op_code);
+    } else {
+      message.op_code = 0;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = bytesFromBase64(object.data);
@@ -6770,12 +6856,18 @@ export const PartyDataSend = {
     const message = { ...basePartyDataSend } as PartyDataSend;
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.op_code !== undefined && object.op_code !== null) {
       message.op_code = object.op_code;
+    } else {
+      message.op_code = 0;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = object.data;
+    } else {
+      message.data = new Uint8Array();
     }
     return message;
   },
@@ -6832,6 +6924,8 @@ export const PartyPresenceEvent = {
     message.leaves = [];
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = String(object.party_id);
+    } else {
+      message.party_id = "";
     }
     if (object.joins !== undefined && object.joins !== null) {
       for (const e of object.joins) {
@@ -6872,6 +6966,8 @@ export const PartyPresenceEvent = {
     message.leaves = [];
     if (object.party_id !== undefined && object.party_id !== null) {
       message.party_id = object.party_id;
+    } else {
+      message.party_id = "";
     }
     if (object.joins !== undefined && object.joins !== null) {
       for (const e of object.joins) {
@@ -7315,6 +7411,8 @@ export const StatusUpdate = {
     const message = { ...baseStatusUpdate } as StatusUpdate;
     if (object.status !== undefined && object.status !== null) {
       message.status = String(object.status);
+    } else {
+      message.status = undefined;
     }
     return message;
   },
@@ -7329,6 +7427,8 @@ export const StatusUpdate = {
     const message = { ...baseStatusUpdate } as StatusUpdate;
     if (object.status !== undefined && object.status !== null) {
       message.status = object.status;
+    } else {
+      message.status = undefined;
     }
     return message;
   },
@@ -7387,15 +7487,23 @@ export const Stream = {
     const message = { ...baseStream } as Stream;
     if (object.mode !== undefined && object.mode !== null) {
       message.mode = Number(object.mode);
+    } else {
+      message.mode = 0;
     }
     if (object.subject !== undefined && object.subject !== null) {
       message.subject = String(object.subject);
+    } else {
+      message.subject = "";
     }
     if (object.subcontext !== undefined && object.subcontext !== null) {
       message.subcontext = String(object.subcontext);
+    } else {
+      message.subcontext = "";
     }
     if (object.label !== undefined && object.label !== null) {
       message.label = String(object.label);
+    } else {
+      message.label = "";
     }
     return message;
   },
@@ -7413,15 +7521,23 @@ export const Stream = {
     const message = { ...baseStream } as Stream;
     if (object.mode !== undefined && object.mode !== null) {
       message.mode = object.mode;
+    } else {
+      message.mode = 0;
     }
     if (object.subject !== undefined && object.subject !== null) {
       message.subject = object.subject;
+    } else {
+      message.subject = "";
     }
     if (object.subcontext !== undefined && object.subcontext !== null) {
       message.subcontext = object.subcontext;
+    } else {
+      message.subcontext = "";
     }
     if (object.label !== undefined && object.label !== null) {
       message.label = object.label;
+    } else {
+      message.label = "";
     }
     return message;
   },
@@ -7480,15 +7596,23 @@ export const StreamData = {
     const message = { ...baseStreamData } as StreamData;
     if (object.stream !== undefined && object.stream !== null) {
       message.stream = Stream.fromJSON(object.stream);
+    } else {
+      message.stream = undefined;
     }
     if (object.sender !== undefined && object.sender !== null) {
       message.sender = UserPresence.fromJSON(object.sender);
+    } else {
+      message.sender = undefined;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = String(object.data);
+    } else {
+      message.data = "";
     }
     if (object.reliable !== undefined && object.reliable !== null) {
       message.reliable = Boolean(object.reliable);
+    } else {
+      message.reliable = false;
     }
     return message;
   },
@@ -7510,15 +7634,23 @@ export const StreamData = {
     const message = { ...baseStreamData } as StreamData;
     if (object.stream !== undefined && object.stream !== null) {
       message.stream = Stream.fromPartial(object.stream);
+    } else {
+      message.stream = undefined;
     }
     if (object.sender !== undefined && object.sender !== null) {
       message.sender = UserPresence.fromPartial(object.sender);
+    } else {
+      message.sender = undefined;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = object.data;
+    } else {
+      message.data = "";
     }
     if (object.reliable !== undefined && object.reliable !== null) {
       message.reliable = object.reliable;
+    } else {
+      message.reliable = false;
     }
     return message;
   },
@@ -7575,6 +7707,8 @@ export const StreamPresenceEvent = {
     message.leaves = [];
     if (object.stream !== undefined && object.stream !== null) {
       message.stream = Stream.fromJSON(object.stream);
+    } else {
+      message.stream = undefined;
     }
     if (object.joins !== undefined && object.joins !== null) {
       for (const e of object.joins) {
@@ -7616,6 +7750,8 @@ export const StreamPresenceEvent = {
     message.leaves = [];
     if (object.stream !== undefined && object.stream !== null) {
       message.stream = Stream.fromPartial(object.stream);
+    } else {
+      message.stream = undefined;
     }
     if (object.joins !== undefined && object.joins !== null) {
       for (const e of object.joins) {
@@ -7698,18 +7834,28 @@ export const UserPresence = {
     const message = { ...baseUserPresence } as UserPresence;
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = String(object.user_id);
+    } else {
+      message.user_id = "";
     }
     if (object.session_id !== undefined && object.session_id !== null) {
       message.session_id = String(object.session_id);
+    } else {
+      message.session_id = "";
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     if (object.persistence !== undefined && object.persistence !== null) {
       message.persistence = Boolean(object.persistence);
+    } else {
+      message.persistence = false;
     }
     if (object.status !== undefined && object.status !== null) {
       message.status = String(object.status);
+    } else {
+      message.status = undefined;
     }
     return message;
   },
@@ -7729,18 +7875,28 @@ export const UserPresence = {
     const message = { ...baseUserPresence } as UserPresence;
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = object.user_id;
+    } else {
+      message.user_id = "";
     }
     if (object.session_id !== undefined && object.session_id !== null) {
       message.session_id = object.session_id;
+    } else {
+      message.session_id = "";
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     if (object.persistence !== undefined && object.persistence !== null) {
       message.persistence = object.persistence;
+    } else {
+      message.persistence = false;
     }
     if (object.status !== undefined && object.status !== null) {
       message.status = object.status;
+    } else {
+      message.status = undefined;
     }
     return message;
   },
@@ -7793,10 +7949,6 @@ export type DeepPartial<T> = T extends Builtin
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
   ? ReadonlyArray<DeepPartial<U>>
-  : T extends { $case: string }
-  ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & {
-      $case: T["$case"];
-    }
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;

@@ -3654,7 +3654,7 @@
                   console.log("Response: %o", JSON.stringify(message));
               }
               /** Inbound message from server. */
-              if (message.cid == undefined) {
+              if (!message.cid) {
                   if (message.notifications) {
                       message.notifications.notifications.forEach(function (n) {
                           n.content = n.content ? JSON.parse(n.content) : undefined;

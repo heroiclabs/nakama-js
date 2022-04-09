@@ -2776,7 +2776,7 @@ var DefaultSocket = class {
       if (this.verbose && window && window.console) {
         console.log("Response: %o", JSON.stringify(message));
       }
-      if (message.cid == void 0) {
+      if (!message.cid) {
         if (message.notifications) {
           message.notifications.notifications.forEach((n) => {
             n.content = n.content ? JSON.parse(n.content) : void 0;

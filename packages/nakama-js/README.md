@@ -197,7 +197,6 @@ npx protoc \
 --ts_proto_out=. \
 --ts_proto_opt=snakeToCamel=false \
 --ts_proto_opt=useOptionals=true \
---ts_proto_opt=oneof=unions \
 --ts_proto_opt=esModuleInterop=true \
 $GOPATH/src/github.com/heroiclabs/nakama-common/rtapi/realtime.proto \
 $GOPATH/src/github.com/heroiclabs/nakama-common/api/api.proto
