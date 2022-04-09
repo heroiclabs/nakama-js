@@ -8822,7 +8822,7 @@ var WebSocketAdapterPb = class {
     this._isConnected = true;
   }
   send(msg) {
-    const envelopeWriter = Envelope.encode(msg);
+    const envelopeWriter = Envelope.encode(Envelope.fromPartial(msg));
     const encodedMsg = envelopeWriter.finish();
     this._socket.send(encodedMsg);
   }

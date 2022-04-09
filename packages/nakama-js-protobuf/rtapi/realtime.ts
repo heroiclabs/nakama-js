@@ -17,103 +17,103 @@ export const protobufPackage = "nakama.realtime";
 export interface Envelope {
   cid: string;
   /** A response from a channel join operation. */
-  channel?: Channel | undefined;
+  channel: Channel | undefined;
   /** Join a realtime chat channel. */
-  channel_join?: ChannelJoin | undefined;
+  channel_join: ChannelJoin | undefined;
   /** Leave a realtime chat channel. */
-  channel_leave?: ChannelLeave | undefined;
+  channel_leave: ChannelLeave | undefined;
   /** An incoming message on a realtime chat channel. */
-  channel_message?: ChannelMessage | undefined;
+  channel_message: ChannelMessage | undefined;
   /** An acknowledgement received in response to sending a message on a chat channel. */
-  channel_message_ack?: ChannelMessageAck | undefined;
+  channel_message_ack: ChannelMessageAck | undefined;
   /** Send a message to a realtime chat channel. */
-  channel_message_send?: ChannelMessageSend | undefined;
+  channel_message_send: ChannelMessageSend | undefined;
   /** Update a message previously sent to a realtime chat channel. */
-  channel_message_update?: ChannelMessageUpdate | undefined;
+  channel_message_update: ChannelMessageUpdate | undefined;
   /** Remove a message previously sent to a realtime chat channel. */
-  channel_message_remove?: ChannelMessageRemove | undefined;
+  channel_message_remove: ChannelMessageRemove | undefined;
   /** Presence update for a particular realtime chat channel. */
-  channel_presence_event?: ChannelPresenceEvent | undefined;
+  channel_presence_event: ChannelPresenceEvent | undefined;
   /** Describes an error which occurred on the server. */
-  error?: Error | undefined;
+  error: Error | undefined;
   /** Incoming information about a realtime match. */
-  match?: Match | undefined;
+  match: Match | undefined;
   /** A client to server request to create a realtime match. */
-  match_create?: MatchCreate | undefined;
+  match_create: MatchCreate | undefined;
   /** Incoming realtime match data delivered from the server. */
-  match_data?: MatchData | undefined;
+  match_data: MatchData | undefined;
   /** A client to server request to send data to a realtime match. */
-  match_data_send?: MatchDataSend | undefined;
+  match_data_send: MatchDataSend | undefined;
   /** A client to server request to join a realtime match. */
-  match_join?: MatchJoin | undefined;
+  match_join: MatchJoin | undefined;
   /** A client to server request to leave a realtime match. */
-  match_leave?: MatchLeave | undefined;
+  match_leave: MatchLeave | undefined;
   /** Presence update for a particular realtime match. */
-  match_presence_event?: MatchPresenceEvent | undefined;
+  match_presence_event: MatchPresenceEvent | undefined;
   /** Submit a new matchmaking process request. */
-  matchmaker_add?: MatchmakerAdd | undefined;
+  matchmaker_add: MatchmakerAdd | undefined;
   /** A successful matchmaking result. */
-  matchmaker_matched?: MatchmakerMatched | undefined;
+  matchmaker_matched: MatchmakerMatched | undefined;
   /** Cancel a matchmaking process using a ticket. */
-  matchmaker_remove?: MatchmakerRemove | undefined;
+  matchmaker_remove: MatchmakerRemove | undefined;
   /** A response from starting a new matchmaking process. */
-  matchmaker_ticket?: MatchmakerTicket | undefined;
+  matchmaker_ticket: MatchmakerTicket | undefined;
   /** Notifications send by the server. */
-  notifications?: Notifications | undefined;
+  notifications: Notifications | undefined;
   /** RPC call or response. */
-  rpc?: Rpc | undefined;
+  rpc: Rpc | undefined;
   /** An incoming status snapshot for some set of users. */
-  status?: Status | undefined;
+  status: Status | undefined;
   /** Start following some set of users to receive their status updates. */
-  status_follow?: StatusFollow | undefined;
+  status_follow: StatusFollow | undefined;
   /** An incoming status update. */
-  status_presence_event?: StatusPresenceEvent | undefined;
+  status_presence_event: StatusPresenceEvent | undefined;
   /** Stop following some set of users to no longer receive their status updates. */
-  status_unfollow?: StatusUnfollow | undefined;
+  status_unfollow: StatusUnfollow | undefined;
   /** Set the user's own status. */
-  status_update?: StatusUpdate | undefined;
+  status_update: StatusUpdate | undefined;
   /** A data message delivered over a stream. */
-  stream_data?: StreamData | undefined;
+  stream_data: StreamData | undefined;
   /** Presence update for a particular stream. */
-  stream_presence_event?: StreamPresenceEvent | undefined;
+  stream_presence_event: StreamPresenceEvent | undefined;
   /** Application-level heartbeat and connection check. */
-  ping?: Ping | undefined;
+  ping: Ping | undefined;
   /** Application-level heartbeat and connection check response. */
-  pong?: Pong | undefined;
+  pong: Pong | undefined;
   /** Incoming information about a party. */
-  party?: Party | undefined;
+  party: Party | undefined;
   /** Create a party. */
-  party_create?: PartyCreate | undefined;
+  party_create: PartyCreate | undefined;
   /** Join a party, or request to join if the party is not open. */
-  party_join?: PartyJoin | undefined;
+  party_join: PartyJoin | undefined;
   /** Leave a party. */
-  party_leave?: PartyLeave | undefined;
+  party_leave: PartyLeave | undefined;
   /** Promote a new party leader. */
-  party_promote?: PartyPromote | undefined;
+  party_promote: PartyPromote | undefined;
   /** Announcement of a new party leader. */
-  party_leader?: PartyLeader | undefined;
+  party_leader: PartyLeader | undefined;
   /** Accept a request to join. */
-  party_accept?: PartyAccept | undefined;
+  party_accept: PartyAccept | undefined;
   /** Kick a party member, or decline a request to join. */
-  party_remove?: PartyRemove | undefined;
+  party_remove: PartyRemove | undefined;
   /** End a party, kicking all party members and closing it. */
-  party_close?: PartyClose | undefined;
+  party_close: PartyClose | undefined;
   /** Request a list of pending join requests for a party. */
-  party_join_request_list?: PartyJoinRequestList | undefined;
+  party_join_request_list: PartyJoinRequestList | undefined;
   /** Incoming notification for one or more new presences attempting to join the party. */
-  party_join_request?: PartyJoinRequest | undefined;
+  party_join_request: PartyJoinRequest | undefined;
   /** Begin matchmaking as a party. */
-  party_matchmaker_add?: PartyMatchmakerAdd | undefined;
+  party_matchmaker_add: PartyMatchmakerAdd | undefined;
   /** Cancel a party matchmaking process using a ticket. */
-  party_matchmaker_remove?: PartyMatchmakerRemove | undefined;
+  party_matchmaker_remove: PartyMatchmakerRemove | undefined;
   /** A response from starting a new party matchmaking process. */
-  party_matchmaker_ticket?: PartyMatchmakerTicket | undefined;
+  party_matchmaker_ticket: PartyMatchmakerTicket | undefined;
   /** Incoming party data delivered from the server. */
-  party_data?: PartyData | undefined;
+  party_data: PartyData | undefined;
   /** A client to server request to send data to a party. */
-  party_data_send?: PartyDataSend | undefined;
+  party_data_send: PartyDataSend | undefined;
   /** Presence update for a particular party. */
-  party_presence_event?: PartyPresenceEvent | undefined;
+  party_presence_event: PartyPresenceEvent | undefined;
 }
 
 /** A realtime chat channel. */
@@ -123,7 +123,7 @@ export interface Channel {
   /** The users currently in the channel. */
   presences: UserPresence[];
   /** A reference to the current user's presence in the channel. */
-  self?: UserPresence;
+  self: UserPresence | undefined;
   /** The name of the chat room, or an empty string if this message was not sent through a chat room. */
   room_name: string;
   /** The ID of the group, or an empty string if this message was not sent through a group channel. */
@@ -141,9 +141,9 @@ export interface ChannelJoin {
   /** The type of the chat channel. */
   type: number;
   /** Whether messages sent on this channel should be persistent. */
-  persistence?: boolean;
+  persistence: boolean | undefined;
   /** Whether the user should appear in the channel's presence list and events. */
-  hidden?: boolean;
+  hidden: boolean | undefined;
 }
 
 /** The type of chat channel. */
@@ -208,15 +208,15 @@ export interface ChannelMessageAck {
   /** The unique ID assigned to the message. */
   message_id: string;
   /** The code representing a message type or category. */
-  code?: number;
+  code: number | undefined;
   /** Username of the message sender. */
   username: string;
   /** The UNIX time when the message was created. */
-  create_time?: Date;
+  create_time: Date | undefined;
   /** The UNIX time when the message was last updated. */
-  update_time?: Date;
+  update_time: Date | undefined;
   /** True if the message was persisted to the channel's history, false otherwise. */
-  persistent?: boolean;
+  persistent: boolean | undefined;
   /** The name of the chat room, or an empty string if this message was not sent through a chat room. */
   room_name: string;
   /** The ID of the group, or an empty string if this message was not sent through a group channel. */
@@ -370,13 +370,13 @@ export interface Match {
   /** True if it's an server-managed authoritative match, false otherwise. */
   authoritative: boolean;
   /** Match label, if any. */
-  label?: string;
+  label: string | undefined;
   /** The number of users currently in the match. */
   size: number;
   /** The users currently in the match. */
   presences: UserPresence[];
   /** A reference to the current user's presence in the match. */
-  self?: UserPresence;
+  self: UserPresence | undefined;
 }
 
 /** Create a new realtime match. */
@@ -387,7 +387,7 @@ export interface MatchData {
   /** The match unique ID. */
   match_id: string;
   /** A reference to the user presence that sent this data, if any. */
-  presence?: UserPresence;
+  presence: UserPresence | undefined;
   /** Op code value. */
   op_code: number;
   /** Data payload, if any. */
@@ -476,12 +476,12 @@ export interface MatchmakerMatched {
   /** The users that have been matched together, and information about their matchmaking data. */
   users: MatchmakerMatched_MatchmakerUser[];
   /** A reference to the current user and their properties. */
-  self?: MatchmakerMatched_MatchmakerUser;
+  self: MatchmakerMatched_MatchmakerUser | undefined;
 }
 
 export interface MatchmakerMatched_MatchmakerUser {
   /** User info. */
-  presence?: UserPresence;
+  presence: UserPresence | undefined;
   /** Party identifier, if this user was matched as a party member. */
   party_id: string;
   /** String properties. */
@@ -527,9 +527,9 @@ export interface Party {
   /** Maximum number of party members. */
   max_size: number;
   /** Self. */
-  self?: UserPresence;
+  self: UserPresence | undefined;
   /** Leader. */
-  leader?: UserPresence;
+  leader: UserPresence | undefined;
   /** All current party members. */
   presences: UserPresence[];
 }
@@ -559,7 +559,7 @@ export interface PartyPromote {
   /** Party ID to promote a new leader for. */
   party_id: string;
   /** The presence of an existing party member to promote as the new leader. */
-  presence?: UserPresence;
+  presence: UserPresence | undefined;
 }
 
 /** Announcement of a new party leader. */
@@ -567,7 +567,7 @@ export interface PartyLeader {
   /** Party ID to announce the new leader for. */
   party_id: string;
   /** The presence of the new party leader. */
-  presence?: UserPresence;
+  presence: UserPresence | undefined;
 }
 
 /** Accept a request to join. */
@@ -575,7 +575,7 @@ export interface PartyAccept {
   /** Party ID to accept a join request for. */
   party_id: string;
   /** The presence to accept as a party member. */
-  presence?: UserPresence;
+  presence: UserPresence | undefined;
 }
 
 /** Kick a party member, or decline a request to join. */
@@ -583,7 +583,7 @@ export interface PartyRemove {
   /** Party ID to remove/reject from. */
   party_id: string;
   /** The presence to remove or reject. */
-  presence?: UserPresence;
+  presence: UserPresence | undefined;
 }
 
 /** End a party, kicking all party members and closing it. */
@@ -653,7 +653,7 @@ export interface PartyData {
   /** The party ID. */
   party_id: string;
   /** A reference to the user presence that sent this data, if any. */
-  presence?: UserPresence;
+  presence: UserPresence | undefined;
   /** Op code value. */
   op_code: number;
   /** Data payload, if any. */
@@ -717,7 +717,7 @@ export interface StatusUnfollow {
 /** Set the user's own status. */
 export interface StatusUpdate {
   /** Status string to set, if not present the user will appear offline. */
-  status?: string;
+  status: string | undefined;
 }
 
 /** Represents identifying information for a stream. */
@@ -735,9 +735,9 @@ export interface Stream {
 /** A data message delivered over a stream. */
 export interface StreamData {
   /** The stream this data message relates to. */
-  stream?: Stream;
+  stream: Stream | undefined;
   /** The sender, if any. */
-  sender?: UserPresence;
+  sender: UserPresence | undefined;
   /** Arbitrary contents of the data message. */
   data: string;
   /** True if this data was delivered reliably, false otherwise. */
@@ -747,7 +747,7 @@ export interface StreamData {
 /** A set of joins and leaves on a particular stream. */
 export interface StreamPresenceEvent {
   /** The stream this event relates to. */
-  stream?: Stream;
+  stream: Stream | undefined;
   /** Presences joining the stream as part of this event, if any. */
   joins: UserPresence[];
   /** Presences leaving the stream as part of this event, if any. */
@@ -765,7 +765,7 @@ export interface UserPresence {
   /** Whether this presence generates persistent data/messages, if applicable for the stream type. */
   persistence: boolean;
   /** A user-set status message for this stream, if applicable. */
-  status?: string;
+  status: string | undefined;
 }
 
 const baseEnvelope: object = { cid: "" };

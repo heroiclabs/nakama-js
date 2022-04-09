@@ -20,7 +20,7 @@ export declare function operatorToJSON(object: Operator): string;
 /** A user with additional account details. Always the current user. */
 export interface Account {
     /** The user object. */
-    user?: User;
+    user: User | undefined;
     /** The user's wallet data. */
     wallet: string;
     /** The email address of the user. */
@@ -30,9 +30,9 @@ export interface Account {
     /** The custom id in the user's account. */
     custom_id: string;
     /** The UNIX time when the user's email was verified. */
-    verify_time?: Date;
+    verify_time: Date | undefined;
     /** The UNIX time when the user's account was disabled/banned. */
-    disable_time?: Date;
+    disable_time: Date | undefined;
 }
 /** Obtain a new authentication token using a refresh token. */
 export interface AccountRefresh {
@@ -213,87 +213,87 @@ export interface SessionLogoutRequest {
 /** Authenticate against the server with Apple Sign In. */
 export interface AuthenticateAppleRequest {
     /** The Apple account details. */
-    account?: AccountApple;
+    account: AccountApple | undefined;
     /** Register the account if the user does not already exist. */
-    create?: boolean;
+    create: boolean | undefined;
     /** Set the username on the account at register. Must be unique. */
     username: string;
 }
 /** Authenticate against the server with a custom ID. */
 export interface AuthenticateCustomRequest {
     /** The custom account details. */
-    account?: AccountCustom;
+    account: AccountCustom | undefined;
     /** Register the account if the user does not already exist. */
-    create?: boolean;
+    create: boolean | undefined;
     /** Set the username on the account at register. Must be unique. */
     username: string;
 }
 /** Authenticate against the server with a device ID. */
 export interface AuthenticateDeviceRequest {
     /** The device account details. */
-    account?: AccountDevice;
+    account: AccountDevice | undefined;
     /** Register the account if the user does not already exist. */
-    create?: boolean;
+    create: boolean | undefined;
     /** Set the username on the account at register. Must be unique. */
     username: string;
 }
 /** Authenticate against the server with email+password. */
 export interface AuthenticateEmailRequest {
     /** The email account details. */
-    account?: AccountEmail;
+    account: AccountEmail | undefined;
     /** Register the account if the user does not already exist. */
-    create?: boolean;
+    create: boolean | undefined;
     /** Set the username on the account at register. Must be unique. */
     username: string;
 }
 /** Authenticate against the server with Facebook. */
 export interface AuthenticateFacebookRequest {
     /** The Facebook account details. */
-    account?: AccountFacebook;
+    account: AccountFacebook | undefined;
     /** Register the account if the user does not already exist. */
-    create?: boolean;
+    create: boolean | undefined;
     /** Set the username on the account at register. Must be unique. */
     username: string;
     /** Import Facebook friends for the user. */
-    sync?: boolean;
+    sync: boolean | undefined;
 }
 /** Authenticate against the server with Facebook Instant Game token. */
 export interface AuthenticateFacebookInstantGameRequest {
     /** The Facebook Instant Game account details. */
-    account?: AccountFacebookInstantGame;
+    account: AccountFacebookInstantGame | undefined;
     /** Register the account if the user does not already exist. */
-    create?: boolean;
+    create: boolean | undefined;
     /** Set the username on the account at register. Must be unique. */
     username: string;
 }
 /** Authenticate against the server with Apple's Game Center. */
 export interface AuthenticateGameCenterRequest {
     /** The Game Center account details. */
-    account?: AccountGameCenter;
+    account: AccountGameCenter | undefined;
     /** Register the account if the user does not already exist. */
-    create?: boolean;
+    create: boolean | undefined;
     /** Set the username on the account at register. Must be unique. */
     username: string;
 }
 /** Authenticate against the server with Google. */
 export interface AuthenticateGoogleRequest {
     /** The Google account details. */
-    account?: AccountGoogle;
+    account: AccountGoogle | undefined;
     /** Register the account if the user does not already exist. */
-    create?: boolean;
+    create: boolean | undefined;
     /** Set the username on the account at register. Must be unique. */
     username: string;
 }
 /** Authenticate against the server with Steam. */
 export interface AuthenticateSteamRequest {
     /** The Steam account details. */
-    account?: AccountSteam;
+    account: AccountSteam | undefined;
     /** Register the account if the user does not already exist. */
-    create?: boolean;
+    create: boolean | undefined;
     /** Set the username on the account at register. Must be unique. */
     username: string;
     /** Import Steam friends for the user. */
-    sync?: boolean;
+    sync: boolean | undefined;
 }
 /** Ban users from a group. */
 export interface BanGroupUsersRequest {
@@ -316,7 +316,7 @@ export interface ChannelMessage {
     /** The unique ID of this message. */
     message_id: string;
     /** The code representing a message type or category. */
-    code?: number;
+    code: number | undefined;
     /** Message sender, usually a user ID. */
     sender_id: string;
     /** The username of the message sender, if any. */
@@ -324,11 +324,11 @@ export interface ChannelMessage {
     /** The content payload. */
     content: string;
     /** The UNIX time when the message was created. */
-    create_time?: Date;
+    create_time: Date | undefined;
     /** The UNIX time when the message was last updated. */
-    update_time?: Date;
+    update_time: Date | undefined;
     /** True if the message was persisted to the channel's history, false otherwise. */
-    persistent?: boolean;
+    persistent: boolean | undefined;
     /** The name of the chat room, or an empty string if this message was not sent through a chat room. */
     room_name: string;
     /** The ID of the group, or an empty string if this message was not sent through a group channel. */
@@ -409,7 +409,7 @@ export interface Event {
         [key: string]: string;
     };
     /** The time when the event was triggered. */
-    timestamp?: Date;
+    timestamp: Date | undefined;
     /** True if the event came directly from a client call, false otherwise. */
     external: boolean;
 }
@@ -420,11 +420,11 @@ export interface Event_PropertiesEntry {
 /** A friend of a user. */
 export interface Friend {
     /** The user object. */
-    user?: User;
+    user: User | undefined;
     /** The friend status. */
-    state?: number;
+    state: number | undefined;
     /** Time of the latest relationship update. */
-    update_time?: Date;
+    update_time: Date | undefined;
 }
 /** The friendship status. */
 export declare enum Friend_State {
@@ -473,15 +473,15 @@ export interface Group {
     /** A URL for an avatar image. */
     avatar_url: string;
     /** Anyone can join open groups, otherwise only admins can accept members. */
-    open?: boolean;
+    open: boolean | undefined;
     /** The current count of all members in the group. */
     edge_count: number;
     /** The maximum number of members allowed. */
     max_count: number;
     /** The UNIX time when the group was created. */
-    create_time?: Date;
+    create_time: Date | undefined;
     /** The UNIX time when the group was last updated. */
-    update_time?: Date;
+    update_time: Date | undefined;
 }
 /** One or more groups returned from a listing operation. */
 export interface GroupList {
@@ -500,9 +500,9 @@ export interface GroupUserList {
 /** A single user-role pair. */
 export interface GroupUserList_GroupUser {
     /** User. */
-    user?: User;
+    user: User | undefined;
     /** Their relationship to the group. */
-    state?: number;
+    state: number | undefined;
 }
 /** The group role status. */
 export declare enum GroupUserList_GroupUser_State {
@@ -521,16 +521,16 @@ export declare function groupUserList_GroupUser_StateToJSON(object: GroupUserLis
 /** Import Facebook friends into the current user's account. */
 export interface ImportFacebookFriendsRequest {
     /** The Facebook account details. */
-    account?: AccountFacebook;
+    account: AccountFacebook | undefined;
     /** Reset the current user's friends list. */
-    reset?: boolean;
+    reset: boolean | undefined;
 }
 /** Import Facebook friends into the current user's account. */
 export interface ImportSteamFriendsRequest {
     /** The Facebook account details. */
-    account?: AccountSteam;
+    account: AccountSteam | undefined;
     /** Reset the current user's friends list. */
-    reset?: boolean;
+    reset: boolean | undefined;
 }
 /** Immediately join an open group, or request to join a closed one. */
 export interface JoinGroupRequest {
@@ -564,7 +564,7 @@ export interface Leaderboard {
     /** Additional information stored as a JSON object. */
     metadata: string;
     /** The UNIX time when the leaderboard was created. */
-    create_time?: Date;
+    create_time: Date | undefined;
     /** Wether the leaderboard was created authoritatively or not. */
     authoritative: boolean;
 }
@@ -582,7 +582,7 @@ export interface LeaderboardRecord {
     /** The ID of the score owner, usually a user or group. */
     owner_id: string;
     /** The username of the score owner, if the owner is a user. */
-    username?: string;
+    username: string | undefined;
     /** The score value. */
     score: number;
     /** An optional subscore value. */
@@ -592,11 +592,11 @@ export interface LeaderboardRecord {
     /** Metadata. */
     metadata: string;
     /** The UNIX time when the leaderboard record was created. */
-    create_time?: Date;
+    create_time: Date | undefined;
     /** The UNIX time when the leaderboard record was updated. */
-    update_time?: Date;
+    update_time: Date | undefined;
     /** The UNIX time when the leaderboard record expires. */
-    expiry_time?: Date;
+    expiry_time: Date | undefined;
     /** The rank of this record. */
     rank: number;
     /** The maximum number of score updates allowed by the owner. */
@@ -621,34 +621,34 @@ export interface LeaveGroupRequest {
 /** Link Facebook to the current user's account. */
 export interface LinkFacebookRequest {
     /** The Facebook account details. */
-    account?: AccountFacebook;
+    account: AccountFacebook | undefined;
     /** Import Facebook friends for the user. */
-    sync?: boolean;
+    sync: boolean | undefined;
 }
 /** Link Steam to the current user's account. */
 export interface LinkSteamRequest {
     /** The Facebook account details. */
-    account?: AccountSteam;
+    account: AccountSteam | undefined;
     /** Import Steam friends for the user. */
-    sync?: boolean;
+    sync: boolean | undefined;
 }
 /** List a channel's message history. */
 export interface ListChannelMessagesRequest {
     /** The channel ID to list from. */
     channel_id: string;
     /** Max number of records to return. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** True if listing should be older messages to newer, false if reverse. */
-    forward?: boolean;
+    forward: boolean | undefined;
     /** A pagination cursor, if any. */
     cursor: string;
 }
 /** List friends for a user. */
 export interface ListFriendsRequest {
     /** Max number of records to return. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** The friend state to list. */
-    state?: number;
+    state: number | undefined;
     /** An optional next page cursor. */
     cursor: string;
 }
@@ -659,22 +659,22 @@ export interface ListGroupsRequest {
     /** Optional pagination cursor. */
     cursor: string;
     /** Max number of groups to return. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** Language tag filter */
     lang_tag: string;
     /** Number of group members */
-    members?: number;
+    members: number | undefined;
     /** Optional Open/Closed filter. */
-    open?: boolean;
+    open: boolean | undefined;
 }
 /** List all users that are part of a group. */
 export interface ListGroupUsersRequest {
     /** The group ID to list from. */
     group_id: string;
     /** Max number of records to return. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** The group user state to list. */
-    state?: number;
+    state: number | undefined;
     /** An optional next page cursor. */
     cursor: string;
 }
@@ -683,11 +683,11 @@ export interface ListLeaderboardRecordsAroundOwnerRequest {
     /** The ID of the tournament to list for. */
     leaderboard_id: string;
     /** Max number of records to return. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** The owner to retrieve records around. */
     owner_id: string;
     /** Expiry in seconds (since epoch) to begin fetching records from. */
-    expiry?: number;
+    expiry: number | undefined;
 }
 /** List leaderboard records from a given leaderboard. */
 export interface ListLeaderboardRecordsRequest {
@@ -696,31 +696,31 @@ export interface ListLeaderboardRecordsRequest {
     /** One or more owners to retrieve records for. */
     owner_ids: string[];
     /** Max number of records to return. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** A next or previous page cursor. */
     cursor: string;
     /** Expiry in seconds (since epoch) to begin fetching records from. Optional. 0 means from current time. */
-    expiry?: number;
+    expiry: number | undefined;
 }
 /** List realtime matches. */
 export interface ListMatchesRequest {
     /** Limit the number of returned matches. */
-    limit?: number;
+    limit: number | undefined;
     /** Authoritative or relayed matches. */
-    authoritative?: boolean;
+    authoritative: boolean | undefined;
     /** Label filter. */
-    label?: string;
+    label: string | undefined;
     /** Minimum user count. */
-    min_size?: number;
+    min_size: number | undefined;
     /** Maximum user count. */
-    max_size?: number;
+    max_size: number | undefined;
     /** Arbitrary label query. */
-    query?: string;
+    query: string | undefined;
 }
 /** Get a list of unexpired notifications. */
 export interface ListNotificationsRequest {
     /** The number of notifications to get. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** A cursor to page through notifications. May be cached by clients to get from point in time forwards. */
     cacheable_cursor: string;
 }
@@ -731,7 +731,7 @@ export interface ListStorageObjectsRequest {
     /** The collection which stores the object. */
     collection: string;
     /** The number of storage objects to list. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** The cursor to page through results from. */
     cursor: string;
 }
@@ -740,11 +740,11 @@ export interface ListTournamentRecordsAroundOwnerRequest {
     /** The ID of the tournament to list for. */
     tournament_id: string;
     /** Max number of records to return. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** The owner to retrieve records around. */
     owner_id: string;
     /** Expiry in seconds (since epoch) to begin fetching records from. */
-    expiry?: number;
+    expiry: number | undefined;
 }
 /** List tournament records from a given tournament. */
 export interface ListTournamentRecordsRequest {
@@ -753,24 +753,24 @@ export interface ListTournamentRecordsRequest {
     /** One or more owners to retrieve records for. */
     owner_ids: string[];
     /** Max number of records to return. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** A next or previous page cursor. */
     cursor: string;
     /** Expiry in seconds (since epoch) to begin fetching records from. */
-    expiry?: number;
+    expiry: number | undefined;
 }
 /** List active/upcoming tournaments based on given filters. */
 export interface ListTournamentsRequest {
     /** The start of the categories to include. Defaults to 0. */
-    category_start?: number;
+    category_start: number | undefined;
     /** The end of the categories to include. Defaults to 128. */
-    category_end?: number;
+    category_end: number | undefined;
     /** The start time for tournaments. Defaults to epoch. */
-    start_time?: number;
+    start_time: number | undefined;
     /** The end time for tournaments. Defaults to +1 year from current Unix time. */
-    end_time?: number;
+    end_time: number | undefined;
     /** Max number of records to return. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** A next page cursor for listings (optional). */
     cursor: string;
 }
@@ -779,9 +779,9 @@ export interface ListUserGroupsRequest {
     /** ID of the user. */
     user_id: string;
     /** Max number of records to return. Between 1 and 100. */
-    limit?: number;
+    limit: number | undefined;
     /** The user group state to list. */
-    state?: number;
+    state: number | undefined;
     /** An optional next page cursor. */
     cursor: string;
 }
@@ -792,7 +792,7 @@ export interface Match {
     /** True if it's an server-managed authoritative match, false otherwise. */
     authoritative: boolean;
     /** Match label, if any. */
-    label?: string;
+    label: string | undefined;
     /** Current number of users in the match. */
     size: number;
     /** Tick Rate */
@@ -818,7 +818,7 @@ export interface Notification {
     /** ID of the sender, if a user. Otherwise 'null'. */
     sender_id: string;
     /** The UNIX time when the notification was created. */
-    create_time?: Date;
+    create_time: Date | undefined;
     /** True if this notification was persisted to the database. */
     persistent: boolean;
 }
@@ -892,9 +892,9 @@ export interface StorageObject {
     /** The write access permissions for the object. */
     permission_write: number;
     /** The UNIX time when the object was created. */
-    create_time?: Date;
+    create_time: Date | undefined;
     /** The UNIX time when the object was last updated. */
-    update_time?: Date;
+    update_time: Date | undefined;
 }
 /** A storage acknowledgement. */
 export interface StorageObjectAck {
@@ -951,11 +951,11 @@ export interface Tournament {
     /** Additional information stored as a JSON object. */
     metadata: string;
     /** The UNIX time when the tournament was created. */
-    create_time?: Date;
+    create_time: Date | undefined;
     /** The UNIX time when the tournament will start. */
-    start_time?: Date;
+    start_time: Date | undefined;
     /** The UNIX time when the tournament will be stopped. */
-    end_time?: Date;
+    end_time: Date | undefined;
     /** Duration of the tournament in seconds. */
     duration: number;
     /** The UNIX time when the tournament start being active. A computed value. */
@@ -986,32 +986,32 @@ export interface TournamentRecordList {
 /** Update a user's account details. */
 export interface UpdateAccountRequest {
     /** The username of the user's account. */
-    username?: string;
+    username: string | undefined;
     /** The display name of the user. */
-    display_name?: string;
+    display_name: string | undefined;
     /** A URL for an avatar image. */
-    avatar_url?: string;
+    avatar_url: string | undefined;
     /** The language expected to be a tag which follows the BCP-47 spec. */
-    lang_tag?: string;
+    lang_tag: string | undefined;
     /** The location set by the user. */
-    location?: string;
+    location: string | undefined;
     /** The timezone set by the user. */
-    timezone?: string;
+    timezone: string | undefined;
 }
 /** Update fields in a given group. */
 export interface UpdateGroupRequest {
     /** The ID of the group to update. */
     group_id: string;
     /** Name. */
-    name?: string;
+    name: string | undefined;
     /** Description string. */
-    description?: string;
+    description: string | undefined;
     /** Lang tag. */
-    lang_tag?: string;
+    lang_tag: string | undefined;
     /** Avatar URL. */
-    avatar_url?: string;
+    avatar_url: string | undefined;
     /** Open is true if anyone should be allowed to join, or false if joins must be approved by a group admin. */
-    open?: boolean;
+    open: boolean | undefined;
 }
 /** A user in the server. */
 export interface User {
@@ -1044,9 +1044,9 @@ export interface User {
     /** Number of related edges to this user. */
     edge_count: number;
     /** The UNIX time when the user was created. */
-    create_time?: Date;
+    create_time: Date | undefined;
     /** The UNIX time when the user was last updated. */
-    update_time?: Date;
+    update_time: Date | undefined;
     /** The Facebook Instant Game ID in the user's account. */
     facebook_instant_game_id: string;
     /** The Apple Sign In ID in the user's account. */
@@ -1062,9 +1062,9 @@ export interface UserGroupList {
 /** A single group-role pair. */
 export interface UserGroupList_UserGroup {
     /** Group. */
-    group?: Group;
+    group: Group | undefined;
     /** The user's relationship to the group. */
-    state?: number;
+    state: number | undefined;
 }
 /** The group role status. */
 export declare enum UserGroupList_UserGroup_State {
@@ -1111,11 +1111,11 @@ export interface ValidatedPurchase {
     /** Store identifier */
     store: ValidatedPurchase_Store;
     /** UNIX Timestamp when the purchase was done. */
-    purchase_time?: Date;
+    purchase_time: Date | undefined;
     /** UNIX Timestamp when the receipt validation was stored in DB. */
-    create_time?: Date;
+    create_time: Date | undefined;
     /** UNIX Timestamp when the receipt validation was updated in DB. */
-    update_time?: Date;
+    update_time: Date | undefined;
     /** Raw provider validation response. */
     provider_response: string;
     /** Whether the purchase was done in production or sandbox environment. */
@@ -1164,7 +1164,7 @@ export interface WriteLeaderboardRecordRequest {
     /** The ID of the leaderboard to write to. */
     leaderboard_id: string;
     /** Record input. */
-    record?: WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
+    record: WriteLeaderboardRecordRequest_LeaderboardRecordWrite | undefined;
 }
 /** Record values to write. */
 export interface WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
@@ -1188,9 +1188,9 @@ export interface WriteStorageObject {
     /** The version hash of the object to check. Possible values are: ["", "*", "#hash#"]. */
     version: string;
     /** The read access permissions for the object. */
-    permission_read?: number;
+    permission_read: number | undefined;
     /** The write access permissions for the object. */
-    permission_write?: number;
+    permission_write: number | undefined;
 }
 /** Write objects to the storage engine. */
 export interface WriteStorageObjectsRequest {
@@ -1202,7 +1202,7 @@ export interface WriteTournamentRecordRequest {
     /** The tournament ID to write the record for. */
     tournament_id: string;
     /** Record input. */
-    record?: WriteTournamentRecordRequest_TournamentRecordWrite;
+    record: WriteTournamentRecordRequest_TournamentRecordWrite | undefined;
 }
 /** Record values to write. */
 export interface WriteTournamentRecordRequest_TournamentRecordWrite {

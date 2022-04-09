@@ -102,8 +102,7 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
     }
 
     send(msg: any): void {
-        // prior to encoding, ts-proto expects optionality to be applied to our envelope object in order to satisfy the protobuf spec
-        const envelopeWriter = tsproto.Envelope.encode(msg);
+        const envelopeWriter = tsproto.Envelope.encode(tsproto.Envelope.fromPartial(msg));
         const encodedMsg = envelopeWriter.finish();
         this._socket!.send(encodedMsg);
     }
