@@ -62,6 +62,7 @@ describe('Link / Unlink Tests', () => {
 
   //optional test
   it.skip('should link to facebook instant games', async () => {
+    const page : Page = await createPage();
 
     const fbid = generateid();
 
@@ -99,6 +100,7 @@ describe('Link / Unlink Tests', () => {
 
   //optional test
   it.skip('should unlink to facebook instant games', async () => {
+    const page : Page = await createPage();
 
     const fbid = generateid();
 

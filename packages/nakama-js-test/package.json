@@ -5,7 +5,7 @@
     "private": true,
     "license": "Apache-2.0",
     "dependencies": {
-        "@heroiclabs/nakama-js": "2.2.0",
+        "@heroiclabs/nakama-js": "2.3.0",
         "@heroiclabs/nakama-js-protobuf": "1.0.3"
     },
     "devDependencies": {
@@ -16,7 +16,6 @@
         "@types/puppeteer": "^5.4.2",
         "jest": "26.6.0",
         "jest-puppeteer": "^4.4.0",
-        "jsdom": "16.3.0",
         "puppeteer": "5.5.0",
         "ts-jest": "26.4.4"
     },
