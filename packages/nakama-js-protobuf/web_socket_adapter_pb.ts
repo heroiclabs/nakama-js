@@ -102,6 +102,21 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
     }
 
     send(msg: any): void {
+
+        if (msg.match_data_send) {
+            let payload = msg.match_data_send.data;
+            // can't send a string over protobuf
+            if (typeof payload == "string") {
+                msg.match_data_send.data = new TextEncoder().encode(payload);
+            }
+        } else if (msg.party_data_send) {
+            let payload = msg.party_data_send.data;
+            // can't send a string over protobuf
+            if (typeof payload == "string") {
+                msg.match_data_send.data = new TextEncoder().encode(payload);
+            }
+        }
+
         const envelopeWriter = tsproto.Envelope.encode(tsproto.Envelope.fromPartial(msg));
         const encodedMsg = envelopeWriter.finish();
         this._socket!.send(encodedMsg);

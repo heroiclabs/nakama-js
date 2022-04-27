@@ -2744,13 +2744,19 @@ var WebSocketAdapterText = class {
   send(msg) {
     if (msg.match_data_send) {
       msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
-      if (msg.match_data_send.data) {
-        msg.match_data_send.data = encode2(msg.match_data_send.data.buffer);
+      let payload = msg.match_data_send.data;
+      if (payload && payload instanceof Uint8Array) {
+        msg.match_data_send.data = encode2(payload.buffer);
+      } else if (payload) {
+        msg.match_data_send.data = btoa(payload);
       }
     } else if (msg.party_data_send) {
       msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
-      if (msg.party_data_send.data) {
-        msg.party_data_send.data = encode2(msg.party_data_send.data.buffer);
+      let payload = msg.party_data_send.data;
+      if (payload && payload instanceof Uint8Array) {
+        msg.party_data_send.data = encode2(payload.buffer);
+      } else if (payload) {
+        msg.party_data_send.data = btoa(payload);
       }
     }
     this._socket.send(JSON.stringify(msg));
@@ -3146,9 +3152,6 @@ var DefaultSocket = class {
   }
   sendMatchState(matchId, opCode, data, presences) {
     return __async(this, null, function* () {
-      if (typeof data == "string") {
-        data = new TextEncoder().encode(data);
-      }
       return this.send({
         match_data_send: {
           match_id: matchId,
@@ -3160,9 +3163,6 @@ var DefaultSocket = class {
     });
   }
   sendPartyData(party_id, op_code, data) {
-    if (typeof data == "string") {
-      data = new TextEncoder().encode(data);
-    }
     return this.send({ party_data_send: { party_id, op_code, data } });
   }
   unfollowUsers(user_ids) {

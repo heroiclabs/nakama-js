@@ -19,9 +19,6 @@ import {Session} from "./session";
 import {Notification} from "./client";
 import {WebSocketAdapter, WebSocketAdapterText} from "./web_socket_adapter"
 
-/** Requires the set of keys K to exist in type T. */
-type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
-
 /** Stores function references for resolve/reject with a DOM Promise. */
 interface PromiseExecutor {
   resolve: (value?: any) => void;
@@ -314,7 +311,16 @@ export interface MatchData {
 
 /** Send a message that contains match data. */
 interface MatchDataSend {
-  match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
+  match_data_send: {
+    /** The unique match identifier. */
+    match_id: string;
+    /** Operation code value. */
+    op_code: number;
+    /** Data payload, if any. */
+    data: string | Uint8Array;
+    /** A reference to the user presences to send this data to, if any. */
+    presences: Presence[];
+  }
 }
 
 /** Incoming information about a party. */
@@ -415,7 +421,7 @@ interface PartyDataSend {
     /** The operation code the message was sent with. */
     op_code : number;
     /** Data payload, if any. */
-    data : any;
+    data : string | Uint8Array;
   }
 }
 
@@ -1135,10 +1141,6 @@ export class DefaultSocket implements Socket {
   }
 
   async sendMatchState(matchId: string, opCode : number, data: string | Uint8Array, presences? : Presence[]): Promise<void> {
-    if (typeof data == "string") {
-        data = new TextEncoder().encode(<string> data);
-    }
-
     return this.send(
       {
         match_data_send: {
@@ -1151,10 +1153,6 @@ export class DefaultSocket implements Socket {
   }
 
   sendPartyData(party_id: string, op_code: number, data: string | Uint8Array): Promise<void> {
-    if (typeof data == "string") {
-        data = new TextEncoder().encode(<string> data);
-    }
-
     return this.send({party_data_send: {party_id: party_id, op_code: op_code, data: data}})
   }
 

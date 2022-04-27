@@ -8822,6 +8822,17 @@ var WebSocketAdapterPb = class {
     this._isConnected = true;
   }
   send(msg) {
+    if (msg.match_data_send) {
+      let payload = msg.match_data_send.data;
+      if (typeof payload == "string") {
+        msg.match_data_send.data = new TextEncoder().encode(payload);
+      }
+    } else if (msg.party_data_send) {
+      let payload = msg.party_data_send.data;
+      if (typeof payload == "string") {
+        msg.match_data_send.data = new TextEncoder().encode(payload);
+      }
+    }
     const envelopeWriter = Envelope.encode(Envelope.fromPartial(msg));
     const encodedMsg = envelopeWriter.finish();
     this._socket.send(encodedMsg);

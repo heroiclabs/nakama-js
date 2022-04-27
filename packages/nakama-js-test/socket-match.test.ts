@@ -91,14 +91,14 @@ describe('Match Tests', () => {
     expect(response).not.toBeNull();
   });
 
-  it.each([AdapterType.Protobuf])('should join a match, then send data, receive data', async (adapter) => {
+  it.each(adapters)('should join a match, then send data, receive data', async (adapter) => {
     const page = await createPage();
 
     const customid1 = generateid();
     const customid2 = generateid();
-    const PAYLOAD = { "hello": "world" };
+    const outerPayload = { "hello": "world" };
 
-    const matchData = await page.evaluate(async (customid1, customid2, payload, adapter) => {
+    const matchDataString = await page.evaluate(async (customid1, customid2, innerPayload, adapter) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
 
@@ -110,6 +110,7 @@ describe('Match Tests', () => {
 
       var promise1 = new Promise<string>((resolve, reject) => {
         socket2.onmatchdata = (matchdata) => {
+          // return string directly because Uint8Array doesn't serialize correctly across Puppeteer boundary
           resolve(new TextDecoder().decode(matchdata.data));
         }
       });
@@ -121,16 +122,16 @@ describe('Match Tests', () => {
       const session2 = await client2.authenticateCustom(customid2);
       await socket2.connect(session2, false);
       await socket2.joinMatch(match.match_id);
-      await socket1.sendMatchState(match.match_id, 20, JSON.stringify(payload));
+      await socket1.sendMatchState(match.match_id, 20, JSON.stringify(innerPayload));
       var promise2 = new Promise<null>((resolve, reject) => {
         setTimeout(reject, 5000, "did not receive match data - timed out.")
       });
 
       return Promise.race([promise1, promise2]);
-    }, customid1, customid2, PAYLOAD, adapter);
+    }, customid1, customid2, outerPayload, adapter);
 
-    expect(matchData).not.toBeNull();
-    expect(JSON.parse(matchData)).toEqual(PAYLOAD);
+    expect(matchDataString).not.toBeNull();
+    expect(JSON.parse(matchDataString)).toEqual(outerPayload);
   });
 
   it.each(adapters)('should join a match, then send data to included presences', async (adapter) => {
@@ -140,9 +141,9 @@ describe('Match Tests', () => {
     const customid2 = generateid();
     const customid3 = generateid();
 
-    const PAYLOAD = { "hello": "world" };
+    const outerPayload = { "hello": "world" };
 
-    const matchData = await page.evaluate(async (customid1, customid2, customid3, payload, adapter) => {
+    const matchDataString = await page.evaluate(async (customid1, customid2, customid3, innerPayload, adapter) => {
       const client1 = new nakamajs.Client();
       const client2 = new nakamajs.Client();
       const client3 = new nakamajs.Client();
@@ -174,19 +175,20 @@ describe('Match Tests', () => {
         setTimeout(reject, 5000, "did not receive match data - timed out.")
       });
 
-      var matchDataPromise = new Promise<MatchData>((resolve, reject) => {
+      var matchDataPromise = new Promise<string>((resolve, reject) => {
         socket2.onmatchdata = (matchdata) => {
-          resolve(matchdata);
+          // return string directly because Uint8Array doesn't serialize correctly across Puppeteer boundary
+          resolve(new TextDecoder().decode(matchdata.data));
         }
       });
 
-      await socket1.sendMatchState(match.match_id, 20, payload, presenceEvt.joins);
+      await socket1.sendMatchState(match.match_id, 20, innerPayload, presenceEvt.joins);
 
       return Promise.race([matchDataPromise, timeout]);
-    }, customid1, customid2, customid3, PAYLOAD, adapter);
+    }, customid1, customid2, customid3, JSON.stringify(outerPayload), adapter);
 
-    expect(matchData).not.toBeNull();
-    expect(matchData.data).toEqual(PAYLOAD);
+    expect(matchDataString).not.toBeNull();
+    expect(JSON.parse(matchDataString).toEqual(outerPayload));
   });
 
   it.each(adapters)('should join a match, then do not send data to excluded presences', async (adapter) => {

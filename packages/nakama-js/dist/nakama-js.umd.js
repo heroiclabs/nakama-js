@@ -3585,15 +3585,23 @@
           if (msg.match_data_send) {
               // according to protobuf docs, int64 is encoded to JSON as string.
               msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
-              if (msg.match_data_send.data) {
-                  msg.match_data_send.data = encode$1(msg.match_data_send.data.buffer);
+              var payload = msg.match_data_send.data;
+              if (payload && payload instanceof Uint8Array) {
+                  msg.match_data_send.data = encode$1(payload.buffer);
+              }
+              else if (payload) { // it's a string
+                  msg.match_data_send.data = btoa(payload);
               }
           }
           else if (msg.party_data_send) {
               // according to protobuf docs, int64 is encoded to JSON as string.
               msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
-              if (msg.party_data_send.data) {
-                  msg.party_data_send.data = encode$1(msg.party_data_send.data.buffer);
+              var payload = msg.party_data_send.data;
+              if (payload && payload instanceof Uint8Array) {
+                  msg.party_data_send.data = encode$1(payload.buffer);
+              }
+              else if (payload) { // it's a string
+                  msg.party_data_send.data = btoa(payload);
               }
           }
           this._socket.send(JSON.stringify(msg));
@@ -4129,9 +4137,6 @@
       DefaultSocket.prototype.sendMatchState = function (matchId, opCode, data, presences) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
-                  if (typeof data == "string") {
-                      data = new TextEncoder().encode(data);
-                  }
                   return [2 /*return*/, this.send({
                           match_data_send: {
                               match_id: matchId,
@@ -4144,9 +4149,6 @@
           });
       };
       DefaultSocket.prototype.sendPartyData = function (party_id, op_code, data) {
-          if (typeof data == "string") {
-              data = new TextEncoder().encode(data);
-          }
           return this.send({ party_data_send: { party_id: party_id, op_code: op_code, data: data } });
       };
       DefaultSocket.prototype.unfollowUsers = function (user_ids) {

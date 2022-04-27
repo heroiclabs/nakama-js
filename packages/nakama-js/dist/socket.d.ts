@@ -17,8 +17,6 @@ import { ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";
 import { WebSocketAdapter } from "./web_socket_adapter";
-/** Requires the set of keys K to exist in type T. */
-declare type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
 /** An object which represents a connected user in the server. */
 export interface Presence {
     /** The id of the user. */
@@ -282,7 +280,16 @@ export interface MatchData {
 }
 /** Send a message that contains match data. */
 interface MatchDataSend {
-    match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
+    match_data_send: {
+        /** The unique match identifier. */
+        match_id: string;
+        /** Operation code value. */
+        op_code: number;
+        /** Data payload, if any. */
+        data: string | Uint8Array;
+        /** A reference to the user presences to send this data to, if any. */
+        presences: Presence[];
+    };
 }
 /** Incoming information about a party. */
 export interface Party {
@@ -373,7 +380,7 @@ interface PartyDataSend {
         /** The operation code the message was sent with. */
         op_code: number;
         /** Data payload, if any. */
-        data: any;
+        data: string | Uint8Array;
     };
 }
 /** Incoming notification for one or more new presences attempting to join the party. */
