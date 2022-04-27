@@ -113,7 +113,7 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
             let payload = msg.party_data_send.data;
             // can't send a string over protobuf
             if (typeof payload == "string") {
-                msg.match_data_send.data = new TextEncoder().encode(payload);
+                msg.party_data_send.data = new TextEncoder().encode(payload);
             }
         }
 

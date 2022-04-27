@@ -19,7 +19,6 @@ import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType, matchmakerTimeout} from "./utils";
 import {describe, expect, it} from '@jest/globals'
 import {MatchmakerMatched, PartyPresenceEvent, PartyData, PartyJoinRequest, PartyLeader, PartyMatchmakerTicket} from "@heroiclabs/nakama-js";
-import { assert } from "console";
 
 describe('Party Tests', () => {
 

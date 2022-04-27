@@ -8830,7 +8830,7 @@ var WebSocketAdapterPb = class {
     } else if (msg.party_data_send) {
       let payload = msg.party_data_send.data;
       if (typeof payload == "string") {
-        msg.match_data_send.data = new TextEncoder().encode(payload);
+        msg.party_data_send.data = new TextEncoder().encode(payload);
       }
     }
     const envelopeWriter = Envelope.encode(Envelope.fromPartial(msg));
