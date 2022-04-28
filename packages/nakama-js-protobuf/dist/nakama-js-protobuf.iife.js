@@ -19,26 +19,23 @@ var nakamajsprotobuf = (() => {
       }
     return a;
   };
-  var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
-  var __commonJS = (cb, mod) => function __require() {
-    return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  var __commonJS = (cb, mod2) => function __require() {
+    return mod2 || (0, cb[__getOwnPropNames(cb)[0]])((mod2 = { exports: {} }).exports, mod2), mod2.exports;
   };
   var __export = (target, all) => {
-    __markAsModule(target);
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
   };
-  var __reExport = (target, module2, desc) => {
-    if (module2 && typeof module2 === "object" || typeof module2 === "function") {
-      for (let key of __getOwnPropNames(module2))
-        if (!__hasOwnProp.call(target, key) && key !== "default")
-          __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
     }
-    return target;
+    return to;
   };
-  var __toModule = (module2) => {
-    return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
-  };
+  var __toESM = (mod2, isNodeMode, target) => (target = mod2 != null ? __create(__getProtoOf(mod2)) : {}, __copyProps(isNodeMode || !mod2 || !mod2.__esModule ? __defProp(target, "default", { value: mod2, enumerable: true }) : target, mod2));
+  var __toCommonJS = (mod2) => __copyProps(__defProp({}, "__esModule", { value: true }), mod2);
 
   // node_modules/long/src/long.js
   var require_long = __commonJS({
@@ -917,8 +914,9 @@ var nakamajsprotobuf = (() => {
       };
       var b64 = new Array(64);
       var s64 = new Array(123);
-      for (var i = 0; i < 64; )
+      for (i = 0; i < 64; )
         s64[b64[i] = i < 26 ? i + 65 : i < 52 ? i + 71 : i < 62 ? i - 4 : i - 59 | 43] = i++;
+      var i;
       base64.encode = function encode(buffer, start, end) {
         var parts = null, chunk = [];
         var i2 = 0, j = 0, t;
@@ -2180,12 +2178,12 @@ var nakamajsprotobuf = (() => {
   });
 
   // rtapi/realtime.ts
-  var import_long2 = __toModule(require_long());
-  var import_minimal4 = __toModule(require_minimal2());
+  var import_long2 = __toESM(require_long());
+  var import_minimal4 = __toESM(require_minimal2());
 
   // google/protobuf/timestamp.ts
-  var Long = __toModule(require_long());
-  var import_minimal = __toModule(require_minimal2());
+  var Long = __toESM(require_long());
+  var import_minimal = __toESM(require_minimal2());
   var baseTimestamp = {
     seconds: 0,
     nanos: 0
@@ -2255,12 +2253,12 @@ var nakamajsprotobuf = (() => {
   }
 
   // api/api.ts
-  var import_long = __toModule(require_long());
-  var import_minimal3 = __toModule(require_minimal2());
+  var import_long = __toESM(require_long());
+  var import_minimal3 = __toESM(require_minimal2());
 
   // google/protobuf/wrappers.ts
-  var Long2 = __toModule(require_long());
-  var import_minimal2 = __toModule(require_minimal2());
+  var Long2 = __toESM(require_long());
+  var import_minimal2 = __toESM(require_minimal2());
   var baseInt32Value = {
     value: 0
   };
@@ -2405,53 +2403,6 @@ var nakamajsprotobuf = (() => {
   var btoa = windowBase64.btoa || ((bin) => Buffer.from(bin, "binary").toString("base64"));
 
   // api/api.ts
-  var OverrideOperator;
-  (function(OverrideOperator2) {
-    OverrideOperator2[OverrideOperator2["NO_OVERRIDE"] = 0] = "NO_OVERRIDE";
-    OverrideOperator2[OverrideOperator2["BEST"] = 1] = "BEST";
-    OverrideOperator2[OverrideOperator2["SET"] = 2] = "SET";
-    OverrideOperator2[OverrideOperator2["INCREMENT"] = 3] = "INCREMENT";
-    OverrideOperator2[OverrideOperator2["DECREMENT"] = 4] = "DECREMENT";
-    OverrideOperator2[OverrideOperator2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-  })(OverrideOperator || (OverrideOperator = {}));
-  var Friend_State;
-  (function(Friend_State2) {
-    Friend_State2[Friend_State2["FRIEND"] = 0] = "FRIEND";
-    Friend_State2[Friend_State2["INVITE_SENT"] = 1] = "INVITE_SENT";
-    Friend_State2[Friend_State2["INVITE_RECEIVED"] = 2] = "INVITE_RECEIVED";
-    Friend_State2[Friend_State2["BLOCKED"] = 3] = "BLOCKED";
-    Friend_State2[Friend_State2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-  })(Friend_State || (Friend_State = {}));
-  var GroupUserList_GroupUser_State;
-  (function(GroupUserList_GroupUser_State2) {
-    GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["SUPERADMIN"] = 0] = "SUPERADMIN";
-    GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["ADMIN"] = 1] = "ADMIN";
-    GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["MEMBER"] = 2] = "MEMBER";
-    GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["JOIN_REQUEST"] = 3] = "JOIN_REQUEST";
-    GroupUserList_GroupUser_State2[GroupUserList_GroupUser_State2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-  })(GroupUserList_GroupUser_State || (GroupUserList_GroupUser_State = {}));
-  var UserGroupList_UserGroup_State;
-  (function(UserGroupList_UserGroup_State2) {
-    UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["SUPERADMIN"] = 0] = "SUPERADMIN";
-    UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["ADMIN"] = 1] = "ADMIN";
-    UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["MEMBER"] = 2] = "MEMBER";
-    UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["JOIN_REQUEST"] = 3] = "JOIN_REQUEST";
-    UserGroupList_UserGroup_State2[UserGroupList_UserGroup_State2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-  })(UserGroupList_UserGroup_State || (UserGroupList_UserGroup_State = {}));
-  var ValidatedPurchase_Store;
-  (function(ValidatedPurchase_Store2) {
-    ValidatedPurchase_Store2[ValidatedPurchase_Store2["APPLE_APP_STORE"] = 0] = "APPLE_APP_STORE";
-    ValidatedPurchase_Store2[ValidatedPurchase_Store2["GOOGLE_PLAY_STORE"] = 1] = "GOOGLE_PLAY_STORE";
-    ValidatedPurchase_Store2[ValidatedPurchase_Store2["HUAWEI_APP_GALLERY"] = 2] = "HUAWEI_APP_GALLERY";
-    ValidatedPurchase_Store2[ValidatedPurchase_Store2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-  })(ValidatedPurchase_Store || (ValidatedPurchase_Store = {}));
-  var ValidatedPurchase_Environment;
-  (function(ValidatedPurchase_Environment2) {
-    ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["UNKNOWN"] = 0] = "UNKNOWN";
-    ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["SANDBOX"] = 1] = "SANDBOX";
-    ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["PRODUCTION"] = 2] = "PRODUCTION";
-    ValidatedPurchase_Environment2[ValidatedPurchase_Environment2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-  })(ValidatedPurchase_Environment || (ValidatedPurchase_Environment = {}));
   var baseChannelMessage = {
     channel_id: "",
     message_id: "",
@@ -2563,42 +2514,68 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelMessage);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = String(object.channel_id);
+      } else {
+        message.channel_id = "";
       }
       if (object.message_id !== void 0 && object.message_id !== null) {
         message.message_id = String(object.message_id);
+      } else {
+        message.message_id = "";
       }
       if (object.code !== void 0 && object.code !== null) {
         message.code = Number(object.code);
+      } else {
+        message.code = void 0;
       }
       if (object.sender_id !== void 0 && object.sender_id !== null) {
         message.sender_id = String(object.sender_id);
+      } else {
+        message.sender_id = "";
       }
       if (object.username !== void 0 && object.username !== null) {
         message.username = String(object.username);
+      } else {
+        message.username = "";
       }
       if (object.content !== void 0 && object.content !== null) {
         message.content = String(object.content);
+      } else {
+        message.content = "";
       }
       if (object.create_time !== void 0 && object.create_time !== null) {
         message.create_time = fromJsonTimestamp(object.create_time);
+      } else {
+        message.create_time = void 0;
       }
       if (object.update_time !== void 0 && object.update_time !== null) {
         message.update_time = fromJsonTimestamp(object.update_time);
+      } else {
+        message.update_time = void 0;
       }
       if (object.persistent !== void 0 && object.persistent !== null) {
         message.persistent = Boolean(object.persistent);
+      } else {
+        message.persistent = void 0;
       }
       if (object.room_name !== void 0 && object.room_name !== null) {
         message.room_name = String(object.room_name);
+      } else {
+        message.room_name = "";
       }
       if (object.group_id !== void 0 && object.group_id !== null) {
         message.group_id = String(object.group_id);
+      } else {
+        message.group_id = "";
       }
       if (object.user_id_one !== void 0 && object.user_id_one !== null) {
         message.user_id_one = String(object.user_id_one);
+      } else {
+        message.user_id_one = "";
       }
       if (object.user_id_two !== void 0 && object.user_id_two !== null) {
         message.user_id_two = String(object.user_id_two);
+      } else {
+        message.user_id_two = "";
       }
       return message;
     },
@@ -2623,42 +2600,68 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelMessage);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = object.channel_id;
+      } else {
+        message.channel_id = "";
       }
       if (object.message_id !== void 0 && object.message_id !== null) {
         message.message_id = object.message_id;
+      } else {
+        message.message_id = "";
       }
       if (object.code !== void 0 && object.code !== null) {
         message.code = object.code;
+      } else {
+        message.code = void 0;
       }
       if (object.sender_id !== void 0 && object.sender_id !== null) {
         message.sender_id = object.sender_id;
+      } else {
+        message.sender_id = "";
       }
       if (object.username !== void 0 && object.username !== null) {
         message.username = object.username;
+      } else {
+        message.username = "";
       }
       if (object.content !== void 0 && object.content !== null) {
         message.content = object.content;
+      } else {
+        message.content = "";
       }
       if (object.create_time !== void 0 && object.create_time !== null) {
         message.create_time = object.create_time;
+      } else {
+        message.create_time = void 0;
       }
       if (object.update_time !== void 0 && object.update_time !== null) {
         message.update_time = object.update_time;
+      } else {
+        message.update_time = void 0;
       }
       if (object.persistent !== void 0 && object.persistent !== null) {
         message.persistent = object.persistent;
+      } else {
+        message.persistent = void 0;
       }
       if (object.room_name !== void 0 && object.room_name !== null) {
         message.room_name = object.room_name;
+      } else {
+        message.room_name = "";
       }
       if (object.group_id !== void 0 && object.group_id !== null) {
         message.group_id = object.group_id;
+      } else {
+        message.group_id = "";
       }
       if (object.user_id_one !== void 0 && object.user_id_one !== null) {
         message.user_id_one = object.user_id_one;
+      } else {
+        message.user_id_one = "";
       }
       if (object.user_id_two !== void 0 && object.user_id_two !== null) {
         message.user_id_two = object.user_id_two;
+      } else {
+        message.user_id_two = "";
       }
       return message;
     }
@@ -2735,24 +2738,38 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseNotification);
       if (object.id !== void 0 && object.id !== null) {
         message.id = String(object.id);
+      } else {
+        message.id = "";
       }
       if (object.subject !== void 0 && object.subject !== null) {
         message.subject = String(object.subject);
+      } else {
+        message.subject = "";
       }
       if (object.content !== void 0 && object.content !== null) {
         message.content = String(object.content);
+      } else {
+        message.content = "";
       }
       if (object.code !== void 0 && object.code !== null) {
         message.code = Number(object.code);
+      } else {
+        message.code = 0;
       }
       if (object.sender_id !== void 0 && object.sender_id !== null) {
         message.sender_id = String(object.sender_id);
+      } else {
+        message.sender_id = "";
       }
       if (object.create_time !== void 0 && object.create_time !== null) {
         message.create_time = fromJsonTimestamp(object.create_time);
+      } else {
+        message.create_time = void 0;
       }
       if (object.persistent !== void 0 && object.persistent !== null) {
         message.persistent = Boolean(object.persistent);
+      } else {
+        message.persistent = false;
       }
       return message;
     },
@@ -2771,24 +2788,38 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseNotification);
       if (object.id !== void 0 && object.id !== null) {
         message.id = object.id;
+      } else {
+        message.id = "";
       }
       if (object.subject !== void 0 && object.subject !== null) {
         message.subject = object.subject;
+      } else {
+        message.subject = "";
       }
       if (object.content !== void 0 && object.content !== null) {
         message.content = object.content;
+      } else {
+        message.content = "";
       }
       if (object.code !== void 0 && object.code !== null) {
         message.code = object.code;
+      } else {
+        message.code = 0;
       }
       if (object.sender_id !== void 0 && object.sender_id !== null) {
         message.sender_id = object.sender_id;
+      } else {
+        message.sender_id = "";
       }
       if (object.create_time !== void 0 && object.create_time !== null) {
         message.create_time = object.create_time;
+      } else {
+        message.create_time = void 0;
       }
       if (object.persistent !== void 0 && object.persistent !== null) {
         message.persistent = object.persistent;
+      } else {
+        message.persistent = false;
       }
       return message;
     }
@@ -2834,12 +2865,18 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseRpc);
       if (object.id !== void 0 && object.id !== null) {
         message.id = String(object.id);
+      } else {
+        message.id = "";
       }
       if (object.payload !== void 0 && object.payload !== null) {
         message.payload = String(object.payload);
+      } else {
+        message.payload = "";
       }
       if (object.http_key !== void 0 && object.http_key !== null) {
         message.http_key = String(object.http_key);
+      } else {
+        message.http_key = "";
       }
       return message;
     },
@@ -2854,12 +2891,18 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseRpc);
       if (object.id !== void 0 && object.id !== null) {
         message.id = object.id;
+      } else {
+        message.id = "";
       }
       if (object.payload !== void 0 && object.payload !== null) {
         message.payload = object.payload;
+      } else {
+        message.payload = "";
       }
       if (object.http_key !== void 0 && object.http_key !== null) {
         message.http_key = object.http_key;
+      } else {
+        message.http_key = "";
       }
       return message;
     }
@@ -2900,179 +2943,158 @@ var nakamajsprotobuf = (() => {
   }
 
   // rtapi/realtime.ts
-  var ChannelJoin_Type;
-  (function(ChannelJoin_Type2) {
-    ChannelJoin_Type2[ChannelJoin_Type2["TYPE_UNSPECIFIED"] = 0] = "TYPE_UNSPECIFIED";
-    ChannelJoin_Type2[ChannelJoin_Type2["ROOM"] = 1] = "ROOM";
-    ChannelJoin_Type2[ChannelJoin_Type2["DIRECT_MESSAGE"] = 2] = "DIRECT_MESSAGE";
-    ChannelJoin_Type2[ChannelJoin_Type2["GROUP"] = 3] = "GROUP";
-    ChannelJoin_Type2[ChannelJoin_Type2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-  })(ChannelJoin_Type || (ChannelJoin_Type = {}));
-  var Error_Code;
-  (function(Error_Code2) {
-    Error_Code2[Error_Code2["RUNTIME_EXCEPTION"] = 0] = "RUNTIME_EXCEPTION";
-    Error_Code2[Error_Code2["UNRECOGNIZED_PAYLOAD"] = 1] = "UNRECOGNIZED_PAYLOAD";
-    Error_Code2[Error_Code2["MISSING_PAYLOAD"] = 2] = "MISSING_PAYLOAD";
-    Error_Code2[Error_Code2["BAD_INPUT"] = 3] = "BAD_INPUT";
-    Error_Code2[Error_Code2["MATCH_NOT_FOUND"] = 4] = "MATCH_NOT_FOUND";
-    Error_Code2[Error_Code2["MATCH_JOIN_REJECTED"] = 5] = "MATCH_JOIN_REJECTED";
-    Error_Code2[Error_Code2["RUNTIME_FUNCTION_NOT_FOUND"] = 6] = "RUNTIME_FUNCTION_NOT_FOUND";
-    Error_Code2[Error_Code2["RUNTIME_FUNCTION_EXCEPTION"] = 7] = "RUNTIME_FUNCTION_EXCEPTION";
-    Error_Code2[Error_Code2["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-  })(Error_Code || (Error_Code = {}));
   var baseEnvelope = { cid: "" };
   var Envelope = {
     encode(message, writer = import_minimal4.default.Writer.create()) {
-      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W;
       if (message.cid !== "") {
         writer.uint32(10).string(message.cid);
       }
-      if (((_a = message.message) == null ? void 0 : _a.$case) === "channel") {
-        Channel.encode(message.message.channel, writer.uint32(18).fork()).ldelim();
+      if (message.channel !== void 0) {
+        Channel.encode(message.channel, writer.uint32(18).fork()).ldelim();
       }
-      if (((_b = message.message) == null ? void 0 : _b.$case) === "channel_join") {
-        ChannelJoin.encode(message.message.channel_join, writer.uint32(26).fork()).ldelim();
+      if (message.channel_join !== void 0) {
+        ChannelJoin.encode(message.channel_join, writer.uint32(26).fork()).ldelim();
       }
-      if (((_c = message.message) == null ? void 0 : _c.$case) === "channel_leave") {
-        ChannelLeave.encode(message.message.channel_leave, writer.uint32(34).fork()).ldelim();
+      if (message.channel_leave !== void 0) {
+        ChannelLeave.encode(message.channel_leave, writer.uint32(34).fork()).ldelim();
       }
-      if (((_d = message.message) == null ? void 0 : _d.$case) === "channel_message") {
-        ChannelMessage.encode(message.message.channel_message, writer.uint32(42).fork()).ldelim();
+      if (message.channel_message !== void 0) {
+        ChannelMessage.encode(message.channel_message, writer.uint32(42).fork()).ldelim();
       }
-      if (((_e = message.message) == null ? void 0 : _e.$case) === "channel_message_ack") {
-        ChannelMessageAck.encode(message.message.channel_message_ack, writer.uint32(50).fork()).ldelim();
+      if (message.channel_message_ack !== void 0) {
+        ChannelMessageAck.encode(message.channel_message_ack, writer.uint32(50).fork()).ldelim();
       }
-      if (((_f = message.message) == null ? void 0 : _f.$case) === "channel_message_send") {
-        ChannelMessageSend.encode(message.message.channel_message_send, writer.uint32(58).fork()).ldelim();
+      if (message.channel_message_send !== void 0) {
+        ChannelMessageSend.encode(message.channel_message_send, writer.uint32(58).fork()).ldelim();
       }
-      if (((_g = message.message) == null ? void 0 : _g.$case) === "channel_message_update") {
-        ChannelMessageUpdate.encode(message.message.channel_message_update, writer.uint32(66).fork()).ldelim();
+      if (message.channel_message_update !== void 0) {
+        ChannelMessageUpdate.encode(message.channel_message_update, writer.uint32(66).fork()).ldelim();
       }
-      if (((_h = message.message) == null ? void 0 : _h.$case) === "channel_message_remove") {
-        ChannelMessageRemove.encode(message.message.channel_message_remove, writer.uint32(74).fork()).ldelim();
+      if (message.channel_message_remove !== void 0) {
+        ChannelMessageRemove.encode(message.channel_message_remove, writer.uint32(74).fork()).ldelim();
       }
-      if (((_i = message.message) == null ? void 0 : _i.$case) === "channel_presence_event") {
-        ChannelPresenceEvent.encode(message.message.channel_presence_event, writer.uint32(82).fork()).ldelim();
+      if (message.channel_presence_event !== void 0) {
+        ChannelPresenceEvent.encode(message.channel_presence_event, writer.uint32(82).fork()).ldelim();
       }
-      if (((_j = message.message) == null ? void 0 : _j.$case) === "error") {
-        Error2.encode(message.message.error, writer.uint32(90).fork()).ldelim();
+      if (message.error !== void 0) {
+        Error2.encode(message.error, writer.uint32(90).fork()).ldelim();
       }
-      if (((_k = message.message) == null ? void 0 : _k.$case) === "match") {
-        Match.encode(message.message.match, writer.uint32(98).fork()).ldelim();
+      if (message.match !== void 0) {
+        Match.encode(message.match, writer.uint32(98).fork()).ldelim();
       }
-      if (((_l = message.message) == null ? void 0 : _l.$case) === "match_create") {
-        MatchCreate.encode(message.message.match_create, writer.uint32(106).fork()).ldelim();
+      if (message.match_create !== void 0) {
+        MatchCreate.encode(message.match_create, writer.uint32(106).fork()).ldelim();
       }
-      if (((_m = message.message) == null ? void 0 : _m.$case) === "match_data") {
-        MatchData.encode(message.message.match_data, writer.uint32(114).fork()).ldelim();
+      if (message.match_data !== void 0) {
+        MatchData.encode(message.match_data, writer.uint32(114).fork()).ldelim();
       }
-      if (((_n = message.message) == null ? void 0 : _n.$case) === "match_data_send") {
-        MatchDataSend.encode(message.message.match_data_send, writer.uint32(122).fork()).ldelim();
+      if (message.match_data_send !== void 0) {
+        MatchDataSend.encode(message.match_data_send, writer.uint32(122).fork()).ldelim();
       }
-      if (((_o = message.message) == null ? void 0 : _o.$case) === "match_join") {
-        MatchJoin.encode(message.message.match_join, writer.uint32(130).fork()).ldelim();
+      if (message.match_join !== void 0) {
+        MatchJoin.encode(message.match_join, writer.uint32(130).fork()).ldelim();
       }
-      if (((_p = message.message) == null ? void 0 : _p.$case) === "match_leave") {
-        MatchLeave.encode(message.message.match_leave, writer.uint32(138).fork()).ldelim();
+      if (message.match_leave !== void 0) {
+        MatchLeave.encode(message.match_leave, writer.uint32(138).fork()).ldelim();
       }
-      if (((_q = message.message) == null ? void 0 : _q.$case) === "match_presence_event") {
-        MatchPresenceEvent.encode(message.message.match_presence_event, writer.uint32(146).fork()).ldelim();
+      if (message.match_presence_event !== void 0) {
+        MatchPresenceEvent.encode(message.match_presence_event, writer.uint32(146).fork()).ldelim();
       }
-      if (((_r = message.message) == null ? void 0 : _r.$case) === "matchmaker_add") {
-        MatchmakerAdd.encode(message.message.matchmaker_add, writer.uint32(154).fork()).ldelim();
+      if (message.matchmaker_add !== void 0) {
+        MatchmakerAdd.encode(message.matchmaker_add, writer.uint32(154).fork()).ldelim();
       }
-      if (((_s = message.message) == null ? void 0 : _s.$case) === "matchmaker_matched") {
-        MatchmakerMatched.encode(message.message.matchmaker_matched, writer.uint32(162).fork()).ldelim();
+      if (message.matchmaker_matched !== void 0) {
+        MatchmakerMatched.encode(message.matchmaker_matched, writer.uint32(162).fork()).ldelim();
       }
-      if (((_t = message.message) == null ? void 0 : _t.$case) === "matchmaker_remove") {
-        MatchmakerRemove.encode(message.message.matchmaker_remove, writer.uint32(170).fork()).ldelim();
+      if (message.matchmaker_remove !== void 0) {
+        MatchmakerRemove.encode(message.matchmaker_remove, writer.uint32(170).fork()).ldelim();
       }
-      if (((_u = message.message) == null ? void 0 : _u.$case) === "matchmaker_ticket") {
-        MatchmakerTicket.encode(message.message.matchmaker_ticket, writer.uint32(178).fork()).ldelim();
+      if (message.matchmaker_ticket !== void 0) {
+        MatchmakerTicket.encode(message.matchmaker_ticket, writer.uint32(178).fork()).ldelim();
       }
-      if (((_v = message.message) == null ? void 0 : _v.$case) === "notifications") {
-        Notifications.encode(message.message.notifications, writer.uint32(186).fork()).ldelim();
+      if (message.notifications !== void 0) {
+        Notifications.encode(message.notifications, writer.uint32(186).fork()).ldelim();
       }
-      if (((_w = message.message) == null ? void 0 : _w.$case) === "rpc") {
-        Rpc.encode(message.message.rpc, writer.uint32(194).fork()).ldelim();
+      if (message.rpc !== void 0) {
+        Rpc.encode(message.rpc, writer.uint32(194).fork()).ldelim();
       }
-      if (((_x = message.message) == null ? void 0 : _x.$case) === "status") {
-        Status.encode(message.message.status, writer.uint32(202).fork()).ldelim();
+      if (message.status !== void 0) {
+        Status.encode(message.status, writer.uint32(202).fork()).ldelim();
       }
-      if (((_y = message.message) == null ? void 0 : _y.$case) === "status_follow") {
-        StatusFollow.encode(message.message.status_follow, writer.uint32(210).fork()).ldelim();
+      if (message.status_follow !== void 0) {
+        StatusFollow.encode(message.status_follow, writer.uint32(210).fork()).ldelim();
       }
-      if (((_z = message.message) == null ? void 0 : _z.$case) === "status_presence_event") {
-        StatusPresenceEvent.encode(message.message.status_presence_event, writer.uint32(218).fork()).ldelim();
+      if (message.status_presence_event !== void 0) {
+        StatusPresenceEvent.encode(message.status_presence_event, writer.uint32(218).fork()).ldelim();
       }
-      if (((_A = message.message) == null ? void 0 : _A.$case) === "status_unfollow") {
-        StatusUnfollow.encode(message.message.status_unfollow, writer.uint32(226).fork()).ldelim();
+      if (message.status_unfollow !== void 0) {
+        StatusUnfollow.encode(message.status_unfollow, writer.uint32(226).fork()).ldelim();
       }
-      if (((_B = message.message) == null ? void 0 : _B.$case) === "status_update") {
-        StatusUpdate.encode(message.message.status_update, writer.uint32(234).fork()).ldelim();
+      if (message.status_update !== void 0) {
+        StatusUpdate.encode(message.status_update, writer.uint32(234).fork()).ldelim();
       }
-      if (((_C = message.message) == null ? void 0 : _C.$case) === "stream_data") {
-        StreamData.encode(message.message.stream_data, writer.uint32(242).fork()).ldelim();
+      if (message.stream_data !== void 0) {
+        StreamData.encode(message.stream_data, writer.uint32(242).fork()).ldelim();
       }
-      if (((_D = message.message) == null ? void 0 : _D.$case) === "stream_presence_event") {
-        StreamPresenceEvent.encode(message.message.stream_presence_event, writer.uint32(250).fork()).ldelim();
+      if (message.stream_presence_event !== void 0) {
+        StreamPresenceEvent.encode(message.stream_presence_event, writer.uint32(250).fork()).ldelim();
       }
-      if (((_E = message.message) == null ? void 0 : _E.$case) === "ping") {
-        Ping.encode(message.message.ping, writer.uint32(258).fork()).ldelim();
+      if (message.ping !== void 0) {
+        Ping.encode(message.ping, writer.uint32(258).fork()).ldelim();
       }
-      if (((_F = message.message) == null ? void 0 : _F.$case) === "pong") {
-        Pong.encode(message.message.pong, writer.uint32(266).fork()).ldelim();
+      if (message.pong !== void 0) {
+        Pong.encode(message.pong, writer.uint32(266).fork()).ldelim();
       }
-      if (((_G = message.message) == null ? void 0 : _G.$case) === "party") {
-        Party.encode(message.message.party, writer.uint32(274).fork()).ldelim();
+      if (message.party !== void 0) {
+        Party.encode(message.party, writer.uint32(274).fork()).ldelim();
       }
-      if (((_H = message.message) == null ? void 0 : _H.$case) === "party_create") {
-        PartyCreate.encode(message.message.party_create, writer.uint32(282).fork()).ldelim();
+      if (message.party_create !== void 0) {
+        PartyCreate.encode(message.party_create, writer.uint32(282).fork()).ldelim();
       }
-      if (((_I = message.message) == null ? void 0 : _I.$case) === "party_join") {
-        PartyJoin.encode(message.message.party_join, writer.uint32(290).fork()).ldelim();
+      if (message.party_join !== void 0) {
+        PartyJoin.encode(message.party_join, writer.uint32(290).fork()).ldelim();
       }
-      if (((_J = message.message) == null ? void 0 : _J.$case) === "party_leave") {
-        PartyLeave.encode(message.message.party_leave, writer.uint32(298).fork()).ldelim();
+      if (message.party_leave !== void 0) {
+        PartyLeave.encode(message.party_leave, writer.uint32(298).fork()).ldelim();
       }
-      if (((_K = message.message) == null ? void 0 : _K.$case) === "party_promote") {
-        PartyPromote.encode(message.message.party_promote, writer.uint32(306).fork()).ldelim();
+      if (message.party_promote !== void 0) {
+        PartyPromote.encode(message.party_promote, writer.uint32(306).fork()).ldelim();
       }
-      if (((_L = message.message) == null ? void 0 : _L.$case) === "party_leader") {
-        PartyLeader.encode(message.message.party_leader, writer.uint32(314).fork()).ldelim();
+      if (message.party_leader !== void 0) {
+        PartyLeader.encode(message.party_leader, writer.uint32(314).fork()).ldelim();
       }
-      if (((_M = message.message) == null ? void 0 : _M.$case) === "party_accept") {
-        PartyAccept.encode(message.message.party_accept, writer.uint32(322).fork()).ldelim();
+      if (message.party_accept !== void 0) {
+        PartyAccept.encode(message.party_accept, writer.uint32(322).fork()).ldelim();
       }
-      if (((_N = message.message) == null ? void 0 : _N.$case) === "party_remove") {
-        PartyRemove.encode(message.message.party_remove, writer.uint32(330).fork()).ldelim();
+      if (message.party_remove !== void 0) {
+        PartyRemove.encode(message.party_remove, writer.uint32(330).fork()).ldelim();
       }
-      if (((_O = message.message) == null ? void 0 : _O.$case) === "party_close") {
-        PartyClose.encode(message.message.party_close, writer.uint32(338).fork()).ldelim();
+      if (message.party_close !== void 0) {
+        PartyClose.encode(message.party_close, writer.uint32(338).fork()).ldelim();
       }
-      if (((_P = message.message) == null ? void 0 : _P.$case) === "party_join_request_list") {
-        PartyJoinRequestList.encode(message.message.party_join_request_list, writer.uint32(346).fork()).ldelim();
+      if (message.party_join_request_list !== void 0) {
+        PartyJoinRequestList.encode(message.party_join_request_list, writer.uint32(346).fork()).ldelim();
       }
-      if (((_Q = message.message) == null ? void 0 : _Q.$case) === "party_join_request") {
-        PartyJoinRequest.encode(message.message.party_join_request, writer.uint32(354).fork()).ldelim();
+      if (message.party_join_request !== void 0) {
+        PartyJoinRequest.encode(message.party_join_request, writer.uint32(354).fork()).ldelim();
       }
-      if (((_R = message.message) == null ? void 0 : _R.$case) === "party_matchmaker_add") {
-        PartyMatchmakerAdd.encode(message.message.party_matchmaker_add, writer.uint32(362).fork()).ldelim();
+      if (message.party_matchmaker_add !== void 0) {
+        PartyMatchmakerAdd.encode(message.party_matchmaker_add, writer.uint32(362).fork()).ldelim();
       }
-      if (((_S = message.message) == null ? void 0 : _S.$case) === "party_matchmaker_remove") {
-        PartyMatchmakerRemove.encode(message.message.party_matchmaker_remove, writer.uint32(370).fork()).ldelim();
+      if (message.party_matchmaker_remove !== void 0) {
+        PartyMatchmakerRemove.encode(message.party_matchmaker_remove, writer.uint32(370).fork()).ldelim();
       }
-      if (((_T = message.message) == null ? void 0 : _T.$case) === "party_matchmaker_ticket") {
-        PartyMatchmakerTicket.encode(message.message.party_matchmaker_ticket, writer.uint32(378).fork()).ldelim();
+      if (message.party_matchmaker_ticket !== void 0) {
+        PartyMatchmakerTicket.encode(message.party_matchmaker_ticket, writer.uint32(378).fork()).ldelim();
       }
-      if (((_U = message.message) == null ? void 0 : _U.$case) === "party_data") {
-        PartyData.encode(message.message.party_data, writer.uint32(386).fork()).ldelim();
+      if (message.party_data !== void 0) {
+        PartyData.encode(message.party_data, writer.uint32(386).fork()).ldelim();
       }
-      if (((_V = message.message) == null ? void 0 : _V.$case) === "party_data_send") {
-        PartyDataSend.encode(message.message.party_data_send, writer.uint32(394).fork()).ldelim();
+      if (message.party_data_send !== void 0) {
+        PartyDataSend.encode(message.party_data_send, writer.uint32(394).fork()).ldelim();
       }
-      if (((_W = message.message) == null ? void 0 : _W.$case) === "party_presence_event") {
-        PartyPresenceEvent.encode(message.message.party_presence_event, writer.uint32(402).fork()).ldelim();
+      if (message.party_presence_event !== void 0) {
+        PartyPresenceEvent.encode(message.party_presence_event, writer.uint32(402).fork()).ldelim();
       }
       return writer;
     },
@@ -3087,298 +3109,151 @@ var nakamajsprotobuf = (() => {
             message.cid = reader.string();
             break;
           case 2:
-            message.message = {
-              $case: "channel",
-              channel: Channel.decode(reader, reader.uint32())
-            };
+            message.channel = Channel.decode(reader, reader.uint32());
             break;
           case 3:
-            message.message = {
-              $case: "channel_join",
-              channel_join: ChannelJoin.decode(reader, reader.uint32())
-            };
+            message.channel_join = ChannelJoin.decode(reader, reader.uint32());
             break;
           case 4:
-            message.message = {
-              $case: "channel_leave",
-              channel_leave: ChannelLeave.decode(reader, reader.uint32())
-            };
+            message.channel_leave = ChannelLeave.decode(reader, reader.uint32());
             break;
           case 5:
-            message.message = {
-              $case: "channel_message",
-              channel_message: ChannelMessage.decode(reader, reader.uint32())
-            };
+            message.channel_message = ChannelMessage.decode(reader, reader.uint32());
             break;
           case 6:
-            message.message = {
-              $case: "channel_message_ack",
-              channel_message_ack: ChannelMessageAck.decode(reader, reader.uint32())
-            };
+            message.channel_message_ack = ChannelMessageAck.decode(reader, reader.uint32());
             break;
           case 7:
-            message.message = {
-              $case: "channel_message_send",
-              channel_message_send: ChannelMessageSend.decode(reader, reader.uint32())
-            };
+            message.channel_message_send = ChannelMessageSend.decode(reader, reader.uint32());
             break;
           case 8:
-            message.message = {
-              $case: "channel_message_update",
-              channel_message_update: ChannelMessageUpdate.decode(reader, reader.uint32())
-            };
+            message.channel_message_update = ChannelMessageUpdate.decode(reader, reader.uint32());
             break;
           case 9:
-            message.message = {
-              $case: "channel_message_remove",
-              channel_message_remove: ChannelMessageRemove.decode(reader, reader.uint32())
-            };
+            message.channel_message_remove = ChannelMessageRemove.decode(reader, reader.uint32());
             break;
           case 10:
-            message.message = {
-              $case: "channel_presence_event",
-              channel_presence_event: ChannelPresenceEvent.decode(reader, reader.uint32())
-            };
+            message.channel_presence_event = ChannelPresenceEvent.decode(reader, reader.uint32());
             break;
           case 11:
-            message.message = {
-              $case: "error",
-              error: Error2.decode(reader, reader.uint32())
-            };
+            message.error = Error2.decode(reader, reader.uint32());
             break;
           case 12:
-            message.message = {
-              $case: "match",
-              match: Match.decode(reader, reader.uint32())
-            };
+            message.match = Match.decode(reader, reader.uint32());
             break;
           case 13:
-            message.message = {
-              $case: "match_create",
-              match_create: MatchCreate.decode(reader, reader.uint32())
-            };
+            message.match_create = MatchCreate.decode(reader, reader.uint32());
             break;
           case 14:
-            message.message = {
-              $case: "match_data",
-              match_data: MatchData.decode(reader, reader.uint32())
-            };
+            message.match_data = MatchData.decode(reader, reader.uint32());
             break;
           case 15:
-            message.message = {
-              $case: "match_data_send",
-              match_data_send: MatchDataSend.decode(reader, reader.uint32())
-            };
+            message.match_data_send = MatchDataSend.decode(reader, reader.uint32());
             break;
           case 16:
-            message.message = {
-              $case: "match_join",
-              match_join: MatchJoin.decode(reader, reader.uint32())
-            };
+            message.match_join = MatchJoin.decode(reader, reader.uint32());
             break;
           case 17:
-            message.message = {
-              $case: "match_leave",
-              match_leave: MatchLeave.decode(reader, reader.uint32())
-            };
+            message.match_leave = MatchLeave.decode(reader, reader.uint32());
             break;
           case 18:
-            message.message = {
-              $case: "match_presence_event",
-              match_presence_event: MatchPresenceEvent.decode(reader, reader.uint32())
-            };
+            message.match_presence_event = MatchPresenceEvent.decode(reader, reader.uint32());
             break;
           case 19:
-            message.message = {
-              $case: "matchmaker_add",
-              matchmaker_add: MatchmakerAdd.decode(reader, reader.uint32())
-            };
+            message.matchmaker_add = MatchmakerAdd.decode(reader, reader.uint32());
             break;
           case 20:
-            message.message = {
-              $case: "matchmaker_matched",
-              matchmaker_matched: MatchmakerMatched.decode(reader, reader.uint32())
-            };
+            message.matchmaker_matched = MatchmakerMatched.decode(reader, reader.uint32());
             break;
           case 21:
-            message.message = {
-              $case: "matchmaker_remove",
-              matchmaker_remove: MatchmakerRemove.decode(reader, reader.uint32())
-            };
+            message.matchmaker_remove = MatchmakerRemove.decode(reader, reader.uint32());
             break;
           case 22:
-            message.message = {
-              $case: "matchmaker_ticket",
-              matchmaker_ticket: MatchmakerTicket.decode(reader, reader.uint32())
-            };
+            message.matchmaker_ticket = MatchmakerTicket.decode(reader, reader.uint32());
             break;
           case 23:
-            message.message = {
-              $case: "notifications",
-              notifications: Notifications.decode(reader, reader.uint32())
-            };
+            message.notifications = Notifications.decode(reader, reader.uint32());
             break;
           case 24:
-            message.message = {
-              $case: "rpc",
-              rpc: Rpc.decode(reader, reader.uint32())
-            };
+            message.rpc = Rpc.decode(reader, reader.uint32());
             break;
           case 25:
-            message.message = {
-              $case: "status",
-              status: Status.decode(reader, reader.uint32())
-            };
+            message.status = Status.decode(reader, reader.uint32());
             break;
           case 26:
-            message.message = {
-              $case: "status_follow",
-              status_follow: StatusFollow.decode(reader, reader.uint32())
-            };
+            message.status_follow = StatusFollow.decode(reader, reader.uint32());
             break;
           case 27:
-            message.message = {
-              $case: "status_presence_event",
-              status_presence_event: StatusPresenceEvent.decode(reader, reader.uint32())
-            };
+            message.status_presence_event = StatusPresenceEvent.decode(reader, reader.uint32());
             break;
           case 28:
-            message.message = {
-              $case: "status_unfollow",
-              status_unfollow: StatusUnfollow.decode(reader, reader.uint32())
-            };
+            message.status_unfollow = StatusUnfollow.decode(reader, reader.uint32());
             break;
           case 29:
-            message.message = {
-              $case: "status_update",
-              status_update: StatusUpdate.decode(reader, reader.uint32())
-            };
+            message.status_update = StatusUpdate.decode(reader, reader.uint32());
             break;
           case 30:
-            message.message = {
-              $case: "stream_data",
-              stream_data: StreamData.decode(reader, reader.uint32())
-            };
+            message.stream_data = StreamData.decode(reader, reader.uint32());
             break;
           case 31:
-            message.message = {
-              $case: "stream_presence_event",
-              stream_presence_event: StreamPresenceEvent.decode(reader, reader.uint32())
-            };
+            message.stream_presence_event = StreamPresenceEvent.decode(reader, reader.uint32());
             break;
           case 32:
-            message.message = {
-              $case: "ping",
-              ping: Ping.decode(reader, reader.uint32())
-            };
+            message.ping = Ping.decode(reader, reader.uint32());
             break;
           case 33:
-            message.message = {
-              $case: "pong",
-              pong: Pong.decode(reader, reader.uint32())
-            };
+            message.pong = Pong.decode(reader, reader.uint32());
             break;
           case 34:
-            message.message = {
-              $case: "party",
-              party: Party.decode(reader, reader.uint32())
-            };
+            message.party = Party.decode(reader, reader.uint32());
             break;
           case 35:
-            message.message = {
-              $case: "party_create",
-              party_create: PartyCreate.decode(reader, reader.uint32())
-            };
+            message.party_create = PartyCreate.decode(reader, reader.uint32());
             break;
           case 36:
-            message.message = {
-              $case: "party_join",
-              party_join: PartyJoin.decode(reader, reader.uint32())
-            };
+            message.party_join = PartyJoin.decode(reader, reader.uint32());
             break;
           case 37:
-            message.message = {
-              $case: "party_leave",
-              party_leave: PartyLeave.decode(reader, reader.uint32())
-            };
+            message.party_leave = PartyLeave.decode(reader, reader.uint32());
             break;
           case 38:
-            message.message = {
-              $case: "party_promote",
-              party_promote: PartyPromote.decode(reader, reader.uint32())
-            };
+            message.party_promote = PartyPromote.decode(reader, reader.uint32());
             break;
           case 39:
-            message.message = {
-              $case: "party_leader",
-              party_leader: PartyLeader.decode(reader, reader.uint32())
-            };
+            message.party_leader = PartyLeader.decode(reader, reader.uint32());
             break;
           case 40:
-            message.message = {
-              $case: "party_accept",
-              party_accept: PartyAccept.decode(reader, reader.uint32())
-            };
+            message.party_accept = PartyAccept.decode(reader, reader.uint32());
             break;
           case 41:
-            message.message = {
-              $case: "party_remove",
-              party_remove: PartyRemove.decode(reader, reader.uint32())
-            };
+            message.party_remove = PartyRemove.decode(reader, reader.uint32());
             break;
           case 42:
-            message.message = {
-              $case: "party_close",
-              party_close: PartyClose.decode(reader, reader.uint32())
-            };
+            message.party_close = PartyClose.decode(reader, reader.uint32());
             break;
           case 43:
-            message.message = {
-              $case: "party_join_request_list",
-              party_join_request_list: PartyJoinRequestList.decode(reader, reader.uint32())
-            };
+            message.party_join_request_list = PartyJoinRequestList.decode(reader, reader.uint32());
             break;
           case 44:
-            message.message = {
-              $case: "party_join_request",
-              party_join_request: PartyJoinRequest.decode(reader, reader.uint32())
-            };
+            message.party_join_request = PartyJoinRequest.decode(reader, reader.uint32());
             break;
           case 45:
-            message.message = {
-              $case: "party_matchmaker_add",
-              party_matchmaker_add: PartyMatchmakerAdd.decode(reader, reader.uint32())
-            };
+            message.party_matchmaker_add = PartyMatchmakerAdd.decode(reader, reader.uint32());
             break;
           case 46:
-            message.message = {
-              $case: "party_matchmaker_remove",
-              party_matchmaker_remove: PartyMatchmakerRemove.decode(reader, reader.uint32())
-            };
+            message.party_matchmaker_remove = PartyMatchmakerRemove.decode(reader, reader.uint32());
             break;
           case 47:
-            message.message = {
-              $case: "party_matchmaker_ticket",
-              party_matchmaker_ticket: PartyMatchmakerTicket.decode(reader, reader.uint32())
-            };
+            message.party_matchmaker_ticket = PartyMatchmakerTicket.decode(reader, reader.uint32());
             break;
           case 48:
-            message.message = {
-              $case: "party_data",
-              party_data: PartyData.decode(reader, reader.uint32())
-            };
+            message.party_data = PartyData.decode(reader, reader.uint32());
             break;
           case 49:
-            message.message = {
-              $case: "party_data_send",
-              party_data_send: PartyDataSend.decode(reader, reader.uint32())
-            };
+            message.party_data_send = PartyDataSend.decode(reader, reader.uint32());
             break;
           case 50:
-            message.message = {
-              $case: "party_presence_event",
-              party_presence_event: PartyPresenceEvent.decode(reader, reader.uint32())
-            };
+            message.party_presence_event = PartyPresenceEvent.decode(reader, reader.uint32());
             break;
           default:
             reader.skipType(tag & 7);
@@ -3391,639 +3266,561 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseEnvelope);
       if (object.cid !== void 0 && object.cid !== null) {
         message.cid = String(object.cid);
+      } else {
+        message.cid = "";
       }
       if (object.channel !== void 0 && object.channel !== null) {
-        message.message = {
-          $case: "channel",
-          channel: Channel.fromJSON(object.channel)
-        };
+        message.channel = Channel.fromJSON(object.channel);
+      } else {
+        message.channel = void 0;
       }
       if (object.channel_join !== void 0 && object.channel_join !== null) {
-        message.message = {
-          $case: "channel_join",
-          channel_join: ChannelJoin.fromJSON(object.channel_join)
-        };
+        message.channel_join = ChannelJoin.fromJSON(object.channel_join);
+      } else {
+        message.channel_join = void 0;
       }
       if (object.channel_leave !== void 0 && object.channel_leave !== null) {
-        message.message = {
-          $case: "channel_leave",
-          channel_leave: ChannelLeave.fromJSON(object.channel_leave)
-        };
+        message.channel_leave = ChannelLeave.fromJSON(object.channel_leave);
+      } else {
+        message.channel_leave = void 0;
       }
       if (object.channel_message !== void 0 && object.channel_message !== null) {
-        message.message = {
-          $case: "channel_message",
-          channel_message: ChannelMessage.fromJSON(object.channel_message)
-        };
+        message.channel_message = ChannelMessage.fromJSON(object.channel_message);
+      } else {
+        message.channel_message = void 0;
       }
       if (object.channel_message_ack !== void 0 && object.channel_message_ack !== null) {
-        message.message = {
-          $case: "channel_message_ack",
-          channel_message_ack: ChannelMessageAck.fromJSON(object.channel_message_ack)
-        };
+        message.channel_message_ack = ChannelMessageAck.fromJSON(object.channel_message_ack);
+      } else {
+        message.channel_message_ack = void 0;
       }
       if (object.channel_message_send !== void 0 && object.channel_message_send !== null) {
-        message.message = {
-          $case: "channel_message_send",
-          channel_message_send: ChannelMessageSend.fromJSON(object.channel_message_send)
-        };
+        message.channel_message_send = ChannelMessageSend.fromJSON(object.channel_message_send);
+      } else {
+        message.channel_message_send = void 0;
       }
       if (object.channel_message_update !== void 0 && object.channel_message_update !== null) {
-        message.message = {
-          $case: "channel_message_update",
-          channel_message_update: ChannelMessageUpdate.fromJSON(object.channel_message_update)
-        };
+        message.channel_message_update = ChannelMessageUpdate.fromJSON(object.channel_message_update);
+      } else {
+        message.channel_message_update = void 0;
       }
       if (object.channel_message_remove !== void 0 && object.channel_message_remove !== null) {
-        message.message = {
-          $case: "channel_message_remove",
-          channel_message_remove: ChannelMessageRemove.fromJSON(object.channel_message_remove)
-        };
+        message.channel_message_remove = ChannelMessageRemove.fromJSON(object.channel_message_remove);
+      } else {
+        message.channel_message_remove = void 0;
       }
       if (object.channel_presence_event !== void 0 && object.channel_presence_event !== null) {
-        message.message = {
-          $case: "channel_presence_event",
-          channel_presence_event: ChannelPresenceEvent.fromJSON(object.channel_presence_event)
-        };
+        message.channel_presence_event = ChannelPresenceEvent.fromJSON(object.channel_presence_event);
+      } else {
+        message.channel_presence_event = void 0;
       }
       if (object.error !== void 0 && object.error !== null) {
-        message.message = { $case: "error", error: Error2.fromJSON(object.error) };
+        message.error = Error2.fromJSON(object.error);
+      } else {
+        message.error = void 0;
       }
       if (object.match !== void 0 && object.match !== null) {
-        message.message = { $case: "match", match: Match.fromJSON(object.match) };
+        message.match = Match.fromJSON(object.match);
+      } else {
+        message.match = void 0;
       }
       if (object.match_create !== void 0 && object.match_create !== null) {
-        message.message = {
-          $case: "match_create",
-          match_create: MatchCreate.fromJSON(object.match_create)
-        };
+        message.match_create = MatchCreate.fromJSON(object.match_create);
+      } else {
+        message.match_create = void 0;
       }
       if (object.match_data !== void 0 && object.match_data !== null) {
-        message.message = {
-          $case: "match_data",
-          match_data: MatchData.fromJSON(object.match_data)
-        };
+        message.match_data = MatchData.fromJSON(object.match_data);
+      } else {
+        message.match_data = void 0;
       }
       if (object.match_data_send !== void 0 && object.match_data_send !== null) {
-        message.message = {
-          $case: "match_data_send",
-          match_data_send: MatchDataSend.fromJSON(object.match_data_send)
-        };
+        message.match_data_send = MatchDataSend.fromJSON(object.match_data_send);
+      } else {
+        message.match_data_send = void 0;
       }
       if (object.match_join !== void 0 && object.match_join !== null) {
-        message.message = {
-          $case: "match_join",
-          match_join: MatchJoin.fromJSON(object.match_join)
-        };
+        message.match_join = MatchJoin.fromJSON(object.match_join);
+      } else {
+        message.match_join = void 0;
       }
       if (object.match_leave !== void 0 && object.match_leave !== null) {
-        message.message = {
-          $case: "match_leave",
-          match_leave: MatchLeave.fromJSON(object.match_leave)
-        };
+        message.match_leave = MatchLeave.fromJSON(object.match_leave);
+      } else {
+        message.match_leave = void 0;
       }
       if (object.match_presence_event !== void 0 && object.match_presence_event !== null) {
-        message.message = {
-          $case: "match_presence_event",
-          match_presence_event: MatchPresenceEvent.fromJSON(object.match_presence_event)
-        };
+        message.match_presence_event = MatchPresenceEvent.fromJSON(object.match_presence_event);
+      } else {
+        message.match_presence_event = void 0;
       }
       if (object.matchmaker_add !== void 0 && object.matchmaker_add !== null) {
-        message.message = {
-          $case: "matchmaker_add",
-          matchmaker_add: MatchmakerAdd.fromJSON(object.matchmaker_add)
-        };
+        message.matchmaker_add = MatchmakerAdd.fromJSON(object.matchmaker_add);
+      } else {
+        message.matchmaker_add = void 0;
       }
       if (object.matchmaker_matched !== void 0 && object.matchmaker_matched !== null) {
-        message.message = {
-          $case: "matchmaker_matched",
-          matchmaker_matched: MatchmakerMatched.fromJSON(object.matchmaker_matched)
-        };
+        message.matchmaker_matched = MatchmakerMatched.fromJSON(object.matchmaker_matched);
+      } else {
+        message.matchmaker_matched = void 0;
       }
       if (object.matchmaker_remove !== void 0 && object.matchmaker_remove !== null) {
-        message.message = {
-          $case: "matchmaker_remove",
-          matchmaker_remove: MatchmakerRemove.fromJSON(object.matchmaker_remove)
-        };
+        message.matchmaker_remove = MatchmakerRemove.fromJSON(object.matchmaker_remove);
+      } else {
+        message.matchmaker_remove = void 0;
       }
       if (object.matchmaker_ticket !== void 0 && object.matchmaker_ticket !== null) {
-        message.message = {
-          $case: "matchmaker_ticket",
-          matchmaker_ticket: MatchmakerTicket.fromJSON(object.matchmaker_ticket)
-        };
+        message.matchmaker_ticket = MatchmakerTicket.fromJSON(object.matchmaker_ticket);
+      } else {
+        message.matchmaker_ticket = void 0;
       }
       if (object.notifications !== void 0 && object.notifications !== null) {
-        message.message = {
-          $case: "notifications",
-          notifications: Notifications.fromJSON(object.notifications)
-        };
+        message.notifications = Notifications.fromJSON(object.notifications);
+      } else {
+        message.notifications = void 0;
       }
       if (object.rpc !== void 0 && object.rpc !== null) {
-        message.message = { $case: "rpc", rpc: Rpc.fromJSON(object.rpc) };
+        message.rpc = Rpc.fromJSON(object.rpc);
+      } else {
+        message.rpc = void 0;
       }
       if (object.status !== void 0 && object.status !== null) {
-        message.message = {
-          $case: "status",
-          status: Status.fromJSON(object.status)
-        };
+        message.status = Status.fromJSON(object.status);
+      } else {
+        message.status = void 0;
       }
       if (object.status_follow !== void 0 && object.status_follow !== null) {
-        message.message = {
-          $case: "status_follow",
-          status_follow: StatusFollow.fromJSON(object.status_follow)
-        };
+        message.status_follow = StatusFollow.fromJSON(object.status_follow);
+      } else {
+        message.status_follow = void 0;
       }
       if (object.status_presence_event !== void 0 && object.status_presence_event !== null) {
-        message.message = {
-          $case: "status_presence_event",
-          status_presence_event: StatusPresenceEvent.fromJSON(object.status_presence_event)
-        };
+        message.status_presence_event = StatusPresenceEvent.fromJSON(object.status_presence_event);
+      } else {
+        message.status_presence_event = void 0;
       }
       if (object.status_unfollow !== void 0 && object.status_unfollow !== null) {
-        message.message = {
-          $case: "status_unfollow",
-          status_unfollow: StatusUnfollow.fromJSON(object.status_unfollow)
-        };
+        message.status_unfollow = StatusUnfollow.fromJSON(object.status_unfollow);
+      } else {
+        message.status_unfollow = void 0;
       }
       if (object.status_update !== void 0 && object.status_update !== null) {
-        message.message = {
-          $case: "status_update",
-          status_update: StatusUpdate.fromJSON(object.status_update)
-        };
+        message.status_update = StatusUpdate.fromJSON(object.status_update);
+      } else {
+        message.status_update = void 0;
       }
       if (object.stream_data !== void 0 && object.stream_data !== null) {
-        message.message = {
-          $case: "stream_data",
-          stream_data: StreamData.fromJSON(object.stream_data)
-        };
+        message.stream_data = StreamData.fromJSON(object.stream_data);
+      } else {
+        message.stream_data = void 0;
       }
       if (object.stream_presence_event !== void 0 && object.stream_presence_event !== null) {
-        message.message = {
-          $case: "stream_presence_event",
-          stream_presence_event: StreamPresenceEvent.fromJSON(object.stream_presence_event)
-        };
+        message.stream_presence_event = StreamPresenceEvent.fromJSON(object.stream_presence_event);
+      } else {
+        message.stream_presence_event = void 0;
       }
       if (object.ping !== void 0 && object.ping !== null) {
-        message.message = { $case: "ping", ping: Ping.fromJSON(object.ping) };
+        message.ping = Ping.fromJSON(object.ping);
+      } else {
+        message.ping = void 0;
       }
       if (object.pong !== void 0 && object.pong !== null) {
-        message.message = { $case: "pong", pong: Pong.fromJSON(object.pong) };
+        message.pong = Pong.fromJSON(object.pong);
+      } else {
+        message.pong = void 0;
       }
       if (object.party !== void 0 && object.party !== null) {
-        message.message = { $case: "party", party: Party.fromJSON(object.party) };
+        message.party = Party.fromJSON(object.party);
+      } else {
+        message.party = void 0;
       }
       if (object.party_create !== void 0 && object.party_create !== null) {
-        message.message = {
-          $case: "party_create",
-          party_create: PartyCreate.fromJSON(object.party_create)
-        };
+        message.party_create = PartyCreate.fromJSON(object.party_create);
+      } else {
+        message.party_create = void 0;
       }
       if (object.party_join !== void 0 && object.party_join !== null) {
-        message.message = {
-          $case: "party_join",
-          party_join: PartyJoin.fromJSON(object.party_join)
-        };
+        message.party_join = PartyJoin.fromJSON(object.party_join);
+      } else {
+        message.party_join = void 0;
       }
       if (object.party_leave !== void 0 && object.party_leave !== null) {
-        message.message = {
-          $case: "party_leave",
-          party_leave: PartyLeave.fromJSON(object.party_leave)
-        };
+        message.party_leave = PartyLeave.fromJSON(object.party_leave);
+      } else {
+        message.party_leave = void 0;
       }
       if (object.party_promote !== void 0 && object.party_promote !== null) {
-        message.message = {
-          $case: "party_promote",
-          party_promote: PartyPromote.fromJSON(object.party_promote)
-        };
+        message.party_promote = PartyPromote.fromJSON(object.party_promote);
+      } else {
+        message.party_promote = void 0;
       }
       if (object.party_leader !== void 0 && object.party_leader !== null) {
-        message.message = {
-          $case: "party_leader",
-          party_leader: PartyLeader.fromJSON(object.party_leader)
-        };
+        message.party_leader = PartyLeader.fromJSON(object.party_leader);
+      } else {
+        message.party_leader = void 0;
       }
       if (object.party_accept !== void 0 && object.party_accept !== null) {
-        message.message = {
-          $case: "party_accept",
-          party_accept: PartyAccept.fromJSON(object.party_accept)
-        };
+        message.party_accept = PartyAccept.fromJSON(object.party_accept);
+      } else {
+        message.party_accept = void 0;
       }
       if (object.party_remove !== void 0 && object.party_remove !== null) {
-        message.message = {
-          $case: "party_remove",
-          party_remove: PartyRemove.fromJSON(object.party_remove)
-        };
+        message.party_remove = PartyRemove.fromJSON(object.party_remove);
+      } else {
+        message.party_remove = void 0;
       }
       if (object.party_close !== void 0 && object.party_close !== null) {
-        message.message = {
-          $case: "party_close",
-          party_close: PartyClose.fromJSON(object.party_close)
-        };
+        message.party_close = PartyClose.fromJSON(object.party_close);
+      } else {
+        message.party_close = void 0;
       }
       if (object.party_join_request_list !== void 0 && object.party_join_request_list !== null) {
-        message.message = {
-          $case: "party_join_request_list",
-          party_join_request_list: PartyJoinRequestList.fromJSON(object.party_join_request_list)
-        };
+        message.party_join_request_list = PartyJoinRequestList.fromJSON(object.party_join_request_list);
+      } else {
+        message.party_join_request_list = void 0;
       }
       if (object.party_join_request !== void 0 && object.party_join_request !== null) {
-        message.message = {
-          $case: "party_join_request",
-          party_join_request: PartyJoinRequest.fromJSON(object.party_join_request)
-        };
+        message.party_join_request = PartyJoinRequest.fromJSON(object.party_join_request);
+      } else {
+        message.party_join_request = void 0;
       }
       if (object.party_matchmaker_add !== void 0 && object.party_matchmaker_add !== null) {
-        message.message = {
-          $case: "party_matchmaker_add",
-          party_matchmaker_add: PartyMatchmakerAdd.fromJSON(object.party_matchmaker_add)
-        };
+        message.party_matchmaker_add = PartyMatchmakerAdd.fromJSON(object.party_matchmaker_add);
+      } else {
+        message.party_matchmaker_add = void 0;
       }
       if (object.party_matchmaker_remove !== void 0 && object.party_matchmaker_remove !== null) {
-        message.message = {
-          $case: "party_matchmaker_remove",
-          party_matchmaker_remove: PartyMatchmakerRemove.fromJSON(object.party_matchmaker_remove)
-        };
+        message.party_matchmaker_remove = PartyMatchmakerRemove.fromJSON(object.party_matchmaker_remove);
+      } else {
+        message.party_matchmaker_remove = void 0;
       }
       if (object.party_matchmaker_ticket !== void 0 && object.party_matchmaker_ticket !== null) {
-        message.message = {
-          $case: "party_matchmaker_ticket",
-          party_matchmaker_ticket: PartyMatchmakerTicket.fromJSON(object.party_matchmaker_ticket)
-        };
+        message.party_matchmaker_ticket = PartyMatchmakerTicket.fromJSON(object.party_matchmaker_ticket);
+      } else {
+        message.party_matchmaker_ticket = void 0;
       }
       if (object.party_data !== void 0 && object.party_data !== null) {
-        message.message = {
-          $case: "party_data",
-          party_data: PartyData.fromJSON(object.party_data)
-        };
+        message.party_data = PartyData.fromJSON(object.party_data);
+      } else {
+        message.party_data = void 0;
       }
       if (object.party_data_send !== void 0 && object.party_data_send !== null) {
-        message.message = {
-          $case: "party_data_send",
-          party_data_send: PartyDataSend.fromJSON(object.party_data_send)
-        };
+        message.party_data_send = PartyDataSend.fromJSON(object.party_data_send);
+      } else {
+        message.party_data_send = void 0;
       }
       if (object.party_presence_event !== void 0 && object.party_presence_event !== null) {
-        message.message = {
-          $case: "party_presence_event",
-          party_presence_event: PartyPresenceEvent.fromJSON(object.party_presence_event)
-        };
+        message.party_presence_event = PartyPresenceEvent.fromJSON(object.party_presence_event);
+      } else {
+        message.party_presence_event = void 0;
       }
       return message;
     },
     toJSON(message) {
-      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka, _la, _ma, _na, _oa, _pa, _qa, _ra, _sa, _ta, _ua, _va, _wa, _xa, _ya, _za, _Aa, _Ba, _Ca, _Da, _Ea, _Fa, _Ga, _Ha, _Ia, _Ja, _Ka, _La, _Ma, _Na, _Oa, _Pa, _Qa, _Ra, _Sa, _Ta, _Ua, _Va, _Wa, _Xa, _Ya, _Za, __a, _$a, _ab, _bb, _cb, _db, _eb, _fb, _gb, _hb, _ib, _jb, _kb, _lb, _mb, _nb, _ob, _pb, _qb, _rb, _sb, _tb, _ub, _vb, _wb, _xb, _yb, _zb, _Ab, _Bb, _Cb, _Db, _Eb, _Fb, _Gb, _Hb, _Ib, _Jb, _Kb, _Lb, _Mb;
       const obj = {};
       message.cid !== void 0 && (obj.cid = message.cid);
-      ((_a = message.message) == null ? void 0 : _a.$case) === "channel" && (obj.channel = ((_b = message.message) == null ? void 0 : _b.channel) ? Channel.toJSON((_c = message.message) == null ? void 0 : _c.channel) : void 0);
-      ((_d = message.message) == null ? void 0 : _d.$case) === "channel_join" && (obj.channel_join = ((_e = message.message) == null ? void 0 : _e.channel_join) ? ChannelJoin.toJSON((_f = message.message) == null ? void 0 : _f.channel_join) : void 0);
-      ((_g = message.message) == null ? void 0 : _g.$case) === "channel_leave" && (obj.channel_leave = ((_h = message.message) == null ? void 0 : _h.channel_leave) ? ChannelLeave.toJSON((_i = message.message) == null ? void 0 : _i.channel_leave) : void 0);
-      ((_j = message.message) == null ? void 0 : _j.$case) === "channel_message" && (obj.channel_message = ((_k = message.message) == null ? void 0 : _k.channel_message) ? ChannelMessage.toJSON((_l = message.message) == null ? void 0 : _l.channel_message) : void 0);
-      ((_m = message.message) == null ? void 0 : _m.$case) === "channel_message_ack" && (obj.channel_message_ack = ((_n = message.message) == null ? void 0 : _n.channel_message_ack) ? ChannelMessageAck.toJSON((_o = message.message) == null ? void 0 : _o.channel_message_ack) : void 0);
-      ((_p = message.message) == null ? void 0 : _p.$case) === "channel_message_send" && (obj.channel_message_send = ((_q = message.message) == null ? void 0 : _q.channel_message_send) ? ChannelMessageSend.toJSON((_r = message.message) == null ? void 0 : _r.channel_message_send) : void 0);
-      ((_s = message.message) == null ? void 0 : _s.$case) === "channel_message_update" && (obj.channel_message_update = ((_t = message.message) == null ? void 0 : _t.channel_message_update) ? ChannelMessageUpdate.toJSON((_u = message.message) == null ? void 0 : _u.channel_message_update) : void 0);
-      ((_v = message.message) == null ? void 0 : _v.$case) === "channel_message_remove" && (obj.channel_message_remove = ((_w = message.message) == null ? void 0 : _w.channel_message_remove) ? ChannelMessageRemove.toJSON((_x = message.message) == null ? void 0 : _x.channel_message_remove) : void 0);
-      ((_y = message.message) == null ? void 0 : _y.$case) === "channel_presence_event" && (obj.channel_presence_event = ((_z = message.message) == null ? void 0 : _z.channel_presence_event) ? ChannelPresenceEvent.toJSON((_A = message.message) == null ? void 0 : _A.channel_presence_event) : void 0);
-      ((_B = message.message) == null ? void 0 : _B.$case) === "error" && (obj.error = ((_C = message.message) == null ? void 0 : _C.error) ? Error2.toJSON((_D = message.message) == null ? void 0 : _D.error) : void 0);
-      ((_E = message.message) == null ? void 0 : _E.$case) === "match" && (obj.match = ((_F = message.message) == null ? void 0 : _F.match) ? Match.toJSON((_G = message.message) == null ? void 0 : _G.match) : void 0);
-      ((_H = message.message) == null ? void 0 : _H.$case) === "match_create" && (obj.match_create = ((_I = message.message) == null ? void 0 : _I.match_create) ? MatchCreate.toJSON((_J = message.message) == null ? void 0 : _J.match_create) : void 0);
-      ((_K = message.message) == null ? void 0 : _K.$case) === "match_data" && (obj.match_data = ((_L = message.message) == null ? void 0 : _L.match_data) ? MatchData.toJSON((_M = message.message) == null ? void 0 : _M.match_data) : void 0);
-      ((_N = message.message) == null ? void 0 : _N.$case) === "match_data_send" && (obj.match_data_send = ((_O = message.message) == null ? void 0 : _O.match_data_send) ? MatchDataSend.toJSON((_P = message.message) == null ? void 0 : _P.match_data_send) : void 0);
-      ((_Q = message.message) == null ? void 0 : _Q.$case) === "match_join" && (obj.match_join = ((_R = message.message) == null ? void 0 : _R.match_join) ? MatchJoin.toJSON((_S = message.message) == null ? void 0 : _S.match_join) : void 0);
-      ((_T = message.message) == null ? void 0 : _T.$case) === "match_leave" && (obj.match_leave = ((_U = message.message) == null ? void 0 : _U.match_leave) ? MatchLeave.toJSON((_V = message.message) == null ? void 0 : _V.match_leave) : void 0);
-      ((_W = message.message) == null ? void 0 : _W.$case) === "match_presence_event" && (obj.match_presence_event = ((_X = message.message) == null ? void 0 : _X.match_presence_event) ? MatchPresenceEvent.toJSON((_Y = message.message) == null ? void 0 : _Y.match_presence_event) : void 0);
-      ((_Z = message.message) == null ? void 0 : _Z.$case) === "matchmaker_add" && (obj.matchmaker_add = ((__ = message.message) == null ? void 0 : __.matchmaker_add) ? MatchmakerAdd.toJSON((_$ = message.message) == null ? void 0 : _$.matchmaker_add) : void 0);
-      ((_aa = message.message) == null ? void 0 : _aa.$case) === "matchmaker_matched" && (obj.matchmaker_matched = ((_ba = message.message) == null ? void 0 : _ba.matchmaker_matched) ? MatchmakerMatched.toJSON((_ca = message.message) == null ? void 0 : _ca.matchmaker_matched) : void 0);
-      ((_da = message.message) == null ? void 0 : _da.$case) === "matchmaker_remove" && (obj.matchmaker_remove = ((_ea = message.message) == null ? void 0 : _ea.matchmaker_remove) ? MatchmakerRemove.toJSON((_fa = message.message) == null ? void 0 : _fa.matchmaker_remove) : void 0);
-      ((_ga = message.message) == null ? void 0 : _ga.$case) === "matchmaker_ticket" && (obj.matchmaker_ticket = ((_ha = message.message) == null ? void 0 : _ha.matchmaker_ticket) ? MatchmakerTicket.toJSON((_ia = message.message) == null ? void 0 : _ia.matchmaker_ticket) : void 0);
-      ((_ja = message.message) == null ? void 0 : _ja.$case) === "notifications" && (obj.notifications = ((_ka = message.message) == null ? void 0 : _ka.notifications) ? Notifications.toJSON((_la = message.message) == null ? void 0 : _la.notifications) : void 0);
-      ((_ma = message.message) == null ? void 0 : _ma.$case) === "rpc" && (obj.rpc = ((_na = message.message) == null ? void 0 : _na.rpc) ? Rpc.toJSON((_oa = message.message) == null ? void 0 : _oa.rpc) : void 0);
-      ((_pa = message.message) == null ? void 0 : _pa.$case) === "status" && (obj.status = ((_qa = message.message) == null ? void 0 : _qa.status) ? Status.toJSON((_ra = message.message) == null ? void 0 : _ra.status) : void 0);
-      ((_sa = message.message) == null ? void 0 : _sa.$case) === "status_follow" && (obj.status_follow = ((_ta = message.message) == null ? void 0 : _ta.status_follow) ? StatusFollow.toJSON((_ua = message.message) == null ? void 0 : _ua.status_follow) : void 0);
-      ((_va = message.message) == null ? void 0 : _va.$case) === "status_presence_event" && (obj.status_presence_event = ((_wa = message.message) == null ? void 0 : _wa.status_presence_event) ? StatusPresenceEvent.toJSON((_xa = message.message) == null ? void 0 : _xa.status_presence_event) : void 0);
-      ((_ya = message.message) == null ? void 0 : _ya.$case) === "status_unfollow" && (obj.status_unfollow = ((_za = message.message) == null ? void 0 : _za.status_unfollow) ? StatusUnfollow.toJSON((_Aa = message.message) == null ? void 0 : _Aa.status_unfollow) : void 0);
-      ((_Ba = message.message) == null ? void 0 : _Ba.$case) === "status_update" && (obj.status_update = ((_Ca = message.message) == null ? void 0 : _Ca.status_update) ? StatusUpdate.toJSON((_Da = message.message) == null ? void 0 : _Da.status_update) : void 0);
-      ((_Ea = message.message) == null ? void 0 : _Ea.$case) === "stream_data" && (obj.stream_data = ((_Fa = message.message) == null ? void 0 : _Fa.stream_data) ? StreamData.toJSON((_Ga = message.message) == null ? void 0 : _Ga.stream_data) : void 0);
-      ((_Ha = message.message) == null ? void 0 : _Ha.$case) === "stream_presence_event" && (obj.stream_presence_event = ((_Ia = message.message) == null ? void 0 : _Ia.stream_presence_event) ? StreamPresenceEvent.toJSON((_Ja = message.message) == null ? void 0 : _Ja.stream_presence_event) : void 0);
-      ((_Ka = message.message) == null ? void 0 : _Ka.$case) === "ping" && (obj.ping = ((_La = message.message) == null ? void 0 : _La.ping) ? Ping.toJSON((_Ma = message.message) == null ? void 0 : _Ma.ping) : void 0);
-      ((_Na = message.message) == null ? void 0 : _Na.$case) === "pong" && (obj.pong = ((_Oa = message.message) == null ? void 0 : _Oa.pong) ? Pong.toJSON((_Pa = message.message) == null ? void 0 : _Pa.pong) : void 0);
-      ((_Qa = message.message) == null ? void 0 : _Qa.$case) === "party" && (obj.party = ((_Ra = message.message) == null ? void 0 : _Ra.party) ? Party.toJSON((_Sa = message.message) == null ? void 0 : _Sa.party) : void 0);
-      ((_Ta = message.message) == null ? void 0 : _Ta.$case) === "party_create" && (obj.party_create = ((_Ua = message.message) == null ? void 0 : _Ua.party_create) ? PartyCreate.toJSON((_Va = message.message) == null ? void 0 : _Va.party_create) : void 0);
-      ((_Wa = message.message) == null ? void 0 : _Wa.$case) === "party_join" && (obj.party_join = ((_Xa = message.message) == null ? void 0 : _Xa.party_join) ? PartyJoin.toJSON((_Ya = message.message) == null ? void 0 : _Ya.party_join) : void 0);
-      ((_Za = message.message) == null ? void 0 : _Za.$case) === "party_leave" && (obj.party_leave = ((__a = message.message) == null ? void 0 : __a.party_leave) ? PartyLeave.toJSON((_$a = message.message) == null ? void 0 : _$a.party_leave) : void 0);
-      ((_ab = message.message) == null ? void 0 : _ab.$case) === "party_promote" && (obj.party_promote = ((_bb = message.message) == null ? void 0 : _bb.party_promote) ? PartyPromote.toJSON((_cb = message.message) == null ? void 0 : _cb.party_promote) : void 0);
-      ((_db = message.message) == null ? void 0 : _db.$case) === "party_leader" && (obj.party_leader = ((_eb = message.message) == null ? void 0 : _eb.party_leader) ? PartyLeader.toJSON((_fb = message.message) == null ? void 0 : _fb.party_leader) : void 0);
-      ((_gb = message.message) == null ? void 0 : _gb.$case) === "party_accept" && (obj.party_accept = ((_hb = message.message) == null ? void 0 : _hb.party_accept) ? PartyAccept.toJSON((_ib = message.message) == null ? void 0 : _ib.party_accept) : void 0);
-      ((_jb = message.message) == null ? void 0 : _jb.$case) === "party_remove" && (obj.party_remove = ((_kb = message.message) == null ? void 0 : _kb.party_remove) ? PartyRemove.toJSON((_lb = message.message) == null ? void 0 : _lb.party_remove) : void 0);
-      ((_mb = message.message) == null ? void 0 : _mb.$case) === "party_close" && (obj.party_close = ((_nb = message.message) == null ? void 0 : _nb.party_close) ? PartyClose.toJSON((_ob = message.message) == null ? void 0 : _ob.party_close) : void 0);
-      ((_pb = message.message) == null ? void 0 : _pb.$case) === "party_join_request_list" && (obj.party_join_request_list = ((_qb = message.message) == null ? void 0 : _qb.party_join_request_list) ? PartyJoinRequestList.toJSON((_rb = message.message) == null ? void 0 : _rb.party_join_request_list) : void 0);
-      ((_sb = message.message) == null ? void 0 : _sb.$case) === "party_join_request" && (obj.party_join_request = ((_tb = message.message) == null ? void 0 : _tb.party_join_request) ? PartyJoinRequest.toJSON((_ub = message.message) == null ? void 0 : _ub.party_join_request) : void 0);
-      ((_vb = message.message) == null ? void 0 : _vb.$case) === "party_matchmaker_add" && (obj.party_matchmaker_add = ((_wb = message.message) == null ? void 0 : _wb.party_matchmaker_add) ? PartyMatchmakerAdd.toJSON((_xb = message.message) == null ? void 0 : _xb.party_matchmaker_add) : void 0);
-      ((_yb = message.message) == null ? void 0 : _yb.$case) === "party_matchmaker_remove" && (obj.party_matchmaker_remove = ((_zb = message.message) == null ? void 0 : _zb.party_matchmaker_remove) ? PartyMatchmakerRemove.toJSON((_Ab = message.message) == null ? void 0 : _Ab.party_matchmaker_remove) : void 0);
-      ((_Bb = message.message) == null ? void 0 : _Bb.$case) === "party_matchmaker_ticket" && (obj.party_matchmaker_ticket = ((_Cb = message.message) == null ? void 0 : _Cb.party_matchmaker_ticket) ? PartyMatchmakerTicket.toJSON((_Db = message.message) == null ? void 0 : _Db.party_matchmaker_ticket) : void 0);
-      ((_Eb = message.message) == null ? void 0 : _Eb.$case) === "party_data" && (obj.party_data = ((_Fb = message.message) == null ? void 0 : _Fb.party_data) ? PartyData.toJSON((_Gb = message.message) == null ? void 0 : _Gb.party_data) : void 0);
-      ((_Hb = message.message) == null ? void 0 : _Hb.$case) === "party_data_send" && (obj.party_data_send = ((_Ib = message.message) == null ? void 0 : _Ib.party_data_send) ? PartyDataSend.toJSON((_Jb = message.message) == null ? void 0 : _Jb.party_data_send) : void 0);
-      ((_Kb = message.message) == null ? void 0 : _Kb.$case) === "party_presence_event" && (obj.party_presence_event = ((_Lb = message.message) == null ? void 0 : _Lb.party_presence_event) ? PartyPresenceEvent.toJSON((_Mb = message.message) == null ? void 0 : _Mb.party_presence_event) : void 0);
+      message.channel !== void 0 && (obj.channel = message.channel ? Channel.toJSON(message.channel) : void 0);
+      message.channel_join !== void 0 && (obj.channel_join = message.channel_join ? ChannelJoin.toJSON(message.channel_join) : void 0);
+      message.channel_leave !== void 0 && (obj.channel_leave = message.channel_leave ? ChannelLeave.toJSON(message.channel_leave) : void 0);
+      message.channel_message !== void 0 && (obj.channel_message = message.channel_message ? ChannelMessage.toJSON(message.channel_message) : void 0);
+      message.channel_message_ack !== void 0 && (obj.channel_message_ack = message.channel_message_ack ? ChannelMessageAck.toJSON(message.channel_message_ack) : void 0);
+      message.channel_message_send !== void 0 && (obj.channel_message_send = message.channel_message_send ? ChannelMessageSend.toJSON(message.channel_message_send) : void 0);
+      message.channel_message_update !== void 0 && (obj.channel_message_update = message.channel_message_update ? ChannelMessageUpdate.toJSON(message.channel_message_update) : void 0);
+      message.channel_message_remove !== void 0 && (obj.channel_message_remove = message.channel_message_remove ? ChannelMessageRemove.toJSON(message.channel_message_remove) : void 0);
+      message.channel_presence_event !== void 0 && (obj.channel_presence_event = message.channel_presence_event ? ChannelPresenceEvent.toJSON(message.channel_presence_event) : void 0);
+      message.error !== void 0 && (obj.error = message.error ? Error2.toJSON(message.error) : void 0);
+      message.match !== void 0 && (obj.match = message.match ? Match.toJSON(message.match) : void 0);
+      message.match_create !== void 0 && (obj.match_create = message.match_create ? MatchCreate.toJSON(message.match_create) : void 0);
+      message.match_data !== void 0 && (obj.match_data = message.match_data ? MatchData.toJSON(message.match_data) : void 0);
+      message.match_data_send !== void 0 && (obj.match_data_send = message.match_data_send ? MatchDataSend.toJSON(message.match_data_send) : void 0);
+      message.match_join !== void 0 && (obj.match_join = message.match_join ? MatchJoin.toJSON(message.match_join) : void 0);
+      message.match_leave !== void 0 && (obj.match_leave = message.match_leave ? MatchLeave.toJSON(message.match_leave) : void 0);
+      message.match_presence_event !== void 0 && (obj.match_presence_event = message.match_presence_event ? MatchPresenceEvent.toJSON(message.match_presence_event) : void 0);
+      message.matchmaker_add !== void 0 && (obj.matchmaker_add = message.matchmaker_add ? MatchmakerAdd.toJSON(message.matchmaker_add) : void 0);
+      message.matchmaker_matched !== void 0 && (obj.matchmaker_matched = message.matchmaker_matched ? MatchmakerMatched.toJSON(message.matchmaker_matched) : void 0);
+      message.matchmaker_remove !== void 0 && (obj.matchmaker_remove = message.matchmaker_remove ? MatchmakerRemove.toJSON(message.matchmaker_remove) : void 0);
+      message.matchmaker_ticket !== void 0 && (obj.matchmaker_ticket = message.matchmaker_ticket ? MatchmakerTicket.toJSON(message.matchmaker_ticket) : void 0);
+      message.notifications !== void 0 && (obj.notifications = message.notifications ? Notifications.toJSON(message.notifications) : void 0);
+      message.rpc !== void 0 && (obj.rpc = message.rpc ? Rpc.toJSON(message.rpc) : void 0);
+      message.status !== void 0 && (obj.status = message.status ? Status.toJSON(message.status) : void 0);
+      message.status_follow !== void 0 && (obj.status_follow = message.status_follow ? StatusFollow.toJSON(message.status_follow) : void 0);
+      message.status_presence_event !== void 0 && (obj.status_presence_event = message.status_presence_event ? StatusPresenceEvent.toJSON(message.status_presence_event) : void 0);
+      message.status_unfollow !== void 0 && (obj.status_unfollow = message.status_unfollow ? StatusUnfollow.toJSON(message.status_unfollow) : void 0);
+      message.status_update !== void 0 && (obj.status_update = message.status_update ? StatusUpdate.toJSON(message.status_update) : void 0);
+      message.stream_data !== void 0 && (obj.stream_data = message.stream_data ? StreamData.toJSON(message.stream_data) : void 0);
+      message.stream_presence_event !== void 0 && (obj.stream_presence_event = message.stream_presence_event ? StreamPresenceEvent.toJSON(message.stream_presence_event) : void 0);
+      message.ping !== void 0 && (obj.ping = message.ping ? Ping.toJSON(message.ping) : void 0);
+      message.pong !== void 0 && (obj.pong = message.pong ? Pong.toJSON(message.pong) : void 0);
+      message.party !== void 0 && (obj.party = message.party ? Party.toJSON(message.party) : void 0);
+      message.party_create !== void 0 && (obj.party_create = message.party_create ? PartyCreate.toJSON(message.party_create) : void 0);
+      message.party_join !== void 0 && (obj.party_join = message.party_join ? PartyJoin.toJSON(message.party_join) : void 0);
+      message.party_leave !== void 0 && (obj.party_leave = message.party_leave ? PartyLeave.toJSON(message.party_leave) : void 0);
+      message.party_promote !== void 0 && (obj.party_promote = message.party_promote ? PartyPromote.toJSON(message.party_promote) : void 0);
+      message.party_leader !== void 0 && (obj.party_leader = message.party_leader ? PartyLeader.toJSON(message.party_leader) : void 0);
+      message.party_accept !== void 0 && (obj.party_accept = message.party_accept ? PartyAccept.toJSON(message.party_accept) : void 0);
+      message.party_remove !== void 0 && (obj.party_remove = message.party_remove ? PartyRemove.toJSON(message.party_remove) : void 0);
+      message.party_close !== void 0 && (obj.party_close = message.party_close ? PartyClose.toJSON(message.party_close) : void 0);
+      message.party_join_request_list !== void 0 && (obj.party_join_request_list = message.party_join_request_list ? PartyJoinRequestList.toJSON(message.party_join_request_list) : void 0);
+      message.party_join_request !== void 0 && (obj.party_join_request = message.party_join_request ? PartyJoinRequest.toJSON(message.party_join_request) : void 0);
+      message.party_matchmaker_add !== void 0 && (obj.party_matchmaker_add = message.party_matchmaker_add ? PartyMatchmakerAdd.toJSON(message.party_matchmaker_add) : void 0);
+      message.party_matchmaker_remove !== void 0 && (obj.party_matchmaker_remove = message.party_matchmaker_remove ? PartyMatchmakerRemove.toJSON(message.party_matchmaker_remove) : void 0);
+      message.party_matchmaker_ticket !== void 0 && (obj.party_matchmaker_ticket = message.party_matchmaker_ticket ? PartyMatchmakerTicket.toJSON(message.party_matchmaker_ticket) : void 0);
+      message.party_data !== void 0 && (obj.party_data = message.party_data ? PartyData.toJSON(message.party_data) : void 0);
+      message.party_data_send !== void 0 && (obj.party_data_send = message.party_data_send ? PartyDataSend.toJSON(message.party_data_send) : void 0);
+      message.party_presence_event !== void 0 && (obj.party_presence_event = message.party_presence_event ? PartyPresenceEvent.toJSON(message.party_presence_event) : void 0);
       return obj;
     },
     fromPartial(object) {
-      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka, _la, _ma, _na, _oa, _pa, _qa, _ra, _sa, _ta, _ua, _va, _wa, _xa, _ya, _za, _Aa, _Ba, _Ca, _Da, _Ea, _Fa, _Ga, _Ha, _Ia, _Ja, _Ka, _La, _Ma, _Na, _Oa, _Pa, _Qa, _Ra, _Sa, _Ta, _Ua, _Va, _Wa, _Xa, _Ya, _Za, __a, _$a, _ab, _bb, _cb, _db, _eb, _fb, _gb, _hb, _ib, _jb, _kb, _lb, _mb, _nb, _ob, _pb, _qb, _rb, _sb, _tb, _ub, _vb, _wb, _xb, _yb, _zb, _Ab, _Bb, _Cb, _Db, _Eb, _Fb, _Gb, _Hb, _Ib, _Jb, _Kb, _Lb, _Mb;
       const message = __spreadValues({}, baseEnvelope);
       if (object.cid !== void 0 && object.cid !== null) {
         message.cid = object.cid;
+      } else {
+        message.cid = "";
       }
-      if (((_a = object.message) == null ? void 0 : _a.$case) === "channel" && ((_b = object.message) == null ? void 0 : _b.channel) !== void 0 && ((_c = object.message) == null ? void 0 : _c.channel) !== null) {
-        message.message = {
-          $case: "channel",
-          channel: Channel.fromPartial(object.message.channel)
-        };
+      if (object.channel !== void 0 && object.channel !== null) {
+        message.channel = Channel.fromPartial(object.channel);
+      } else {
+        message.channel = void 0;
       }
-      if (((_d = object.message) == null ? void 0 : _d.$case) === "channel_join" && ((_e = object.message) == null ? void 0 : _e.channel_join) !== void 0 && ((_f = object.message) == null ? void 0 : _f.channel_join) !== null) {
-        message.message = {
-          $case: "channel_join",
-          channel_join: ChannelJoin.fromPartial(object.message.channel_join)
-        };
+      if (object.channel_join !== void 0 && object.channel_join !== null) {
+        message.channel_join = ChannelJoin.fromPartial(object.channel_join);
+      } else {
+        message.channel_join = void 0;
       }
-      if (((_g = object.message) == null ? void 0 : _g.$case) === "channel_leave" && ((_h = object.message) == null ? void 0 : _h.channel_leave) !== void 0 && ((_i = object.message) == null ? void 0 : _i.channel_leave) !== null) {
-        message.message = {
-          $case: "channel_leave",
-          channel_leave: ChannelLeave.fromPartial(object.message.channel_leave)
-        };
+      if (object.channel_leave !== void 0 && object.channel_leave !== null) {
+        message.channel_leave = ChannelLeave.fromPartial(object.channel_leave);
+      } else {
+        message.channel_leave = void 0;
       }
-      if (((_j = object.message) == null ? void 0 : _j.$case) === "channel_message" && ((_k = object.message) == null ? void 0 : _k.channel_message) !== void 0 && ((_l = object.message) == null ? void 0 : _l.channel_message) !== null) {
-        message.message = {
-          $case: "channel_message",
-          channel_message: ChannelMessage.fromPartial(object.message.channel_message)
-        };
+      if (object.channel_message !== void 0 && object.channel_message !== null) {
+        message.channel_message = ChannelMessage.fromPartial(object.channel_message);
+      } else {
+        message.channel_message = void 0;
       }
-      if (((_m = object.message) == null ? void 0 : _m.$case) === "channel_message_ack" && ((_n = object.message) == null ? void 0 : _n.channel_message_ack) !== void 0 && ((_o = object.message) == null ? void 0 : _o.channel_message_ack) !== null) {
-        message.message = {
-          $case: "channel_message_ack",
-          channel_message_ack: ChannelMessageAck.fromPartial(object.message.channel_message_ack)
-        };
+      if (object.channel_message_ack !== void 0 && object.channel_message_ack !== null) {
+        message.channel_message_ack = ChannelMessageAck.fromPartial(object.channel_message_ack);
+      } else {
+        message.channel_message_ack = void 0;
       }
-      if (((_p = object.message) == null ? void 0 : _p.$case) === "channel_message_send" && ((_q = object.message) == null ? void 0 : _q.channel_message_send) !== void 0 && ((_r = object.message) == null ? void 0 : _r.channel_message_send) !== null) {
-        message.message = {
-          $case: "channel_message_send",
-          channel_message_send: ChannelMessageSend.fromPartial(object.message.channel_message_send)
-        };
+      if (object.channel_message_send !== void 0 && object.channel_message_send !== null) {
+        message.channel_message_send = ChannelMessageSend.fromPartial(object.channel_message_send);
+      } else {
+        message.channel_message_send = void 0;
       }
-      if (((_s = object.message) == null ? void 0 : _s.$case) === "channel_message_update" && ((_t = object.message) == null ? void 0 : _t.channel_message_update) !== void 0 && ((_u = object.message) == null ? void 0 : _u.channel_message_update) !== null) {
-        message.message = {
-          $case: "channel_message_update",
-          channel_message_update: ChannelMessageUpdate.fromPartial(object.message.channel_message_update)
-        };
+      if (object.channel_message_update !== void 0 && object.channel_message_update !== null) {
+        message.channel_message_update = ChannelMessageUpdate.fromPartial(object.channel_message_update);
+      } else {
+        message.channel_message_update = void 0;
       }
-      if (((_v = object.message) == null ? void 0 : _v.$case) === "channel_message_remove" && ((_w = object.message) == null ? void 0 : _w.channel_message_remove) !== void 0 && ((_x = object.message) == null ? void 0 : _x.channel_message_remove) !== null) {
-        message.message = {
-          $case: "channel_message_remove",
-          channel_message_remove: ChannelMessageRemove.fromPartial(object.message.channel_message_remove)
-        };
+      if (object.channel_message_remove !== void 0 && object.channel_message_remove !== null) {
+        message.channel_message_remove = ChannelMessageRemove.fromPartial(object.channel_message_remove);
+      } else {
+        message.channel_message_remove = void 0;
       }
-      if (((_y = object.message) == null ? void 0 : _y.$case) === "channel_presence_event" && ((_z = object.message) == null ? void 0 : _z.channel_presence_event) !== void 0 && ((_A = object.message) == null ? void 0 : _A.channel_presence_event) !== null) {
-        message.message = {
-          $case: "channel_presence_event",
-          channel_presence_event: ChannelPresenceEvent.fromPartial(object.message.channel_presence_event)
-        };
+      if (object.channel_presence_event !== void 0 && object.channel_presence_event !== null) {
+        message.channel_presence_event = ChannelPresenceEvent.fromPartial(object.channel_presence_event);
+      } else {
+        message.channel_presence_event = void 0;
       }
-      if (((_B = object.message) == null ? void 0 : _B.$case) === "error" && ((_C = object.message) == null ? void 0 : _C.error) !== void 0 && ((_D = object.message) == null ? void 0 : _D.error) !== null) {
-        message.message = {
-          $case: "error",
-          error: Error2.fromPartial(object.message.error)
-        };
+      if (object.error !== void 0 && object.error !== null) {
+        message.error = Error2.fromPartial(object.error);
+      } else {
+        message.error = void 0;
       }
-      if (((_E = object.message) == null ? void 0 : _E.$case) === "match" && ((_F = object.message) == null ? void 0 : _F.match) !== void 0 && ((_G = object.message) == null ? void 0 : _G.match) !== null) {
-        message.message = {
-          $case: "match",
-          match: Match.fromPartial(object.message.match)
-        };
+      if (object.match !== void 0 && object.match !== null) {
+        message.match = Match.fromPartial(object.match);
+      } else {
+        message.match = void 0;
       }
-      if (((_H = object.message) == null ? void 0 : _H.$case) === "match_create" && ((_I = object.message) == null ? void 0 : _I.match_create) !== void 0 && ((_J = object.message) == null ? void 0 : _J.match_create) !== null) {
-        message.message = {
-          $case: "match_create",
-          match_create: MatchCreate.fromPartial(object.message.match_create)
-        };
+      if (object.match_create !== void 0 && object.match_create !== null) {
+        message.match_create = MatchCreate.fromPartial(object.match_create);
+      } else {
+        message.match_create = void 0;
       }
-      if (((_K = object.message) == null ? void 0 : _K.$case) === "match_data" && ((_L = object.message) == null ? void 0 : _L.match_data) !== void 0 && ((_M = object.message) == null ? void 0 : _M.match_data) !== null) {
-        message.message = {
-          $case: "match_data",
-          match_data: MatchData.fromPartial(object.message.match_data)
-        };
+      if (object.match_data !== void 0 && object.match_data !== null) {
+        message.match_data = MatchData.fromPartial(object.match_data);
+      } else {
+        message.match_data = void 0;
       }
-      if (((_N = object.message) == null ? void 0 : _N.$case) === "match_data_send" && ((_O = object.message) == null ? void 0 : _O.match_data_send) !== void 0 && ((_P = object.message) == null ? void 0 : _P.match_data_send) !== null) {
-        message.message = {
-          $case: "match_data_send",
-          match_data_send: MatchDataSend.fromPartial(object.message.match_data_send)
-        };
+      if (object.match_data_send !== void 0 && object.match_data_send !== null) {
+        message.match_data_send = MatchDataSend.fromPartial(object.match_data_send);
+      } else {
+        message.match_data_send = void 0;
       }
-      if (((_Q = object.message) == null ? void 0 : _Q.$case) === "match_join" && ((_R = object.message) == null ? void 0 : _R.match_join) !== void 0 && ((_S = object.message) == null ? void 0 : _S.match_join) !== null) {
-        message.message = {
-          $case: "match_join",
-          match_join: MatchJoin.fromPartial(object.message.match_join)
-        };
+      if (object.match_join !== void 0 && object.match_join !== null) {
+        message.match_join = MatchJoin.fromPartial(object.match_join);
+      } else {
+        message.match_join = void 0;
       }
-      if (((_T = object.message) == null ? void 0 : _T.$case) === "match_leave" && ((_U = object.message) == null ? void 0 : _U.match_leave) !== void 0 && ((_V = object.message) == null ? void 0 : _V.match_leave) !== null) {
-        message.message = {
-          $case: "match_leave",
-          match_leave: MatchLeave.fromPartial(object.message.match_leave)
-        };
+      if (object.match_leave !== void 0 && object.match_leave !== null) {
+        message.match_leave = MatchLeave.fromPartial(object.match_leave);
+      } else {
+        message.match_leave = void 0;
       }
-      if (((_W = object.message) == null ? void 0 : _W.$case) === "match_presence_event" && ((_X = object.message) == null ? void 0 : _X.match_presence_event) !== void 0 && ((_Y = object.message) == null ? void 0 : _Y.match_presence_event) !== null) {
-        message.message = {
-          $case: "match_presence_event",
-          match_presence_event: MatchPresenceEvent.fromPartial(object.message.match_presence_event)
-        };
+      if (object.match_presence_event !== void 0 && object.match_presence_event !== null) {
+        message.match_presence_event = MatchPresenceEvent.fromPartial(object.match_presence_event);
+      } else {
+        message.match_presence_event = void 0;
       }
-      if (((_Z = object.message) == null ? void 0 : _Z.$case) === "matchmaker_add" && ((__ = object.message) == null ? void 0 : __.matchmaker_add) !== void 0 && ((_$ = object.message) == null ? void 0 : _$.matchmaker_add) !== null) {
-        message.message = {
-          $case: "matchmaker_add",
-          matchmaker_add: MatchmakerAdd.fromPartial(object.message.matchmaker_add)
-        };
+      if (object.matchmaker_add !== void 0 && object.matchmaker_add !== null) {
+        message.matchmaker_add = MatchmakerAdd.fromPartial(object.matchmaker_add);
+      } else {
+        message.matchmaker_add = void 0;
       }
-      if (((_aa = object.message) == null ? void 0 : _aa.$case) === "matchmaker_matched" && ((_ba = object.message) == null ? void 0 : _ba.matchmaker_matched) !== void 0 && ((_ca = object.message) == null ? void 0 : _ca.matchmaker_matched) !== null) {
-        message.message = {
-          $case: "matchmaker_matched",
-          matchmaker_matched: MatchmakerMatched.fromPartial(object.message.matchmaker_matched)
-        };
+      if (object.matchmaker_matched !== void 0 && object.matchmaker_matched !== null) {
+        message.matchmaker_matched = MatchmakerMatched.fromPartial(object.matchmaker_matched);
+      } else {
+        message.matchmaker_matched = void 0;
       }
-      if (((_da = object.message) == null ? void 0 : _da.$case) === "matchmaker_remove" && ((_ea = object.message) == null ? void 0 : _ea.matchmaker_remove) !== void 0 && ((_fa = object.message) == null ? void 0 : _fa.matchmaker_remove) !== null) {
-        message.message = {
-          $case: "matchmaker_remove",
-          matchmaker_remove: MatchmakerRemove.fromPartial(object.message.matchmaker_remove)
-        };
+      if (object.matchmaker_remove !== void 0 && object.matchmaker_remove !== null) {
+        message.matchmaker_remove = MatchmakerRemove.fromPartial(object.matchmaker_remove);
+      } else {
+        message.matchmaker_remove = void 0;
       }
-      if (((_ga = object.message) == null ? void 0 : _ga.$case) === "matchmaker_ticket" && ((_ha = object.message) == null ? void 0 : _ha.matchmaker_ticket) !== void 0 && ((_ia = object.message) == null ? void 0 : _ia.matchmaker_ticket) !== null) {
-        message.message = {
-          $case: "matchmaker_ticket",
-          matchmaker_ticket: MatchmakerTicket.fromPartial(object.message.matchmaker_ticket)
-        };
+      if (object.matchmaker_ticket !== void 0 && object.matchmaker_ticket !== null) {
+        message.matchmaker_ticket = MatchmakerTicket.fromPartial(object.matchmaker_ticket);
+      } else {
+        message.matchmaker_ticket = void 0;
       }
-      if (((_ja = object.message) == null ? void 0 : _ja.$case) === "notifications" && ((_ka = object.message) == null ? void 0 : _ka.notifications) !== void 0 && ((_la = object.message) == null ? void 0 : _la.notifications) !== null) {
-        message.message = {
-          $case: "notifications",
-          notifications: Notifications.fromPartial(object.message.notifications)
-        };
+      if (object.notifications !== void 0 && object.notifications !== null) {
+        message.notifications = Notifications.fromPartial(object.notifications);
+      } else {
+        message.notifications = void 0;
       }
-      if (((_ma = object.message) == null ? void 0 : _ma.$case) === "rpc" && ((_na = object.message) == null ? void 0 : _na.rpc) !== void 0 && ((_oa = object.message) == null ? void 0 : _oa.rpc) !== null) {
-        message.message = {
-          $case: "rpc",
-          rpc: Rpc.fromPartial(object.message.rpc)
-        };
+      if (object.rpc !== void 0 && object.rpc !== null) {
+        message.rpc = Rpc.fromPartial(object.rpc);
+      } else {
+        message.rpc = void 0;
       }
-      if (((_pa = object.message) == null ? void 0 : _pa.$case) === "status" && ((_qa = object.message) == null ? void 0 : _qa.status) !== void 0 && ((_ra = object.message) == null ? void 0 : _ra.status) !== null) {
-        message.message = {
-          $case: "status",
-          status: Status.fromPartial(object.message.status)
-        };
+      if (object.status !== void 0 && object.status !== null) {
+        message.status = Status.fromPartial(object.status);
+      } else {
+        message.status = void 0;
       }
-      if (((_sa = object.message) == null ? void 0 : _sa.$case) === "status_follow" && ((_ta = object.message) == null ? void 0 : _ta.status_follow) !== void 0 && ((_ua = object.message) == null ? void 0 : _ua.status_follow) !== null) {
-        message.message = {
-          $case: "status_follow",
-          status_follow: StatusFollow.fromPartial(object.message.status_follow)
-        };
+      if (object.status_follow !== void 0 && object.status_follow !== null) {
+        message.status_follow = StatusFollow.fromPartial(object.status_follow);
+      } else {
+        message.status_follow = void 0;
       }
-      if (((_va = object.message) == null ? void 0 : _va.$case) === "status_presence_event" && ((_wa = object.message) == null ? void 0 : _wa.status_presence_event) !== void 0 && ((_xa = object.message) == null ? void 0 : _xa.status_presence_event) !== null) {
-        message.message = {
-          $case: "status_presence_event",
-          status_presence_event: StatusPresenceEvent.fromPartial(object.message.status_presence_event)
-        };
+      if (object.status_presence_event !== void 0 && object.status_presence_event !== null) {
+        message.status_presence_event = StatusPresenceEvent.fromPartial(object.status_presence_event);
+      } else {
+        message.status_presence_event = void 0;
       }
-      if (((_ya = object.message) == null ? void 0 : _ya.$case) === "status_unfollow" && ((_za = object.message) == null ? void 0 : _za.status_unfollow) !== void 0 && ((_Aa = object.message) == null ? void 0 : _Aa.status_unfollow) !== null) {
-        message.message = {
-          $case: "status_unfollow",
-          status_unfollow: StatusUnfollow.fromPartial(object.message.status_unfollow)
-        };
+      if (object.status_unfollow !== void 0 && object.status_unfollow !== null) {
+        message.status_unfollow = StatusUnfollow.fromPartial(object.status_unfollow);
+      } else {
+        message.status_unfollow = void 0;
       }
-      if (((_Ba = object.message) == null ? void 0 : _Ba.$case) === "status_update" && ((_Ca = object.message) == null ? void 0 : _Ca.status_update) !== void 0 && ((_Da = object.message) == null ? void 0 : _Da.status_update) !== null) {
-        message.message = {
-          $case: "status_update",
-          status_update: StatusUpdate.fromPartial(object.message.status_update)
-        };
+      if (object.status_update !== void 0 && object.status_update !== null) {
+        message.status_update = StatusUpdate.fromPartial(object.status_update);
+      } else {
+        message.status_update = void 0;
       }
-      if (((_Ea = object.message) == null ? void 0 : _Ea.$case) === "stream_data" && ((_Fa = object.message) == null ? void 0 : _Fa.stream_data) !== void 0 && ((_Ga = object.message) == null ? void 0 : _Ga.stream_data) !== null) {
-        message.message = {
-          $case: "stream_data",
-          stream_data: StreamData.fromPartial(object.message.stream_data)
-        };
+      if (object.stream_data !== void 0 && object.stream_data !== null) {
+        message.stream_data = StreamData.fromPartial(object.stream_data);
+      } else {
+        message.stream_data = void 0;
       }
-      if (((_Ha = object.message) == null ? void 0 : _Ha.$case) === "stream_presence_event" && ((_Ia = object.message) == null ? void 0 : _Ia.stream_presence_event) !== void 0 && ((_Ja = object.message) == null ? void 0 : _Ja.stream_presence_event) !== null) {
-        message.message = {
-          $case: "stream_presence_event",
-          stream_presence_event: StreamPresenceEvent.fromPartial(object.message.stream_presence_event)
-        };
+      if (object.stream_presence_event !== void 0 && object.stream_presence_event !== null) {
+        message.stream_presence_event = StreamPresenceEvent.fromPartial(object.stream_presence_event);
+      } else {
+        message.stream_presence_event = void 0;
       }
-      if (((_Ka = object.message) == null ? void 0 : _Ka.$case) === "ping" && ((_La = object.message) == null ? void 0 : _La.ping) !== void 0 && ((_Ma = object.message) == null ? void 0 : _Ma.ping) !== null) {
-        message.message = {
-          $case: "ping",
-          ping: Ping.fromPartial(object.message.ping)
-        };
+      if (object.ping !== void 0 && object.ping !== null) {
+        message.ping = Ping.fromPartial(object.ping);
+      } else {
+        message.ping = void 0;
       }
-      if (((_Na = object.message) == null ? void 0 : _Na.$case) === "pong" && ((_Oa = object.message) == null ? void 0 : _Oa.pong) !== void 0 && ((_Pa = object.message) == null ? void 0 : _Pa.pong) !== null) {
-        message.message = {
-          $case: "pong",
-          pong: Pong.fromPartial(object.message.pong)
-        };
+      if (object.pong !== void 0 && object.pong !== null) {
+        message.pong = Pong.fromPartial(object.pong);
+      } else {
+        message.pong = void 0;
       }
-      if (((_Qa = object.message) == null ? void 0 : _Qa.$case) === "party" && ((_Ra = object.message) == null ? void 0 : _Ra.party) !== void 0 && ((_Sa = object.message) == null ? void 0 : _Sa.party) !== null) {
-        message.message = {
-          $case: "party",
-          party: Party.fromPartial(object.message.party)
-        };
+      if (object.party !== void 0 && object.party !== null) {
+        message.party = Party.fromPartial(object.party);
+      } else {
+        message.party = void 0;
       }
-      if (((_Ta = object.message) == null ? void 0 : _Ta.$case) === "party_create" && ((_Ua = object.message) == null ? void 0 : _Ua.party_create) !== void 0 && ((_Va = object.message) == null ? void 0 : _Va.party_create) !== null) {
-        message.message = {
-          $case: "party_create",
-          party_create: PartyCreate.fromPartial(object.message.party_create)
-        };
+      if (object.party_create !== void 0 && object.party_create !== null) {
+        message.party_create = PartyCreate.fromPartial(object.party_create);
+      } else {
+        message.party_create = void 0;
       }
-      if (((_Wa = object.message) == null ? void 0 : _Wa.$case) === "party_join" && ((_Xa = object.message) == null ? void 0 : _Xa.party_join) !== void 0 && ((_Ya = object.message) == null ? void 0 : _Ya.party_join) !== null) {
-        message.message = {
-          $case: "party_join",
-          party_join: PartyJoin.fromPartial(object.message.party_join)
-        };
+      if (object.party_join !== void 0 && object.party_join !== null) {
+        message.party_join = PartyJoin.fromPartial(object.party_join);
+      } else {
+        message.party_join = void 0;
       }
-      if (((_Za = object.message) == null ? void 0 : _Za.$case) === "party_leave" && ((__a = object.message) == null ? void 0 : __a.party_leave) !== void 0 && ((_$a = object.message) == null ? void 0 : _$a.party_leave) !== null) {
-        message.message = {
-          $case: "party_leave",
-          party_leave: PartyLeave.fromPartial(object.message.party_leave)
-        };
+      if (object.party_leave !== void 0 && object.party_leave !== null) {
+        message.party_leave = PartyLeave.fromPartial(object.party_leave);
+      } else {
+        message.party_leave = void 0;
       }
-      if (((_ab = object.message) == null ? void 0 : _ab.$case) === "party_promote" && ((_bb = object.message) == null ? void 0 : _bb.party_promote) !== void 0 && ((_cb = object.message) == null ? void 0 : _cb.party_promote) !== null) {
-        message.message = {
-          $case: "party_promote",
-          party_promote: PartyPromote.fromPartial(object.message.party_promote)
-        };
+      if (object.party_promote !== void 0 && object.party_promote !== null) {
+        message.party_promote = PartyPromote.fromPartial(object.party_promote);
+      } else {
+        message.party_promote = void 0;
       }
-      if (((_db = object.message) == null ? void 0 : _db.$case) === "party_leader" && ((_eb = object.message) == null ? void 0 : _eb.party_leader) !== void 0 && ((_fb = object.message) == null ? void 0 : _fb.party_leader) !== null) {
-        message.message = {
-          $case: "party_leader",
-          party_leader: PartyLeader.fromPartial(object.message.party_leader)
-        };
+      if (object.party_leader !== void 0 && object.party_leader !== null) {
+        message.party_leader = PartyLeader.fromPartial(object.party_leader);
+      } else {
+        message.party_leader = void 0;
       }
-      if (((_gb = object.message) == null ? void 0 : _gb.$case) === "party_accept" && ((_hb = object.message) == null ? void 0 : _hb.party_accept) !== void 0 && ((_ib = object.message) == null ? void 0 : _ib.party_accept) !== null) {
-        message.message = {
-          $case: "party_accept",
-          party_accept: PartyAccept.fromPartial(object.message.party_accept)
-        };
+      if (object.party_accept !== void 0 && object.party_accept !== null) {
+        message.party_accept = PartyAccept.fromPartial(object.party_accept);
+      } else {
+        message.party_accept = void 0;
       }
-      if (((_jb = object.message) == null ? void 0 : _jb.$case) === "party_remove" && ((_kb = object.message) == null ? void 0 : _kb.party_remove) !== void 0 && ((_lb = object.message) == null ? void 0 : _lb.party_remove) !== null) {
-        message.message = {
-          $case: "party_remove",
-          party_remove: PartyRemove.fromPartial(object.message.party_remove)
-        };
+      if (object.party_remove !== void 0 && object.party_remove !== null) {
+        message.party_remove = PartyRemove.fromPartial(object.party_remove);
+      } else {
+        message.party_remove = void 0;
       }
-      if (((_mb = object.message) == null ? void 0 : _mb.$case) === "party_close" && ((_nb = object.message) == null ? void 0 : _nb.party_close) !== void 0 && ((_ob = object.message) == null ? void 0 : _ob.party_close) !== null) {
-        message.message = {
-          $case: "party_close",
-          party_close: PartyClose.fromPartial(object.message.party_close)
-        };
+      if (object.party_close !== void 0 && object.party_close !== null) {
+        message.party_close = PartyClose.fromPartial(object.party_close);
+      } else {
+        message.party_close = void 0;
       }
-      if (((_pb = object.message) == null ? void 0 : _pb.$case) === "party_join_request_list" && ((_qb = object.message) == null ? void 0 : _qb.party_join_request_list) !== void 0 && ((_rb = object.message) == null ? void 0 : _rb.party_join_request_list) !== null) {
-        message.message = {
-          $case: "party_join_request_list",
-          party_join_request_list: PartyJoinRequestList.fromPartial(object.message.party_join_request_list)
-        };
+      if (object.party_join_request_list !== void 0 && object.party_join_request_list !== null) {
+        message.party_join_request_list = PartyJoinRequestList.fromPartial(object.party_join_request_list);
+      } else {
+        message.party_join_request_list = void 0;
       }
-      if (((_sb = object.message) == null ? void 0 : _sb.$case) === "party_join_request" && ((_tb = object.message) == null ? void 0 : _tb.party_join_request) !== void 0 && ((_ub = object.message) == null ? void 0 : _ub.party_join_request) !== null) {
-        message.message = {
-          $case: "party_join_request",
-          party_join_request: PartyJoinRequest.fromPartial(object.message.party_join_request)
-        };
+      if (object.party_join_request !== void 0 && object.party_join_request !== null) {
+        message.party_join_request = PartyJoinRequest.fromPartial(object.party_join_request);
+      } else {
+        message.party_join_request = void 0;
       }
-      if (((_vb = object.message) == null ? void 0 : _vb.$case) === "party_matchmaker_add" && ((_wb = object.message) == null ? void 0 : _wb.party_matchmaker_add) !== void 0 && ((_xb = object.message) == null ? void 0 : _xb.party_matchmaker_add) !== null) {
-        message.message = {
-          $case: "party_matchmaker_add",
-          party_matchmaker_add: PartyMatchmakerAdd.fromPartial(object.message.party_matchmaker_add)
-        };
+      if (object.party_matchmaker_add !== void 0 && object.party_matchmaker_add !== null) {
+        message.party_matchmaker_add = PartyMatchmakerAdd.fromPartial(object.party_matchmaker_add);
+      } else {
+        message.party_matchmaker_add = void 0;
       }
-      if (((_yb = object.message) == null ? void 0 : _yb.$case) === "party_matchmaker_remove" && ((_zb = object.message) == null ? void 0 : _zb.party_matchmaker_remove) !== void 0 && ((_Ab = object.message) == null ? void 0 : _Ab.party_matchmaker_remove) !== null) {
-        message.message = {
-          $case: "party_matchmaker_remove",
-          party_matchmaker_remove: PartyMatchmakerRemove.fromPartial(object.message.party_matchmaker_remove)
-        };
+      if (object.party_matchmaker_remove !== void 0 && object.party_matchmaker_remove !== null) {
+        message.party_matchmaker_remove = PartyMatchmakerRemove.fromPartial(object.party_matchmaker_remove);
+      } else {
+        message.party_matchmaker_remove = void 0;
       }
-      if (((_Bb = object.message) == null ? void 0 : _Bb.$case) === "party_matchmaker_ticket" && ((_Cb = object.message) == null ? void 0 : _Cb.party_matchmaker_ticket) !== void 0 && ((_Db = object.message) == null ? void 0 : _Db.party_matchmaker_ticket) !== null) {
-        message.message = {
-          $case: "party_matchmaker_ticket",
-          party_matchmaker_ticket: PartyMatchmakerTicket.fromPartial(object.message.party_matchmaker_ticket)
-        };
+      if (object.party_matchmaker_ticket !== void 0 && object.party_matchmaker_ticket !== null) {
+        message.party_matchmaker_ticket = PartyMatchmakerTicket.fromPartial(object.party_matchmaker_ticket);
+      } else {
+        message.party_matchmaker_ticket = void 0;
       }
-      if (((_Eb = object.message) == null ? void 0 : _Eb.$case) === "party_data" && ((_Fb = object.message) == null ? void 0 : _Fb.party_data) !== void 0 && ((_Gb = object.message) == null ? void 0 : _Gb.party_data) !== null) {
-        message.message = {
-          $case: "party_data",
-          party_data: PartyData.fromPartial(object.message.party_data)
-        };
+      if (object.party_data !== void 0 && object.party_data !== null) {
+        message.party_data = PartyData.fromPartial(object.party_data);
+      } else {
+        message.party_data = void 0;
       }
-      if (((_Hb = object.message) == null ? void 0 : _Hb.$case) === "party_data_send" && ((_Ib = object.message) == null ? void 0 : _Ib.party_data_send) !== void 0 && ((_Jb = object.message) == null ? void 0 : _Jb.party_data_send) !== null) {
-        message.message = {
-          $case: "party_data_send",
-          party_data_send: PartyDataSend.fromPartial(object.message.party_data_send)
-        };
+      if (object.party_data_send !== void 0 && object.party_data_send !== null) {
+        message.party_data_send = PartyDataSend.fromPartial(object.party_data_send);
+      } else {
+        message.party_data_send = void 0;
       }
-      if (((_Kb = object.message) == null ? void 0 : _Kb.$case) === "party_presence_event" && ((_Lb = object.message) == null ? void 0 : _Lb.party_presence_event) !== void 0 && ((_Mb = object.message) == null ? void 0 : _Mb.party_presence_event) !== null) {
-        message.message = {
-          $case: "party_presence_event",
-          party_presence_event: PartyPresenceEvent.fromPartial(object.message.party_presence_event)
-        };
+      if (object.party_presence_event !== void 0 && object.party_presence_event !== null) {
+        message.party_presence_event = PartyPresenceEvent.fromPartial(object.party_presence_event);
+      } else {
+        message.party_presence_event = void 0;
       }
       return message;
     }
@@ -4101,6 +3898,8 @@ var nakamajsprotobuf = (() => {
       message.presences = [];
       if (object.id !== void 0 && object.id !== null) {
         message.id = String(object.id);
+      } else {
+        message.id = "";
       }
       if (object.presences !== void 0 && object.presences !== null) {
         for (const e of object.presences) {
@@ -4109,18 +3908,28 @@ var nakamajsprotobuf = (() => {
       }
       if (object.self !== void 0 && object.self !== null) {
         message.self = UserPresence.fromJSON(object.self);
+      } else {
+        message.self = void 0;
       }
       if (object.room_name !== void 0 && object.room_name !== null) {
         message.room_name = String(object.room_name);
+      } else {
+        message.room_name = "";
       }
       if (object.group_id !== void 0 && object.group_id !== null) {
         message.group_id = String(object.group_id);
+      } else {
+        message.group_id = "";
       }
       if (object.user_id_one !== void 0 && object.user_id_one !== null) {
         message.user_id_one = String(object.user_id_one);
+      } else {
+        message.user_id_one = "";
       }
       if (object.user_id_two !== void 0 && object.user_id_two !== null) {
         message.user_id_two = String(object.user_id_two);
+      } else {
+        message.user_id_two = "";
       }
       return message;
     },
@@ -4144,6 +3953,8 @@ var nakamajsprotobuf = (() => {
       message.presences = [];
       if (object.id !== void 0 && object.id !== null) {
         message.id = object.id;
+      } else {
+        message.id = "";
       }
       if (object.presences !== void 0 && object.presences !== null) {
         for (const e of object.presences) {
@@ -4152,18 +3963,28 @@ var nakamajsprotobuf = (() => {
       }
       if (object.self !== void 0 && object.self !== null) {
         message.self = UserPresence.fromPartial(object.self);
+      } else {
+        message.self = void 0;
       }
       if (object.room_name !== void 0 && object.room_name !== null) {
         message.room_name = object.room_name;
+      } else {
+        message.room_name = "";
       }
       if (object.group_id !== void 0 && object.group_id !== null) {
         message.group_id = object.group_id;
+      } else {
+        message.group_id = "";
       }
       if (object.user_id_one !== void 0 && object.user_id_one !== null) {
         message.user_id_one = object.user_id_one;
+      } else {
+        message.user_id_one = "";
       }
       if (object.user_id_two !== void 0 && object.user_id_two !== null) {
         message.user_id_two = object.user_id_two;
+      } else {
+        message.user_id_two = "";
       }
       return message;
     }
@@ -4215,15 +4036,23 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelJoin);
       if (object.target !== void 0 && object.target !== null) {
         message.target = String(object.target);
+      } else {
+        message.target = "";
       }
       if (object.type !== void 0 && object.type !== null) {
         message.type = Number(object.type);
+      } else {
+        message.type = 0;
       }
       if (object.persistence !== void 0 && object.persistence !== null) {
         message.persistence = Boolean(object.persistence);
+      } else {
+        message.persistence = void 0;
       }
       if (object.hidden !== void 0 && object.hidden !== null) {
         message.hidden = Boolean(object.hidden);
+      } else {
+        message.hidden = void 0;
       }
       return message;
     },
@@ -4239,15 +4068,23 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelJoin);
       if (object.target !== void 0 && object.target !== null) {
         message.target = object.target;
+      } else {
+        message.target = "";
       }
       if (object.type !== void 0 && object.type !== null) {
         message.type = object.type;
+      } else {
+        message.type = 0;
       }
       if (object.persistence !== void 0 && object.persistence !== null) {
         message.persistence = object.persistence;
+      } else {
+        message.persistence = void 0;
       }
       if (object.hidden !== void 0 && object.hidden !== null) {
         message.hidden = object.hidden;
+      } else {
+        message.hidden = void 0;
       }
       return message;
     }
@@ -4281,6 +4118,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelLeave);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = String(object.channel_id);
+      } else {
+        message.channel_id = "";
       }
       return message;
     },
@@ -4293,6 +4132,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelLeave);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = object.channel_id;
+      } else {
+        message.channel_id = "";
       }
       return message;
     }
@@ -4394,36 +4235,58 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelMessageAck);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = String(object.channel_id);
+      } else {
+        message.channel_id = "";
       }
       if (object.message_id !== void 0 && object.message_id !== null) {
         message.message_id = String(object.message_id);
+      } else {
+        message.message_id = "";
       }
       if (object.code !== void 0 && object.code !== null) {
         message.code = Number(object.code);
+      } else {
+        message.code = void 0;
       }
       if (object.username !== void 0 && object.username !== null) {
         message.username = String(object.username);
+      } else {
+        message.username = "";
       }
       if (object.create_time !== void 0 && object.create_time !== null) {
         message.create_time = fromJsonTimestamp2(object.create_time);
+      } else {
+        message.create_time = void 0;
       }
       if (object.update_time !== void 0 && object.update_time !== null) {
         message.update_time = fromJsonTimestamp2(object.update_time);
+      } else {
+        message.update_time = void 0;
       }
       if (object.persistent !== void 0 && object.persistent !== null) {
         message.persistent = Boolean(object.persistent);
+      } else {
+        message.persistent = void 0;
       }
       if (object.room_name !== void 0 && object.room_name !== null) {
         message.room_name = String(object.room_name);
+      } else {
+        message.room_name = "";
       }
       if (object.group_id !== void 0 && object.group_id !== null) {
         message.group_id = String(object.group_id);
+      } else {
+        message.group_id = "";
       }
       if (object.user_id_one !== void 0 && object.user_id_one !== null) {
         message.user_id_one = String(object.user_id_one);
+      } else {
+        message.user_id_one = "";
       }
       if (object.user_id_two !== void 0 && object.user_id_two !== null) {
         message.user_id_two = String(object.user_id_two);
+      } else {
+        message.user_id_two = "";
       }
       return message;
     },
@@ -4446,36 +4309,58 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelMessageAck);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = object.channel_id;
+      } else {
+        message.channel_id = "";
       }
       if (object.message_id !== void 0 && object.message_id !== null) {
         message.message_id = object.message_id;
+      } else {
+        message.message_id = "";
       }
       if (object.code !== void 0 && object.code !== null) {
         message.code = object.code;
+      } else {
+        message.code = void 0;
       }
       if (object.username !== void 0 && object.username !== null) {
         message.username = object.username;
+      } else {
+        message.username = "";
       }
       if (object.create_time !== void 0 && object.create_time !== null) {
         message.create_time = object.create_time;
+      } else {
+        message.create_time = void 0;
       }
       if (object.update_time !== void 0 && object.update_time !== null) {
         message.update_time = object.update_time;
+      } else {
+        message.update_time = void 0;
       }
       if (object.persistent !== void 0 && object.persistent !== null) {
         message.persistent = object.persistent;
+      } else {
+        message.persistent = void 0;
       }
       if (object.room_name !== void 0 && object.room_name !== null) {
         message.room_name = object.room_name;
+      } else {
+        message.room_name = "";
       }
       if (object.group_id !== void 0 && object.group_id !== null) {
         message.group_id = object.group_id;
+      } else {
+        message.group_id = "";
       }
       if (object.user_id_one !== void 0 && object.user_id_one !== null) {
         message.user_id_one = object.user_id_one;
+      } else {
+        message.user_id_one = "";
       }
       if (object.user_id_two !== void 0 && object.user_id_two !== null) {
         message.user_id_two = object.user_id_two;
+      } else {
+        message.user_id_two = "";
       }
       return message;
     }
@@ -4515,9 +4400,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelMessageSend);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = String(object.channel_id);
+      } else {
+        message.channel_id = "";
       }
       if (object.content !== void 0 && object.content !== null) {
         message.content = String(object.content);
+      } else {
+        message.content = "";
       }
       return message;
     },
@@ -4531,9 +4420,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelMessageSend);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = object.channel_id;
+      } else {
+        message.channel_id = "";
       }
       if (object.content !== void 0 && object.content !== null) {
         message.content = object.content;
+      } else {
+        message.content = "";
       }
       return message;
     }
@@ -4583,12 +4476,18 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelMessageUpdate);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = String(object.channel_id);
+      } else {
+        message.channel_id = "";
       }
       if (object.message_id !== void 0 && object.message_id !== null) {
         message.message_id = String(object.message_id);
+      } else {
+        message.message_id = "";
       }
       if (object.content !== void 0 && object.content !== null) {
         message.content = String(object.content);
+      } else {
+        message.content = "";
       }
       return message;
     },
@@ -4603,12 +4502,18 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelMessageUpdate);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = object.channel_id;
+      } else {
+        message.channel_id = "";
       }
       if (object.message_id !== void 0 && object.message_id !== null) {
         message.message_id = object.message_id;
+      } else {
+        message.message_id = "";
       }
       if (object.content !== void 0 && object.content !== null) {
         message.content = object.content;
+      } else {
+        message.content = "";
       }
       return message;
     }
@@ -4648,9 +4553,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelMessageRemove);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = String(object.channel_id);
+      } else {
+        message.channel_id = "";
       }
       if (object.message_id !== void 0 && object.message_id !== null) {
         message.message_id = String(object.message_id);
+      } else {
+        message.message_id = "";
       }
       return message;
     },
@@ -4664,9 +4573,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseChannelMessageRemove);
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = object.channel_id;
+      } else {
+        message.channel_id = "";
       }
       if (object.message_id !== void 0 && object.message_id !== null) {
         message.message_id = object.message_id;
+      } else {
+        message.message_id = "";
       }
       return message;
     }
@@ -4746,6 +4659,8 @@ var nakamajsprotobuf = (() => {
       message.leaves = [];
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = String(object.channel_id);
+      } else {
+        message.channel_id = "";
       }
       if (object.joins !== void 0 && object.joins !== null) {
         for (const e of object.joins) {
@@ -4759,15 +4674,23 @@ var nakamajsprotobuf = (() => {
       }
       if (object.room_name !== void 0 && object.room_name !== null) {
         message.room_name = String(object.room_name);
+      } else {
+        message.room_name = "";
       }
       if (object.group_id !== void 0 && object.group_id !== null) {
         message.group_id = String(object.group_id);
+      } else {
+        message.group_id = "";
       }
       if (object.user_id_one !== void 0 && object.user_id_one !== null) {
         message.user_id_one = String(object.user_id_one);
+      } else {
+        message.user_id_one = "";
       }
       if (object.user_id_two !== void 0 && object.user_id_two !== null) {
         message.user_id_two = String(object.user_id_two);
+      } else {
+        message.user_id_two = "";
       }
       return message;
     },
@@ -4796,6 +4719,8 @@ var nakamajsprotobuf = (() => {
       message.leaves = [];
       if (object.channel_id !== void 0 && object.channel_id !== null) {
         message.channel_id = object.channel_id;
+      } else {
+        message.channel_id = "";
       }
       if (object.joins !== void 0 && object.joins !== null) {
         for (const e of object.joins) {
@@ -4809,15 +4734,23 @@ var nakamajsprotobuf = (() => {
       }
       if (object.room_name !== void 0 && object.room_name !== null) {
         message.room_name = object.room_name;
+      } else {
+        message.room_name = "";
       }
       if (object.group_id !== void 0 && object.group_id !== null) {
         message.group_id = object.group_id;
+      } else {
+        message.group_id = "";
       }
       if (object.user_id_one !== void 0 && object.user_id_one !== null) {
         message.user_id_one = object.user_id_one;
+      } else {
+        message.user_id_one = "";
       }
       if (object.user_id_two !== void 0 && object.user_id_two !== null) {
         message.user_id_two = object.user_id_two;
+      } else {
+        message.user_id_two = "";
       }
       return message;
     }
@@ -4868,9 +4801,13 @@ var nakamajsprotobuf = (() => {
       message.context = {};
       if (object.code !== void 0 && object.code !== null) {
         message.code = Number(object.code);
+      } else {
+        message.code = 0;
       }
       if (object.message !== void 0 && object.message !== null) {
         message.message = String(object.message);
+      } else {
+        message.message = "";
       }
       if (object.context !== void 0 && object.context !== null) {
         Object.entries(object.context).forEach(([key, value]) => {
@@ -4896,9 +4833,13 @@ var nakamajsprotobuf = (() => {
       message.context = {};
       if (object.code !== void 0 && object.code !== null) {
         message.code = object.code;
+      } else {
+        message.code = 0;
       }
       if (object.message !== void 0 && object.message !== null) {
         message.message = object.message;
+      } else {
+        message.message = "";
       }
       if (object.context !== void 0 && object.context !== null) {
         Object.entries(object.context).forEach(([key, value]) => {
@@ -4945,9 +4886,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseError_ContextEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = String(object.key);
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = String(object.value);
+      } else {
+        message.value = "";
       }
       return message;
     },
@@ -4961,9 +4906,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseError_ContextEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = object.key;
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = object.value;
+      } else {
+        message.value = "";
       }
       return message;
     }
@@ -5029,15 +4978,23 @@ var nakamajsprotobuf = (() => {
       message.presences = [];
       if (object.match_id !== void 0 && object.match_id !== null) {
         message.match_id = String(object.match_id);
+      } else {
+        message.match_id = "";
       }
       if (object.authoritative !== void 0 && object.authoritative !== null) {
         message.authoritative = Boolean(object.authoritative);
+      } else {
+        message.authoritative = false;
       }
       if (object.label !== void 0 && object.label !== null) {
         message.label = String(object.label);
+      } else {
+        message.label = void 0;
       }
       if (object.size !== void 0 && object.size !== null) {
         message.size = Number(object.size);
+      } else {
+        message.size = 0;
       }
       if (object.presences !== void 0 && object.presences !== null) {
         for (const e of object.presences) {
@@ -5046,6 +5003,8 @@ var nakamajsprotobuf = (() => {
       }
       if (object.self !== void 0 && object.self !== null) {
         message.self = UserPresence.fromJSON(object.self);
+      } else {
+        message.self = void 0;
       }
       return message;
     },
@@ -5068,15 +5027,23 @@ var nakamajsprotobuf = (() => {
       message.presences = [];
       if (object.match_id !== void 0 && object.match_id !== null) {
         message.match_id = object.match_id;
+      } else {
+        message.match_id = "";
       }
       if (object.authoritative !== void 0 && object.authoritative !== null) {
         message.authoritative = object.authoritative;
+      } else {
+        message.authoritative = false;
       }
       if (object.label !== void 0 && object.label !== null) {
         message.label = object.label;
+      } else {
+        message.label = void 0;
       }
       if (object.size !== void 0 && object.size !== null) {
         message.size = object.size;
+      } else {
+        message.size = 0;
       }
       if (object.presences !== void 0 && object.presences !== null) {
         for (const e of object.presences) {
@@ -5085,6 +5052,8 @@ var nakamajsprotobuf = (() => {
       }
       if (object.self !== void 0 && object.self !== null) {
         message.self = UserPresence.fromPartial(object.self);
+      } else {
+        message.self = void 0;
       }
       return message;
     }
@@ -5176,18 +5145,26 @@ var nakamajsprotobuf = (() => {
       message.data = new Uint8Array();
       if (object.match_id !== void 0 && object.match_id !== null) {
         message.match_id = String(object.match_id);
+      } else {
+        message.match_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromJSON(object.presence);
+      } else {
+        message.presence = void 0;
       }
       if (object.op_code !== void 0 && object.op_code !== null) {
         message.op_code = Number(object.op_code);
+      } else {
+        message.op_code = 0;
       }
       if (object.data !== void 0 && object.data !== null) {
         message.data = bytesFromBase64(object.data);
       }
       if (object.reliable !== void 0 && object.reliable !== null) {
         message.reliable = Boolean(object.reliable);
+      } else {
+        message.reliable = false;
       }
       return message;
     },
@@ -5204,18 +5181,28 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchData);
       if (object.match_id !== void 0 && object.match_id !== null) {
         message.match_id = object.match_id;
+      } else {
+        message.match_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromPartial(object.presence);
+      } else {
+        message.presence = void 0;
       }
       if (object.op_code !== void 0 && object.op_code !== null) {
         message.op_code = object.op_code;
+      } else {
+        message.op_code = 0;
       }
       if (object.data !== void 0 && object.data !== null) {
         message.data = object.data;
+      } else {
+        message.data = new Uint8Array();
       }
       if (object.reliable !== void 0 && object.reliable !== null) {
         message.reliable = object.reliable;
+      } else {
+        message.reliable = false;
       }
       return message;
     }
@@ -5277,9 +5264,13 @@ var nakamajsprotobuf = (() => {
       message.data = new Uint8Array();
       if (object.match_id !== void 0 && object.match_id !== null) {
         message.match_id = String(object.match_id);
+      } else {
+        message.match_id = "";
       }
       if (object.op_code !== void 0 && object.op_code !== null) {
         message.op_code = Number(object.op_code);
+      } else {
+        message.op_code = 0;
       }
       if (object.data !== void 0 && object.data !== null) {
         message.data = bytesFromBase64(object.data);
@@ -5291,6 +5282,8 @@ var nakamajsprotobuf = (() => {
       }
       if (object.reliable !== void 0 && object.reliable !== null) {
         message.reliable = Boolean(object.reliable);
+      } else {
+        message.reliable = false;
       }
       return message;
     },
@@ -5312,12 +5305,18 @@ var nakamajsprotobuf = (() => {
       message.presences = [];
       if (object.match_id !== void 0 && object.match_id !== null) {
         message.match_id = object.match_id;
+      } else {
+        message.match_id = "";
       }
       if (object.op_code !== void 0 && object.op_code !== null) {
         message.op_code = object.op_code;
+      } else {
+        message.op_code = 0;
       }
       if (object.data !== void 0 && object.data !== null) {
         message.data = object.data;
+      } else {
+        message.data = new Uint8Array();
       }
       if (object.presences !== void 0 && object.presences !== null) {
         for (const e of object.presences) {
@@ -5326,6 +5325,8 @@ var nakamajsprotobuf = (() => {
       }
       if (object.reliable !== void 0 && object.reliable !== null) {
         message.reliable = object.reliable;
+      } else {
+        message.reliable = false;
       }
       return message;
     }
@@ -5333,12 +5334,11 @@ var nakamajsprotobuf = (() => {
   var baseMatchJoin = {};
   var MatchJoin = {
     encode(message, writer = import_minimal4.default.Writer.create()) {
-      var _a, _b;
-      if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id") {
-        writer.uint32(10).string(message.id.match_id);
+      if (message.match_id !== void 0) {
+        writer.uint32(10).string(message.match_id);
       }
-      if (((_b = message.id) == null ? void 0 : _b.$case) === "token") {
-        writer.uint32(18).string(message.id.token);
+      if (message.token !== void 0) {
+        writer.uint32(18).string(message.token);
       }
       Object.entries(message.metadata).forEach(([key, value]) => {
         MatchJoin_MetadataEntry.encode({ key, value }, writer.uint32(26).fork()).ldelim();
@@ -5354,10 +5354,10 @@ var nakamajsprotobuf = (() => {
         const tag = reader.uint32();
         switch (tag >>> 3) {
           case 1:
-            message.id = { $case: "match_id", match_id: reader.string() };
+            message.match_id = reader.string();
             break;
           case 2:
-            message.id = { $case: "token", token: reader.string() };
+            message.token = reader.string();
             break;
           case 3:
             const entry3 = MatchJoin_MetadataEntry.decode(reader, reader.uint32());
@@ -5376,10 +5376,14 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchJoin);
       message.metadata = {};
       if (object.match_id !== void 0 && object.match_id !== null) {
-        message.id = { $case: "match_id", match_id: String(object.match_id) };
+        message.match_id = String(object.match_id);
+      } else {
+        message.match_id = void 0;
       }
       if (object.token !== void 0 && object.token !== null) {
-        message.id = { $case: "token", token: String(object.token) };
+        message.token = String(object.token);
+      } else {
+        message.token = void 0;
       }
       if (object.metadata !== void 0 && object.metadata !== null) {
         Object.entries(object.metadata).forEach(([key, value]) => {
@@ -5389,10 +5393,9 @@ var nakamajsprotobuf = (() => {
       return message;
     },
     toJSON(message) {
-      var _a, _b, _c, _d;
       const obj = {};
-      ((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && (obj.match_id = (_b = message.id) == null ? void 0 : _b.match_id);
-      ((_c = message.id) == null ? void 0 : _c.$case) === "token" && (obj.token = (_d = message.id) == null ? void 0 : _d.token);
+      message.match_id !== void 0 && (obj.match_id = message.match_id);
+      message.token !== void 0 && (obj.token = message.token);
       obj.metadata = {};
       if (message.metadata) {
         Object.entries(message.metadata).forEach(([k, v]) => {
@@ -5402,14 +5405,17 @@ var nakamajsprotobuf = (() => {
       return obj;
     },
     fromPartial(object) {
-      var _a, _b, _c, _d, _e, _f;
       const message = __spreadValues({}, baseMatchJoin);
       message.metadata = {};
-      if (((_a = object.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = object.id) == null ? void 0 : _b.match_id) !== void 0 && ((_c = object.id) == null ? void 0 : _c.match_id) !== null) {
-        message.id = { $case: "match_id", match_id: object.id.match_id };
+      if (object.match_id !== void 0 && object.match_id !== null) {
+        message.match_id = object.match_id;
+      } else {
+        message.match_id = void 0;
       }
-      if (((_d = object.id) == null ? void 0 : _d.$case) === "token" && ((_e = object.id) == null ? void 0 : _e.token) !== void 0 && ((_f = object.id) == null ? void 0 : _f.token) !== null) {
-        message.id = { $case: "token", token: object.id.token };
+      if (object.token !== void 0 && object.token !== null) {
+        message.token = object.token;
+      } else {
+        message.token = void 0;
       }
       if (object.metadata !== void 0 && object.metadata !== null) {
         Object.entries(object.metadata).forEach(([key, value]) => {
@@ -5456,9 +5462,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchJoin_MetadataEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = String(object.key);
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = String(object.value);
+      } else {
+        message.value = "";
       }
       return message;
     },
@@ -5472,9 +5482,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchJoin_MetadataEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = object.key;
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = object.value;
+      } else {
+        message.value = "";
       }
       return message;
     }
@@ -5508,6 +5522,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchLeave);
       if (object.match_id !== void 0 && object.match_id !== null) {
         message.match_id = String(object.match_id);
+      } else {
+        message.match_id = "";
       }
       return message;
     },
@@ -5520,6 +5536,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchLeave);
       if (object.match_id !== void 0 && object.match_id !== null) {
         message.match_id = object.match_id;
+      } else {
+        message.match_id = "";
       }
       return message;
     }
@@ -5569,6 +5587,8 @@ var nakamajsprotobuf = (() => {
       message.leaves = [];
       if (object.match_id !== void 0 && object.match_id !== null) {
         message.match_id = String(object.match_id);
+      } else {
+        message.match_id = "";
       }
       if (object.joins !== void 0 && object.joins !== null) {
         for (const e of object.joins) {
@@ -5603,6 +5623,8 @@ var nakamajsprotobuf = (() => {
       message.leaves = [];
       if (object.match_id !== void 0 && object.match_id !== null) {
         message.match_id = object.match_id;
+      } else {
+        message.match_id = "";
       }
       if (object.joins !== void 0 && object.joins !== null) {
         for (const e of object.joins) {
@@ -5680,12 +5702,18 @@ var nakamajsprotobuf = (() => {
       message.numeric_properties = {};
       if (object.min_count !== void 0 && object.min_count !== null) {
         message.min_count = Number(object.min_count);
+      } else {
+        message.min_count = 0;
       }
       if (object.max_count !== void 0 && object.max_count !== null) {
         message.max_count = Number(object.max_count);
+      } else {
+        message.max_count = 0;
       }
       if (object.query !== void 0 && object.query !== null) {
         message.query = String(object.query);
+      } else {
+        message.query = "";
       }
       if (object.string_properties !== void 0 && object.string_properties !== null) {
         Object.entries(object.string_properties).forEach(([key, value]) => {
@@ -5724,12 +5752,18 @@ var nakamajsprotobuf = (() => {
       message.numeric_properties = {};
       if (object.min_count !== void 0 && object.min_count !== null) {
         message.min_count = object.min_count;
+      } else {
+        message.min_count = 0;
       }
       if (object.max_count !== void 0 && object.max_count !== null) {
         message.max_count = object.max_count;
+      } else {
+        message.max_count = 0;
       }
       if (object.query !== void 0 && object.query !== null) {
         message.query = object.query;
+      } else {
+        message.query = "";
       }
       if (object.string_properties !== void 0 && object.string_properties !== null) {
         Object.entries(object.string_properties).forEach(([key, value]) => {
@@ -5783,9 +5817,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerAdd_StringPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = String(object.key);
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = String(object.value);
+      } else {
+        message.value = "";
       }
       return message;
     },
@@ -5799,9 +5837,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerAdd_StringPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = object.key;
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = object.value;
+      } else {
+        message.value = "";
       }
       return message;
     }
@@ -5841,9 +5883,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerAdd_NumericPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = String(object.key);
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = Number(object.value);
+      } else {
+        message.value = 0;
       }
       return message;
     },
@@ -5857,9 +5903,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerAdd_NumericPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = object.key;
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = object.value;
+      } else {
+        message.value = 0;
       }
       return message;
     }
@@ -5867,15 +5917,14 @@ var nakamajsprotobuf = (() => {
   var baseMatchmakerMatched = { ticket: "" };
   var MatchmakerMatched = {
     encode(message, writer = import_minimal4.default.Writer.create()) {
-      var _a, _b;
       if (message.ticket !== "") {
         writer.uint32(10).string(message.ticket);
       }
-      if (((_a = message.id) == null ? void 0 : _a.$case) === "match_id") {
-        writer.uint32(18).string(message.id.match_id);
+      if (message.match_id !== void 0) {
+        writer.uint32(18).string(message.match_id);
       }
-      if (((_b = message.id) == null ? void 0 : _b.$case) === "token") {
-        writer.uint32(26).string(message.id.token);
+      if (message.token !== void 0) {
+        writer.uint32(26).string(message.token);
       }
       for (const v of message.users) {
         MatchmakerMatched_MatchmakerUser.encode(v, writer.uint32(34).fork()).ldelim();
@@ -5897,10 +5946,10 @@ var nakamajsprotobuf = (() => {
             message.ticket = reader.string();
             break;
           case 2:
-            message.id = { $case: "match_id", match_id: reader.string() };
+            message.match_id = reader.string();
             break;
           case 3:
-            message.id = { $case: "token", token: reader.string() };
+            message.token = reader.string();
             break;
           case 4:
             message.users.push(MatchmakerMatched_MatchmakerUser.decode(reader, reader.uint32()));
@@ -5920,12 +5969,18 @@ var nakamajsprotobuf = (() => {
       message.users = [];
       if (object.ticket !== void 0 && object.ticket !== null) {
         message.ticket = String(object.ticket);
+      } else {
+        message.ticket = "";
       }
       if (object.match_id !== void 0 && object.match_id !== null) {
-        message.id = { $case: "match_id", match_id: String(object.match_id) };
+        message.match_id = String(object.match_id);
+      } else {
+        message.match_id = void 0;
       }
       if (object.token !== void 0 && object.token !== null) {
-        message.id = { $case: "token", token: String(object.token) };
+        message.token = String(object.token);
+      } else {
+        message.token = void 0;
       }
       if (object.users !== void 0 && object.users !== null) {
         for (const e of object.users) {
@@ -5934,15 +5989,16 @@ var nakamajsprotobuf = (() => {
       }
       if (object.self !== void 0 && object.self !== null) {
         message.self = MatchmakerMatched_MatchmakerUser.fromJSON(object.self);
+      } else {
+        message.self = void 0;
       }
       return message;
     },
     toJSON(message) {
-      var _a, _b, _c, _d;
       const obj = {};
       message.ticket !== void 0 && (obj.ticket = message.ticket);
-      ((_a = message.id) == null ? void 0 : _a.$case) === "match_id" && (obj.match_id = (_b = message.id) == null ? void 0 : _b.match_id);
-      ((_c = message.id) == null ? void 0 : _c.$case) === "token" && (obj.token = (_d = message.id) == null ? void 0 : _d.token);
+      message.match_id !== void 0 && (obj.match_id = message.match_id);
+      message.token !== void 0 && (obj.token = message.token);
       if (message.users) {
         obj.users = message.users.map((e) => e ? MatchmakerMatched_MatchmakerUser.toJSON(e) : void 0);
       } else {
@@ -5952,17 +6008,22 @@ var nakamajsprotobuf = (() => {
       return obj;
     },
     fromPartial(object) {
-      var _a, _b, _c, _d, _e, _f;
       const message = __spreadValues({}, baseMatchmakerMatched);
       message.users = [];
       if (object.ticket !== void 0 && object.ticket !== null) {
         message.ticket = object.ticket;
+      } else {
+        message.ticket = "";
       }
-      if (((_a = object.id) == null ? void 0 : _a.$case) === "match_id" && ((_b = object.id) == null ? void 0 : _b.match_id) !== void 0 && ((_c = object.id) == null ? void 0 : _c.match_id) !== null) {
-        message.id = { $case: "match_id", match_id: object.id.match_id };
+      if (object.match_id !== void 0 && object.match_id !== null) {
+        message.match_id = object.match_id;
+      } else {
+        message.match_id = void 0;
       }
-      if (((_d = object.id) == null ? void 0 : _d.$case) === "token" && ((_e = object.id) == null ? void 0 : _e.token) !== void 0 && ((_f = object.id) == null ? void 0 : _f.token) !== null) {
-        message.id = { $case: "token", token: object.id.token };
+      if (object.token !== void 0 && object.token !== null) {
+        message.token = object.token;
+      } else {
+        message.token = void 0;
       }
       if (object.users !== void 0 && object.users !== null) {
         for (const e of object.users) {
@@ -5971,6 +6032,8 @@ var nakamajsprotobuf = (() => {
       }
       if (object.self !== void 0 && object.self !== null) {
         message.self = MatchmakerMatched_MatchmakerUser.fromPartial(object.self);
+      } else {
+        message.self = void 0;
       }
       return message;
     }
@@ -6032,9 +6095,13 @@ var nakamajsprotobuf = (() => {
       message.numeric_properties = {};
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromJSON(object.presence);
+      } else {
+        message.presence = void 0;
       }
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.string_properties !== void 0 && object.string_properties !== null) {
         Object.entries(object.string_properties).forEach(([key, value]) => {
@@ -6072,9 +6139,13 @@ var nakamajsprotobuf = (() => {
       message.numeric_properties = {};
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromPartial(object.presence);
+      } else {
+        message.presence = void 0;
       }
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.string_properties !== void 0 && object.string_properties !== null) {
         Object.entries(object.string_properties).forEach(([key, value]) => {
@@ -6131,9 +6202,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerMatched_MatchmakerUser_StringPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = String(object.key);
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = String(object.value);
+      } else {
+        message.value = "";
       }
       return message;
     },
@@ -6147,9 +6222,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerMatched_MatchmakerUser_StringPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = object.key;
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = object.value;
+      } else {
+        message.value = "";
       }
       return message;
     }
@@ -6192,9 +6271,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerMatched_MatchmakerUser_NumericPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = String(object.key);
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = Number(object.value);
+      } else {
+        message.value = 0;
       }
       return message;
     },
@@ -6208,9 +6291,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerMatched_MatchmakerUser_NumericPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = object.key;
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = object.value;
+      } else {
+        message.value = 0;
       }
       return message;
     }
@@ -6244,6 +6331,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerRemove);
       if (object.ticket !== void 0 && object.ticket !== null) {
         message.ticket = String(object.ticket);
+      } else {
+        message.ticket = "";
       }
       return message;
     },
@@ -6256,6 +6345,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerRemove);
       if (object.ticket !== void 0 && object.ticket !== null) {
         message.ticket = object.ticket;
+      } else {
+        message.ticket = "";
       }
       return message;
     }
@@ -6289,6 +6380,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerTicket);
       if (object.ticket !== void 0 && object.ticket !== null) {
         message.ticket = String(object.ticket);
+      } else {
+        message.ticket = "";
       }
       return message;
     },
@@ -6301,6 +6394,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseMatchmakerTicket);
       if (object.ticket !== void 0 && object.ticket !== null) {
         message.ticket = object.ticket;
+      } else {
+        message.ticket = "";
       }
       return message;
     }
@@ -6422,18 +6517,28 @@ var nakamajsprotobuf = (() => {
       message.presences = [];
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.open !== void 0 && object.open !== null) {
         message.open = Boolean(object.open);
+      } else {
+        message.open = false;
       }
       if (object.max_size !== void 0 && object.max_size !== null) {
         message.max_size = Number(object.max_size);
+      } else {
+        message.max_size = 0;
       }
       if (object.self !== void 0 && object.self !== null) {
         message.self = UserPresence.fromJSON(object.self);
+      } else {
+        message.self = void 0;
       }
       if (object.leader !== void 0 && object.leader !== null) {
         message.leader = UserPresence.fromJSON(object.leader);
+      } else {
+        message.leader = void 0;
       }
       if (object.presences !== void 0 && object.presences !== null) {
         for (const e of object.presences) {
@@ -6461,18 +6566,28 @@ var nakamajsprotobuf = (() => {
       message.presences = [];
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.open !== void 0 && object.open !== null) {
         message.open = object.open;
+      } else {
+        message.open = false;
       }
       if (object.max_size !== void 0 && object.max_size !== null) {
         message.max_size = object.max_size;
+      } else {
+        message.max_size = 0;
       }
       if (object.self !== void 0 && object.self !== null) {
         message.self = UserPresence.fromPartial(object.self);
+      } else {
+        message.self = void 0;
       }
       if (object.leader !== void 0 && object.leader !== null) {
         message.leader = UserPresence.fromPartial(object.leader);
+      } else {
+        message.leader = void 0;
       }
       if (object.presences !== void 0 && object.presences !== null) {
         for (const e of object.presences) {
@@ -6517,9 +6632,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyCreate);
       if (object.open !== void 0 && object.open !== null) {
         message.open = Boolean(object.open);
+      } else {
+        message.open = false;
       }
       if (object.max_size !== void 0 && object.max_size !== null) {
         message.max_size = Number(object.max_size);
+      } else {
+        message.max_size = 0;
       }
       return message;
     },
@@ -6533,9 +6652,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyCreate);
       if (object.open !== void 0 && object.open !== null) {
         message.open = object.open;
+      } else {
+        message.open = false;
       }
       if (object.max_size !== void 0 && object.max_size !== null) {
         message.max_size = object.max_size;
+      } else {
+        message.max_size = 0;
       }
       return message;
     }
@@ -6569,6 +6692,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyJoin);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       return message;
     },
@@ -6581,6 +6706,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyJoin);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       return message;
     }
@@ -6614,6 +6741,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyLeave);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       return message;
     },
@@ -6626,6 +6755,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyLeave);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       return message;
     }
@@ -6665,9 +6796,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyPromote);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromJSON(object.presence);
+      } else {
+        message.presence = void 0;
       }
       return message;
     },
@@ -6681,9 +6816,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyPromote);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromPartial(object.presence);
+      } else {
+        message.presence = void 0;
       }
       return message;
     }
@@ -6723,9 +6862,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyLeader);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromJSON(object.presence);
+      } else {
+        message.presence = void 0;
       }
       return message;
     },
@@ -6739,9 +6882,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyLeader);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromPartial(object.presence);
+      } else {
+        message.presence = void 0;
       }
       return message;
     }
@@ -6781,9 +6928,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyAccept);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromJSON(object.presence);
+      } else {
+        message.presence = void 0;
       }
       return message;
     },
@@ -6797,9 +6948,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyAccept);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromPartial(object.presence);
+      } else {
+        message.presence = void 0;
       }
       return message;
     }
@@ -6839,9 +6994,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyRemove);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromJSON(object.presence);
+      } else {
+        message.presence = void 0;
       }
       return message;
     },
@@ -6855,9 +7014,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyRemove);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromPartial(object.presence);
+      } else {
+        message.presence = void 0;
       }
       return message;
     }
@@ -6891,6 +7054,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyClose);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       return message;
     },
@@ -6903,6 +7068,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyClose);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       return message;
     }
@@ -6936,6 +7103,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyJoinRequestList);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       return message;
     },
@@ -6948,6 +7117,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyJoinRequestList);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       return message;
     }
@@ -6989,6 +7160,8 @@ var nakamajsprotobuf = (() => {
       message.presences = [];
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.presences !== void 0 && object.presences !== null) {
         for (const e of object.presences) {
@@ -7012,6 +7185,8 @@ var nakamajsprotobuf = (() => {
       message.presences = [];
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.presences !== void 0 && object.presences !== null) {
         for (const e of object.presences) {
@@ -7095,15 +7270,23 @@ var nakamajsprotobuf = (() => {
       message.numeric_properties = {};
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.min_count !== void 0 && object.min_count !== null) {
         message.min_count = Number(object.min_count);
+      } else {
+        message.min_count = 0;
       }
       if (object.max_count !== void 0 && object.max_count !== null) {
         message.max_count = Number(object.max_count);
+      } else {
+        message.max_count = 0;
       }
       if (object.query !== void 0 && object.query !== null) {
         message.query = String(object.query);
+      } else {
+        message.query = "";
       }
       if (object.string_properties !== void 0 && object.string_properties !== null) {
         Object.entries(object.string_properties).forEach(([key, value]) => {
@@ -7143,15 +7326,23 @@ var nakamajsprotobuf = (() => {
       message.numeric_properties = {};
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.min_count !== void 0 && object.min_count !== null) {
         message.min_count = object.min_count;
+      } else {
+        message.min_count = 0;
       }
       if (object.max_count !== void 0 && object.max_count !== null) {
         message.max_count = object.max_count;
+      } else {
+        message.max_count = 0;
       }
       if (object.query !== void 0 && object.query !== null) {
         message.query = object.query;
+      } else {
+        message.query = "";
       }
       if (object.string_properties !== void 0 && object.string_properties !== null) {
         Object.entries(object.string_properties).forEach(([key, value]) => {
@@ -7208,9 +7399,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyMatchmakerAdd_StringPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = String(object.key);
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = String(object.value);
+      } else {
+        message.value = "";
       }
       return message;
     },
@@ -7224,9 +7419,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyMatchmakerAdd_StringPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = object.key;
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = object.value;
+      } else {
+        message.value = "";
       }
       return message;
     }
@@ -7269,9 +7468,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyMatchmakerAdd_NumericPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = String(object.key);
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = Number(object.value);
+      } else {
+        message.value = 0;
       }
       return message;
     },
@@ -7285,9 +7488,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyMatchmakerAdd_NumericPropertiesEntry);
       if (object.key !== void 0 && object.key !== null) {
         message.key = object.key;
+      } else {
+        message.key = "";
       }
       if (object.value !== void 0 && object.value !== null) {
         message.value = object.value;
+      } else {
+        message.value = 0;
       }
       return message;
     }
@@ -7327,9 +7534,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyMatchmakerRemove);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.ticket !== void 0 && object.ticket !== null) {
         message.ticket = String(object.ticket);
+      } else {
+        message.ticket = "";
       }
       return message;
     },
@@ -7343,9 +7554,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyMatchmakerRemove);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.ticket !== void 0 && object.ticket !== null) {
         message.ticket = object.ticket;
+      } else {
+        message.ticket = "";
       }
       return message;
     }
@@ -7385,9 +7600,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyMatchmakerTicket);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.ticket !== void 0 && object.ticket !== null) {
         message.ticket = String(object.ticket);
+      } else {
+        message.ticket = "";
       }
       return message;
     },
@@ -7401,9 +7620,13 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyMatchmakerTicket);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.ticket !== void 0 && object.ticket !== null) {
         message.ticket = object.ticket;
+      } else {
+        message.ticket = "";
       }
       return message;
     }
@@ -7457,12 +7680,18 @@ var nakamajsprotobuf = (() => {
       message.data = new Uint8Array();
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromJSON(object.presence);
+      } else {
+        message.presence = void 0;
       }
       if (object.op_code !== void 0 && object.op_code !== null) {
         message.op_code = Number(object.op_code);
+      } else {
+        message.op_code = 0;
       }
       if (object.data !== void 0 && object.data !== null) {
         message.data = bytesFromBase64(object.data);
@@ -7481,15 +7710,23 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyData);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.presence !== void 0 && object.presence !== null) {
         message.presence = UserPresence.fromPartial(object.presence);
+      } else {
+        message.presence = void 0;
       }
       if (object.op_code !== void 0 && object.op_code !== null) {
         message.op_code = object.op_code;
+      } else {
+        message.op_code = 0;
       }
       if (object.data !== void 0 && object.data !== null) {
         message.data = object.data;
+      } else {
+        message.data = new Uint8Array();
       }
       return message;
     }
@@ -7537,9 +7774,13 @@ var nakamajsprotobuf = (() => {
       message.data = new Uint8Array();
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.op_code !== void 0 && object.op_code !== null) {
         message.op_code = Number(object.op_code);
+      } else {
+        message.op_code = 0;
       }
       if (object.data !== void 0 && object.data !== null) {
         message.data = bytesFromBase64(object.data);
@@ -7557,12 +7798,18 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, basePartyDataSend);
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.op_code !== void 0 && object.op_code !== null) {
         message.op_code = object.op_code;
+      } else {
+        message.op_code = 0;
       }
       if (object.data !== void 0 && object.data !== null) {
         message.data = object.data;
+      } else {
+        message.data = new Uint8Array();
       }
       return message;
     }
@@ -7612,6 +7859,8 @@ var nakamajsprotobuf = (() => {
       message.leaves = [];
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = String(object.party_id);
+      } else {
+        message.party_id = "";
       }
       if (object.joins !== void 0 && object.joins !== null) {
         for (const e of object.joins) {
@@ -7646,6 +7895,8 @@ var nakamajsprotobuf = (() => {
       message.leaves = [];
       if (object.party_id !== void 0 && object.party_id !== null) {
         message.party_id = object.party_id;
+      } else {
+        message.party_id = "";
       }
       if (object.joins !== void 0 && object.joins !== null) {
         for (const e of object.joins) {
@@ -8025,6 +8276,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseStatusUpdate);
       if (object.status !== void 0 && object.status !== null) {
         message.status = String(object.status);
+      } else {
+        message.status = void 0;
       }
       return message;
     },
@@ -8037,6 +8290,8 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseStatusUpdate);
       if (object.status !== void 0 && object.status !== null) {
         message.status = object.status;
+      } else {
+        message.status = void 0;
       }
       return message;
     }
@@ -8088,15 +8343,23 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseStream);
       if (object.mode !== void 0 && object.mode !== null) {
         message.mode = Number(object.mode);
+      } else {
+        message.mode = 0;
       }
       if (object.subject !== void 0 && object.subject !== null) {
         message.subject = String(object.subject);
+      } else {
+        message.subject = "";
       }
       if (object.subcontext !== void 0 && object.subcontext !== null) {
         message.subcontext = String(object.subcontext);
+      } else {
+        message.subcontext = "";
       }
       if (object.label !== void 0 && object.label !== null) {
         message.label = String(object.label);
+      } else {
+        message.label = "";
       }
       return message;
     },
@@ -8112,15 +8375,23 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseStream);
       if (object.mode !== void 0 && object.mode !== null) {
         message.mode = object.mode;
+      } else {
+        message.mode = 0;
       }
       if (object.subject !== void 0 && object.subject !== null) {
         message.subject = object.subject;
+      } else {
+        message.subject = "";
       }
       if (object.subcontext !== void 0 && object.subcontext !== null) {
         message.subcontext = object.subcontext;
+      } else {
+        message.subcontext = "";
       }
       if (object.label !== void 0 && object.label !== null) {
         message.label = object.label;
+      } else {
+        message.label = "";
       }
       return message;
     }
@@ -8172,15 +8443,23 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseStreamData);
       if (object.stream !== void 0 && object.stream !== null) {
         message.stream = Stream.fromJSON(object.stream);
+      } else {
+        message.stream = void 0;
       }
       if (object.sender !== void 0 && object.sender !== null) {
         message.sender = UserPresence.fromJSON(object.sender);
+      } else {
+        message.sender = void 0;
       }
       if (object.data !== void 0 && object.data !== null) {
         message.data = String(object.data);
+      } else {
+        message.data = "";
       }
       if (object.reliable !== void 0 && object.reliable !== null) {
         message.reliable = Boolean(object.reliable);
+      } else {
+        message.reliable = false;
       }
       return message;
     },
@@ -8196,15 +8475,23 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseStreamData);
       if (object.stream !== void 0 && object.stream !== null) {
         message.stream = Stream.fromPartial(object.stream);
+      } else {
+        message.stream = void 0;
       }
       if (object.sender !== void 0 && object.sender !== null) {
         message.sender = UserPresence.fromPartial(object.sender);
+      } else {
+        message.sender = void 0;
       }
       if (object.data !== void 0 && object.data !== null) {
         message.data = object.data;
+      } else {
+        message.data = "";
       }
       if (object.reliable !== void 0 && object.reliable !== null) {
         message.reliable = object.reliable;
+      } else {
+        message.reliable = false;
       }
       return message;
     }
@@ -8254,6 +8541,8 @@ var nakamajsprotobuf = (() => {
       message.leaves = [];
       if (object.stream !== void 0 && object.stream !== null) {
         message.stream = Stream.fromJSON(object.stream);
+      } else {
+        message.stream = void 0;
       }
       if (object.joins !== void 0 && object.joins !== null) {
         for (const e of object.joins) {
@@ -8288,6 +8577,8 @@ var nakamajsprotobuf = (() => {
       message.leaves = [];
       if (object.stream !== void 0 && object.stream !== null) {
         message.stream = Stream.fromPartial(object.stream);
+      } else {
+        message.stream = void 0;
       }
       if (object.joins !== void 0 && object.joins !== null) {
         for (const e of object.joins) {
@@ -8360,18 +8651,28 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseUserPresence);
       if (object.user_id !== void 0 && object.user_id !== null) {
         message.user_id = String(object.user_id);
+      } else {
+        message.user_id = "";
       }
       if (object.session_id !== void 0 && object.session_id !== null) {
         message.session_id = String(object.session_id);
+      } else {
+        message.session_id = "";
       }
       if (object.username !== void 0 && object.username !== null) {
         message.username = String(object.username);
+      } else {
+        message.username = "";
       }
       if (object.persistence !== void 0 && object.persistence !== null) {
         message.persistence = Boolean(object.persistence);
+      } else {
+        message.persistence = false;
       }
       if (object.status !== void 0 && object.status !== null) {
         message.status = String(object.status);
+      } else {
+        message.status = void 0;
       }
       return message;
     },
@@ -8388,18 +8689,28 @@ var nakamajsprotobuf = (() => {
       const message = __spreadValues({}, baseUserPresence);
       if (object.user_id !== void 0 && object.user_id !== null) {
         message.user_id = object.user_id;
+      } else {
+        message.user_id = "";
       }
       if (object.session_id !== void 0 && object.session_id !== null) {
         message.session_id = object.session_id;
+      } else {
+        message.session_id = "";
       }
       if (object.username !== void 0 && object.username !== null) {
         message.username = object.username;
+      } else {
+        message.username = "";
       }
       if (object.persistence !== void 0 && object.persistence !== null) {
         message.persistence = object.persistence;
+      } else {
+        message.persistence = false;
       }
       if (object.status !== void 0 && object.status !== null) {
         message.status = object.status;
+      } else {
+        message.status = void 0;
       }
       return message;
     }
@@ -8487,11 +8798,7 @@ var nakamajsprotobuf = (() => {
         this._socket.onmessage = (evt) => {
           const buffer = evt.data;
           const uintBuffer = new Uint8Array(buffer);
-          const envelopeProto = Envelope.decode(uintBuffer);
-          const envelope = Envelope.toJSON(envelopeProto);
-          if (envelope.cid == "") {
-            envelope.cid = void 0;
-          }
+          const envelope = Envelope.decode(uintBuffer);
           if (envelope.channel_message) {
             if (envelope.channel_message.code == void 0) {
               envelope.channel_message.code = 0;
@@ -8527,11 +8834,21 @@ var nakamajsprotobuf = (() => {
       this._isConnected = true;
     }
     send(msg) {
-      const envelope = Envelope.fromJSON(msg);
-      const envelopeWriter = Envelope.encode(envelope);
+      if (msg.match_data_send) {
+        let payload = msg.match_data_send.data;
+        if (typeof payload == "string") {
+          msg.match_data_send.data = new TextEncoder().encode(payload);
+        }
+      } else if (msg.party_data_send) {
+        let payload = msg.party_data_send.data;
+        if (typeof payload == "string") {
+          msg.party_data_send.data = new TextEncoder().encode(payload);
+        }
+      }
+      const envelopeWriter = Envelope.encode(Envelope.fromPartial(msg));
       const encodedMsg = envelopeWriter.finish();
       this._socket.send(encodedMsg);
     }
   };
-  return nakama_js_protobuf_exports;
+  return __toCommonJS(nakama_js_protobuf_exports);
 })();

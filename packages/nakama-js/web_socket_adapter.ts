@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import * as base64 from "base64-arraybuffer";
+
 /**
  * An interface used by Nakama's web socket to determine the payload protocol.
  */
@@ -107,6 +109,13 @@ export class WebSocketAdapterText implements WebSocketAdapter {
         if (value) {
             this._socket!.onmessage = (evt: MessageEvent) => {
                 const message: any = JSON.parse(evt.data);
+
+                if (message.match_data && message.match_data.data) {
+                    message.match_data.data = new Uint8Array(base64.decode(message.match_data.data));
+                } else if (message.party_data && message.party_data.data) {
+                    message.party_data.data = new Uint8Array(base64.decode(message.party_data.data));
+                }
+
                 value!(message);
             };
         }
@@ -143,8 +152,21 @@ export class WebSocketAdapterText implements WebSocketAdapter {
         if (msg.match_data_send) {
             // according to protobuf docs, int64 is encoded to JSON as string.
             msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+            let payload = msg.match_data_send.data;
+            if (payload && payload instanceof Uint8Array) {
+                msg.match_data_send.data = base64.encode(payload.buffer);
+            } else if (payload) { // it's a string
+                msg.match_data_send.data = btoa(payload);
+            }
         } else if (msg.party_data_send) {
+            // according to protobuf docs, int64 is encoded to JSON as string.
             msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
+            let payload = msg.party_data_send.data;
+            if (payload && payload instanceof Uint8Array) {
+                msg.party_data_send.data = base64.encode(payload.buffer);
+            } else if (payload) { // it's a string
+                msg.party_data_send.data = btoa(payload);
+            }
         }
 
         this._socket!.send(JSON.stringify(msg));

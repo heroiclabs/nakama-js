@@ -15,7 +15,7 @@ export const protobufPackage = "nakama.api";
 /** The Nakama server RPC protocol for games and apps. */
 
 /** Operator that can be used to override the one set in the leaderboard. */
-export enum OverrideOperator {
+export enum Operator {
   /** NO_OVERRIDE - Do not override the leaderboard operator. */
   NO_OVERRIDE = 0,
   /** BEST - Override the leaderboard operator with BEST. */
@@ -29,41 +29,41 @@ export enum OverrideOperator {
   UNRECOGNIZED = -1,
 }
 
-export function overrideOperatorFromJSON(object: any): OverrideOperator {
+export function operatorFromJSON(object: any): Operator {
   switch (object) {
     case 0:
     case "NO_OVERRIDE":
-      return OverrideOperator.NO_OVERRIDE;
+      return Operator.NO_OVERRIDE;
     case 1:
     case "BEST":
-      return OverrideOperator.BEST;
+      return Operator.BEST;
     case 2:
     case "SET":
-      return OverrideOperator.SET;
+      return Operator.SET;
     case 3:
     case "INCREMENT":
-      return OverrideOperator.INCREMENT;
+      return Operator.INCREMENT;
     case 4:
     case "DECREMENT":
-      return OverrideOperator.DECREMENT;
+      return Operator.DECREMENT;
     case -1:
     case "UNRECOGNIZED":
     default:
-      return OverrideOperator.UNRECOGNIZED;
+      return Operator.UNRECOGNIZED;
   }
 }
 
-export function overrideOperatorToJSON(object: OverrideOperator): string {
+export function operatorToJSON(object: Operator): string {
   switch (object) {
-    case OverrideOperator.NO_OVERRIDE:
+    case Operator.NO_OVERRIDE:
       return "NO_OVERRIDE";
-    case OverrideOperator.BEST:
+    case Operator.BEST:
       return "BEST";
-    case OverrideOperator.SET:
+    case Operator.SET:
       return "SET";
-    case OverrideOperator.INCREMENT:
+    case Operator.INCREMENT:
       return "INCREMENT";
-    case OverrideOperator.DECREMENT:
+    case Operator.DECREMENT:
       return "DECREMENT";
     default:
       return "UNKNOWN";
@@ -73,7 +73,7 @@ export function overrideOperatorToJSON(object: OverrideOperator): string {
 /** A user with additional account details. Always the current user. */
 export interface Account {
   /** The user object. */
-  user?: User;
+  user: User | undefined;
   /** The user's wallet data. */
   wallet: string;
   /** The email address of the user. */
@@ -83,9 +83,9 @@ export interface Account {
   /** The custom id in the user's account. */
   custom_id: string;
   /** The UNIX time when the user's email was verified. */
-  verify_time?: Date;
+  verify_time: Date | undefined;
   /** The UNIX time when the user's account was disabled/banned. */
-  disable_time?: Date;
+  disable_time: Date | undefined;
 }
 
 /** Obtain a new authentication token using a refresh token. */
@@ -270,9 +270,9 @@ export interface SessionLogoutRequest {
 /** Authenticate against the server with Apple Sign In. */
 export interface AuthenticateAppleRequest {
   /** The Apple account details. */
-  account?: AccountApple;
+  account: AccountApple | undefined;
   /** Register the account if the user does not already exist. */
-  create?: boolean;
+  create: boolean | undefined;
   /** Set the username on the account at register. Must be unique. */
   username: string;
 }
@@ -280,9 +280,9 @@ export interface AuthenticateAppleRequest {
 /** Authenticate against the server with a custom ID. */
 export interface AuthenticateCustomRequest {
   /** The custom account details. */
-  account?: AccountCustom;
+  account: AccountCustom | undefined;
   /** Register the account if the user does not already exist. */
-  create?: boolean;
+  create: boolean | undefined;
   /** Set the username on the account at register. Must be unique. */
   username: string;
 }
@@ -290,9 +290,9 @@ export interface AuthenticateCustomRequest {
 /** Authenticate against the server with a device ID. */
 export interface AuthenticateDeviceRequest {
   /** The device account details. */
-  account?: AccountDevice;
+  account: AccountDevice | undefined;
   /** Register the account if the user does not already exist. */
-  create?: boolean;
+  create: boolean | undefined;
   /** Set the username on the account at register. Must be unique. */
   username: string;
 }
@@ -300,9 +300,9 @@ export interface AuthenticateDeviceRequest {
 /** Authenticate against the server with email+password. */
 export interface AuthenticateEmailRequest {
   /** The email account details. */
-  account?: AccountEmail;
+  account: AccountEmail | undefined;
   /** Register the account if the user does not already exist. */
-  create?: boolean;
+  create: boolean | undefined;
   /** Set the username on the account at register. Must be unique. */
   username: string;
 }
@@ -310,21 +310,21 @@ export interface AuthenticateEmailRequest {
 /** Authenticate against the server with Facebook. */
 export interface AuthenticateFacebookRequest {
   /** The Facebook account details. */
-  account?: AccountFacebook;
+  account: AccountFacebook | undefined;
   /** Register the account if the user does not already exist. */
-  create?: boolean;
+  create: boolean | undefined;
   /** Set the username on the account at register. Must be unique. */
   username: string;
   /** Import Facebook friends for the user. */
-  sync?: boolean;
+  sync: boolean | undefined;
 }
 
 /** Authenticate against the server with Facebook Instant Game token. */
 export interface AuthenticateFacebookInstantGameRequest {
   /** The Facebook Instant Game account details. */
-  account?: AccountFacebookInstantGame;
+  account: AccountFacebookInstantGame | undefined;
   /** Register the account if the user does not already exist. */
-  create?: boolean;
+  create: boolean | undefined;
   /** Set the username on the account at register. Must be unique. */
   username: string;
 }
@@ -332,9 +332,9 @@ export interface AuthenticateFacebookInstantGameRequest {
 /** Authenticate against the server with Apple's Game Center. */
 export interface AuthenticateGameCenterRequest {
   /** The Game Center account details. */
-  account?: AccountGameCenter;
+  account: AccountGameCenter | undefined;
   /** Register the account if the user does not already exist. */
-  create?: boolean;
+  create: boolean | undefined;
   /** Set the username on the account at register. Must be unique. */
   username: string;
 }
@@ -342,9 +342,9 @@ export interface AuthenticateGameCenterRequest {
 /** Authenticate against the server with Google. */
 export interface AuthenticateGoogleRequest {
   /** The Google account details. */
-  account?: AccountGoogle;
+  account: AccountGoogle | undefined;
   /** Register the account if the user does not already exist. */
-  create?: boolean;
+  create: boolean | undefined;
   /** Set the username on the account at register. Must be unique. */
   username: string;
 }
@@ -352,13 +352,13 @@ export interface AuthenticateGoogleRequest {
 /** Authenticate against the server with Steam. */
 export interface AuthenticateSteamRequest {
   /** The Steam account details. */
-  account?: AccountSteam;
+  account: AccountSteam | undefined;
   /** Register the account if the user does not already exist. */
-  create?: boolean;
+  create: boolean | undefined;
   /** Set the username on the account at register. Must be unique. */
   username: string;
   /** Import Steam friends for the user. */
-  sync?: boolean;
+  sync: boolean | undefined;
 }
 
 /** Ban users from a group. */
@@ -384,7 +384,7 @@ export interface ChannelMessage {
   /** The unique ID of this message. */
   message_id: string;
   /** The code representing a message type or category. */
-  code?: number;
+  code: number | undefined;
   /** Message sender, usually a user ID. */
   sender_id: string;
   /** The username of the message sender, if any. */
@@ -392,11 +392,11 @@ export interface ChannelMessage {
   /** The content payload. */
   content: string;
   /** The UNIX time when the message was created. */
-  create_time?: Date;
+  create_time: Date | undefined;
   /** The UNIX time when the message was last updated. */
-  update_time?: Date;
+  update_time: Date | undefined;
   /** True if the message was persisted to the channel's history, false otherwise. */
-  persistent?: boolean;
+  persistent: boolean | undefined;
   /** The name of the chat room, or an empty string if this message was not sent through a chat room. */
   room_name: string;
   /** The ID of the group, or an empty string if this message was not sent through a group channel. */
@@ -484,7 +484,7 @@ export interface Event {
   /** Arbitrary event property values. */
   properties: { [key: string]: string };
   /** The time when the event was triggered. */
-  timestamp?: Date;
+  timestamp: Date | undefined;
   /** True if the event came directly from a client call, false otherwise. */
   external: boolean;
 }
@@ -497,11 +497,11 @@ export interface Event_PropertiesEntry {
 /** A friend of a user. */
 export interface Friend {
   /** The user object. */
-  user?: User;
+  user: User | undefined;
   /** The friend status. */
-  state?: number;
+  state: number | undefined;
   /** Time of the latest relationship update. */
-  update_time?: Date;
+  update_time: Date | undefined;
 }
 
 /** The friendship status. */
@@ -588,15 +588,15 @@ export interface Group {
   /** A URL for an avatar image. */
   avatar_url: string;
   /** Anyone can join open groups, otherwise only admins can accept members. */
-  open?: boolean;
+  open: boolean | undefined;
   /** The current count of all members in the group. */
   edge_count: number;
   /** The maximum number of members allowed. */
   max_count: number;
   /** The UNIX time when the group was created. */
-  create_time?: Date;
+  create_time: Date | undefined;
   /** The UNIX time when the group was last updated. */
-  update_time?: Date;
+  update_time: Date | undefined;
 }
 
 /** One or more groups returned from a listing operation. */
@@ -618,9 +618,9 @@ export interface GroupUserList {
 /** A single user-role pair. */
 export interface GroupUserList_GroupUser {
   /** User. */
-  user?: User;
+  user: User | undefined;
   /** Their relationship to the group. */
-  state?: number;
+  state: number | undefined;
 }
 
 /** The group role status. */
@@ -679,17 +679,17 @@ export function groupUserList_GroupUser_StateToJSON(
 /** Import Facebook friends into the current user's account. */
 export interface ImportFacebookFriendsRequest {
   /** The Facebook account details. */
-  account?: AccountFacebook;
+  account: AccountFacebook | undefined;
   /** Reset the current user's friends list. */
-  reset?: boolean;
+  reset: boolean | undefined;
 }
 
 /** Import Facebook friends into the current user's account. */
 export interface ImportSteamFriendsRequest {
   /** The Facebook account details. */
-  account?: AccountSteam;
+  account: AccountSteam | undefined;
   /** Reset the current user's friends list. */
-  reset?: boolean;
+  reset: boolean | undefined;
 }
 
 /** Immediately join an open group, or request to join a closed one. */
@@ -712,6 +712,34 @@ export interface KickGroupUsersRequest {
   user_ids: string[];
 }
 
+/** A leaderboard on the server. */
+export interface Leaderboard {
+  /** The ID of the leaderboard. */
+  id: string;
+  /** ASC(0) or DESC(1) sort mode of scores in the leaderboard. */
+  sort_order: number;
+  /** BEST, SET, INCREMENT or DECREMENT operator mode of the leaderboard. */
+  operator: Operator;
+  /** The UNIX time when the leaderboard was previously reset. A computed value. */
+  prev_reset: number;
+  /** The UNIX time when the leaderboard is next playable. A computed value. */
+  next_reset: number;
+  /** Additional information stored as a JSON object. */
+  metadata: string;
+  /** The UNIX time when the leaderboard was created. */
+  create_time: Date | undefined;
+  /** Wether the leaderboard was created authoritatively or not. */
+  authoritative: boolean;
+}
+
+/** A list of leaderboards */
+export interface LeaderboardList {
+  /** The list of leaderboards returned. */
+  leaderboards: Leaderboard[];
+  /** A pagination cursor (optional). */
+  cursor: string;
+}
+
 /** Represents a complete leaderboard record with all scores and associated metadata. */
 export interface LeaderboardRecord {
   /** The ID of the leaderboard this score belongs to. */
@@ -719,7 +747,7 @@ export interface LeaderboardRecord {
   /** The ID of the score owner, usually a user or group. */
   owner_id: string;
   /** The username of the score owner, if the owner is a user. */
-  username?: string;
+  username: string | undefined;
   /** The score value. */
   score: number;
   /** An optional subscore value. */
@@ -729,11 +757,11 @@ export interface LeaderboardRecord {
   /** Metadata. */
   metadata: string;
   /** The UNIX time when the leaderboard record was created. */
-  create_time?: Date;
+  create_time: Date | undefined;
   /** The UNIX time when the leaderboard record was updated. */
-  update_time?: Date;
+  update_time: Date | undefined;
   /** The UNIX time when the leaderboard record expires. */
-  expiry_time?: Date;
+  expiry_time: Date | undefined;
   /** The rank of this record. */
   rank: number;
   /** The maximum number of score updates allowed by the owner. */
@@ -761,17 +789,17 @@ export interface LeaveGroupRequest {
 /** Link Facebook to the current user's account. */
 export interface LinkFacebookRequest {
   /** The Facebook account details. */
-  account?: AccountFacebook;
+  account: AccountFacebook | undefined;
   /** Import Facebook friends for the user. */
-  sync?: boolean;
+  sync: boolean | undefined;
 }
 
 /** Link Steam to the current user's account. */
 export interface LinkSteamRequest {
   /** The Facebook account details. */
-  account?: AccountSteam;
+  account: AccountSteam | undefined;
   /** Import Steam friends for the user. */
-  sync?: boolean;
+  sync: boolean | undefined;
 }
 
 /** List a channel's message history. */
@@ -779,9 +807,9 @@ export interface ListChannelMessagesRequest {
   /** The channel ID to list from. */
   channel_id: string;
   /** Max number of records to return. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
   /** True if listing should be older messages to newer, false if reverse. */
-  forward?: boolean;
+  forward: boolean | undefined;
   /** A pagination cursor, if any. */
   cursor: string;
 }
@@ -789,9 +817,9 @@ export interface ListChannelMessagesRequest {
 /** List friends for a user. */
 export interface ListFriendsRequest {
   /** Max number of records to return. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
   /** The friend state to list. */
-  state?: number;
+  state: number | undefined;
   /** An optional next page cursor. */
   cursor: string;
 }
@@ -803,7 +831,13 @@ export interface ListGroupsRequest {
   /** Optional pagination cursor. */
   cursor: string;
   /** Max number of groups to return. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
+  /** Language tag filter */
+  lang_tag: string;
+  /** Number of group members */
+  members: number | undefined;
+  /** Optional Open/Closed filter. */
+  open: boolean | undefined;
 }
 
 /** List all users that are part of a group. */
@@ -811,9 +845,9 @@ export interface ListGroupUsersRequest {
   /** The group ID to list from. */
   group_id: string;
   /** Max number of records to return. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
   /** The group user state to list. */
-  state?: number;
+  state: number | undefined;
   /** An optional next page cursor. */
   cursor: string;
 }
@@ -823,11 +857,11 @@ export interface ListLeaderboardRecordsAroundOwnerRequest {
   /** The ID of the tournament to list for. */
   leaderboard_id: string;
   /** Max number of records to return. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
   /** The owner to retrieve records around. */
   owner_id: string;
   /** Expiry in seconds (since epoch) to begin fetching records from. */
-  expiry?: number;
+  expiry: number | undefined;
 }
 
 /** List leaderboard records from a given leaderboard. */
@@ -837,33 +871,33 @@ export interface ListLeaderboardRecordsRequest {
   /** One or more owners to retrieve records for. */
   owner_ids: string[];
   /** Max number of records to return. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
   /** A next or previous page cursor. */
   cursor: string;
   /** Expiry in seconds (since epoch) to begin fetching records from. Optional. 0 means from current time. */
-  expiry?: number;
+  expiry: number | undefined;
 }
 
 /** List realtime matches. */
 export interface ListMatchesRequest {
   /** Limit the number of returned matches. */
-  limit?: number;
+  limit: number | undefined;
   /** Authoritative or relayed matches. */
-  authoritative?: boolean;
+  authoritative: boolean | undefined;
   /** Label filter. */
-  label?: string;
+  label: string | undefined;
   /** Minimum user count. */
-  min_size?: number;
+  min_size: number | undefined;
   /** Maximum user count. */
-  max_size?: number;
+  max_size: number | undefined;
   /** Arbitrary label query. */
-  query?: string;
+  query: string | undefined;
 }
 
 /** Get a list of unexpired notifications. */
 export interface ListNotificationsRequest {
   /** The number of notifications to get. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
   /** A cursor to page through notifications. May be cached by clients to get from point in time forwards. */
   cacheable_cursor: string;
 }
@@ -875,7 +909,7 @@ export interface ListStorageObjectsRequest {
   /** The collection which stores the object. */
   collection: string;
   /** The number of storage objects to list. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
   /** The cursor to page through results from. */
   cursor: string;
 }
@@ -885,11 +919,11 @@ export interface ListTournamentRecordsAroundOwnerRequest {
   /** The ID of the tournament to list for. */
   tournament_id: string;
   /** Max number of records to return. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
   /** The owner to retrieve records around. */
   owner_id: string;
   /** Expiry in seconds (since epoch) to begin fetching records from. */
-  expiry?: number;
+  expiry: number | undefined;
 }
 
 /** List tournament records from a given tournament. */
@@ -899,25 +933,25 @@ export interface ListTournamentRecordsRequest {
   /** One or more owners to retrieve records for. */
   owner_ids: string[];
   /** Max number of records to return. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
   /** A next or previous page cursor. */
   cursor: string;
   /** Expiry in seconds (since epoch) to begin fetching records from. */
-  expiry?: number;
+  expiry: number | undefined;
 }
 
 /** List active/upcoming tournaments based on given filters. */
 export interface ListTournamentsRequest {
   /** The start of the categories to include. Defaults to 0. */
-  category_start?: number;
+  category_start: number | undefined;
   /** The end of the categories to include. Defaults to 128. */
-  category_end?: number;
+  category_end: number | undefined;
   /** The start time for tournaments. Defaults to epoch. */
-  start_time?: number;
+  start_time: number | undefined;
   /** The end time for tournaments. Defaults to +1 year from current Unix time. */
-  end_time?: number;
+  end_time: number | undefined;
   /** Max number of records to return. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
   /** A next page cursor for listings (optional). */
   cursor: string;
 }
@@ -927,9 +961,9 @@ export interface ListUserGroupsRequest {
   /** ID of the user. */
   user_id: string;
   /** Max number of records to return. Between 1 and 100. */
-  limit?: number;
+  limit: number | undefined;
   /** The user group state to list. */
-  state?: number;
+  state: number | undefined;
   /** An optional next page cursor. */
   cursor: string;
 }
@@ -941,7 +975,7 @@ export interface Match {
   /** True if it's an server-managed authoritative match, false otherwise. */
   authoritative: boolean;
   /** Match label, if any. */
-  label?: string;
+  label: string | undefined;
   /** Current number of users in the match. */
   size: number;
   /** Tick Rate */
@@ -969,7 +1003,7 @@ export interface Notification {
   /** ID of the sender, if a user. Otherwise 'null'. */
   sender_id: string;
   /** The UNIX time when the notification was created. */
-  create_time?: Date;
+  create_time: Date | undefined;
   /** True if this notification was persisted to the database. */
   persistent: boolean;
 }
@@ -1051,9 +1085,9 @@ export interface StorageObject {
   /** The write access permissions for the object. */
   permission_write: number;
   /** The UNIX time when the object was created. */
-  create_time?: Date;
+  create_time: Date | undefined;
   /** The UNIX time when the object was last updated. */
-  update_time?: Date;
+  update_time: Date | undefined;
 }
 
 /** A storage acknowledgement. */
@@ -1098,7 +1132,7 @@ export interface Tournament {
   description: string;
   /** The category of the tournament. e.g. "vip" could be category 1. */
   category: number;
-  /** ASC or DESC sort mode of scores in the tournament. */
+  /** ASC (0) or DESC (1) sort mode of scores in the tournament. */
   sort_order: number;
   /** The current number of players in the tournament. */
   size: number;
@@ -1115,15 +1149,19 @@ export interface Tournament {
   /** Additional information stored as a JSON object. */
   metadata: string;
   /** The UNIX time when the tournament was created. */
-  create_time?: Date;
+  create_time: Date | undefined;
   /** The UNIX time when the tournament will start. */
-  start_time?: Date;
+  start_time: Date | undefined;
   /** The UNIX time when the tournament will be stopped. */
-  end_time?: Date;
+  end_time: Date | undefined;
   /** Duration of the tournament in seconds. */
   duration: number;
   /** The UNIX time when the tournament start being active. A computed value. */
   start_active: number;
+  /** The UNIX time when the tournament was last reset. A computed value. */
+  prev_reset: number;
+  /** Operator. */
+  operator: Operator;
 }
 
 /** A list of tournaments. */
@@ -1149,17 +1187,17 @@ export interface TournamentRecordList {
 /** Update a user's account details. */
 export interface UpdateAccountRequest {
   /** The username of the user's account. */
-  username?: string;
+  username: string | undefined;
   /** The display name of the user. */
-  display_name?: string;
+  display_name: string | undefined;
   /** A URL for an avatar image. */
-  avatar_url?: string;
+  avatar_url: string | undefined;
   /** The language expected to be a tag which follows the BCP-47 spec. */
-  lang_tag?: string;
+  lang_tag: string | undefined;
   /** The location set by the user. */
-  location?: string;
+  location: string | undefined;
   /** The timezone set by the user. */
-  timezone?: string;
+  timezone: string | undefined;
 }
 
 /** Update fields in a given group. */
@@ -1167,15 +1205,15 @@ export interface UpdateGroupRequest {
   /** The ID of the group to update. */
   group_id: string;
   /** Name. */
-  name?: string;
+  name: string | undefined;
   /** Description string. */
-  description?: string;
+  description: string | undefined;
   /** Lang tag. */
-  lang_tag?: string;
+  lang_tag: string | undefined;
   /** Avatar URL. */
-  avatar_url?: string;
+  avatar_url: string | undefined;
   /** Open is true if anyone should be allowed to join, or false if joins must be approved by a group admin. */
-  open?: boolean;
+  open: boolean | undefined;
 }
 
 /** A user in the server. */
@@ -1209,9 +1247,9 @@ export interface User {
   /** Number of related edges to this user. */
   edge_count: number;
   /** The UNIX time when the user was created. */
-  create_time?: Date;
+  create_time: Date | undefined;
   /** The UNIX time when the user was last updated. */
-  update_time?: Date;
+  update_time: Date | undefined;
   /** The Facebook Instant Game ID in the user's account. */
   facebook_instant_game_id: string;
   /** The Apple Sign In ID in the user's account. */
@@ -1229,9 +1267,9 @@ export interface UserGroupList {
 /** A single group-role pair. */
 export interface UserGroupList_UserGroup {
   /** Group. */
-  group?: Group;
+  group: Group | undefined;
   /** The user's relationship to the group. */
-  state?: number;
+  state: number | undefined;
 }
 
 /** The group role status. */
@@ -1322,15 +1360,17 @@ export interface ValidatedPurchase {
   /** Store identifier */
   store: ValidatedPurchase_Store;
   /** UNIX Timestamp when the purchase was done. */
-  purchase_time?: Date;
+  purchase_time: Date | undefined;
   /** UNIX Timestamp when the receipt validation was stored in DB. */
-  create_time?: Date;
+  create_time: Date | undefined;
   /** UNIX Timestamp when the receipt validation was updated in DB. */
-  update_time?: Date;
+  update_time: Date | undefined;
   /** Raw provider validation response. */
   provider_response: string;
   /** Whether the purchase was done in production or sandbox environment. */
   environment: ValidatedPurchase_Environment;
+  /** Whether the purchase had already been validated by Nakama before. */
+  seen_before: boolean;
 }
 
 /** Validation Provider */
@@ -1444,7 +1484,7 @@ export interface WriteLeaderboardRecordRequest {
   /** The ID of the leaderboard to write to. */
   leaderboard_id: string;
   /** Record input. */
-  record?: WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
+  record: WriteLeaderboardRecordRequest_LeaderboardRecordWrite | undefined;
 }
 
 /** Record values to write. */
@@ -1456,7 +1496,7 @@ export interface WriteLeaderboardRecordRequest_LeaderboardRecordWrite {
   /** Optional record metadata. */
   metadata: string;
   /** Operator override. */
-  operator: OverrideOperator;
+  operator: Operator;
 }
 
 /** The object to store. */
@@ -1470,9 +1510,9 @@ export interface WriteStorageObject {
   /** The version hash of the object to check. Possible values are: ["", "*", "#hash#"]. */
   version: string;
   /** The read access permissions for the object. */
-  permission_read?: number;
+  permission_read: number | undefined;
   /** The write access permissions for the object. */
-  permission_write?: number;
+  permission_write: number | undefined;
 }
 
 /** Write objects to the storage engine. */
@@ -1486,7 +1526,7 @@ export interface WriteTournamentRecordRequest {
   /** The tournament ID to write the record for. */
   tournament_id: string;
   /** Record input. */
-  record?: WriteTournamentRecordRequest_TournamentRecordWrite;
+  record: WriteTournamentRecordRequest_TournamentRecordWrite | undefined;
 }
 
 /** Record values to write. */
@@ -1498,7 +1538,7 @@ export interface WriteTournamentRecordRequest_TournamentRecordWrite {
   /** A JSON object of additional properties (optional). */
   metadata: string;
   /** Operator override. */
-  operator: OverrideOperator;
+  operator: Operator;
 }
 
 const baseAccount: object = { wallet: "", email: "", custom_id: "" };
@@ -1584,12 +1624,18 @@ export const Account = {
     message.devices = [];
     if (object.user !== undefined && object.user !== null) {
       message.user = User.fromJSON(object.user);
+    } else {
+      message.user = undefined;
     }
     if (object.wallet !== undefined && object.wallet !== null) {
       message.wallet = String(object.wallet);
+    } else {
+      message.wallet = "";
     }
     if (object.email !== undefined && object.email !== null) {
       message.email = String(object.email);
+    } else {
+      message.email = "";
     }
     if (object.devices !== undefined && object.devices !== null) {
       for (const e of object.devices) {
@@ -1598,12 +1644,18 @@ export const Account = {
     }
     if (object.custom_id !== undefined && object.custom_id !== null) {
       message.custom_id = String(object.custom_id);
+    } else {
+      message.custom_id = "";
     }
     if (object.verify_time !== undefined && object.verify_time !== null) {
       message.verify_time = fromJsonTimestamp(object.verify_time);
+    } else {
+      message.verify_time = undefined;
     }
     if (object.disable_time !== undefined && object.disable_time !== null) {
       message.disable_time = fromJsonTimestamp(object.disable_time);
+    } else {
+      message.disable_time = undefined;
     }
     return message;
   },
@@ -1634,12 +1686,18 @@ export const Account = {
     message.devices = [];
     if (object.user !== undefined && object.user !== null) {
       message.user = User.fromPartial(object.user);
+    } else {
+      message.user = undefined;
     }
     if (object.wallet !== undefined && object.wallet !== null) {
       message.wallet = object.wallet;
+    } else {
+      message.wallet = "";
     }
     if (object.email !== undefined && object.email !== null) {
       message.email = object.email;
+    } else {
+      message.email = "";
     }
     if (object.devices !== undefined && object.devices !== null) {
       for (const e of object.devices) {
@@ -1648,12 +1706,18 @@ export const Account = {
     }
     if (object.custom_id !== undefined && object.custom_id !== null) {
       message.custom_id = object.custom_id;
+    } else {
+      message.custom_id = "";
     }
     if (object.verify_time !== undefined && object.verify_time !== null) {
       message.verify_time = object.verify_time;
+    } else {
+      message.verify_time = undefined;
     }
     if (object.disable_time !== undefined && object.disable_time !== null) {
       message.disable_time = object.disable_time;
+    } else {
+      message.disable_time = undefined;
     }
     return message;
   },
@@ -1711,6 +1775,8 @@ export const AccountRefresh = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = String(object.token);
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -1737,6 +1803,8 @@ export const AccountRefresh = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = object.token;
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -1797,9 +1865,13 @@ export const AccountRefresh_VarsEntry = {
     } as AccountRefresh_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -1819,9 +1891,13 @@ export const AccountRefresh_VarsEntry = {
     } as AccountRefresh_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -1876,6 +1952,8 @@ export const AccountApple = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = String(object.token);
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -1902,6 +1980,8 @@ export const AccountApple = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = object.token;
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -1958,9 +2038,13 @@ export const AccountApple_VarsEntry = {
     const message = { ...baseAccountApple_VarsEntry } as AccountApple_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -1978,9 +2062,13 @@ export const AccountApple_VarsEntry = {
     const message = { ...baseAccountApple_VarsEntry } as AccountApple_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -2038,6 +2126,8 @@ export const AccountCustom = {
     message.vars = {};
     if (object.id !== undefined && object.id !== null) {
       message.id = String(object.id);
+    } else {
+      message.id = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -2064,6 +2154,8 @@ export const AccountCustom = {
     message.vars = {};
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -2124,9 +2216,13 @@ export const AccountCustom_VarsEntry = {
     } as AccountCustom_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -2146,9 +2242,13 @@ export const AccountCustom_VarsEntry = {
     } as AccountCustom_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -2206,6 +2306,8 @@ export const AccountDevice = {
     message.vars = {};
     if (object.id !== undefined && object.id !== null) {
       message.id = String(object.id);
+    } else {
+      message.id = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -2232,6 +2334,8 @@ export const AccountDevice = {
     message.vars = {};
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -2292,9 +2396,13 @@ export const AccountDevice_VarsEntry = {
     } as AccountDevice_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -2314,9 +2422,13 @@ export const AccountDevice_VarsEntry = {
     } as AccountDevice_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -2377,9 +2489,13 @@ export const AccountEmail = {
     message.vars = {};
     if (object.email !== undefined && object.email !== null) {
       message.email = String(object.email);
+    } else {
+      message.email = "";
     }
     if (object.password !== undefined && object.password !== null) {
       message.password = String(object.password);
+    } else {
+      message.password = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -2407,9 +2523,13 @@ export const AccountEmail = {
     message.vars = {};
     if (object.email !== undefined && object.email !== null) {
       message.email = object.email;
+    } else {
+      message.email = "";
     }
     if (object.password !== undefined && object.password !== null) {
       message.password = object.password;
+    } else {
+      message.password = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -2466,9 +2586,13 @@ export const AccountEmail_VarsEntry = {
     const message = { ...baseAccountEmail_VarsEntry } as AccountEmail_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -2486,9 +2610,13 @@ export const AccountEmail_VarsEntry = {
     const message = { ...baseAccountEmail_VarsEntry } as AccountEmail_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -2546,6 +2674,8 @@ export const AccountFacebook = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = String(object.token);
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -2572,6 +2702,8 @@ export const AccountFacebook = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = object.token;
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -2632,9 +2764,13 @@ export const AccountFacebook_VarsEntry = {
     } as AccountFacebook_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -2654,9 +2790,13 @@ export const AccountFacebook_VarsEntry = {
     } as AccountFacebook_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -2724,6 +2864,8 @@ export const AccountFacebookInstantGame = {
       object.signed_player_info !== null
     ) {
       message.signed_player_info = String(object.signed_player_info);
+    } else {
+      message.signed_player_info = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -2758,6 +2900,8 @@ export const AccountFacebookInstantGame = {
       object.signed_player_info !== null
     ) {
       message.signed_player_info = object.signed_player_info;
+    } else {
+      message.signed_player_info = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -2818,9 +2962,13 @@ export const AccountFacebookInstantGame_VarsEntry = {
     } as AccountFacebookInstantGame_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -2840,9 +2988,13 @@ export const AccountFacebookInstantGame_VarsEntry = {
     } as AccountFacebookInstantGame_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -2937,24 +3089,36 @@ export const AccountGameCenter = {
     message.vars = {};
     if (object.player_id !== undefined && object.player_id !== null) {
       message.player_id = String(object.player_id);
+    } else {
+      message.player_id = "";
     }
     if (object.bundle_id !== undefined && object.bundle_id !== null) {
       message.bundle_id = String(object.bundle_id);
+    } else {
+      message.bundle_id = "";
     }
     if (
       object.timestamp_seconds !== undefined &&
       object.timestamp_seconds !== null
     ) {
       message.timestamp_seconds = Number(object.timestamp_seconds);
+    } else {
+      message.timestamp_seconds = 0;
     }
     if (object.salt !== undefined && object.salt !== null) {
       message.salt = String(object.salt);
+    } else {
+      message.salt = "";
     }
     if (object.signature !== undefined && object.signature !== null) {
       message.signature = String(object.signature);
+    } else {
+      message.signature = "";
     }
     if (object.public_key_url !== undefined && object.public_key_url !== null) {
       message.public_key_url = String(object.public_key_url);
+    } else {
+      message.public_key_url = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -2988,24 +3152,36 @@ export const AccountGameCenter = {
     message.vars = {};
     if (object.player_id !== undefined && object.player_id !== null) {
       message.player_id = object.player_id;
+    } else {
+      message.player_id = "";
     }
     if (object.bundle_id !== undefined && object.bundle_id !== null) {
       message.bundle_id = object.bundle_id;
+    } else {
+      message.bundle_id = "";
     }
     if (
       object.timestamp_seconds !== undefined &&
       object.timestamp_seconds !== null
     ) {
       message.timestamp_seconds = object.timestamp_seconds;
+    } else {
+      message.timestamp_seconds = 0;
     }
     if (object.salt !== undefined && object.salt !== null) {
       message.salt = object.salt;
+    } else {
+      message.salt = "";
     }
     if (object.signature !== undefined && object.signature !== null) {
       message.signature = object.signature;
+    } else {
+      message.signature = "";
     }
     if (object.public_key_url !== undefined && object.public_key_url !== null) {
       message.public_key_url = object.public_key_url;
+    } else {
+      message.public_key_url = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -3066,9 +3242,13 @@ export const AccountGameCenter_VarsEntry = {
     } as AccountGameCenter_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -3088,9 +3268,13 @@ export const AccountGameCenter_VarsEntry = {
     } as AccountGameCenter_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -3148,6 +3332,8 @@ export const AccountGoogle = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = String(object.token);
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -3174,6 +3360,8 @@ export const AccountGoogle = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = object.token;
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -3234,9 +3422,13 @@ export const AccountGoogle_VarsEntry = {
     } as AccountGoogle_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -3256,9 +3448,13 @@ export const AccountGoogle_VarsEntry = {
     } as AccountGoogle_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -3313,6 +3509,8 @@ export const AccountSteam = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = String(object.token);
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -3339,6 +3537,8 @@ export const AccountSteam = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = object.token;
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -3395,9 +3595,13 @@ export const AccountSteam_VarsEntry = {
     const message = { ...baseAccountSteam_VarsEntry } as AccountSteam_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -3415,9 +3619,13 @@ export const AccountSteam_VarsEntry = {
     const message = { ...baseAccountSteam_VarsEntry } as AccountSteam_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -3558,6 +3766,8 @@ export const AddGroupUsersRequest = {
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     if (object.user_ids !== undefined && object.user_ids !== null) {
       for (const e of object.user_ids) {
@@ -3583,6 +3793,8 @@ export const AddGroupUsersRequest = {
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     if (object.user_ids !== undefined && object.user_ids !== null) {
       for (const e of object.user_ids) {
@@ -3648,6 +3860,8 @@ export const SessionRefreshRequest = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = String(object.token);
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -3676,6 +3890,8 @@ export const SessionRefreshRequest = {
     message.vars = {};
     if (object.token !== undefined && object.token !== null) {
       message.token = object.token;
+    } else {
+      message.token = "";
     }
     if (object.vars !== undefined && object.vars !== null) {
       Object.entries(object.vars).forEach(([key, value]) => {
@@ -3736,9 +3952,13 @@ export const SessionRefreshRequest_VarsEntry = {
     } as SessionRefreshRequest_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -3758,9 +3978,13 @@ export const SessionRefreshRequest_VarsEntry = {
     } as SessionRefreshRequest_VarsEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -3810,9 +4034,13 @@ export const SessionLogoutRequest = {
     const message = { ...baseSessionLogoutRequest } as SessionLogoutRequest;
     if (object.token !== undefined && object.token !== null) {
       message.token = String(object.token);
+    } else {
+      message.token = "";
     }
     if (object.refresh_token !== undefined && object.refresh_token !== null) {
       message.refresh_token = String(object.refresh_token);
+    } else {
+      message.refresh_token = "";
     }
     return message;
   },
@@ -3829,9 +4057,13 @@ export const SessionLogoutRequest = {
     const message = { ...baseSessionLogoutRequest } as SessionLogoutRequest;
     if (object.token !== undefined && object.token !== null) {
       message.token = object.token;
+    } else {
+      message.token = "";
     }
     if (object.refresh_token !== undefined && object.refresh_token !== null) {
       message.refresh_token = object.refresh_token;
+    } else {
+      message.refresh_token = "";
     }
     return message;
   },
@@ -3894,12 +4126,18 @@ export const AuthenticateAppleRequest = {
     } as AuthenticateAppleRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountApple.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = Boolean(object.create);
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -3923,12 +4161,18 @@ export const AuthenticateAppleRequest = {
     } as AuthenticateAppleRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountApple.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = object.create;
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -3991,12 +4235,18 @@ export const AuthenticateCustomRequest = {
     } as AuthenticateCustomRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountCustom.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = Boolean(object.create);
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4020,12 +4270,18 @@ export const AuthenticateCustomRequest = {
     } as AuthenticateCustomRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountCustom.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = object.create;
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4088,12 +4344,18 @@ export const AuthenticateDeviceRequest = {
     } as AuthenticateDeviceRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountDevice.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = Boolean(object.create);
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4117,12 +4379,18 @@ export const AuthenticateDeviceRequest = {
     } as AuthenticateDeviceRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountDevice.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = object.create;
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4185,12 +4453,18 @@ export const AuthenticateEmailRequest = {
     } as AuthenticateEmailRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountEmail.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = Boolean(object.create);
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4214,12 +4488,18 @@ export const AuthenticateEmailRequest = {
     } as AuthenticateEmailRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountEmail.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = object.create;
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4294,15 +4574,23 @@ export const AuthenticateFacebookRequest = {
     } as AuthenticateFacebookRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebook.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = Boolean(object.create);
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     if (object.sync !== undefined && object.sync !== null) {
       message.sync = Boolean(object.sync);
+    } else {
+      message.sync = undefined;
     }
     return message;
   },
@@ -4327,15 +4615,23 @@ export const AuthenticateFacebookRequest = {
     } as AuthenticateFacebookRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebook.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = object.create;
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     if (object.sync !== undefined && object.sync !== null) {
       message.sync = object.sync;
+    } else {
+      message.sync = undefined;
     }
     return message;
   },
@@ -4404,12 +4700,18 @@ export const AuthenticateFacebookInstantGameRequest = {
     } as AuthenticateFacebookInstantGameRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebookInstantGame.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = Boolean(object.create);
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4433,12 +4735,18 @@ export const AuthenticateFacebookInstantGameRequest = {
     } as AuthenticateFacebookInstantGameRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebookInstantGame.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = object.create;
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4504,12 +4812,18 @@ export const AuthenticateGameCenterRequest = {
     } as AuthenticateGameCenterRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountGameCenter.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = Boolean(object.create);
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4533,12 +4847,18 @@ export const AuthenticateGameCenterRequest = {
     } as AuthenticateGameCenterRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountGameCenter.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = object.create;
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4601,12 +4921,18 @@ export const AuthenticateGoogleRequest = {
     } as AuthenticateGoogleRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountGoogle.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = Boolean(object.create);
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4630,12 +4956,18 @@ export const AuthenticateGoogleRequest = {
     } as AuthenticateGoogleRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountGoogle.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = object.create;
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     return message;
   },
@@ -4707,15 +5039,23 @@ export const AuthenticateSteamRequest = {
     } as AuthenticateSteamRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountSteam.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = Boolean(object.create);
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     if (object.sync !== undefined && object.sync !== null) {
       message.sync = Boolean(object.sync);
+    } else {
+      message.sync = undefined;
     }
     return message;
   },
@@ -4740,15 +5080,23 @@ export const AuthenticateSteamRequest = {
     } as AuthenticateSteamRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountSteam.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.create !== undefined && object.create !== null) {
       message.create = object.create;
+    } else {
+      message.create = undefined;
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     if (object.sync !== undefined && object.sync !== null) {
       message.sync = object.sync;
+    } else {
+      message.sync = undefined;
     }
     return message;
   },
@@ -4800,6 +5148,8 @@ export const BanGroupUsersRequest = {
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     if (object.user_ids !== undefined && object.user_ids !== null) {
       for (const e of object.user_ids) {
@@ -4825,6 +5175,8 @@ export const BanGroupUsersRequest = {
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     if (object.user_ids !== undefined && object.user_ids !== null) {
       for (const e of object.user_ids) {
@@ -5057,42 +5409,68 @@ export const ChannelMessage = {
     const message = { ...baseChannelMessage } as ChannelMessage;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = String(object.channel_id);
+    } else {
+      message.channel_id = "";
     }
     if (object.message_id !== undefined && object.message_id !== null) {
       message.message_id = String(object.message_id);
+    } else {
+      message.message_id = "";
     }
     if (object.code !== undefined && object.code !== null) {
       message.code = Number(object.code);
+    } else {
+      message.code = undefined;
     }
     if (object.sender_id !== undefined && object.sender_id !== null) {
       message.sender_id = String(object.sender_id);
+    } else {
+      message.sender_id = "";
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     if (object.content !== undefined && object.content !== null) {
       message.content = String(object.content);
+    } else {
+      message.content = "";
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = fromJsonTimestamp(object.create_time);
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = fromJsonTimestamp(object.update_time);
+    } else {
+      message.update_time = undefined;
     }
     if (object.persistent !== undefined && object.persistent !== null) {
       message.persistent = Boolean(object.persistent);
+    } else {
+      message.persistent = undefined;
     }
     if (object.room_name !== undefined && object.room_name !== null) {
       message.room_name = String(object.room_name);
+    } else {
+      message.room_name = "";
     }
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     if (object.user_id_one !== undefined && object.user_id_one !== null) {
       message.user_id_one = String(object.user_id_one);
+    } else {
+      message.user_id_one = "";
     }
     if (object.user_id_two !== undefined && object.user_id_two !== null) {
       message.user_id_two = String(object.user_id_two);
+    } else {
+      message.user_id_two = "";
     }
     return message;
   },
@@ -5123,42 +5501,68 @@ export const ChannelMessage = {
     const message = { ...baseChannelMessage } as ChannelMessage;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = object.channel_id;
+    } else {
+      message.channel_id = "";
     }
     if (object.message_id !== undefined && object.message_id !== null) {
       message.message_id = object.message_id;
+    } else {
+      message.message_id = "";
     }
     if (object.code !== undefined && object.code !== null) {
       message.code = object.code;
+    } else {
+      message.code = undefined;
     }
     if (object.sender_id !== undefined && object.sender_id !== null) {
       message.sender_id = object.sender_id;
+    } else {
+      message.sender_id = "";
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     if (object.content !== undefined && object.content !== null) {
       message.content = object.content;
+    } else {
+      message.content = "";
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = object.create_time;
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = object.update_time;
+    } else {
+      message.update_time = undefined;
     }
     if (object.persistent !== undefined && object.persistent !== null) {
       message.persistent = object.persistent;
+    } else {
+      message.persistent = undefined;
     }
     if (object.room_name !== undefined && object.room_name !== null) {
       message.room_name = object.room_name;
+    } else {
+      message.room_name = "";
     }
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     if (object.user_id_one !== undefined && object.user_id_one !== null) {
       message.user_id_one = object.user_id_one;
+    } else {
+      message.user_id_one = "";
     }
     if (object.user_id_two !== undefined && object.user_id_two !== null) {
       message.user_id_two = object.user_id_two;
+    } else {
+      message.user_id_two = "";
     }
     return message;
   },
@@ -5228,15 +5632,21 @@ export const ChannelMessageList = {
     }
     if (object.next_cursor !== undefined && object.next_cursor !== null) {
       message.next_cursor = String(object.next_cursor);
+    } else {
+      message.next_cursor = "";
     }
     if (object.prev_cursor !== undefined && object.prev_cursor !== null) {
       message.prev_cursor = String(object.prev_cursor);
+    } else {
+      message.prev_cursor = "";
     }
     if (
       object.cacheable_cursor !== undefined &&
       object.cacheable_cursor !== null
     ) {
       message.cacheable_cursor = String(object.cacheable_cursor);
+    } else {
+      message.cacheable_cursor = "";
     }
     return message;
   },
@@ -5269,15 +5679,21 @@ export const ChannelMessageList = {
     }
     if (object.next_cursor !== undefined && object.next_cursor !== null) {
       message.next_cursor = object.next_cursor;
+    } else {
+      message.next_cursor = "";
     }
     if (object.prev_cursor !== undefined && object.prev_cursor !== null) {
       message.prev_cursor = object.prev_cursor;
+    } else {
+      message.prev_cursor = "";
     }
     if (
       object.cacheable_cursor !== undefined &&
       object.cacheable_cursor !== null
     ) {
       message.cacheable_cursor = object.cacheable_cursor;
+    } else {
+      message.cacheable_cursor = "";
     }
     return message;
   },
@@ -5355,21 +5771,33 @@ export const CreateGroupRequest = {
     const message = { ...baseCreateGroupRequest } as CreateGroupRequest;
     if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
+    } else {
+      message.name = "";
     }
     if (object.description !== undefined && object.description !== null) {
       message.description = String(object.description);
+    } else {
+      message.description = "";
     }
     if (object.lang_tag !== undefined && object.lang_tag !== null) {
       message.lang_tag = String(object.lang_tag);
+    } else {
+      message.lang_tag = "";
     }
     if (object.avatar_url !== undefined && object.avatar_url !== null) {
       message.avatar_url = String(object.avatar_url);
+    } else {
+      message.avatar_url = "";
     }
     if (object.open !== undefined && object.open !== null) {
       message.open = Boolean(object.open);
+    } else {
+      message.open = false;
     }
     if (object.max_count !== undefined && object.max_count !== null) {
       message.max_count = Number(object.max_count);
+    } else {
+      message.max_count = 0;
     }
     return message;
   },
@@ -5390,21 +5818,33 @@ export const CreateGroupRequest = {
     const message = { ...baseCreateGroupRequest } as CreateGroupRequest;
     if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
+    } else {
+      message.name = "";
     }
     if (object.description !== undefined && object.description !== null) {
       message.description = object.description;
+    } else {
+      message.description = "";
     }
     if (object.lang_tag !== undefined && object.lang_tag !== null) {
       message.lang_tag = object.lang_tag;
+    } else {
+      message.lang_tag = "";
     }
     if (object.avatar_url !== undefined && object.avatar_url !== null) {
       message.avatar_url = object.avatar_url;
+    } else {
+      message.avatar_url = "";
     }
     if (object.open !== undefined && object.open !== null) {
       message.open = object.open;
+    } else {
+      message.open = false;
     }
     if (object.max_count !== undefined && object.max_count !== null) {
       message.max_count = object.max_count;
+    } else {
+      message.max_count = 0;
     }
     return message;
   },
@@ -5537,6 +5977,8 @@ export const DeleteGroupRequest = {
     const message = { ...baseDeleteGroupRequest } as DeleteGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     return message;
   },
@@ -5551,6 +5993,8 @@ export const DeleteGroupRequest = {
     const message = { ...baseDeleteGroupRequest } as DeleteGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     return message;
   },
@@ -5598,6 +6042,8 @@ export const DeleteLeaderboardRecordRequest = {
     } as DeleteLeaderboardRecordRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = String(object.leaderboard_id);
+    } else {
+      message.leaderboard_id = "";
     }
     return message;
   },
@@ -5617,6 +6063,8 @@ export const DeleteLeaderboardRecordRequest = {
     } as DeleteLeaderboardRecordRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = object.leaderboard_id;
+    } else {
+      message.leaderboard_id = "";
     }
     return message;
   },
@@ -5752,12 +6200,18 @@ export const DeleteStorageObjectId = {
     const message = { ...baseDeleteStorageObjectId } as DeleteStorageObjectId;
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = String(object.collection);
+    } else {
+      message.collection = "";
     }
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.version !== undefined && object.version !== null) {
       message.version = String(object.version);
+    } else {
+      message.version = "";
     }
     return message;
   },
@@ -5776,12 +6230,18 @@ export const DeleteStorageObjectId = {
     const message = { ...baseDeleteStorageObjectId } as DeleteStorageObjectId;
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = object.collection;
+    } else {
+      message.collection = "";
     }
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.version !== undefined && object.version !== null) {
       message.version = object.version;
+    } else {
+      message.version = "";
     }
     return message;
   },
@@ -5930,6 +6390,8 @@ export const Event = {
     message.properties = {};
     if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
+    } else {
+      message.name = "";
     }
     if (object.properties !== undefined && object.properties !== null) {
       Object.entries(object.properties).forEach(([key, value]) => {
@@ -5938,9 +6400,13 @@ export const Event = {
     }
     if (object.timestamp !== undefined && object.timestamp !== null) {
       message.timestamp = fromJsonTimestamp(object.timestamp);
+    } else {
+      message.timestamp = undefined;
     }
     if (object.external !== undefined && object.external !== null) {
       message.external = Boolean(object.external);
+    } else {
+      message.external = false;
     }
     return message;
   },
@@ -5965,6 +6431,8 @@ export const Event = {
     message.properties = {};
     if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
+    } else {
+      message.name = "";
     }
     if (object.properties !== undefined && object.properties !== null) {
       Object.entries(object.properties).forEach(([key, value]) => {
@@ -5975,9 +6443,13 @@ export const Event = {
     }
     if (object.timestamp !== undefined && object.timestamp !== null) {
       message.timestamp = object.timestamp;
+    } else {
+      message.timestamp = undefined;
     }
     if (object.external !== undefined && object.external !== null) {
       message.external = object.external;
+    } else {
+      message.external = false;
     }
     return message;
   },
@@ -6027,9 +6499,13 @@ export const Event_PropertiesEntry = {
     const message = { ...baseEvent_PropertiesEntry } as Event_PropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -6047,9 +6523,13 @@ export const Event_PropertiesEntry = {
     const message = { ...baseEvent_PropertiesEntry } as Event_PropertiesEntry;
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     return message;
   },
@@ -6110,12 +6590,18 @@ export const Friend = {
     const message = { ...baseFriend } as Friend;
     if (object.user !== undefined && object.user !== null) {
       message.user = User.fromJSON(object.user);
+    } else {
+      message.user = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = Number(object.state);
+    } else {
+      message.state = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = fromJsonTimestamp(object.update_time);
+    } else {
+      message.update_time = undefined;
     }
     return message;
   },
@@ -6134,12 +6620,18 @@ export const Friend = {
     const message = { ...baseFriend } as Friend;
     if (object.user !== undefined && object.user !== null) {
       message.user = User.fromPartial(object.user);
+    } else {
+      message.user = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = object.state;
+    } else {
+      message.state = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = object.update_time;
+    } else {
+      message.update_time = undefined;
     }
     return message;
   },
@@ -6193,6 +6685,8 @@ export const FriendList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -6220,6 +6714,8 @@ export const FriendList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -6463,39 +6959,63 @@ export const Group = {
     const message = { ...baseGroup } as Group;
     if (object.id !== undefined && object.id !== null) {
       message.id = String(object.id);
+    } else {
+      message.id = "";
     }
     if (object.creator_id !== undefined && object.creator_id !== null) {
       message.creator_id = String(object.creator_id);
+    } else {
+      message.creator_id = "";
     }
     if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
+    } else {
+      message.name = "";
     }
     if (object.description !== undefined && object.description !== null) {
       message.description = String(object.description);
+    } else {
+      message.description = "";
     }
     if (object.lang_tag !== undefined && object.lang_tag !== null) {
       message.lang_tag = String(object.lang_tag);
+    } else {
+      message.lang_tag = "";
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = String(object.metadata);
+    } else {
+      message.metadata = "";
     }
     if (object.avatar_url !== undefined && object.avatar_url !== null) {
       message.avatar_url = String(object.avatar_url);
+    } else {
+      message.avatar_url = "";
     }
     if (object.open !== undefined && object.open !== null) {
       message.open = Boolean(object.open);
+    } else {
+      message.open = undefined;
     }
     if (object.edge_count !== undefined && object.edge_count !== null) {
       message.edge_count = Number(object.edge_count);
+    } else {
+      message.edge_count = 0;
     }
     if (object.max_count !== undefined && object.max_count !== null) {
       message.max_count = Number(object.max_count);
+    } else {
+      message.max_count = 0;
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = fromJsonTimestamp(object.create_time);
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = fromJsonTimestamp(object.update_time);
+    } else {
+      message.update_time = undefined;
     }
     return message;
   },
@@ -6524,39 +7044,63 @@ export const Group = {
     const message = { ...baseGroup } as Group;
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = "";
     }
     if (object.creator_id !== undefined && object.creator_id !== null) {
       message.creator_id = object.creator_id;
+    } else {
+      message.creator_id = "";
     }
     if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
+    } else {
+      message.name = "";
     }
     if (object.description !== undefined && object.description !== null) {
       message.description = object.description;
+    } else {
+      message.description = "";
     }
     if (object.lang_tag !== undefined && object.lang_tag !== null) {
       message.lang_tag = object.lang_tag;
+    } else {
+      message.lang_tag = "";
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = object.metadata;
+    } else {
+      message.metadata = "";
     }
     if (object.avatar_url !== undefined && object.avatar_url !== null) {
       message.avatar_url = object.avatar_url;
+    } else {
+      message.avatar_url = "";
     }
     if (object.open !== undefined && object.open !== null) {
       message.open = object.open;
+    } else {
+      message.open = undefined;
     }
     if (object.edge_count !== undefined && object.edge_count !== null) {
       message.edge_count = object.edge_count;
+    } else {
+      message.edge_count = 0;
     }
     if (object.max_count !== undefined && object.max_count !== null) {
       message.max_count = object.max_count;
+    } else {
+      message.max_count = 0;
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = object.create_time;
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = object.update_time;
+    } else {
+      message.update_time = undefined;
     }
     return message;
   },
@@ -6610,6 +7154,8 @@ export const GroupList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -6635,6 +7181,8 @@ export const GroupList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -6690,6 +7238,8 @@ export const GroupUserList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -6717,6 +7267,8 @@ export const GroupUserList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -6773,9 +7325,13 @@ export const GroupUserList_GroupUser = {
     } as GroupUserList_GroupUser;
     if (object.user !== undefined && object.user !== null) {
       message.user = User.fromJSON(object.user);
+    } else {
+      message.user = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = Number(object.state);
+    } else {
+      message.state = undefined;
     }
     return message;
   },
@@ -6796,9 +7352,13 @@ export const GroupUserList_GroupUser = {
     } as GroupUserList_GroupUser;
     if (object.user !== undefined && object.user !== null) {
       message.user = User.fromPartial(object.user);
+    } else {
+      message.user = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = object.state;
+    } else {
+      message.state = undefined;
     }
     return message;
   },
@@ -6858,9 +7418,13 @@ export const ImportFacebookFriendsRequest = {
     } as ImportFacebookFriendsRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebook.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.reset !== undefined && object.reset !== null) {
       message.reset = Boolean(object.reset);
+    } else {
+      message.reset = undefined;
     }
     return message;
   },
@@ -6883,9 +7447,13 @@ export const ImportFacebookFriendsRequest = {
     } as ImportFacebookFriendsRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebook.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.reset !== undefined && object.reset !== null) {
       message.reset = object.reset;
+    } else {
+      message.reset = undefined;
     }
     return message;
   },
@@ -6942,9 +7510,13 @@ export const ImportSteamFriendsRequest = {
     } as ImportSteamFriendsRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountSteam.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.reset !== undefined && object.reset !== null) {
       message.reset = Boolean(object.reset);
+    } else {
+      message.reset = undefined;
     }
     return message;
   },
@@ -6967,9 +7539,13 @@ export const ImportSteamFriendsRequest = {
     } as ImportSteamFriendsRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountSteam.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.reset !== undefined && object.reset !== null) {
       message.reset = object.reset;
+    } else {
+      message.reset = undefined;
     }
     return message;
   },
@@ -7010,6 +7586,8 @@ export const JoinGroupRequest = {
     const message = { ...baseJoinGroupRequest } as JoinGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     return message;
   },
@@ -7024,6 +7602,8 @@ export const JoinGroupRequest = {
     const message = { ...baseJoinGroupRequest } as JoinGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     return message;
   },
@@ -7067,6 +7647,8 @@ export const JoinTournamentRequest = {
     const message = { ...baseJoinTournamentRequest } as JoinTournamentRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = String(object.tournament_id);
+    } else {
+      message.tournament_id = "";
     }
     return message;
   },
@@ -7084,6 +7666,8 @@ export const JoinTournamentRequest = {
     const message = { ...baseJoinTournamentRequest } as JoinTournamentRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = object.tournament_id;
+    } else {
+      message.tournament_id = "";
     }
     return message;
   },
@@ -7135,6 +7719,8 @@ export const KickGroupUsersRequest = {
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     if (object.user_ids !== undefined && object.user_ids !== null) {
       for (const e of object.user_ids) {
@@ -7162,11 +7748,292 @@ export const KickGroupUsersRequest = {
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     if (object.user_ids !== undefined && object.user_ids !== null) {
       for (const e of object.user_ids) {
         message.user_ids.push(e);
       }
+    }
+    return message;
+  },
+};
+
+const baseLeaderboard: object = {
+  id: "",
+  sort_order: 0,
+  operator: 0,
+  prev_reset: 0,
+  next_reset: 0,
+  metadata: "",
+  authoritative: false,
+};
+
+export const Leaderboard = {
+  encode(
+    message: Leaderboard,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.sort_order !== 0) {
+      writer.uint32(16).uint32(message.sort_order);
+    }
+    if (message.operator !== 0) {
+      writer.uint32(24).int32(message.operator);
+    }
+    if (message.prev_reset !== 0) {
+      writer.uint32(32).uint32(message.prev_reset);
+    }
+    if (message.next_reset !== 0) {
+      writer.uint32(40).uint32(message.next_reset);
+    }
+    if (message.metadata !== "") {
+      writer.uint32(50).string(message.metadata);
+    }
+    if (message.create_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.create_time),
+        writer.uint32(58).fork()
+      ).ldelim();
+    }
+    if (message.authoritative === true) {
+      writer.uint32(64).bool(message.authoritative);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Leaderboard {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseLeaderboard } as Leaderboard;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string();
+          break;
+        case 2:
+          message.sort_order = reader.uint32();
+          break;
+        case 3:
+          message.operator = reader.int32() as any;
+          break;
+        case 4:
+          message.prev_reset = reader.uint32();
+          break;
+        case 5:
+          message.next_reset = reader.uint32();
+          break;
+        case 6:
+          message.metadata = reader.string();
+          break;
+        case 7:
+          message.create_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        case 8:
+          message.authoritative = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Leaderboard {
+    const message = { ...baseLeaderboard } as Leaderboard;
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id);
+    } else {
+      message.id = "";
+    }
+    if (object.sort_order !== undefined && object.sort_order !== null) {
+      message.sort_order = Number(object.sort_order);
+    } else {
+      message.sort_order = 0;
+    }
+    if (object.operator !== undefined && object.operator !== null) {
+      message.operator = operatorFromJSON(object.operator);
+    } else {
+      message.operator = 0;
+    }
+    if (object.prev_reset !== undefined && object.prev_reset !== null) {
+      message.prev_reset = Number(object.prev_reset);
+    } else {
+      message.prev_reset = 0;
+    }
+    if (object.next_reset !== undefined && object.next_reset !== null) {
+      message.next_reset = Number(object.next_reset);
+    } else {
+      message.next_reset = 0;
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = String(object.metadata);
+    } else {
+      message.metadata = "";
+    }
+    if (object.create_time !== undefined && object.create_time !== null) {
+      message.create_time = fromJsonTimestamp(object.create_time);
+    } else {
+      message.create_time = undefined;
+    }
+    if (object.authoritative !== undefined && object.authoritative !== null) {
+      message.authoritative = Boolean(object.authoritative);
+    } else {
+      message.authoritative = false;
+    }
+    return message;
+  },
+
+  toJSON(message: Leaderboard): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    message.sort_order !== undefined && (obj.sort_order = message.sort_order);
+    message.operator !== undefined &&
+      (obj.operator = operatorToJSON(message.operator));
+    message.prev_reset !== undefined && (obj.prev_reset = message.prev_reset);
+    message.next_reset !== undefined && (obj.next_reset = message.next_reset);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.create_time !== undefined &&
+      (obj.create_time = message.create_time.toISOString());
+    message.authoritative !== undefined &&
+      (obj.authoritative = message.authoritative);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<Leaderboard>): Leaderboard {
+    const message = { ...baseLeaderboard } as Leaderboard;
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id;
+    } else {
+      message.id = "";
+    }
+    if (object.sort_order !== undefined && object.sort_order !== null) {
+      message.sort_order = object.sort_order;
+    } else {
+      message.sort_order = 0;
+    }
+    if (object.operator !== undefined && object.operator !== null) {
+      message.operator = object.operator;
+    } else {
+      message.operator = 0;
+    }
+    if (object.prev_reset !== undefined && object.prev_reset !== null) {
+      message.prev_reset = object.prev_reset;
+    } else {
+      message.prev_reset = 0;
+    }
+    if (object.next_reset !== undefined && object.next_reset !== null) {
+      message.next_reset = object.next_reset;
+    } else {
+      message.next_reset = 0;
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = object.metadata;
+    } else {
+      message.metadata = "";
+    }
+    if (object.create_time !== undefined && object.create_time !== null) {
+      message.create_time = object.create_time;
+    } else {
+      message.create_time = undefined;
+    }
+    if (object.authoritative !== undefined && object.authoritative !== null) {
+      message.authoritative = object.authoritative;
+    } else {
+      message.authoritative = false;
+    }
+    return message;
+  },
+};
+
+const baseLeaderboardList: object = { cursor: "" };
+
+export const LeaderboardList = {
+  encode(
+    message: LeaderboardList,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.leaderboards) {
+      Leaderboard.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.cursor !== "") {
+      writer.uint32(18).string(message.cursor);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): LeaderboardList {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseLeaderboardList } as LeaderboardList;
+    message.leaderboards = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.leaderboards.push(
+            Leaderboard.decode(reader, reader.uint32())
+          );
+          break;
+        case 2:
+          message.cursor = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LeaderboardList {
+    const message = { ...baseLeaderboardList } as LeaderboardList;
+    message.leaderboards = [];
+    if (object.leaderboards !== undefined && object.leaderboards !== null) {
+      for (const e of object.leaderboards) {
+        message.leaderboards.push(Leaderboard.fromJSON(e));
+      }
+    }
+    if (object.cursor !== undefined && object.cursor !== null) {
+      message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
+    }
+    return message;
+  },
+
+  toJSON(message: LeaderboardList): unknown {
+    const obj: any = {};
+    if (message.leaderboards) {
+      obj.leaderboards = message.leaderboards.map((e) =>
+        e ? Leaderboard.toJSON(e) : undefined
+      );
+    } else {
+      obj.leaderboards = [];
+    }
+    message.cursor !== undefined && (obj.cursor = message.cursor);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<LeaderboardList>): LeaderboardList {
+    const message = { ...baseLeaderboardList } as LeaderboardList;
+    message.leaderboards = [];
+    if (object.leaderboards !== undefined && object.leaderboards !== null) {
+      for (const e of object.leaderboards) {
+        message.leaderboards.push(Leaderboard.fromPartial(e));
+      }
+    }
+    if (object.cursor !== undefined && object.cursor !== null) {
+      message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -7300,39 +8167,63 @@ export const LeaderboardRecord = {
     const message = { ...baseLeaderboardRecord } as LeaderboardRecord;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = String(object.leaderboard_id);
+    } else {
+      message.leaderboard_id = "";
     }
     if (object.owner_id !== undefined && object.owner_id !== null) {
       message.owner_id = String(object.owner_id);
+    } else {
+      message.owner_id = "";
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = undefined;
     }
     if (object.score !== undefined && object.score !== null) {
       message.score = Number(object.score);
+    } else {
+      message.score = 0;
     }
     if (object.subscore !== undefined && object.subscore !== null) {
       message.subscore = Number(object.subscore);
+    } else {
+      message.subscore = 0;
     }
     if (object.num_score !== undefined && object.num_score !== null) {
       message.num_score = Number(object.num_score);
+    } else {
+      message.num_score = 0;
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = String(object.metadata);
+    } else {
+      message.metadata = "";
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = fromJsonTimestamp(object.create_time);
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = fromJsonTimestamp(object.update_time);
+    } else {
+      message.update_time = undefined;
     }
     if (object.expiry_time !== undefined && object.expiry_time !== null) {
       message.expiry_time = fromJsonTimestamp(object.expiry_time);
+    } else {
+      message.expiry_time = undefined;
     }
     if (object.rank !== undefined && object.rank !== null) {
       message.rank = Number(object.rank);
+    } else {
+      message.rank = 0;
     }
     if (object.max_num_score !== undefined && object.max_num_score !== null) {
       message.max_num_score = Number(object.max_num_score);
+    } else {
+      message.max_num_score = 0;
     }
     return message;
   },
@@ -7363,39 +8254,63 @@ export const LeaderboardRecord = {
     const message = { ...baseLeaderboardRecord } as LeaderboardRecord;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = object.leaderboard_id;
+    } else {
+      message.leaderboard_id = "";
     }
     if (object.owner_id !== undefined && object.owner_id !== null) {
       message.owner_id = object.owner_id;
+    } else {
+      message.owner_id = "";
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = undefined;
     }
     if (object.score !== undefined && object.score !== null) {
       message.score = object.score;
+    } else {
+      message.score = 0;
     }
     if (object.subscore !== undefined && object.subscore !== null) {
       message.subscore = object.subscore;
+    } else {
+      message.subscore = 0;
     }
     if (object.num_score !== undefined && object.num_score !== null) {
       message.num_score = object.num_score;
+    } else {
+      message.num_score = 0;
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = object.metadata;
+    } else {
+      message.metadata = "";
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = object.create_time;
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = object.update_time;
+    } else {
+      message.update_time = undefined;
     }
     if (object.expiry_time !== undefined && object.expiry_time !== null) {
       message.expiry_time = object.expiry_time;
+    } else {
+      message.expiry_time = undefined;
     }
     if (object.rank !== undefined && object.rank !== null) {
       message.rank = object.rank;
+    } else {
+      message.rank = 0;
     }
     if (object.max_num_score !== undefined && object.max_num_score !== null) {
       message.max_num_score = object.max_num_score;
+    } else {
+      message.max_num_score = 0;
     }
     return message;
   },
@@ -7475,9 +8390,13 @@ export const LeaderboardRecordList = {
     }
     if (object.next_cursor !== undefined && object.next_cursor !== null) {
       message.next_cursor = String(object.next_cursor);
+    } else {
+      message.next_cursor = "";
     }
     if (object.prev_cursor !== undefined && object.prev_cursor !== null) {
       message.prev_cursor = String(object.prev_cursor);
+    } else {
+      message.prev_cursor = "";
     }
     return message;
   },
@@ -7523,9 +8442,13 @@ export const LeaderboardRecordList = {
     }
     if (object.next_cursor !== undefined && object.next_cursor !== null) {
       message.next_cursor = object.next_cursor;
+    } else {
+      message.next_cursor = "";
     }
     if (object.prev_cursor !== undefined && object.prev_cursor !== null) {
       message.prev_cursor = object.prev_cursor;
+    } else {
+      message.prev_cursor = "";
     }
     return message;
   },
@@ -7566,6 +8489,8 @@ export const LeaveGroupRequest = {
     const message = { ...baseLeaveGroupRequest } as LeaveGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     return message;
   },
@@ -7580,6 +8505,8 @@ export const LeaveGroupRequest = {
     const message = { ...baseLeaveGroupRequest } as LeaveGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     return message;
   },
@@ -7632,9 +8559,13 @@ export const LinkFacebookRequest = {
     const message = { ...baseLinkFacebookRequest } as LinkFacebookRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebook.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.sync !== undefined && object.sync !== null) {
       message.sync = Boolean(object.sync);
+    } else {
+      message.sync = undefined;
     }
     return message;
   },
@@ -7653,9 +8584,13 @@ export const LinkFacebookRequest = {
     const message = { ...baseLinkFacebookRequest } as LinkFacebookRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountFacebook.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.sync !== undefined && object.sync !== null) {
       message.sync = object.sync;
+    } else {
+      message.sync = undefined;
     }
     return message;
   },
@@ -7705,9 +8640,13 @@ export const LinkSteamRequest = {
     const message = { ...baseLinkSteamRequest } as LinkSteamRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountSteam.fromJSON(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.sync !== undefined && object.sync !== null) {
       message.sync = Boolean(object.sync);
+    } else {
+      message.sync = undefined;
     }
     return message;
   },
@@ -7726,9 +8665,13 @@ export const LinkSteamRequest = {
     const message = { ...baseLinkSteamRequest } as LinkSteamRequest;
     if (object.account !== undefined && object.account !== null) {
       message.account = AccountSteam.fromPartial(object.account);
+    } else {
+      message.account = undefined;
     }
     if (object.sync !== undefined && object.sync !== null) {
       message.sync = object.sync;
+    } else {
+      message.sync = undefined;
     }
     return message;
   },
@@ -7800,15 +8743,23 @@ export const ListChannelMessagesRequest = {
     } as ListChannelMessagesRequest;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = String(object.channel_id);
+    } else {
+      message.channel_id = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (object.forward !== undefined && object.forward !== null) {
       message.forward = Boolean(object.forward);
+    } else {
+      message.forward = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -7830,15 +8781,23 @@ export const ListChannelMessagesRequest = {
     } as ListChannelMessagesRequest;
     if (object.channel_id !== undefined && object.channel_id !== null) {
       message.channel_id = object.channel_id;
+    } else {
+      message.channel_id = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (object.forward !== undefined && object.forward !== null) {
       message.forward = object.forward;
+    } else {
+      message.forward = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -7897,12 +8856,18 @@ export const ListFriendsRequest = {
     const message = { ...baseListFriendsRequest } as ListFriendsRequest;
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = Number(object.state);
+    } else {
+      message.state = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -7919,18 +8884,24 @@ export const ListFriendsRequest = {
     const message = { ...baseListFriendsRequest } as ListFriendsRequest;
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = object.state;
+    } else {
+      message.state = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
 };
 
-const baseListGroupsRequest: object = { name: "", cursor: "" };
+const baseListGroupsRequest: object = { name: "", cursor: "", lang_tag: "" };
 
 export const ListGroupsRequest = {
   encode(
@@ -7947,6 +8918,21 @@ export const ListGroupsRequest = {
       Int32Value.encode(
         { value: message.limit! },
         writer.uint32(26).fork()
+      ).ldelim();
+    }
+    if (message.lang_tag !== "") {
+      writer.uint32(34).string(message.lang_tag);
+    }
+    if (message.members !== undefined) {
+      Int32Value.encode(
+        { value: message.members! },
+        writer.uint32(42).fork()
+      ).ldelim();
+    }
+    if (message.open !== undefined) {
+      BoolValue.encode(
+        { value: message.open! },
+        writer.uint32(50).fork()
       ).ldelim();
     }
     return writer;
@@ -7968,6 +8954,15 @@ export const ListGroupsRequest = {
         case 3:
           message.limit = Int32Value.decode(reader, reader.uint32()).value;
           break;
+        case 4:
+          message.lang_tag = reader.string();
+          break;
+        case 5:
+          message.members = Int32Value.decode(reader, reader.uint32()).value;
+          break;
+        case 6:
+          message.open = BoolValue.decode(reader, reader.uint32()).value;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -7980,12 +8975,33 @@ export const ListGroupsRequest = {
     const message = { ...baseListGroupsRequest } as ListGroupsRequest;
     if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
+    } else {
+      message.name = "";
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
+    }
+    if (object.lang_tag !== undefined && object.lang_tag !== null) {
+      message.lang_tag = String(object.lang_tag);
+    } else {
+      message.lang_tag = "";
+    }
+    if (object.members !== undefined && object.members !== null) {
+      message.members = Number(object.members);
+    } else {
+      message.members = undefined;
+    }
+    if (object.open !== undefined && object.open !== null) {
+      message.open = Boolean(object.open);
+    } else {
+      message.open = undefined;
     }
     return message;
   },
@@ -7995,6 +9011,9 @@ export const ListGroupsRequest = {
     message.name !== undefined && (obj.name = message.name);
     message.cursor !== undefined && (obj.cursor = message.cursor);
     message.limit !== undefined && (obj.limit = message.limit);
+    message.lang_tag !== undefined && (obj.lang_tag = message.lang_tag);
+    message.members !== undefined && (obj.members = message.members);
+    message.open !== undefined && (obj.open = message.open);
     return obj;
   },
 
@@ -8002,12 +9021,33 @@ export const ListGroupsRequest = {
     const message = { ...baseListGroupsRequest } as ListGroupsRequest;
     if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
+    } else {
+      message.name = "";
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
+    }
+    if (object.lang_tag !== undefined && object.lang_tag !== null) {
+      message.lang_tag = object.lang_tag;
+    } else {
+      message.lang_tag = "";
+    }
+    if (object.members !== undefined && object.members !== null) {
+      message.members = object.members;
+    } else {
+      message.members = undefined;
+    }
+    if (object.open !== undefined && object.open !== null) {
+      message.open = object.open;
+    } else {
+      message.open = undefined;
     }
     return message;
   },
@@ -8075,15 +9115,23 @@ export const ListGroupUsersRequest = {
     const message = { ...baseListGroupUsersRequest } as ListGroupUsersRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = Number(object.state);
+    } else {
+      message.state = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -8103,15 +9151,23 @@ export const ListGroupUsersRequest = {
     const message = { ...baseListGroupUsersRequest } as ListGroupUsersRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = object.state;
+    } else {
+      message.state = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -8186,15 +9242,23 @@ export const ListLeaderboardRecordsAroundOwnerRequest = {
     } as ListLeaderboardRecordsAroundOwnerRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = String(object.leaderboard_id);
+    } else {
+      message.leaderboard_id = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (object.owner_id !== undefined && object.owner_id !== null) {
       message.owner_id = String(object.owner_id);
+    } else {
+      message.owner_id = "";
     }
     if (object.expiry !== undefined && object.expiry !== null) {
       message.expiry = Number(object.expiry);
+    } else {
+      message.expiry = undefined;
     }
     return message;
   },
@@ -8217,15 +9281,23 @@ export const ListLeaderboardRecordsAroundOwnerRequest = {
     } as ListLeaderboardRecordsAroundOwnerRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = object.leaderboard_id;
+    } else {
+      message.leaderboard_id = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (object.owner_id !== undefined && object.owner_id !== null) {
       message.owner_id = object.owner_id;
+    } else {
+      message.owner_id = "";
     }
     if (object.expiry !== undefined && object.expiry !== null) {
       message.expiry = object.expiry;
+    } else {
+      message.expiry = undefined;
     }
     return message;
   },
@@ -8309,6 +9381,8 @@ export const ListLeaderboardRecordsRequest = {
     message.owner_ids = [];
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = String(object.leaderboard_id);
+    } else {
+      message.leaderboard_id = "";
     }
     if (object.owner_ids !== undefined && object.owner_ids !== null) {
       for (const e of object.owner_ids) {
@@ -8317,12 +9391,18 @@ export const ListLeaderboardRecordsRequest = {
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     if (object.expiry !== undefined && object.expiry !== null) {
       message.expiry = Number(object.expiry);
+    } else {
+      message.expiry = undefined;
     }
     return message;
   },
@@ -8351,6 +9431,8 @@ export const ListLeaderboardRecordsRequest = {
     message.owner_ids = [];
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = object.leaderboard_id;
+    } else {
+      message.leaderboard_id = "";
     }
     if (object.owner_ids !== undefined && object.owner_ids !== null) {
       for (const e of object.owner_ids) {
@@ -8359,12 +9441,18 @@ export const ListLeaderboardRecordsRequest = {
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     if (object.expiry !== undefined && object.expiry !== null) {
       message.expiry = object.expiry;
+    } else {
+      message.expiry = undefined;
     }
     return message;
   },
@@ -8456,21 +9544,33 @@ export const ListMatchesRequest = {
     const message = { ...baseListMatchesRequest } as ListMatchesRequest;
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (object.authoritative !== undefined && object.authoritative !== null) {
       message.authoritative = Boolean(object.authoritative);
+    } else {
+      message.authoritative = undefined;
     }
     if (object.label !== undefined && object.label !== null) {
       message.label = String(object.label);
+    } else {
+      message.label = undefined;
     }
     if (object.min_size !== undefined && object.min_size !== null) {
       message.min_size = Number(object.min_size);
+    } else {
+      message.min_size = undefined;
     }
     if (object.max_size !== undefined && object.max_size !== null) {
       message.max_size = Number(object.max_size);
+    } else {
+      message.max_size = undefined;
     }
     if (object.query !== undefined && object.query !== null) {
       message.query = String(object.query);
+    } else {
+      message.query = undefined;
     }
     return message;
   },
@@ -8491,21 +9591,33 @@ export const ListMatchesRequest = {
     const message = { ...baseListMatchesRequest } as ListMatchesRequest;
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (object.authoritative !== undefined && object.authoritative !== null) {
       message.authoritative = object.authoritative;
+    } else {
+      message.authoritative = undefined;
     }
     if (object.label !== undefined && object.label !== null) {
       message.label = object.label;
+    } else {
+      message.label = undefined;
     }
     if (object.min_size !== undefined && object.min_size !== null) {
       message.min_size = object.min_size;
+    } else {
+      message.min_size = undefined;
     }
     if (object.max_size !== undefined && object.max_size !== null) {
       message.max_size = object.max_size;
+    } else {
+      message.max_size = undefined;
     }
     if (object.query !== undefined && object.query !== null) {
       message.query = object.query;
+    } else {
+      message.query = undefined;
     }
     return message;
   },
@@ -8562,12 +9674,16 @@ export const ListNotificationsRequest = {
     } as ListNotificationsRequest;
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (
       object.cacheable_cursor !== undefined &&
       object.cacheable_cursor !== null
     ) {
       message.cacheable_cursor = String(object.cacheable_cursor);
+    } else {
+      message.cacheable_cursor = "";
     }
     return message;
   },
@@ -8588,12 +9704,16 @@ export const ListNotificationsRequest = {
     } as ListNotificationsRequest;
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (
       object.cacheable_cursor !== undefined &&
       object.cacheable_cursor !== null
     ) {
       message.cacheable_cursor = object.cacheable_cursor;
+    } else {
+      message.cacheable_cursor = "";
     }
     return message;
   },
@@ -8666,15 +9786,23 @@ export const ListStorageObjectsRequest = {
     } as ListStorageObjectsRequest;
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = String(object.user_id);
+    } else {
+      message.user_id = "";
     }
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = String(object.collection);
+    } else {
+      message.collection = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -8696,15 +9824,23 @@ export const ListStorageObjectsRequest = {
     } as ListStorageObjectsRequest;
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = object.user_id;
+    } else {
+      message.user_id = "";
     }
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = object.collection;
+    } else {
+      message.collection = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -8779,15 +9915,23 @@ export const ListTournamentRecordsAroundOwnerRequest = {
     } as ListTournamentRecordsAroundOwnerRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = String(object.tournament_id);
+    } else {
+      message.tournament_id = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (object.owner_id !== undefined && object.owner_id !== null) {
       message.owner_id = String(object.owner_id);
+    } else {
+      message.owner_id = "";
     }
     if (object.expiry !== undefined && object.expiry !== null) {
       message.expiry = Number(object.expiry);
+    } else {
+      message.expiry = undefined;
     }
     return message;
   },
@@ -8810,15 +9954,23 @@ export const ListTournamentRecordsAroundOwnerRequest = {
     } as ListTournamentRecordsAroundOwnerRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = object.tournament_id;
+    } else {
+      message.tournament_id = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (object.owner_id !== undefined && object.owner_id !== null) {
       message.owner_id = object.owner_id;
+    } else {
+      message.owner_id = "";
     }
     if (object.expiry !== undefined && object.expiry !== null) {
       message.expiry = object.expiry;
+    } else {
+      message.expiry = undefined;
     }
     return message;
   },
@@ -8902,6 +10054,8 @@ export const ListTournamentRecordsRequest = {
     message.owner_ids = [];
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = String(object.tournament_id);
+    } else {
+      message.tournament_id = "";
     }
     if (object.owner_ids !== undefined && object.owner_ids !== null) {
       for (const e of object.owner_ids) {
@@ -8910,12 +10064,18 @@ export const ListTournamentRecordsRequest = {
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     if (object.expiry !== undefined && object.expiry !== null) {
       message.expiry = Number(object.expiry);
+    } else {
+      message.expiry = undefined;
     }
     return message;
   },
@@ -8944,6 +10104,8 @@ export const ListTournamentRecordsRequest = {
     message.owner_ids = [];
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = object.tournament_id;
+    } else {
+      message.tournament_id = "";
     }
     if (object.owner_ids !== undefined && object.owner_ids !== null) {
       for (const e of object.owner_ids) {
@@ -8952,12 +10114,18 @@ export const ListTournamentRecordsRequest = {
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     if (object.expiry !== undefined && object.expiry !== null) {
       message.expiry = object.expiry;
+    } else {
+      message.expiry = undefined;
     }
     return message;
   },
@@ -9055,21 +10223,33 @@ export const ListTournamentsRequest = {
     const message = { ...baseListTournamentsRequest } as ListTournamentsRequest;
     if (object.category_start !== undefined && object.category_start !== null) {
       message.category_start = Number(object.category_start);
+    } else {
+      message.category_start = undefined;
     }
     if (object.category_end !== undefined && object.category_end !== null) {
       message.category_end = Number(object.category_end);
+    } else {
+      message.category_end = undefined;
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = Number(object.start_time);
+    } else {
+      message.start_time = undefined;
     }
     if (object.end_time !== undefined && object.end_time !== null) {
       message.end_time = Number(object.end_time);
+    } else {
+      message.end_time = undefined;
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -9093,21 +10273,33 @@ export const ListTournamentsRequest = {
     const message = { ...baseListTournamentsRequest } as ListTournamentsRequest;
     if (object.category_start !== undefined && object.category_start !== null) {
       message.category_start = object.category_start;
+    } else {
+      message.category_start = undefined;
     }
     if (object.category_end !== undefined && object.category_end !== null) {
       message.category_end = object.category_end;
+    } else {
+      message.category_end = undefined;
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = object.start_time;
+    } else {
+      message.start_time = undefined;
     }
     if (object.end_time !== undefined && object.end_time !== null) {
       message.end_time = object.end_time;
+    } else {
+      message.end_time = undefined;
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -9175,15 +10367,23 @@ export const ListUserGroupsRequest = {
     const message = { ...baseListUserGroupsRequest } as ListUserGroupsRequest;
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = String(object.user_id);
+    } else {
+      message.user_id = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = Number(object.limit);
+    } else {
+      message.limit = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = Number(object.state);
+    } else {
+      message.state = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -9203,15 +10403,23 @@ export const ListUserGroupsRequest = {
     const message = { ...baseListUserGroupsRequest } as ListUserGroupsRequest;
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = object.user_id;
+    } else {
+      message.user_id = "";
     }
     if (object.limit !== undefined && object.limit !== null) {
       message.limit = object.limit;
+    } else {
+      message.limit = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = object.state;
+    } else {
+      message.state = undefined;
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -9288,21 +10496,33 @@ export const Match = {
     const message = { ...baseMatch } as Match;
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = String(object.match_id);
+    } else {
+      message.match_id = "";
     }
     if (object.authoritative !== undefined && object.authoritative !== null) {
       message.authoritative = Boolean(object.authoritative);
+    } else {
+      message.authoritative = false;
     }
     if (object.label !== undefined && object.label !== null) {
       message.label = String(object.label);
+    } else {
+      message.label = undefined;
     }
     if (object.size !== undefined && object.size !== null) {
       message.size = Number(object.size);
+    } else {
+      message.size = 0;
     }
     if (object.tick_rate !== undefined && object.tick_rate !== null) {
       message.tick_rate = Number(object.tick_rate);
+    } else {
+      message.tick_rate = 0;
     }
     if (object.handler_name !== undefined && object.handler_name !== null) {
       message.handler_name = String(object.handler_name);
+    } else {
+      message.handler_name = "";
     }
     return message;
   },
@@ -9324,21 +10544,33 @@ export const Match = {
     const message = { ...baseMatch } as Match;
     if (object.match_id !== undefined && object.match_id !== null) {
       message.match_id = object.match_id;
+    } else {
+      message.match_id = "";
     }
     if (object.authoritative !== undefined && object.authoritative !== null) {
       message.authoritative = object.authoritative;
+    } else {
+      message.authoritative = false;
     }
     if (object.label !== undefined && object.label !== null) {
       message.label = object.label;
+    } else {
+      message.label = undefined;
     }
     if (object.size !== undefined && object.size !== null) {
       message.size = object.size;
+    } else {
+      message.size = 0;
     }
     if (object.tick_rate !== undefined && object.tick_rate !== null) {
       message.tick_rate = object.tick_rate;
+    } else {
+      message.tick_rate = 0;
     }
     if (object.handler_name !== undefined && object.handler_name !== null) {
       message.handler_name = object.handler_name;
+    } else {
+      message.handler_name = "";
     }
     return message;
   },
@@ -9494,24 +10726,38 @@ export const Notification = {
     const message = { ...baseNotification } as Notification;
     if (object.id !== undefined && object.id !== null) {
       message.id = String(object.id);
+    } else {
+      message.id = "";
     }
     if (object.subject !== undefined && object.subject !== null) {
       message.subject = String(object.subject);
+    } else {
+      message.subject = "";
     }
     if (object.content !== undefined && object.content !== null) {
       message.content = String(object.content);
+    } else {
+      message.content = "";
     }
     if (object.code !== undefined && object.code !== null) {
       message.code = Number(object.code);
+    } else {
+      message.code = 0;
     }
     if (object.sender_id !== undefined && object.sender_id !== null) {
       message.sender_id = String(object.sender_id);
+    } else {
+      message.sender_id = "";
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = fromJsonTimestamp(object.create_time);
+    } else {
+      message.create_time = undefined;
     }
     if (object.persistent !== undefined && object.persistent !== null) {
       message.persistent = Boolean(object.persistent);
+    } else {
+      message.persistent = false;
     }
     return message;
   },
@@ -9533,24 +10779,38 @@ export const Notification = {
     const message = { ...baseNotification } as Notification;
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = "";
     }
     if (object.subject !== undefined && object.subject !== null) {
       message.subject = object.subject;
+    } else {
+      message.subject = "";
     }
     if (object.content !== undefined && object.content !== null) {
       message.content = object.content;
+    } else {
+      message.content = "";
     }
     if (object.code !== undefined && object.code !== null) {
       message.code = object.code;
+    } else {
+      message.code = 0;
     }
     if (object.sender_id !== undefined && object.sender_id !== null) {
       message.sender_id = object.sender_id;
+    } else {
+      message.sender_id = "";
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = object.create_time;
+    } else {
+      message.create_time = undefined;
     }
     if (object.persistent !== undefined && object.persistent !== null) {
       message.persistent = object.persistent;
+    } else {
+      message.persistent = false;
     }
     return message;
   },
@@ -9609,6 +10869,8 @@ export const NotificationList = {
       object.cacheable_cursor !== null
     ) {
       message.cacheable_cursor = String(object.cacheable_cursor);
+    } else {
+      message.cacheable_cursor = "";
     }
     return message;
   },
@@ -9640,6 +10902,8 @@ export const NotificationList = {
       object.cacheable_cursor !== null
     ) {
       message.cacheable_cursor = object.cacheable_cursor;
+    } else {
+      message.cacheable_cursor = "";
     }
     return message;
   },
@@ -9695,6 +10959,8 @@ export const PromoteGroupUsersRequest = {
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     if (object.user_ids !== undefined && object.user_ids !== null) {
       for (const e of object.user_ids) {
@@ -9724,6 +10990,8 @@ export const PromoteGroupUsersRequest = {
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     if (object.user_ids !== undefined && object.user_ids !== null) {
       for (const e of object.user_ids) {
@@ -9784,6 +11052,8 @@ export const DemoteGroupUsersRequest = {
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     if (object.user_ids !== undefined && object.user_ids !== null) {
       for (const e of object.user_ids) {
@@ -9813,6 +11083,8 @@ export const DemoteGroupUsersRequest = {
     message.user_ids = [];
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     if (object.user_ids !== undefined && object.user_ids !== null) {
       for (const e of object.user_ids) {
@@ -9874,12 +11146,18 @@ export const ReadStorageObjectId = {
     const message = { ...baseReadStorageObjectId } as ReadStorageObjectId;
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = String(object.collection);
+    } else {
+      message.collection = "";
     }
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = String(object.user_id);
+    } else {
+      message.user_id = "";
     }
     return message;
   },
@@ -9896,12 +11174,18 @@ export const ReadStorageObjectId = {
     const message = { ...baseReadStorageObjectId } as ReadStorageObjectId;
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = object.collection;
+    } else {
+      message.collection = "";
     }
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = object.user_id;
+    } else {
+      message.user_id = "";
     }
     return message;
   },
@@ -10031,12 +11315,18 @@ export const Rpc = {
     const message = { ...baseRpc } as Rpc;
     if (object.id !== undefined && object.id !== null) {
       message.id = String(object.id);
+    } else {
+      message.id = "";
     }
     if (object.payload !== undefined && object.payload !== null) {
       message.payload = String(object.payload);
+    } else {
+      message.payload = "";
     }
     if (object.http_key !== undefined && object.http_key !== null) {
       message.http_key = String(object.http_key);
+    } else {
+      message.http_key = "";
     }
     return message;
   },
@@ -10053,12 +11343,18 @@ export const Rpc = {
     const message = { ...baseRpc } as Rpc;
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = "";
     }
     if (object.payload !== undefined && object.payload !== null) {
       message.payload = object.payload;
+    } else {
+      message.payload = "";
     }
     if (object.http_key !== undefined && object.http_key !== null) {
       message.http_key = object.http_key;
+    } else {
+      message.http_key = "";
     }
     return message;
   },
@@ -10111,12 +11407,18 @@ export const Session = {
     const message = { ...baseSession } as Session;
     if (object.created !== undefined && object.created !== null) {
       message.created = Boolean(object.created);
+    } else {
+      message.created = false;
     }
     if (object.token !== undefined && object.token !== null) {
       message.token = String(object.token);
+    } else {
+      message.token = "";
     }
     if (object.refresh_token !== undefined && object.refresh_token !== null) {
       message.refresh_token = String(object.refresh_token);
+    } else {
+      message.refresh_token = "";
     }
     return message;
   },
@@ -10134,12 +11436,18 @@ export const Session = {
     const message = { ...baseSession } as Session;
     if (object.created !== undefined && object.created !== null) {
       message.created = object.created;
+    } else {
+      message.created = false;
     }
     if (object.token !== undefined && object.token !== null) {
       message.token = object.token;
+    } else {
+      message.token = "";
     }
     if (object.refresh_token !== undefined && object.refresh_token !== null) {
       message.refresh_token = object.refresh_token;
+    } else {
+      message.refresh_token = "";
     }
     return message;
   },
@@ -10246,36 +11554,54 @@ export const StorageObject = {
     const message = { ...baseStorageObject } as StorageObject;
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = String(object.collection);
+    } else {
+      message.collection = "";
     }
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = String(object.user_id);
+    } else {
+      message.user_id = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     if (object.version !== undefined && object.version !== null) {
       message.version = String(object.version);
+    } else {
+      message.version = "";
     }
     if (
       object.permission_read !== undefined &&
       object.permission_read !== null
     ) {
       message.permission_read = Number(object.permission_read);
+    } else {
+      message.permission_read = 0;
     }
     if (
       object.permission_write !== undefined &&
       object.permission_write !== null
     ) {
       message.permission_write = Number(object.permission_write);
+    } else {
+      message.permission_write = 0;
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = fromJsonTimestamp(object.create_time);
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = fromJsonTimestamp(object.update_time);
+    } else {
+      message.update_time = undefined;
     }
     return message;
   },
@@ -10302,36 +11628,54 @@ export const StorageObject = {
     const message = { ...baseStorageObject } as StorageObject;
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = object.collection;
+    } else {
+      message.collection = "";
     }
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = object.user_id;
+    } else {
+      message.user_id = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     if (object.version !== undefined && object.version !== null) {
       message.version = object.version;
+    } else {
+      message.version = "";
     }
     if (
       object.permission_read !== undefined &&
       object.permission_read !== null
     ) {
       message.permission_read = object.permission_read;
+    } else {
+      message.permission_read = 0;
     }
     if (
       object.permission_write !== undefined &&
       object.permission_write !== null
     ) {
       message.permission_write = object.permission_write;
+    } else {
+      message.permission_write = 0;
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = object.create_time;
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = object.update_time;
+    } else {
+      message.update_time = undefined;
     }
     return message;
   },
@@ -10395,15 +11739,23 @@ export const StorageObjectAck = {
     const message = { ...baseStorageObjectAck } as StorageObjectAck;
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = String(object.collection);
+    } else {
+      message.collection = "";
     }
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.version !== undefined && object.version !== null) {
       message.version = String(object.version);
+    } else {
+      message.version = "";
     }
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = String(object.user_id);
+    } else {
+      message.user_id = "";
     }
     return message;
   },
@@ -10421,15 +11773,23 @@ export const StorageObjectAck = {
     const message = { ...baseStorageObjectAck } as StorageObjectAck;
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = object.collection;
+    } else {
+      message.collection = "";
     }
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.version !== undefined && object.version !== null) {
       message.version = object.version;
+    } else {
+      message.version = "";
     }
     if (object.user_id !== undefined && object.user_id !== null) {
       message.user_id = object.user_id;
+    } else {
+      message.user_id = "";
     }
     return message;
   },
@@ -10617,6 +11977,8 @@ export const StorageObjectList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -10644,6 +12006,8 @@ export const StorageObjectList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -10664,6 +12028,8 @@ const baseTournament: object = {
   metadata: "",
   duration: 0,
   start_active: 0,
+  prev_reset: 0,
+  operator: 0,
 };
 
 export const Tournament = {
@@ -10730,6 +12096,12 @@ export const Tournament = {
     }
     if (message.start_active !== 0) {
       writer.uint32(136).uint32(message.start_active);
+    }
+    if (message.prev_reset !== 0) {
+      writer.uint32(144).uint32(message.prev_reset);
+    }
+    if (message.operator !== 0) {
+      writer.uint32(152).int32(message.operator);
     }
     return writer;
   },
@@ -10798,6 +12170,12 @@ export const Tournament = {
         case 17:
           message.start_active = reader.uint32();
           break;
+        case 18:
+          message.prev_reset = reader.uint32();
+          break;
+        case 19:
+          message.operator = reader.int32() as any;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -10810,54 +12188,98 @@ export const Tournament = {
     const message = { ...baseTournament } as Tournament;
     if (object.id !== undefined && object.id !== null) {
       message.id = String(object.id);
+    } else {
+      message.id = "";
     }
     if (object.title !== undefined && object.title !== null) {
       message.title = String(object.title);
+    } else {
+      message.title = "";
     }
     if (object.description !== undefined && object.description !== null) {
       message.description = String(object.description);
+    } else {
+      message.description = "";
     }
     if (object.category !== undefined && object.category !== null) {
       message.category = Number(object.category);
+    } else {
+      message.category = 0;
     }
     if (object.sort_order !== undefined && object.sort_order !== null) {
       message.sort_order = Number(object.sort_order);
+    } else {
+      message.sort_order = 0;
     }
     if (object.size !== undefined && object.size !== null) {
       message.size = Number(object.size);
+    } else {
+      message.size = 0;
     }
     if (object.max_size !== undefined && object.max_size !== null) {
       message.max_size = Number(object.max_size);
+    } else {
+      message.max_size = 0;
     }
     if (object.max_num_score !== undefined && object.max_num_score !== null) {
       message.max_num_score = Number(object.max_num_score);
+    } else {
+      message.max_num_score = 0;
     }
     if (object.can_enter !== undefined && object.can_enter !== null) {
       message.can_enter = Boolean(object.can_enter);
+    } else {
+      message.can_enter = false;
     }
     if (object.end_active !== undefined && object.end_active !== null) {
       message.end_active = Number(object.end_active);
+    } else {
+      message.end_active = 0;
     }
     if (object.next_reset !== undefined && object.next_reset !== null) {
       message.next_reset = Number(object.next_reset);
+    } else {
+      message.next_reset = 0;
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = String(object.metadata);
+    } else {
+      message.metadata = "";
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = fromJsonTimestamp(object.create_time);
+    } else {
+      message.create_time = undefined;
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = fromJsonTimestamp(object.start_time);
+    } else {
+      message.start_time = undefined;
     }
     if (object.end_time !== undefined && object.end_time !== null) {
       message.end_time = fromJsonTimestamp(object.end_time);
+    } else {
+      message.end_time = undefined;
     }
     if (object.duration !== undefined && object.duration !== null) {
       message.duration = Number(object.duration);
+    } else {
+      message.duration = 0;
     }
     if (object.start_active !== undefined && object.start_active !== null) {
       message.start_active = Number(object.start_active);
+    } else {
+      message.start_active = 0;
+    }
+    if (object.prev_reset !== undefined && object.prev_reset !== null) {
+      message.prev_reset = Number(object.prev_reset);
+    } else {
+      message.prev_reset = 0;
+    }
+    if (object.operator !== undefined && object.operator !== null) {
+      message.operator = operatorFromJSON(object.operator);
+    } else {
+      message.operator = 0;
     }
     return message;
   },
@@ -10887,6 +12309,9 @@ export const Tournament = {
     message.duration !== undefined && (obj.duration = message.duration);
     message.start_active !== undefined &&
       (obj.start_active = message.start_active);
+    message.prev_reset !== undefined && (obj.prev_reset = message.prev_reset);
+    message.operator !== undefined &&
+      (obj.operator = operatorToJSON(message.operator));
     return obj;
   },
 
@@ -10894,54 +12319,98 @@ export const Tournament = {
     const message = { ...baseTournament } as Tournament;
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = "";
     }
     if (object.title !== undefined && object.title !== null) {
       message.title = object.title;
+    } else {
+      message.title = "";
     }
     if (object.description !== undefined && object.description !== null) {
       message.description = object.description;
+    } else {
+      message.description = "";
     }
     if (object.category !== undefined && object.category !== null) {
       message.category = object.category;
+    } else {
+      message.category = 0;
     }
     if (object.sort_order !== undefined && object.sort_order !== null) {
       message.sort_order = object.sort_order;
+    } else {
+      message.sort_order = 0;
     }
     if (object.size !== undefined && object.size !== null) {
       message.size = object.size;
+    } else {
+      message.size = 0;
     }
     if (object.max_size !== undefined && object.max_size !== null) {
       message.max_size = object.max_size;
+    } else {
+      message.max_size = 0;
     }
     if (object.max_num_score !== undefined && object.max_num_score !== null) {
       message.max_num_score = object.max_num_score;
+    } else {
+      message.max_num_score = 0;
     }
     if (object.can_enter !== undefined && object.can_enter !== null) {
       message.can_enter = object.can_enter;
+    } else {
+      message.can_enter = false;
     }
     if (object.end_active !== undefined && object.end_active !== null) {
       message.end_active = object.end_active;
+    } else {
+      message.end_active = 0;
     }
     if (object.next_reset !== undefined && object.next_reset !== null) {
       message.next_reset = object.next_reset;
+    } else {
+      message.next_reset = 0;
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = object.metadata;
+    } else {
+      message.metadata = "";
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = object.create_time;
+    } else {
+      message.create_time = undefined;
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = object.start_time;
+    } else {
+      message.start_time = undefined;
     }
     if (object.end_time !== undefined && object.end_time !== null) {
       message.end_time = object.end_time;
+    } else {
+      message.end_time = undefined;
     }
     if (object.duration !== undefined && object.duration !== null) {
       message.duration = object.duration;
+    } else {
+      message.duration = 0;
     }
     if (object.start_active !== undefined && object.start_active !== null) {
       message.start_active = object.start_active;
+    } else {
+      message.start_active = 0;
+    }
+    if (object.prev_reset !== undefined && object.prev_reset !== null) {
+      message.prev_reset = object.prev_reset;
+    } else {
+      message.prev_reset = 0;
+    }
+    if (object.operator !== undefined && object.operator !== null) {
+      message.operator = object.operator;
+    } else {
+      message.operator = 0;
     }
     return message;
   },
@@ -10995,6 +12464,8 @@ export const TournamentList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -11022,6 +12493,8 @@ export const TournamentList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -11101,9 +12574,13 @@ export const TournamentRecordList = {
     }
     if (object.next_cursor !== undefined && object.next_cursor !== null) {
       message.next_cursor = String(object.next_cursor);
+    } else {
+      message.next_cursor = "";
     }
     if (object.prev_cursor !== undefined && object.prev_cursor !== null) {
       message.prev_cursor = String(object.prev_cursor);
+    } else {
+      message.prev_cursor = "";
     }
     return message;
   },
@@ -11147,9 +12624,13 @@ export const TournamentRecordList = {
     }
     if (object.next_cursor !== undefined && object.next_cursor !== null) {
       message.next_cursor = object.next_cursor;
+    } else {
+      message.next_cursor = "";
     }
     if (object.prev_cursor !== undefined && object.prev_cursor !== null) {
       message.prev_cursor = object.prev_cursor;
+    } else {
+      message.prev_cursor = "";
     }
     return message;
   },
@@ -11247,21 +12728,33 @@ export const UpdateAccountRequest = {
     const message = { ...baseUpdateAccountRequest } as UpdateAccountRequest;
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = undefined;
     }
     if (object.display_name !== undefined && object.display_name !== null) {
       message.display_name = String(object.display_name);
+    } else {
+      message.display_name = undefined;
     }
     if (object.avatar_url !== undefined && object.avatar_url !== null) {
       message.avatar_url = String(object.avatar_url);
+    } else {
+      message.avatar_url = undefined;
     }
     if (object.lang_tag !== undefined && object.lang_tag !== null) {
       message.lang_tag = String(object.lang_tag);
+    } else {
+      message.lang_tag = undefined;
     }
     if (object.location !== undefined && object.location !== null) {
       message.location = String(object.location);
+    } else {
+      message.location = undefined;
     }
     if (object.timezone !== undefined && object.timezone !== null) {
       message.timezone = String(object.timezone);
+    } else {
+      message.timezone = undefined;
     }
     return message;
   },
@@ -11282,21 +12775,33 @@ export const UpdateAccountRequest = {
     const message = { ...baseUpdateAccountRequest } as UpdateAccountRequest;
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = undefined;
     }
     if (object.display_name !== undefined && object.display_name !== null) {
       message.display_name = object.display_name;
+    } else {
+      message.display_name = undefined;
     }
     if (object.avatar_url !== undefined && object.avatar_url !== null) {
       message.avatar_url = object.avatar_url;
+    } else {
+      message.avatar_url = undefined;
     }
     if (object.lang_tag !== undefined && object.lang_tag !== null) {
       message.lang_tag = object.lang_tag;
+    } else {
+      message.lang_tag = undefined;
     }
     if (object.location !== undefined && object.location !== null) {
       message.location = object.location;
+    } else {
+      message.location = undefined;
     }
     if (object.timezone !== undefined && object.timezone !== null) {
       message.timezone = object.timezone;
+    } else {
+      message.timezone = undefined;
     }
     return message;
   },
@@ -11388,21 +12893,33 @@ export const UpdateGroupRequest = {
     const message = { ...baseUpdateGroupRequest } as UpdateGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = String(object.group_id);
+    } else {
+      message.group_id = "";
     }
     if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
+    } else {
+      message.name = undefined;
     }
     if (object.description !== undefined && object.description !== null) {
       message.description = String(object.description);
+    } else {
+      message.description = undefined;
     }
     if (object.lang_tag !== undefined && object.lang_tag !== null) {
       message.lang_tag = String(object.lang_tag);
+    } else {
+      message.lang_tag = undefined;
     }
     if (object.avatar_url !== undefined && object.avatar_url !== null) {
       message.avatar_url = String(object.avatar_url);
+    } else {
+      message.avatar_url = undefined;
     }
     if (object.open !== undefined && object.open !== null) {
       message.open = Boolean(object.open);
+    } else {
+      message.open = undefined;
     }
     return message;
   },
@@ -11423,21 +12940,33 @@ export const UpdateGroupRequest = {
     const message = { ...baseUpdateGroupRequest } as UpdateGroupRequest;
     if (object.group_id !== undefined && object.group_id !== null) {
       message.group_id = object.group_id;
+    } else {
+      message.group_id = "";
     }
     if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
+    } else {
+      message.name = undefined;
     }
     if (object.description !== undefined && object.description !== null) {
       message.description = object.description;
+    } else {
+      message.description = undefined;
     }
     if (object.lang_tag !== undefined && object.lang_tag !== null) {
       message.lang_tag = object.lang_tag;
+    } else {
+      message.lang_tag = undefined;
     }
     if (object.avatar_url !== undefined && object.avatar_url !== null) {
       message.avatar_url = object.avatar_url;
+    } else {
+      message.avatar_url = undefined;
     }
     if (object.open !== undefined && object.open !== null) {
       message.open = object.open;
+    } else {
+      message.open = undefined;
     }
     return message;
   },
@@ -11604,51 +13133,83 @@ export const User = {
     const message = { ...baseUser } as User;
     if (object.id !== undefined && object.id !== null) {
       message.id = String(object.id);
+    } else {
+      message.id = "";
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
     if (object.display_name !== undefined && object.display_name !== null) {
       message.display_name = String(object.display_name);
+    } else {
+      message.display_name = "";
     }
     if (object.avatar_url !== undefined && object.avatar_url !== null) {
       message.avatar_url = String(object.avatar_url);
+    } else {
+      message.avatar_url = "";
     }
     if (object.lang_tag !== undefined && object.lang_tag !== null) {
       message.lang_tag = String(object.lang_tag);
+    } else {
+      message.lang_tag = "";
     }
     if (object.location !== undefined && object.location !== null) {
       message.location = String(object.location);
+    } else {
+      message.location = "";
     }
     if (object.timezone !== undefined && object.timezone !== null) {
       message.timezone = String(object.timezone);
+    } else {
+      message.timezone = "";
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = String(object.metadata);
+    } else {
+      message.metadata = "";
     }
     if (object.facebook_id !== undefined && object.facebook_id !== null) {
       message.facebook_id = String(object.facebook_id);
+    } else {
+      message.facebook_id = "";
     }
     if (object.google_id !== undefined && object.google_id !== null) {
       message.google_id = String(object.google_id);
+    } else {
+      message.google_id = "";
     }
     if (object.gamecenter_id !== undefined && object.gamecenter_id !== null) {
       message.gamecenter_id = String(object.gamecenter_id);
+    } else {
+      message.gamecenter_id = "";
     }
     if (object.steam_id !== undefined && object.steam_id !== null) {
       message.steam_id = String(object.steam_id);
+    } else {
+      message.steam_id = "";
     }
     if (object.online !== undefined && object.online !== null) {
       message.online = Boolean(object.online);
+    } else {
+      message.online = false;
     }
     if (object.edge_count !== undefined && object.edge_count !== null) {
       message.edge_count = Number(object.edge_count);
+    } else {
+      message.edge_count = 0;
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = fromJsonTimestamp(object.create_time);
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = fromJsonTimestamp(object.update_time);
+    } else {
+      message.update_time = undefined;
     }
     if (
       object.facebook_instant_game_id !== undefined &&
@@ -11657,9 +13218,13 @@ export const User = {
       message.facebook_instant_game_id = String(
         object.facebook_instant_game_id
       );
+    } else {
+      message.facebook_instant_game_id = "";
     }
     if (object.apple_id !== undefined && object.apple_id !== null) {
       message.apple_id = String(object.apple_id);
+    } else {
+      message.apple_id = "";
     }
     return message;
   },
@@ -11697,60 +13262,96 @@ export const User = {
     const message = { ...baseUser } as User;
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = "";
     }
     if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
     if (object.display_name !== undefined && object.display_name !== null) {
       message.display_name = object.display_name;
+    } else {
+      message.display_name = "";
     }
     if (object.avatar_url !== undefined && object.avatar_url !== null) {
       message.avatar_url = object.avatar_url;
+    } else {
+      message.avatar_url = "";
     }
     if (object.lang_tag !== undefined && object.lang_tag !== null) {
       message.lang_tag = object.lang_tag;
+    } else {
+      message.lang_tag = "";
     }
     if (object.location !== undefined && object.location !== null) {
       message.location = object.location;
+    } else {
+      message.location = "";
     }
     if (object.timezone !== undefined && object.timezone !== null) {
       message.timezone = object.timezone;
+    } else {
+      message.timezone = "";
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = object.metadata;
+    } else {
+      message.metadata = "";
     }
     if (object.facebook_id !== undefined && object.facebook_id !== null) {
       message.facebook_id = object.facebook_id;
+    } else {
+      message.facebook_id = "";
     }
     if (object.google_id !== undefined && object.google_id !== null) {
       message.google_id = object.google_id;
+    } else {
+      message.google_id = "";
     }
     if (object.gamecenter_id !== undefined && object.gamecenter_id !== null) {
       message.gamecenter_id = object.gamecenter_id;
+    } else {
+      message.gamecenter_id = "";
     }
     if (object.steam_id !== undefined && object.steam_id !== null) {
       message.steam_id = object.steam_id;
+    } else {
+      message.steam_id = "";
     }
     if (object.online !== undefined && object.online !== null) {
       message.online = object.online;
+    } else {
+      message.online = false;
     }
     if (object.edge_count !== undefined && object.edge_count !== null) {
       message.edge_count = object.edge_count;
+    } else {
+      message.edge_count = 0;
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = object.create_time;
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = object.update_time;
+    } else {
+      message.update_time = undefined;
     }
     if (
       object.facebook_instant_game_id !== undefined &&
       object.facebook_instant_game_id !== null
     ) {
       message.facebook_instant_game_id = object.facebook_instant_game_id;
+    } else {
+      message.facebook_instant_game_id = "";
     }
     if (object.apple_id !== undefined && object.apple_id !== null) {
       message.apple_id = object.apple_id;
+    } else {
+      message.apple_id = "";
     }
     return message;
   },
@@ -11806,6 +13407,8 @@ export const UserGroupList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -11833,6 +13436,8 @@ export const UserGroupList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -11889,9 +13494,13 @@ export const UserGroupList_UserGroup = {
     } as UserGroupList_UserGroup;
     if (object.group !== undefined && object.group !== null) {
       message.group = Group.fromJSON(object.group);
+    } else {
+      message.group = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = Number(object.state);
+    } else {
+      message.state = undefined;
     }
     return message;
   },
@@ -11912,9 +13521,13 @@ export const UserGroupList_UserGroup = {
     } as UserGroupList_UserGroup;
     if (object.group !== undefined && object.group !== null) {
       message.group = Group.fromPartial(object.group);
+    } else {
+      message.group = undefined;
     }
     if (object.state !== undefined && object.state !== null) {
       message.state = object.state;
+    } else {
+      message.state = undefined;
     }
     return message;
   },
@@ -12024,6 +13637,8 @@ export const ValidatePurchaseAppleRequest = {
     } as ValidatePurchaseAppleRequest;
     if (object.receipt !== undefined && object.receipt !== null) {
       message.receipt = String(object.receipt);
+    } else {
+      message.receipt = "";
     }
     return message;
   },
@@ -12042,6 +13657,8 @@ export const ValidatePurchaseAppleRequest = {
     } as ValidatePurchaseAppleRequest;
     if (object.receipt !== undefined && object.receipt !== null) {
       message.receipt = object.receipt;
+    } else {
+      message.receipt = "";
     }
     return message;
   },
@@ -12089,6 +13706,8 @@ export const ValidatePurchaseGoogleRequest = {
     } as ValidatePurchaseGoogleRequest;
     if (object.purchase !== undefined && object.purchase !== null) {
       message.purchase = String(object.purchase);
+    } else {
+      message.purchase = "";
     }
     return message;
   },
@@ -12107,6 +13726,8 @@ export const ValidatePurchaseGoogleRequest = {
     } as ValidatePurchaseGoogleRequest;
     if (object.purchase !== undefined && object.purchase !== null) {
       message.purchase = object.purchase;
+    } else {
+      message.purchase = "";
     }
     return message;
   },
@@ -12163,9 +13784,13 @@ export const ValidatePurchaseHuaweiRequest = {
     } as ValidatePurchaseHuaweiRequest;
     if (object.purchase !== undefined && object.purchase !== null) {
       message.purchase = String(object.purchase);
+    } else {
+      message.purchase = "";
     }
     if (object.signature !== undefined && object.signature !== null) {
       message.signature = String(object.signature);
+    } else {
+      message.signature = "";
     }
     return message;
   },
@@ -12185,9 +13810,13 @@ export const ValidatePurchaseHuaweiRequest = {
     } as ValidatePurchaseHuaweiRequest;
     if (object.purchase !== undefined && object.purchase !== null) {
       message.purchase = object.purchase;
+    } else {
+      message.purchase = "";
     }
     if (object.signature !== undefined && object.signature !== null) {
       message.signature = object.signature;
+    } else {
+      message.signature = "";
     }
     return message;
   },
@@ -12199,6 +13828,7 @@ const baseValidatedPurchase: object = {
   store: 0,
   provider_response: "",
   environment: 0,
+  seen_before: false,
 };
 
 export const ValidatedPurchase = {
@@ -12238,6 +13868,9 @@ export const ValidatedPurchase = {
     }
     if (message.environment !== 0) {
       writer.uint32(64).int32(message.environment);
+    }
+    if (message.seen_before === true) {
+      writer.uint32(72).bool(message.seen_before);
     }
     return writer;
   },
@@ -12279,6 +13912,9 @@ export const ValidatedPurchase = {
         case 8:
           message.environment = reader.int32() as any;
           break;
+        case 9:
+          message.seen_before = reader.bool();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -12291,32 +13927,53 @@ export const ValidatedPurchase = {
     const message = { ...baseValidatedPurchase } as ValidatedPurchase;
     if (object.product_id !== undefined && object.product_id !== null) {
       message.product_id = String(object.product_id);
+    } else {
+      message.product_id = "";
     }
     if (object.transaction_id !== undefined && object.transaction_id !== null) {
       message.transaction_id = String(object.transaction_id);
+    } else {
+      message.transaction_id = "";
     }
     if (object.store !== undefined && object.store !== null) {
       message.store = validatedPurchase_StoreFromJSON(object.store);
+    } else {
+      message.store = 0;
     }
     if (object.purchase_time !== undefined && object.purchase_time !== null) {
       message.purchase_time = fromJsonTimestamp(object.purchase_time);
+    } else {
+      message.purchase_time = undefined;
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = fromJsonTimestamp(object.create_time);
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = fromJsonTimestamp(object.update_time);
+    } else {
+      message.update_time = undefined;
     }
     if (
       object.provider_response !== undefined &&
       object.provider_response !== null
     ) {
       message.provider_response = String(object.provider_response);
+    } else {
+      message.provider_response = "";
     }
     if (object.environment !== undefined && object.environment !== null) {
       message.environment = validatedPurchase_EnvironmentFromJSON(
         object.environment
       );
+    } else {
+      message.environment = 0;
+    }
+    if (object.seen_before !== undefined && object.seen_before !== null) {
+      message.seen_before = Boolean(object.seen_before);
+    } else {
+      message.seen_before = false;
     }
     return message;
   },
@@ -12340,6 +13997,8 @@ export const ValidatedPurchase = {
       (obj.environment = validatedPurchase_EnvironmentToJSON(
         message.environment
       ));
+    message.seen_before !== undefined &&
+      (obj.seen_before = message.seen_before);
     return obj;
   },
 
@@ -12347,30 +14006,51 @@ export const ValidatedPurchase = {
     const message = { ...baseValidatedPurchase } as ValidatedPurchase;
     if (object.product_id !== undefined && object.product_id !== null) {
       message.product_id = object.product_id;
+    } else {
+      message.product_id = "";
     }
     if (object.transaction_id !== undefined && object.transaction_id !== null) {
       message.transaction_id = object.transaction_id;
+    } else {
+      message.transaction_id = "";
     }
     if (object.store !== undefined && object.store !== null) {
       message.store = object.store;
+    } else {
+      message.store = 0;
     }
     if (object.purchase_time !== undefined && object.purchase_time !== null) {
       message.purchase_time = object.purchase_time;
+    } else {
+      message.purchase_time = undefined;
     }
     if (object.create_time !== undefined && object.create_time !== null) {
       message.create_time = object.create_time;
+    } else {
+      message.create_time = undefined;
     }
     if (object.update_time !== undefined && object.update_time !== null) {
       message.update_time = object.update_time;
+    } else {
+      message.update_time = undefined;
     }
     if (
       object.provider_response !== undefined &&
       object.provider_response !== null
     ) {
       message.provider_response = object.provider_response;
+    } else {
+      message.provider_response = "";
     }
     if (object.environment !== undefined && object.environment !== null) {
       message.environment = object.environment;
+    } else {
+      message.environment = 0;
+    }
+    if (object.seen_before !== undefined && object.seen_before !== null) {
+      message.seen_before = object.seen_before;
+    } else {
+      message.seen_before = false;
     }
     return message;
   },
@@ -12515,6 +14195,8 @@ export const PurchaseList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = String(object.cursor);
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -12545,6 +14227,8 @@ export const PurchaseList = {
     }
     if (object.cursor !== undefined && object.cursor !== null) {
       message.cursor = object.cursor;
+    } else {
+      message.cursor = "";
     }
     return message;
   },
@@ -12604,11 +14288,15 @@ export const WriteLeaderboardRecordRequest = {
     } as WriteLeaderboardRecordRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = String(object.leaderboard_id);
+    } else {
+      message.leaderboard_id = "";
     }
     if (object.record !== undefined && object.record !== null) {
       message.record = WriteLeaderboardRecordRequest_LeaderboardRecordWrite.fromJSON(
         object.record
       );
+    } else {
+      message.record = undefined;
     }
     return message;
   },
@@ -12634,11 +14322,15 @@ export const WriteLeaderboardRecordRequest = {
     } as WriteLeaderboardRecordRequest;
     if (object.leaderboard_id !== undefined && object.leaderboard_id !== null) {
       message.leaderboard_id = object.leaderboard_id;
+    } else {
+      message.leaderboard_id = "";
     }
     if (object.record !== undefined && object.record !== null) {
       message.record = WriteLeaderboardRecordRequest_LeaderboardRecordWrite.fromPartial(
         object.record
       );
+    } else {
+      message.record = undefined;
     }
     return message;
   },
@@ -12709,15 +14401,23 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
     } as WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
     if (object.score !== undefined && object.score !== null) {
       message.score = Number(object.score);
+    } else {
+      message.score = 0;
     }
     if (object.subscore !== undefined && object.subscore !== null) {
       message.subscore = Number(object.subscore);
+    } else {
+      message.subscore = 0;
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = String(object.metadata);
+    } else {
+      message.metadata = "";
     }
     if (object.operator !== undefined && object.operator !== null) {
-      message.operator = overrideOperatorFromJSON(object.operator);
+      message.operator = operatorFromJSON(object.operator);
+    } else {
+      message.operator = 0;
     }
     return message;
   },
@@ -12730,7 +14430,7 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
     message.subscore !== undefined && (obj.subscore = message.subscore);
     message.metadata !== undefined && (obj.metadata = message.metadata);
     message.operator !== undefined &&
-      (obj.operator = overrideOperatorToJSON(message.operator));
+      (obj.operator = operatorToJSON(message.operator));
     return obj;
   },
 
@@ -12742,15 +14442,23 @@ export const WriteLeaderboardRecordRequest_LeaderboardRecordWrite = {
     } as WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
     if (object.score !== undefined && object.score !== null) {
       message.score = object.score;
+    } else {
+      message.score = 0;
     }
     if (object.subscore !== undefined && object.subscore !== null) {
       message.subscore = object.subscore;
+    } else {
+      message.subscore = 0;
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = object.metadata;
+    } else {
+      message.metadata = "";
     }
     if (object.operator !== undefined && object.operator !== null) {
       message.operator = object.operator;
+    } else {
+      message.operator = 0;
     }
     return message;
   },
@@ -12838,27 +14546,39 @@ export const WriteStorageObject = {
     const message = { ...baseWriteStorageObject } as WriteStorageObject;
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = String(object.collection);
+    } else {
+      message.collection = "";
     }
     if (object.key !== undefined && object.key !== null) {
       message.key = String(object.key);
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = String(object.value);
+    } else {
+      message.value = "";
     }
     if (object.version !== undefined && object.version !== null) {
       message.version = String(object.version);
+    } else {
+      message.version = "";
     }
     if (
       object.permission_read !== undefined &&
       object.permission_read !== null
     ) {
       message.permission_read = Number(object.permission_read);
+    } else {
+      message.permission_read = undefined;
     }
     if (
       object.permission_write !== undefined &&
       object.permission_write !== null
     ) {
       message.permission_write = Number(object.permission_write);
+    } else {
+      message.permission_write = undefined;
     }
     return message;
   },
@@ -12880,27 +14600,39 @@ export const WriteStorageObject = {
     const message = { ...baseWriteStorageObject } as WriteStorageObject;
     if (object.collection !== undefined && object.collection !== null) {
       message.collection = object.collection;
+    } else {
+      message.collection = "";
     }
     if (object.key !== undefined && object.key !== null) {
       message.key = object.key;
+    } else {
+      message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
       message.value = object.value;
+    } else {
+      message.value = "";
     }
     if (object.version !== undefined && object.version !== null) {
       message.version = object.version;
+    } else {
+      message.version = "";
     }
     if (
       object.permission_read !== undefined &&
       object.permission_read !== null
     ) {
       message.permission_read = object.permission_read;
+    } else {
+      message.permission_read = undefined;
     }
     if (
       object.permission_write !== undefined &&
       object.permission_write !== null
     ) {
       message.permission_write = object.permission_write;
+    } else {
+      message.permission_write = undefined;
     }
     return message;
   },
@@ -13040,11 +14772,15 @@ export const WriteTournamentRecordRequest = {
     } as WriteTournamentRecordRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = String(object.tournament_id);
+    } else {
+      message.tournament_id = "";
     }
     if (object.record !== undefined && object.record !== null) {
       message.record = WriteTournamentRecordRequest_TournamentRecordWrite.fromJSON(
         object.record
       );
+    } else {
+      message.record = undefined;
     }
     return message;
   },
@@ -13070,11 +14806,15 @@ export const WriteTournamentRecordRequest = {
     } as WriteTournamentRecordRequest;
     if (object.tournament_id !== undefined && object.tournament_id !== null) {
       message.tournament_id = object.tournament_id;
+    } else {
+      message.tournament_id = "";
     }
     if (object.record !== undefined && object.record !== null) {
       message.record = WriteTournamentRecordRequest_TournamentRecordWrite.fromPartial(
         object.record
       );
+    } else {
+      message.record = undefined;
     }
     return message;
   },
@@ -13145,15 +14885,23 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
     } as WriteTournamentRecordRequest_TournamentRecordWrite;
     if (object.score !== undefined && object.score !== null) {
       message.score = Number(object.score);
+    } else {
+      message.score = 0;
     }
     if (object.subscore !== undefined && object.subscore !== null) {
       message.subscore = Number(object.subscore);
+    } else {
+      message.subscore = 0;
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = String(object.metadata);
+    } else {
+      message.metadata = "";
     }
     if (object.operator !== undefined && object.operator !== null) {
-      message.operator = overrideOperatorFromJSON(object.operator);
+      message.operator = operatorFromJSON(object.operator);
+    } else {
+      message.operator = 0;
     }
     return message;
   },
@@ -13164,7 +14912,7 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
     message.subscore !== undefined && (obj.subscore = message.subscore);
     message.metadata !== undefined && (obj.metadata = message.metadata);
     message.operator !== undefined &&
-      (obj.operator = overrideOperatorToJSON(message.operator));
+      (obj.operator = operatorToJSON(message.operator));
     return obj;
   },
 
@@ -13176,15 +14924,23 @@ export const WriteTournamentRecordRequest_TournamentRecordWrite = {
     } as WriteTournamentRecordRequest_TournamentRecordWrite;
     if (object.score !== undefined && object.score !== null) {
       message.score = object.score;
+    } else {
+      message.score = 0;
     }
     if (object.subscore !== undefined && object.subscore !== null) {
       message.subscore = object.subscore;
+    } else {
+      message.subscore = 0;
     }
     if (object.metadata !== undefined && object.metadata !== null) {
       message.metadata = object.metadata;
+    } else {
+      message.metadata = "";
     }
     if (object.operator !== undefined && object.operator !== null) {
       message.operator = object.operator;
+    } else {
+      message.operator = 0;
     }
     return message;
   },
@@ -13214,10 +14970,6 @@ export type DeepPartial<T> = T extends Builtin
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
   ? ReadonlyArray<DeepPartial<U>>
-  : T extends { $case: string }
-  ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & {
-      $case: T["$case"];
-    }
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;

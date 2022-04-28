@@ -574,7 +574,6 @@
    *
    * @author Dan Kogai (https://github.com/dankogai)
    */
-  const _hasatob = typeof atob === 'function';
   const _hasbtoa = typeof btoa === 'function';
   const _hasBuffer = typeof Buffer === 'function';
   const _TD = typeof TextDecoder === 'function' ? new TextDecoder() : undefined;
@@ -586,7 +585,6 @@
       a.forEach((c, i) => tab[c] = i);
       return tab;
   })(b64chs);
-  const b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
   const _fromCC = String.fromCharCode.bind(String);
   const _U8Afrom = typeof Uint8Array.from === 'function'
       ? Uint8Array.from.bind(Uint8Array)
@@ -594,7 +592,6 @@
   const _mkUriSafe = (src) => src
       .replace(/[+\/]/g, (m0) => m0 == '+' ? '-' : '_')
       .replace(/=+$/m, '');
-  const _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, '');
   /**
    * polyfill version of `btoa`
    */
@@ -678,80 +675,6 @@
   const encode = (src, urlsafe = false) => urlsafe
       ? _mkUriSafe(_encode(src))
       : _encode(src);
-  // This trick is found broken https://github.com/dankogai/js-base64/issues/130
-  // const btou = (src: string) => decodeURIComponent(escape(src));
-  // reverting good old fationed regexp
-  const re_btou = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
-  const cb_btou = (cccc) => {
-      switch (cccc.length) {
-          case 4:
-              var cp = ((0x07 & cccc.charCodeAt(0)) << 18)
-                  | ((0x3f & cccc.charCodeAt(1)) << 12)
-                  | ((0x3f & cccc.charCodeAt(2)) << 6)
-                  | (0x3f & cccc.charCodeAt(3)), offset = cp - 0x10000;
-              return (_fromCC((offset >>> 10) + 0xD800)
-                  + _fromCC((offset & 0x3FF) + 0xDC00));
-          case 3:
-              return _fromCC(((0x0f & cccc.charCodeAt(0)) << 12)
-                  | ((0x3f & cccc.charCodeAt(1)) << 6)
-                  | (0x3f & cccc.charCodeAt(2)));
-          default:
-              return _fromCC(((0x1f & cccc.charCodeAt(0)) << 6)
-                  | (0x3f & cccc.charCodeAt(1)));
-      }
-  };
-  /**
-   * @deprecated should have been internal use only.
-   * @param {string} src UTF-16 string
-   * @returns {string} UTF-8 string
-   */
-  const btou = (b) => b.replace(re_btou, cb_btou);
-  /**
-   * polyfill version of `atob`
-   */
-  const atobPolyfill = (asc) => {
-      // console.log('polyfilled');
-      asc = asc.replace(/\s+/g, '');
-      if (!b64re.test(asc))
-          throw new TypeError('malformed base64.');
-      asc += '=='.slice(2 - (asc.length & 3));
-      let u24, bin = '', r1, r2;
-      for (let i = 0; i < asc.length;) {
-          u24 = b64tab[asc.charAt(i++)] << 18
-              | b64tab[asc.charAt(i++)] << 12
-              | (r1 = b64tab[asc.charAt(i++)]) << 6
-              | (r2 = b64tab[asc.charAt(i++)]);
-          bin += r1 === 64 ? _fromCC(u24 >> 16 & 255)
-              : r2 === 64 ? _fromCC(u24 >> 16 & 255, u24 >> 8 & 255)
-                  : _fromCC(u24 >> 16 & 255, u24 >> 8 & 255, u24 & 255);
-      }
-      return bin;
-  };
-  /**
-   * does what `window.atob` of web browsers do.
-   * @param {String} asc Base64-encoded string
-   * @returns {string} binary string
-   */
-  const _atob = _hasatob ? (asc) => atob(_tidyB64(asc))
-      : _hasBuffer ? (asc) => Buffer.from(asc, 'base64').toString('binary')
-          : atobPolyfill;
-  //
-  const _toUint8Array = _hasBuffer
-      ? (a) => _U8Afrom(Buffer.from(a, 'base64'))
-      : (a) => _U8Afrom(_atob(a), c => c.charCodeAt(0));
-  //
-  const _decode = _hasBuffer
-      ? (a) => Buffer.from(a, 'base64').toString('utf8')
-      : _TD
-          ? (a) => _TD.decode(_toUint8Array(a))
-          : (a) => btou(_atob(a));
-  const _unURI = (a) => _tidyB64(a.replace(/[-_]/g, (m0) => m0 == '-' ? '+' : '/'));
-  /**
-   * converts a Base64 string to a UTF-8 string.
-   * @param {String} src Base64 string.  Both normal and URL-safe are supported
-   * @returns {string} UTF-8 string
-   */
-  const decode = (src) => _decode(_unURI(src));
 
   function buildFetchOptions(method, options, bodyJson) {
       var fetchOptions = __assign({ method: method }, options);
@@ -777,16 +700,6 @@
           fetchOptions.body = bodyJson;
       }
       return fetchOptions;
-  }
-  function b64EncodeUnicode(str) {
-      return encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
-          return String.fromCharCode(Number('0x' + p1));
-      }));
-  }
-  function b64DecodeUnicode(str) {
-      return decodeURIComponent(decode(str).split('').map(function (c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
   }
 
   // tslint:disable
@@ -3527,6 +3440,54 @@
       return Session;
   }());
 
+  /*
+   * base64-arraybuffer 1.0.2 <https://github.com/niklasvh/base64-arraybuffer>
+   * Copyright (c) 2022 Niklas von Hertzen <https://hertzen.com>
+   * Released under MIT License
+   */
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  // Use a lookup table to find the index.
+  var lookup = typeof Uint8Array === 'undefined' ? [] : new Uint8Array(256);
+  for (var i = 0; i < chars.length; i++) {
+      lookup[chars.charCodeAt(i)] = i;
+  }
+  var encode$1 = function (arraybuffer) {
+      var bytes = new Uint8Array(arraybuffer), i, len = bytes.length, base64 = '';
+      for (i = 0; i < len; i += 3) {
+          base64 += chars[bytes[i] >> 2];
+          base64 += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+          base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+          base64 += chars[bytes[i + 2] & 63];
+      }
+      if (len % 3 === 2) {
+          base64 = base64.substring(0, base64.length - 1) + '=';
+      }
+      else if (len % 3 === 1) {
+          base64 = base64.substring(0, base64.length - 2) + '==';
+      }
+      return base64;
+  };
+  var decode = function (base64) {
+      var bufferLength = base64.length * 0.75, len = base64.length, i, p = 0, encoded1, encoded2, encoded3, encoded4;
+      if (base64[base64.length - 1] === '=') {
+          bufferLength--;
+          if (base64[base64.length - 2] === '=') {
+              bufferLength--;
+          }
+      }
+      var arraybuffer = new ArrayBuffer(bufferLength), bytes = new Uint8Array(arraybuffer);
+      for (i = 0; i < len; i += 4) {
+          encoded1 = lookup[base64.charCodeAt(i)];
+          encoded2 = lookup[base64.charCodeAt(i + 1)];
+          encoded3 = lookup[base64.charCodeAt(i + 2)];
+          encoded4 = lookup[base64.charCodeAt(i + 3)];
+          bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+          bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+          bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+      }
+      return arraybuffer;
+  };
+
   /**
    * Copyright 2020 The Nakama Authors
    *
@@ -3577,6 +3538,12 @@
               if (value) {
                   this._socket.onmessage = function (evt) {
                       var message = JSON.parse(evt.data);
+                      if (message.match_data && message.match_data.data) {
+                          message.match_data.data = new Uint8Array(decode(message.match_data.data));
+                      }
+                      else if (message.party_data && message.party_data.data) {
+                          message.party_data.data = new Uint8Array(decode(message.party_data.data));
+                      }
                       value(message);
                   };
               }
@@ -3618,9 +3585,24 @@
           if (msg.match_data_send) {
               // according to protobuf docs, int64 is encoded to JSON as string.
               msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+              var payload = msg.match_data_send.data;
+              if (payload && payload instanceof Uint8Array) {
+                  msg.match_data_send.data = encode$1(payload.buffer);
+              }
+              else if (payload) { // it's a string
+                  msg.match_data_send.data = btoa(payload);
+              }
           }
           else if (msg.party_data_send) {
+              // according to protobuf docs, int64 is encoded to JSON as string.
               msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
+              var payload = msg.party_data_send.data;
+              if (payload && payload instanceof Uint8Array) {
+                  msg.party_data_send.data = encode$1(payload.buffer);
+              }
+              else if (payload) { // it's a string
+                  msg.party_data_send.data = btoa(payload);
+              }
           }
           this._socket.send(JSON.stringify(msg));
       };
@@ -3680,7 +3662,7 @@
                   console.log("Response: %o", JSON.stringify(message));
               }
               /** Inbound message from server. */
-              if (message.cid == undefined) {
+              if (!message.cid) {
                   if (message.notifications) {
                       message.notifications.notifications.forEach(function (n) {
                           n.content = n.content ? JSON.parse(n.content) : undefined;
@@ -3688,7 +3670,6 @@
                       });
                   }
                   else if (message.match_data) {
-                      message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
                       message.match_data.op_code = parseInt(message.match_data.op_code);
                       _this.onmatchdata(message.match_data);
                   }
@@ -3718,7 +3699,6 @@
                       _this.onchannelpresence(message.channel_presence_event);
                   }
                   else if (message.party_data) {
-                      message.party_data.data = message.party_data.data != null ? JSON.parse(b64DecodeUnicode(message.party_data.data)) : null;
                       message.party_data.op_code = parseInt(message.party_data.op_code);
                       _this.onpartydata(message.party_data);
                   }
@@ -3889,12 +3869,10 @@
               }
               else {
                   if (untypedMessage.match_data_send) {
-                      untypedMessage.match_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.match_data_send.data));
                       _this.adapter.send(untypedMessage);
                       resolve();
                   }
                   else if (untypedMessage.party_data_send) {
-                      untypedMessage.party_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.party_data_send.data));
                       _this.adapter.send(untypedMessage);
                       resolve();
                   }

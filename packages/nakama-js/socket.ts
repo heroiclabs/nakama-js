@@ -18,10 +18,6 @@ import {ApiNotification, ApiRpc} from "./api.gen";
 import {Session} from "./session";
 import {Notification} from "./client";
 import {WebSocketAdapter, WebSocketAdapterText} from "./web_socket_adapter"
-import {b64DecodeUnicode, b64EncodeUnicode} from "./utils";
-
-/** Requires the set of keys K to exist in type T. */
-type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
 
 /** Stores function references for resolve/reject with a DOM Promise. */
 interface PromiseExecutor {
@@ -308,14 +304,23 @@ export interface MatchData {
   /** Operation code value. */
   op_code: number;
   /** Data payload, if any. */
-  data: any;
+  data: Uint8Array;
   /** A reference to the user presences that sent this data, if any. */
   presences: Presence[];
 }
 
 /** Send a message that contains match data. */
 interface MatchDataSend {
-  match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
+  match_data_send: {
+    /** The unique match identifier. */
+    match_id: string;
+    /** Operation code value. */
+    op_code: number;
+    /** Data payload, if any. */
+    data: string | Uint8Array;
+    /** A reference to the user presences to send this data to, if any. */
+    presences: Presence[];
+  }
 }
 
 /** Incoming information about a party. */
@@ -405,7 +410,7 @@ export interface PartyData {
   /** The operation code the message was sent with. */
   op_code: number;
   /** Data payload, if any. */
-  data: any;
+  data: Uint8Array;
 }
 
 /** A client to server request to send data to a party. */
@@ -416,7 +421,7 @@ interface PartyDataSend {
     /** The operation code the message was sent with. */
     op_code : number;
     /** Data payload, if any. */
-    data : any;
+    data : string | Uint8Array;
   }
 }
 
@@ -603,10 +608,10 @@ export interface Socket {
 
   /** Send input to a multiplayer match on the server. */
   /** When no presences are supplied the new match state will be sent to all presences. */
-  sendMatchState(matchId: string, opCode : number, data: any, presence? : Presence[]) : Promise<void>;
+  sendMatchState(matchId: string, opCode : number, data: string | Uint8Array, presence? : Presence[]) : Promise<void>;
 
   /** Send data to a party. */
-  sendPartyData(party_id : string, opcode : number, data : any) : Promise<void>;
+  sendPartyData(party_id : string, opcode : number, data : string | Uint8Array) : Promise<void>;
 
   /** Unfollow one or more users from their status updates. */
   unfollowUsers(user_ids : string[]) : Promise<void>;
@@ -730,14 +735,13 @@ export class DefaultSocket implements Socket {
       }
 
       /** Inbound message from server. */
-      if (message.cid == undefined) {
+      if (!message.cid) {
         if (message.notifications) {
           message.notifications.notifications.forEach((n: ApiNotification) => {
               n.content = n.content ? JSON.parse(n.content) : undefined;
               this.onnotification(n);
           });
         } else if (message.match_data) {
-          message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
           message.match_data.op_code = parseInt(message.match_data.op_code);
           this.onmatchdata(message.match_data);
         } else if (message.match_presence_event) {
@@ -758,7 +762,6 @@ export class DefaultSocket implements Socket {
         } else if (message.channel_presence_event) {
           this.onchannelpresence(<ChannelPresenceEvent>message.channel_presence_event);
         } else if (message.party_data) {
-          message.party_data.data = message.party_data.data != null ? JSON.parse(b64DecodeUnicode(message.party_data.data)) : null;
           message.party_data.op_code = parseInt(message.party_data.op_code);
           this.onpartydata(<PartyData>message.party_data);
         } else if (message.on_party_close) {
@@ -947,12 +950,10 @@ export class DefaultSocket implements Socket {
       }
       else {
         if (untypedMessage.match_data_send) {
-          untypedMessage.match_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.match_data_send.data));
           this.adapter.send(untypedMessage);
           resolve();
         }
         else if (untypedMessage.party_data_send) {
-            untypedMessage.party_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.party_data_send.data));
             this.adapter.send(untypedMessage);
             resolve();
         }
@@ -1139,7 +1140,7 @@ export class DefaultSocket implements Socket {
       return response.rpc;
   }
 
-  async sendMatchState(matchId: string, opCode : number, data: any, presences? : Presence[]): Promise<void> {
+  async sendMatchState(matchId: string, opCode : number, data: string | Uint8Array, presences? : Presence[]): Promise<void> {
     return this.send(
       {
         match_data_send: {
@@ -1151,7 +1152,7 @@ export class DefaultSocket implements Socket {
     });
   }
 
-  sendPartyData(party_id: string, op_code: number, data: any): Promise<void> {
+  sendPartyData(party_id: string, op_code: number, data: string | Uint8Array): Promise<void> {
     return this.send({party_data_send: {party_id: party_id, op_code: op_code, data: data}})
   }
 

@@ -16,7 +16,6 @@
 
 
 import * as nakamajs from "@heroiclabs/nakama-js";
-import { isExportDeclaration } from "typescript";
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {generateid, createPage, adapters, AdapterType} from "./utils";
 import {describe, expect, it} from '@jest/globals'

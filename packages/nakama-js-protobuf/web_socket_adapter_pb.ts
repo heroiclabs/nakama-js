@@ -54,25 +54,16 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
         if (value) {
             this._socket!.onmessage = (evt: MessageEvent) => {
                 const buffer: ArrayBuffer = evt.data;
-
                 const uintBuffer: Uint8Array = new Uint8Array(buffer);
-
-                const envelopeProto = tsproto.Envelope.decode(uintBuffer);
-                const envelope: any = tsproto.Envelope.toJSON(envelopeProto);
-
-                if (envelope.cid == "") {
-                    //protobuf plugin always sets missing required fields to default values.
-                    envelope.cid = undefined;
-                }
+                const envelope = tsproto.Envelope.decode(uintBuffer);
 
                 if (envelope.channel_message) {
-
                     if (envelope.channel_message.code == undefined) {
                         //protobuf plugin does not default-initialize missing Int32Value fields
                         envelope.channel_message.code = 0;
                     }
                     if (envelope.channel_message.persistent == undefined) {
-                        //protobuf plugin does not default-initialize missing boolean fields
+                        //protobuf plugin does not default-initialize missing BoolValue fields
                         envelope.channel_message.persistent = false;
                     }
                 }
@@ -111,8 +102,22 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
     }
 
     send(msg: any): void {
-        const envelope = tsproto.Envelope.fromJSON(msg);
-        const envelopeWriter = tsproto.Envelope.encode(envelope);
+
+        if (msg.match_data_send) {
+            let payload = msg.match_data_send.data;
+            // can't send a string over protobuf
+            if (typeof payload == "string") {
+                msg.match_data_send.data = new TextEncoder().encode(payload);
+            }
+        } else if (msg.party_data_send) {
+            let payload = msg.party_data_send.data;
+            // can't send a string over protobuf
+            if (typeof payload == "string") {
+                msg.party_data_send.data = new TextEncoder().encode(payload);
+            }
+        }
+
+        const envelopeWriter = tsproto.Envelope.encode(tsproto.Envelope.fromPartial(msg));
         const encodedMsg = envelopeWriter.finish();
         this._socket!.send(encodedMsg);
     }

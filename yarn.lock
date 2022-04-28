@@ -1715,6 +1715,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@heroiclabs/nakama-js-base@workspace:."
   dependencies:
+    base64-arraybuffer: ^1.0.2
     base64url: ^3.0.1
     bufferutil: 4.0.1
     chalk: ^2.4.2
@@ -5105,6 +5106,13 @@ __metadata:
   version: 1.0.0
   resolution: "balanced-match@npm:1.0.0"
   checksum: f515a605fe1b59f476f7477c5e1d53ad55b4f42982fca1d57b6701906f4ad1f1ac90fd6587d92cc1af2edb43eecf979214dd847ee410a6de9db4ebf0dd128d62
+  languageName: node
+  linkType: hard
+
+"base64-arraybuffer@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "base64-arraybuffer@npm:1.0.2"
+  checksum: ad0cdcb68b5751d547904a6f12a2d945b3eae2fb596c1328861d2293ee7adc44e68e890809537f22f030f843d158e1b95f381363b596da8d46aed33953caf814
   languageName: node
   linkType: hard
 

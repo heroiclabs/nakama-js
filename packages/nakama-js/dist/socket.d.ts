@@ -17,8 +17,6 @@ import { ApiRpc } from "./api.gen";
 import { Session } from "./session";
 import { Notification } from "./client";
 import { WebSocketAdapter } from "./web_socket_adapter";
-/** Requires the set of keys K to exist in type T. */
-declare type RequireKeys<T, K extends keyof T> = Omit<Partial<T>, K> & Pick<T, K>;
 /** An object which represents a connected user in the server. */
 export interface Presence {
     /** The id of the user. */
@@ -276,13 +274,22 @@ export interface MatchData {
     /** Operation code value. */
     op_code: number;
     /** Data payload, if any. */
-    data: any;
+    data: Uint8Array;
     /** A reference to the user presences that sent this data, if any. */
     presences: Presence[];
 }
 /** Send a message that contains match data. */
 interface MatchDataSend {
-    match_data_send: RequireKeys<MatchData, "match_id" | "op_code" | "data">;
+    match_data_send: {
+        /** The unique match identifier. */
+        match_id: string;
+        /** Operation code value. */
+        op_code: number;
+        /** Data payload, if any. */
+        data: string | Uint8Array;
+        /** A reference to the user presences to send this data to, if any. */
+        presences: Presence[];
+    };
 }
 /** Incoming information about a party. */
 export interface Party {
@@ -363,7 +370,7 @@ export interface PartyData {
     /** The operation code the message was sent with. */
     op_code: number;
     /** Data payload, if any. */
-    data: any;
+    data: Uint8Array;
 }
 /** A client to server request to send data to a party. */
 interface PartyDataSend {
@@ -373,7 +380,7 @@ interface PartyDataSend {
         /** The operation code the message was sent with. */
         op_code: number;
         /** Data payload, if any. */
-        data: any;
+        data: string | Uint8Array;
     };
 }
 /** Incoming notification for one or more new presences attempting to join the party. */
@@ -526,9 +533,9 @@ export interface Socket {
     rpc(id?: string, payload?: string, http_key?: string): Promise<ApiRpc>;
     /** Send input to a multiplayer match on the server. */
     /** When no presences are supplied the new match state will be sent to all presences. */
-    sendMatchState(matchId: string, opCode: number, data: any, presence?: Presence[]): Promise<void>;
+    sendMatchState(matchId: string, opCode: number, data: string | Uint8Array, presence?: Presence[]): Promise<void>;
     /** Send data to a party. */
-    sendPartyData(party_id: string, opcode: number, data: any): Promise<void>;
+    sendPartyData(party_id: string, opcode: number, data: string | Uint8Array): Promise<void>;
     /** Unfollow one or more users from their status updates. */
     unfollowUsers(user_ids: string[]): Promise<void>;
     /** Update a chat message on a chat channel in the server. */
@@ -636,8 +643,8 @@ export declare class DefaultSocket implements Socket {
     removeMatchmakerParty(party_id: string, ticket: string): Promise<void>;
     removePartyMember(party_id: string, member: Presence): Promise<void>;
     rpc(id?: string, payload?: string, http_key?: string): Promise<ApiRpc>;
-    sendMatchState(matchId: string, opCode: number, data: any, presences?: Presence[]): Promise<void>;
-    sendPartyData(party_id: string, op_code: number, data: any): Promise<void>;
+    sendMatchState(matchId: string, opCode: number, data: string | Uint8Array, presences?: Presence[]): Promise<void>;
+    sendPartyData(party_id: string, op_code: number, data: string | Uint8Array): Promise<void>;
     unfollowUsers(user_ids: string[]): Promise<void>;
     updateChatMessage(channel_id: string, message_id: string, content: any): Promise<ChannelMessageAck>;
     updateStatus(status?: string): Promise<void>;
