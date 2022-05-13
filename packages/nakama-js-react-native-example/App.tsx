@@ -34,12 +34,14 @@ function App() {
 
   useEffect(() => {
     var useSSL = false; // Enable if server is run with an SSL certificate.
-    var client = new Client("defaultkey", "127.0.0.1", "7350", useSSL);
+    // if running in an Android emulator, use 10.0.2.2 instead of localhost to communicate
+    // with the host machine
+    var client = new Client("defaultkey", "10.0.2.2", "7350", useSSL);
 
     client.authenticateCustom("test_id").then(
         session => { console.log("authenticated.");
     }).catch(e => {
-        console.log("error authenticating.");
+        console.log("error authenticating: " + e.message);
     });
   });
 
