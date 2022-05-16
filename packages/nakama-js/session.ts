@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 The Nakama Authors
+ * Copyright 2022 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-/** A session authenticated for a user with Nakama server. */ 
+
+import base64 from "js-base64"
+
+/** A session authenticated for a user with Nakama server. */
 export interface ISession {
   /** Claims */
   /** The authorization token used to construct this session. */
@@ -79,7 +82,7 @@ export class Session implements ISession {
       throw 'jwt is not valid.';
     }
 
-    const tokenDecoded = JSON.parse(atob(tokenParts[1])); // FIXME: use base64 polyfill for React Native.
+    const tokenDecoded = JSON.parse(base64.atob(tokenParts[1]));
     const tokenExpiresAt = Math.floor(parseInt(tokenDecoded['exp']));
 
     /** clients that have just updated to the refresh tokens */
@@ -92,7 +95,7 @@ export class Session implements ISession {
             throw 'refresh jwt is not valid.';
         }
 
-        const refreshTokenDecoded = JSON.parse(atob(refreshTokenParts[1])); // FIXME: use base64 polyfill for React Native.
+        const refreshTokenDecoded = JSON.parse(base64.atob(refreshTokenParts[1]))
         const refreshTokenExpiresAt = Math.floor(parseInt(refreshTokenDecoded['exp']));
         this.refresh_expires_at = refreshTokenExpiresAt;
         this.refresh_token = refreshToken;
