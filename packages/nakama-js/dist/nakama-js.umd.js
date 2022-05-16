@@ -574,6 +574,7 @@
    *
    * @author Dan Kogai (https://github.com/dankogai)
    */
+  const _hasatob = typeof atob === 'function';
   const _hasbtoa = typeof btoa === 'function';
   const _hasBuffer = typeof Buffer === 'function';
   const _TD = typeof TextDecoder === 'function' ? new TextDecoder() : undefined;
@@ -585,6 +586,7 @@
       a.forEach((c, i) => tab[c] = i);
       return tab;
   })(b64chs);
+  const b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
   const _fromCC = String.fromCharCode.bind(String);
   const _U8Afrom = typeof Uint8Array.from === 'function'
       ? Uint8Array.from.bind(Uint8Array)
@@ -592,6 +594,7 @@
   const _mkUriSafe = (src) => src
       .replace(/[+\/]/g, (m0) => m0 == '+' ? '-' : '_')
       .replace(/=+$/m, '');
+  const _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, '');
   /**
    * polyfill version of `btoa`
    */
@@ -675,6 +678,35 @@
   const encode = (src, urlsafe = false) => urlsafe
       ? _mkUriSafe(_encode(src))
       : _encode(src);
+  /**
+   * polyfill version of `atob`
+   */
+  const atobPolyfill = (asc) => {
+      // console.log('polyfilled');
+      asc = asc.replace(/\s+/g, '');
+      if (!b64re.test(asc))
+          throw new TypeError('malformed base64.');
+      asc += '=='.slice(2 - (asc.length & 3));
+      let u24, bin = '', r1, r2;
+      for (let i = 0; i < asc.length;) {
+          u24 = b64tab[asc.charAt(i++)] << 18
+              | b64tab[asc.charAt(i++)] << 12
+              | (r1 = b64tab[asc.charAt(i++)]) << 6
+              | (r2 = b64tab[asc.charAt(i++)]);
+          bin += r1 === 64 ? _fromCC(u24 >> 16 & 255)
+              : r2 === 64 ? _fromCC(u24 >> 16 & 255, u24 >> 8 & 255)
+                  : _fromCC(u24 >> 16 & 255, u24 >> 8 & 255, u24 & 255);
+      }
+      return bin;
+  };
+  /**
+   * does what `window.atob` of web browsers do.
+   * @param {String} asc Base64-encoded string
+   * @returns {string} binary string
+   */
+  const _atob = _hasatob ? (asc) => atob(_tidyB64(asc))
+      : _hasBuffer ? (asc) => Buffer.from(asc, 'base64').toString('binary')
+          : atobPolyfill;
 
   function buildFetchOptions(method, options, bodyJson) {
       var fetchOptions = __assign({ method: method }, options);
@@ -3381,7 +3413,7 @@
   }());
 
   /**
-   * Copyright 2017 The Nakama Authors
+   * Copyright 2022 The Nakama Authors
    *
    * Licensed under the Apache License, Version 2.0 (the "License");
    * you may not use this file except in compliance with the License.
@@ -3414,7 +3446,7 @@
           if (tokenParts.length != 3) {
               throw 'jwt is not valid.';
           }
-          var tokenDecoded = JSON.parse(atob(tokenParts[1])); // FIXME: use base64 polyfill for React Native.
+          var tokenDecoded = JSON.parse(_atob(tokenParts[1]));
           var tokenExpiresAt = Math.floor(parseInt(tokenDecoded['exp']));
           /** clients that have just updated to the refresh tokens */
           /** client release will not have a cached refresh token */
@@ -3423,7 +3455,7 @@
               if (refreshTokenParts.length != 3) {
                   throw 'refresh jwt is not valid.';
               }
-              var refreshTokenDecoded = JSON.parse(atob(refreshTokenParts[1])); // FIXME: use base64 polyfill for React Native.
+              var refreshTokenDecoded = JSON.parse(_atob(refreshTokenParts[1]));
               var refreshTokenExpiresAt = Math.floor(parseInt(refreshTokenDecoded['exp']));
               this.refresh_expires_at = refreshTokenExpiresAt;
               this.refresh_token = refreshToken;
@@ -3590,7 +3622,7 @@
                   msg.match_data_send.data = encode$1(payload.buffer);
               }
               else if (payload) { // it's a string
-                  msg.match_data_send.data = btoa(payload);
+                  msg.match_data_send.data = _btoa(payload);
               }
           }
           else if (msg.party_data_send) {
@@ -3601,7 +3633,7 @@
                   msg.party_data_send.data = encode$1(payload.buffer);
               }
               else if (payload) { // it's a string
-                  msg.party_data_send.data = btoa(payload);
+                  msg.party_data_send.data = _btoa(payload);
               }
           }
           this._socket.send(JSON.stringify(msg));
@@ -4134,7 +4166,7 @@
               });
           });
       };
-      DefaultSocket.prototype.sendMatchState = function (matchId, opCode, data, presences) {
+      DefaultSocket.prototype.sendMatchState = function (matchId, opCode, data, presences, reliable) {
           return __awaiter(this, void 0, void 0, function () {
               return __generator(this, function (_a) {
                   return [2 /*return*/, this.send({
@@ -4142,7 +4174,8 @@
                               match_id: matchId,
                               op_code: opCode,
                               data: data,
-                              presences: presences !== null && presences !== void 0 ? presences : []
+                              presences: presences !== null && presences !== void 0 ? presences : [],
+                              reliable: reliable
                           }
                       })];
               });

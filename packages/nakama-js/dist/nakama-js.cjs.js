@@ -473,6 +473,7 @@ module.exports = __toCommonJS(nakama_js_exports);
 var import_whatwg_fetch = __toESM(require_fetch());
 
 // node_modules/js-base64/base64.mjs
+var _hasatob = typeof atob === "function";
 var _hasbtoa = typeof btoa === "function";
 var _hasBuffer = typeof Buffer === "function";
 var _TD = typeof TextDecoder === "function" ? new TextDecoder() : void 0;
@@ -484,9 +485,11 @@ var b64tab = ((a) => {
   a.forEach((c, i) => tab[c] = i);
   return tab;
 })(b64chs);
+var b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
 var _fromCC = String.fromCharCode.bind(String);
 var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it, fn = (x) => x) => new Uint8Array(Array.prototype.slice.call(it, 0).map(fn));
 var _mkUriSafe = (src) => src.replace(/[+\/]/g, (m0) => m0 == "+" ? "-" : "_").replace(/=+$/m, "");
+var _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, "");
 var btoaPolyfill = (bin) => {
   let u32, c0, c1, c2, asc = "";
   const pad = bin.length % 3;
@@ -520,6 +523,19 @@ var re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g;
 var utob = (u) => u.replace(re_utob, cb_utob);
 var _encode = _hasBuffer ? (s) => Buffer.from(s, "utf8").toString("base64") : _TE ? (s) => _fromUint8Array(_TE.encode(s)) : (s) => _btoa(utob(s));
 var encode = (src, urlsafe = false) => urlsafe ? _mkUriSafe(_encode(src)) : _encode(src);
+var atobPolyfill = (asc) => {
+  asc = asc.replace(/\s+/g, "");
+  if (!b64re.test(asc))
+    throw new TypeError("malformed base64.");
+  asc += "==".slice(2 - (asc.length & 3));
+  let u24, bin = "", r1, r2;
+  for (let i = 0; i < asc.length; ) {
+    u24 = b64tab[asc.charAt(i++)] << 18 | b64tab[asc.charAt(i++)] << 12 | (r1 = b64tab[asc.charAt(i++)]) << 6 | (r2 = b64tab[asc.charAt(i++)]);
+    bin += r1 === 64 ? _fromCC(u24 >> 16 & 255) : r2 === 64 ? _fromCC(u24 >> 16 & 255, u24 >> 8 & 255) : _fromCC(u24 >> 16 & 255, u24 >> 8 & 255, u24 & 255);
+  }
+  return bin;
+};
+var _atob = _hasatob ? (asc) => atob(_tidyB64(asc)) : _hasBuffer ? (asc) => Buffer.from(asc, "base64").toString("binary") : atobPolyfill;
 
 // utils.ts
 function buildFetchOptions(method, options, bodyJson) {
@@ -2621,14 +2637,14 @@ var Session = class {
     if (tokenParts.length != 3) {
       throw "jwt is not valid.";
     }
-    const tokenDecoded = JSON.parse(atob(tokenParts[1]));
+    const tokenDecoded = JSON.parse(_atob(tokenParts[1]));
     const tokenExpiresAt = Math.floor(parseInt(tokenDecoded["exp"]));
     if (refreshToken) {
       const refreshTokenParts = refreshToken.split(".");
       if (refreshTokenParts.length != 3) {
         throw "refresh jwt is not valid.";
       }
-      const refreshTokenDecoded = JSON.parse(atob(refreshTokenParts[1]));
+      const refreshTokenDecoded = JSON.parse(_atob(refreshTokenParts[1]));
       const refreshTokenExpiresAt = Math.floor(parseInt(refreshTokenDecoded["exp"]));
       this.refresh_expires_at = refreshTokenExpiresAt;
       this.refresh_token = refreshToken;
@@ -2748,7 +2764,7 @@ var WebSocketAdapterText = class {
       if (payload && payload instanceof Uint8Array) {
         msg.match_data_send.data = encode2(payload.buffer);
       } else if (payload) {
-        msg.match_data_send.data = btoa(payload);
+        msg.match_data_send.data = _btoa(payload);
       }
     } else if (msg.party_data_send) {
       msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
@@ -2756,7 +2772,7 @@ var WebSocketAdapterText = class {
       if (payload && payload instanceof Uint8Array) {
         msg.party_data_send.data = encode2(payload.buffer);
       } else if (payload) {
-        msg.party_data_send.data = btoa(payload);
+        msg.party_data_send.data = _btoa(payload);
       }
     }
     this._socket.send(JSON.stringify(msg));
@@ -3150,14 +3166,15 @@ var DefaultSocket = class {
       return response.rpc;
     });
   }
-  sendMatchState(matchId, opCode, data, presences) {
+  sendMatchState(matchId, opCode, data, presences, reliable) {
     return __async(this, null, function* () {
       return this.send({
         match_data_send: {
           match_id: matchId,
           op_code: opCode,
           data,
-          presences: presences != null ? presences : []
+          presences: presences != null ? presences : [],
+          reliable
         }
       });
     });

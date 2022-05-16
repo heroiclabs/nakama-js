@@ -15,7 +15,7 @@
  */
 
 import * as base64 from "base64-arraybuffer";
-import base64Polyfill from "js-base64"
+import * as base64Polyfill from "js-base64"
 
 /**
  * An interface used by Nakama's web socket to determine the payload protocol.

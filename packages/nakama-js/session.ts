@@ -15,7 +15,7 @@
  */
 
 
-import base64 from "js-base64"
+import * as base64 from "js-base64"
 
 /** A session authenticated for a user with Nakama server. */
 export interface ISession {
