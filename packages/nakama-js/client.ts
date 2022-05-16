@@ -650,8 +650,8 @@ export class Client {
   }
 
   /** A socket created with the client's configuration. */
-  createSocket(useSSL = false, verbose: boolean = false, adapter : WebSocketAdapter = new WebSocketAdapterText()): Socket {
-    return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter);
+  createSocket(useSSL = false, verbose: boolean = false, adapter : WebSocketAdapter = new WebSocketAdapterText(), sendTimeoutSec : number): Socket {
+    return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter, sendTimeoutSec);
   }
 
   /** Delete one or more users by ID or username. */

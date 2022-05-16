@@ -707,7 +707,8 @@ export class DefaultSocket implements Socket {
       readonly port: string,
       readonly useSSL: boolean = false,
       public verbose: boolean = false,
-      readonly adapter : WebSocketAdapter = new WebSocketAdapterText()
+      readonly adapter : WebSocketAdapter = new WebSocketAdapterText(),
+      readonly sendTimeoutSec : number = 10
       ) {
     this.cIds = {};
     this.nextCid = 1;
@@ -719,7 +720,7 @@ export class DefaultSocket implements Socket {
     return cid;
   }
 
-  connect(session: Session, createStatus: boolean = false): Promise<Session> {
+  connect(session: Session, createStatus: boolean = false, connectTimeoutSec: number = 30): Promise<Session> {
     if (this.adapter.isConnected) {
       return Promise.resolve(session);
     }
@@ -816,6 +817,12 @@ export class DefaultSocket implements Socket {
         reject(evt);
         this.adapter.close();
       }
+
+
+      window.setTimeout(() => {
+        reject("The socket timed out when trying to connect.");
+        this.adapter.close();
+      }, connectTimeoutSec * 1000);
     });
   }
 
@@ -973,6 +980,9 @@ export class DefaultSocket implements Socket {
 
           const cid = this.generatecid();
           this.cIds[cid] = {resolve, reject};
+          window.setTimeout(() => {
+            reject("The socket timed out while waiting for a response.")
+          }, this.sendTimeoutSec * 1000);
 
           /** Add id for promise executor. */
           untypedMessage.cid = cid;
