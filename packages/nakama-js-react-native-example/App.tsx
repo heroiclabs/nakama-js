@@ -36,7 +36,7 @@ function App() {
     var useSSL = false; // Enable if server is run with an SSL certificate.
     // if running in an Android emulator, use 10.0.2.2 instead of localhost to communicate
     // with the host machine
-    var client = new Client("defaultkey", "heroic.local", "7350", useSSL);
+    var client = new Client("defaultkey", "localhost", "7350", useSSL);
 
     console.log("authenticating...");
 
