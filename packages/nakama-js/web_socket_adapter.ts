@@ -15,6 +15,7 @@
  */
 
 import * as base64 from "base64-arraybuffer";
+import * as base64Polyfill from "js-base64"
 
 /**
  * An interface used by Nakama's web socket to determine the payload protocol.
@@ -156,7 +157,7 @@ export class WebSocketAdapterText implements WebSocketAdapter {
             if (payload && payload instanceof Uint8Array) {
                 msg.match_data_send.data = base64.encode(payload.buffer);
             } else if (payload) { // it's a string
-                msg.match_data_send.data = btoa(payload);
+                msg.match_data_send.data = base64Polyfill.btoa(payload);
             }
         } else if (msg.party_data_send) {
             // according to protobuf docs, int64 is encoded to JSON as string.
@@ -165,7 +166,7 @@ export class WebSocketAdapterText implements WebSocketAdapter {
             if (payload && payload instanceof Uint8Array) {
                 msg.party_data_send.data = base64.encode(payload.buffer);
             } else if (payload) { // it's a string
-                msg.party_data_send.data = btoa(payload);
+                msg.party_data_send.data = base64Polyfill.btoa(payload);
             }
         }
 

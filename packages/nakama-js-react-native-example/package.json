@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@heroiclabs/nakama-js": "workspace:packages/nakama-js",
-    "react": "16.13.1",
-    "react-native": "0.63.4"
+    "react": "17.0.2",
+    "react-native": "0.68.2"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
@@ -25,6 +25,7 @@
     "eslint": "^6.5.1",
     "jest": "^25.1.0",
     "metro-react-native-babel-preset": "^0.59.0",
+    "react-native-codegen": "^0.69.1",
     "react-test-renderer": "16.13.1",
     "typescript": "^3.8.3"
   },

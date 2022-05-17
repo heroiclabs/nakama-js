@@ -156,10 +156,12 @@ export interface StreamId {
 export interface StreamData {
     /** The stream identifier. */
     stream: StreamId;
-    /** Array of presences to receive stream data. */
-    stream_presence: Presence;
-    /** The data to send. */
+    /** A reference to the user presence that sent this data, if any. */
+    sender?: Presence;
+    /** Arbitrary contents of the data message. */
     data: string;
+    /** True if this data was delivered reliably. */
+    reliable?: boolean;
 }
 /** Presence updates. */
 export interface StreamPresenceEvent {
@@ -275,8 +277,10 @@ export interface MatchData {
     op_code: number;
     /** Data payload, if any. */
     data: Uint8Array;
-    /** A reference to the user presences that sent this data, if any. */
-    presences: Presence[];
+    /** A reference to the user presence that sent this data, if any. */
+    presence?: Presence;
+    /** True if this data was delivered reliably. */
+    reliable?: boolean;
 }
 /** Send a message that contains match data. */
 interface MatchDataSend {
@@ -289,6 +293,8 @@ interface MatchDataSend {
         data: string | Uint8Array;
         /** A reference to the user presences to send this data to, if any. */
         presences: Presence[];
+        /** True if the data should be sent reliably. */
+        reliable?: boolean;
     };
 }
 /** Incoming information about a party. */
@@ -643,7 +649,7 @@ export declare class DefaultSocket implements Socket {
     removeMatchmakerParty(party_id: string, ticket: string): Promise<void>;
     removePartyMember(party_id: string, member: Presence): Promise<void>;
     rpc(id?: string, payload?: string, http_key?: string): Promise<ApiRpc>;
-    sendMatchState(matchId: string, opCode: number, data: string | Uint8Array, presences?: Presence[]): Promise<void>;
+    sendMatchState(matchId: string, opCode: number, data: string | Uint8Array, presences?: Presence[], reliable?: boolean): Promise<void>;
     sendPartyData(party_id: string, op_code: number, data: string | Uint8Array): Promise<void>;
     unfollowUsers(user_ids: string[]): Promise<void>;
     updateChatMessage(channel_id: string, message_id: string, content: any): Promise<ChannelMessageAck>;
