@@ -1,6 +1,6 @@
 {
     "name": "@heroiclabs/nakama-js",
-    "version": "2.3.0",
+    "version": "2.4.0",
     "scripts": {
         "build": "node build.js",
         "docs": "typedoc index.ts --gaID UA-89839802-1 --out ../../docs"
