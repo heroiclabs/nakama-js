@@ -188,7 +188,7 @@ describe('Match Tests', () => {
     }, customid1, customid2, customid3, JSON.stringify(outerPayload), adapter);
 
     expect(matchDataString).not.toBeNull();
-    expect(JSON.parse(matchDataString).toEqual(outerPayload));
+    expect(JSON.parse(matchDataString)).toEqual(outerPayload);
   });
 
   it.each(adapters)('should join a match, then do not send data to excluded presences', async (adapter) => {

@@ -5,9 +5,21 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ### Unreleased
 
+### Added
+- Added more details comments and documentation on objects and methods.
+
 ### Changed
 - Changed data structure used to pass session variables to authentication methods. The old structure used was a `Map<string, string>`. We now use the `Record<string, string>` for serialization support.
+- Changed `StreamData.stream_presence` to `StreamData.sender`. This field should be populated correctly now.
+- Changed `MatchData.presences` to a singular `MatchData.presence`. This presence represents the sender. This field should be populated correctly now.
+- Match and party data payloads are now serialized as protobuf when using the protobuf adapter.
+    - Because of this change, `sendMatchState` and `sendPartyData` can now receive bytes as input. If bytes are sent using the default text adapter, they are base64 encoded to a string.
+       - These functions can no longer receive data payloads of type `any`. Any object previously passed in must be serialized to a string or bytes. This change is enforced at compile time.
+    - Also due to this change, `MatchData` and `PartyData` have their `data` fields typed as a `Uint8Array`. This breaks
+    backwards compatibility. Users who send a string as their match or party data will need to use a utility such as `TextDecoder` to deserialize the string. This change is enforced at compile time.
 
+### Fixed
+- Fixed an issue with our base64 dependency in React Native.
 
 ### [2.3.0]
 
