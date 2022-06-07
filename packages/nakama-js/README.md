@@ -203,10 +203,10 @@ $GOPATH/src/github.com/heroiclabs/nakama-common/api/api.proto
 
 ### Release Process
 
-To release onto NPM if you have access to the "@heroiclabs" organization you can use Yarn.
+To release onto NPM if you have access to the "@heroiclabs" organization:
 
 ```shell
-yarn workspace <workspace> run build && yarn workspace <workspace> npm publish --access=public
+cd <workspace> && npm publish --access=public
 ```
 
 ### Generate Docs
