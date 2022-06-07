@@ -5,6 +5,13 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ### Unreleased
 
+### [2.4.1]
+
+### Fixed
+- This release is a republish of 2.4.0 but with the `cjs` distribution provided.
+
+### [2.4.0]
+
 ### Added
 - Added more details comments and documentation on objects and methods.
 

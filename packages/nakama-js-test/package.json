@@ -5,8 +5,8 @@
     "private": true,
     "license": "Apache-2.0",
     "dependencies": {
-        "@heroiclabs/nakama-js": "2.3.0",
-        "@heroiclabs/nakama-js-protobuf": "1.0.3"
+        "@heroiclabs/nakama-js": "2.4.1",
+        "@heroiclabs/nakama-js-protobuf": "1.2.0"
     },
     "devDependencies": {
         "@types/expect-puppeteer": "^4.4.5",
