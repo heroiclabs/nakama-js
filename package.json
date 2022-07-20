@@ -43,6 +43,7 @@
     ]
   },
   "dependencies": {
+    "@scarf/scarf": "^1.1.1",
     "base64-arraybuffer": "^1.0.2"
   }
 }
