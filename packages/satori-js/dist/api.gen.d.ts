@@ -107,7 +107,7 @@ export declare class SatoriApi {
     /** Get or list all available experiments for this identity. */
     satoriGetExperiments(bearerToken: string, names?: Array<string>, options?: any): Promise<ApiExperimentList>;
     /** List all available flags for this identity. */
-    satoriGetFlags(bearerToken: string, names?: Array<string>, options?: any): Promise<ApiFlagList>;
+    satoriGetFlags(bearerToken: string, basicAuthUsername: string, basicAuthPassword: string, names?: Array<string>, options?: any): Promise<ApiFlagList>;
     /** Enrich/replace the current session with new identifier. */
     satoriIdentify(bearerToken: string, body: ApiIdentifyRequest, options?: any): Promise<ApiSession>;
     /** List available live events. */

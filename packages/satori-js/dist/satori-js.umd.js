@@ -812,7 +812,9 @@
           bodyJson = JSON.stringify(body || {});
           var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
-          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          if (basicAuthUsername) {
+              fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          }
           return Promise.race([
               fetch(fullUrl, fetchOptions).then(function (response) {
                   if (response.status == 204) {
@@ -876,7 +878,9 @@
           bodyJson = JSON.stringify(body || {});
           var fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
           var fetchOptions = buildFetchOptions("POST", options, bodyJson);
-          fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          if (basicAuthUsername) {
+              fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+          }
           return Promise.race([
               fetch(fullUrl, fetchOptions).then(function (response) {
                   if (response.status == 204) {
@@ -958,7 +962,7 @@
           ]);
       };
       /** List all available flags for this identity. */
-      SatoriApi.prototype.satoriGetFlags = function (bearerToken, names, options) {
+      SatoriApi.prototype.satoriGetFlags = function (bearerToken, basicAuthUsername, basicAuthPassword, names, options) {
           var _this = this;
           if (options === void 0) { options = {}; }
           var urlPath = "/v1/flag";
@@ -969,6 +973,9 @@
           var fetchOptions = buildFetchOptions("GET", options, bodyJson);
           if (bearerToken) {
               fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+          }
+          if (basicAuthUsername) {
+              fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
           }
           return Promise.race([
               fetch(fullUrl, fetchOptions).then(function (response) {
@@ -1352,6 +1359,98 @@
               });
           });
       };
+      /** Get a single flag for this identity. */
+      Client.prototype.getFlag = function (session, name, defaultValue) {
+          return __awaiter(this, void 0, void 0, function () {
+              var error_1;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0:
+                          _a.trys.push([0, 3, , 4]);
+                          if (!(this.autoRefreshSession && session.refresh_token &&
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
+                      case 1:
+                          _a.sent();
+                          _a.label = 2;
+                      case 2: return [2 /*return*/, this.apiClient.satoriGetFlags(session.token, "", "", [name]).then(function (flagList) {
+                              var _a;
+                              var flag = null;
+                              (_a = flagList.flags) === null || _a === void 0 ? void 0 : _a.forEach(function (f) {
+                                  if (f.name === name) {
+                                      flag = f;
+                                  }
+                              });
+                              if (flag === null) {
+                                  flag = {
+                                      name: name,
+                                      value: defaultValue
+                                  };
+                              }
+                              return Promise.resolve(flag);
+                          })];
+                      case 3:
+                          error_1 = _a.sent();
+                          if (defaultValue !== undefined) {
+                              return [2 /*return*/, Promise.resolve({
+                                      name: name,
+                                      value: defaultValue
+                                  })];
+                          }
+                          else {
+                              return [2 /*return*/, Promise.reject(error_1)];
+                          }
+                      case 4: return [2 /*return*/];
+                  }
+              });
+          });
+      };
+      /** Get a single flag with its configured default value. */
+      Client.prototype.getFlagDefault = function (session, name, defaultValue) {
+          return __awaiter(this, void 0, void 0, function () {
+              var error_2;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0:
+                          _a.trys.push([0, 3, , 4]);
+                          if (!(this.autoRefreshSession && session.refresh_token &&
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
+                      case 1:
+                          _a.sent();
+                          _a.label = 2;
+                      case 2: return [2 /*return*/, this.apiClient.satoriGetFlags("", this.apiKey, "", [name]).then(function (flagList) {
+                              var _a;
+                              var flag = null;
+                              (_a = flagList.flags) === null || _a === void 0 ? void 0 : _a.forEach(function (f) {
+                                  if (f.name === name) {
+                                      flag = f;
+                                  }
+                              });
+                              if (flag === null) {
+                                  flag = {
+                                      name: name,
+                                      value: defaultValue
+                                  };
+                              }
+                              return Promise.resolve(flag);
+                          })];
+                      case 3:
+                          error_2 = _a.sent();
+                          if (defaultValue !== undefined) {
+                              return [2 /*return*/, Promise.resolve({
+                                      name: name,
+                                      value: defaultValue
+                                  })];
+                          }
+                          else {
+                              return [2 /*return*/, Promise.reject(error_2)];
+                          }
+                      case 4: return [2 /*return*/];
+                  }
+              });
+          });
+      };
       /** List all available flags for this identity. */
       Client.prototype.getFlags = function (session, names) {
           return __awaiter(this, void 0, void 0, function () {
@@ -1364,7 +1463,7 @@
                       case 1:
                           _a.sent();
                           _a.label = 2;
-                      case 2: return [2 /*return*/, this.apiClient.satoriGetFlags(session.token, names)];
+                      case 2: return [2 /*return*/, this.apiClient.satoriGetFlags(session.token, "", "", names)];
                   }
               });
           });

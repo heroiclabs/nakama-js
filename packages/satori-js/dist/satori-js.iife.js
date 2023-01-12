@@ -636,7 +636,9 @@ var satorijs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -692,7 +694,9 @@ var satorijs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -764,7 +768,7 @@ var satorijs = (() => {
       ]);
     }
     /** List all available flags for this identity. */
-    satoriGetFlags(bearerToken, names, options = {}) {
+    satoriGetFlags(bearerToken, basicAuthUsername, basicAuthPassword, names, options = {}) {
       const urlPath = "/v1/flag";
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("names", names);
@@ -773,6 +777,9 @@ var satorijs = (() => {
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
       if (bearerToken) {
         fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
       }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
@@ -1047,13 +1054,83 @@ var satorijs = (() => {
         return this.apiClient.satoriGetExperiments(session.token, names);
       });
     }
+    /** Get a single flag for this identity. */
+    getFlag(session, name, defaultValue) {
+      return __async(this, null, function* () {
+        try {
+          if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+            yield this.sessionRefresh(session);
+          }
+          return this.apiClient.satoriGetFlags(session.token, "", "", [name]).then((flagList) => {
+            var _a;
+            let flag = null;
+            (_a = flagList.flags) == null ? void 0 : _a.forEach((f) => {
+              if (f.name === name) {
+                flag = f;
+              }
+            });
+            if (flag === null) {
+              flag = {
+                name,
+                value: defaultValue
+              };
+            }
+            return Promise.resolve(flag);
+          });
+        } catch (error) {
+          if (defaultValue !== void 0) {
+            return Promise.resolve({
+              name,
+              value: defaultValue
+            });
+          } else {
+            return Promise.reject(error);
+          }
+        }
+      });
+    }
+    /** Get a single flag with its configured default value. */
+    getFlagDefault(session, name, defaultValue) {
+      return __async(this, null, function* () {
+        try {
+          if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+            yield this.sessionRefresh(session);
+          }
+          return this.apiClient.satoriGetFlags("", this.apiKey, "", [name]).then((flagList) => {
+            var _a;
+            let flag = null;
+            (_a = flagList.flags) == null ? void 0 : _a.forEach((f) => {
+              if (f.name === name) {
+                flag = f;
+              }
+            });
+            if (flag === null) {
+              flag = {
+                name,
+                value: defaultValue
+              };
+            }
+            return Promise.resolve(flag);
+          });
+        } catch (error) {
+          if (defaultValue !== void 0) {
+            return Promise.resolve({
+              name,
+              value: defaultValue
+            });
+          } else {
+            return Promise.reject(error);
+          }
+        }
+      });
+    }
     /** List all available flags for this identity. */
     getFlags(session, names) {
       return __async(this, null, function* () {
         if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
           yield this.sessionRefresh(session);
         }
-        return this.apiClient.satoriGetFlags(session.token, names);
+        return this.apiClient.satoriGetFlags(session.token, "", "", names);
       });
     }
     /** Enrich/replace the current session with new identifier. */

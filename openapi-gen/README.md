@@ -5,8 +5,16 @@ openapi-gen
 
 ## Usage
 
+### Nakama
+
 ```shell
-go run main.go $GOPATH/src/github.com/heroiclabs/nakama/apigrpc/apigrpc.swagger.json > ../packages/nakama-js/api.gen.ts
+go run main.go "$GOPATH/src/github.com/heroiclabs/nakama/apigrpc/apigrpc.swagger.json" "Nakama" > ../packages/nakama-js/api.gen.ts
+```
+
+### Satori
+
+```shell
+go run main.go "$GOPATH/src/github.com/heroiclabs/nakama/apigrpc/apigrpc.swagger.json" "Satori" > ../packages/satori-js/api.gen.ts
 ```
 
 ### Rationale

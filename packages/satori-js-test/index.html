@@ -17,6 +17,9 @@
         .then(session => {
           _session = session;
           console.log("session", session);
+          client.getFlag(session, 'nonExistingFlagName', 'aDefaultValue').then((flag) => console.log('Non existing flag:', flag));
+          client.getFlag(session, 'FlagOne', 'defaultValueShouldNotReturn').then((flag) => console.log('flag', flag));
+          client.getFlagDefault(session, 'FlagOne').then((flag) => console.log('default flag', flag));
           client.sessionRefresh(session).then((session) => console.log("session refreshed, new token: ", session.token));
           client.event(session, { name: "testEvent", value: "A value", metadata: { hello: "world" }}).then(() => console.log("sent event"));
           client.events(session, [

@@ -40,6 +40,16 @@ export declare class Client {
     events(session: Session, events: Array<ApiEvent>): Promise<boolean>;
     /** Get or list all available experiments for this identity. */
     getExperiments(session: Session, names?: Array<string>): Promise<import("./api.gen").ApiExperimentList>;
+    /** Get a single flag for this identity. */
+    getFlag(session: Session, name: string, defaultValue?: string): Promise<{
+        name: string;
+        value: string | undefined;
+    }>;
+    /** Get a single flag with its configured default value. */
+    getFlagDefault(session: Session, name: string, defaultValue?: string): Promise<{
+        name: string;
+        value: string | undefined;
+    }>;
     /** List all available flags for this identity. */
     getFlags(session: Session, names?: Array<string>): Promise<import("./api.gen").ApiFlagList>;
     /** Enrich/replace the current session with new identifier. */

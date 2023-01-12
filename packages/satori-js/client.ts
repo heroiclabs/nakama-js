@@ -125,6 +125,86 @@ export class Client {
     return this.apiClient.satoriGetExperiments(session.token, names);
   }
 
+  /** Get a single flag for this identity. */
+  async getFlag(session: Session, name: string, defaultValue?: string) {
+    try
+    {
+      if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+      }
+
+      return this.apiClient.satoriGetFlags(session.token, "", "", [name]).then((flagList) => {
+        let flag = null;
+
+        flagList.flags?.forEach((f) => {
+          if (f.name === name) {
+            flag = f
+          }
+        });
+
+        if (flag === null) {
+          flag = {
+            name,
+            value: defaultValue
+          };
+        }
+
+        return Promise.resolve(flag);
+      });
+    }
+    catch (error) {
+      if (defaultValue !== undefined) {
+        return Promise.resolve({
+          name,
+          value: defaultValue
+        });
+      } else {
+        return Promise.reject(error);
+      }
+    }
+  }
+
+  /** Get a single flag with its configured default value. */
+  async getFlagDefault(session: Session, name: string, defaultValue?: string) {
+    try
+    {
+      if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+      }
+
+      return this.apiClient.satoriGetFlags("", this.apiKey, "", [name]).then((flagList) => {
+        let flag = null;
+
+        flagList.flags?.forEach((f) => {
+          if (f.name === name) {
+            flag = f
+          }
+        });
+
+        if (flag === null) {
+          flag = {
+            name,
+            value: defaultValue
+          };
+        }
+
+        return Promise.resolve(flag);
+      });
+    }
+    catch (error) {
+      if (defaultValue !== undefined) {
+        return Promise.resolve({
+          name,
+          value: defaultValue
+        });
+      } else {
+        return Promise.reject(error);
+      }
+    }
+  }
+
   /** List all available flags for this identity. */
   async getFlags(session: Session, names?: Array<string>) {
     if (this.autoRefreshSession && session.refresh_token &&
@@ -132,7 +212,7 @@ export class Client {
       await this.sessionRefresh(session);
     }
 
-    return this.apiClient.satoriGetFlags(session.token, names);
+    return this.apiClient.satoriGetFlags(session.token, "", "", names);
   }
 
   /** Enrich/replace the current session with new identifier. */
