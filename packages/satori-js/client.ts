@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { SatoriApi, ApiSession, ApiAuthenticateRequest, ApiEventRequest, ApiAuthenticateLogoutRequest, ApiAuthenticateRefreshRequest, ApiIdentifyRequest, ApiUpdatePropertiesRequest } from "./api.gen";
+import { SatoriApi, ApiSession, ApiAuthenticateRequest, ApiEventRequest, ApiAuthenticateLogoutRequest, ApiAuthenticateRefreshRequest, ApiIdentifyRequest, ApiUpdatePropertiesRequest, ApiEvent } from "./api.gen";
 
 import { Session } from "./session";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = "7450";
-const DEFAULT_SERVER_KEY = "defaultkey";
+const DEFAULT_API_KEY = "defaultkey";
 const DEFAULT_TIMEOUT_MS = 7000;
 const DEFAULT_EXPIRED_TIMESPAN_MS = 5 * 60 * 1000;
 
@@ -34,7 +34,7 @@ export class Client {
   private readonly apiClient: SatoriApi;
 
   constructor(
-      readonly serverkey = DEFAULT_SERVER_KEY,
+      readonly apiKey = DEFAULT_API_KEY,
       readonly host = DEFAULT_HOST,
       readonly port = DEFAULT_PORT,
       readonly useSSL = false,
@@ -43,7 +43,7 @@ export class Client {
     const scheme = (useSSL) ? "https://" : "http://";
     const basePath = `${scheme}${host}:${port}`;
 
-    this.apiClient = new SatoriApi(serverkey, basePath, timeout);
+    this.apiClient = new SatoriApi(apiKey, basePath, timeout);
   }
 
   /** Authenticate a user with an ID against the server. */
@@ -53,7 +53,7 @@ export class Client {
       "id": id,
     };
 
-    return this.apiClient.satoriAuthenticate(this.serverkey, "", request).then((apiSession : ApiSession) => {
+    return this.apiClient.satoriAuthenticate(this.apiKey, "", request).then((apiSession : ApiSession) => {
       return Promise.resolve(new Session(apiSession.token || "", apiSession.refresh_token || ""));
     });
   }
@@ -65,7 +65,7 @@ export class Client {
       "refresh_token": session.refresh_token,
     };
 
-    return this.apiClient.satoriAuthenticateRefresh(this.serverkey, "", request).then((apiSession : ApiSession) => {
+    return this.apiClient.satoriAuthenticateRefresh(this.apiKey, "", request).then((apiSession : ApiSession) => {
       return Promise.resolve(new Session(apiSession.token || "", apiSession.refresh_token || ""));
     });
   }
@@ -84,18 +84,30 @@ export class Client {
   }
 
   /** Publish an event for this session. */
-  async event(session: Session, name: string, value?: string, metadata: any = {}) {
+  async event(session: Session, event: ApiEvent) {
     if (this.autoRefreshSession && session.refresh_token &&
       session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
       await this.sessionRefresh(session);
     }
 
     const request : ApiEventRequest = {
-      events: [{
-      name,
-      metadata,
-      value
-      }]
+      events: [event]
+    };
+
+    return this.apiClient.satoriEvent(session.token, request).then((response) => {
+      return Promise.resolve(response !== undefined);
+    });
+  }
+
+  /** Publish multiple events for this session */
+  async events(session: Session, events: Array<ApiEvent>) {
+    if (this.autoRefreshSession && session.refresh_token &&
+      session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+      await this.sessionRefresh(session);
+    }
+
+    const request : ApiEventRequest = {
+      events
     };
 
     return this.apiClient.satoriEvent(session.token, request).then((response) => {

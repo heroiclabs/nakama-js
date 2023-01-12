@@ -736,8 +736,8 @@
 
   // tslint:disable
   var SatoriApi = /** @class */ (function () {
-      function SatoriApi(serverKey, basePath, timeoutMs) {
-          this.serverKey = serverKey;
+      function SatoriApi(apiKey, basePath, timeoutMs) {
+          this.apiKey = apiKey;
           this.basePath = basePath;
           this.timeoutMs = timeoutMs;
       }
@@ -1220,19 +1220,19 @@
    */
   var DEFAULT_HOST = "127.0.0.1";
   var DEFAULT_PORT = "7450";
-  var DEFAULT_SERVER_KEY = "defaultkey";
+  var DEFAULT_API_KEY = "defaultkey";
   var DEFAULT_TIMEOUT_MS = 7000;
   var DEFAULT_EXPIRED_TIMESPAN_MS = 5 * 60 * 1000;
   /** A client for Satori server. */
   var Client = /** @class */ (function () {
-      function Client(serverkey, host, port, useSSL, timeout, autoRefreshSession) {
-          if (serverkey === void 0) { serverkey = DEFAULT_SERVER_KEY; }
+      function Client(apiKey, host, port, useSSL, timeout, autoRefreshSession) {
+          if (apiKey === void 0) { apiKey = DEFAULT_API_KEY; }
           if (host === void 0) { host = DEFAULT_HOST; }
           if (port === void 0) { port = DEFAULT_PORT; }
           if (useSSL === void 0) { useSSL = false; }
           if (timeout === void 0) { timeout = DEFAULT_TIMEOUT_MS; }
           if (autoRefreshSession === void 0) { autoRefreshSession = true; }
-          this.serverkey = serverkey;
+          this.apiKey = apiKey;
           this.host = host;
           this.port = port;
           this.useSSL = useSSL;
@@ -1242,7 +1242,7 @@
           this.expiredTimespanMs = DEFAULT_EXPIRED_TIMESPAN_MS;
           var scheme = (useSSL) ? "https://" : "http://";
           var basePath = "" + scheme + host + ":" + port;
-          this.apiClient = new SatoriApi(serverkey, basePath, timeout);
+          this.apiClient = new SatoriApi(apiKey, basePath, timeout);
       }
       /** Authenticate a user with an ID against the server. */
       Client.prototype.authenticate = function (id) {
@@ -1252,7 +1252,7 @@
                   request = {
                       "id": id,
                   };
-                  return [2 /*return*/, this.apiClient.satoriAuthenticate(this.serverkey, "", request).then(function (apiSession) {
+                  return [2 /*return*/, this.apiClient.satoriAuthenticate(this.apiKey, "", request).then(function (apiSession) {
                           return Promise.resolve(new Session(apiSession.token || "", apiSession.refresh_token || ""));
                       })];
               });
@@ -1266,7 +1266,7 @@
                   request = {
                       "refresh_token": session.refresh_token,
                   };
-                  return [2 /*return*/, this.apiClient.satoriAuthenticateRefresh(this.serverkey, "", request).then(function (apiSession) {
+                  return [2 /*return*/, this.apiClient.satoriAuthenticateRefresh(this.apiKey, "", request).then(function (apiSession) {
                           return Promise.resolve(new Session(apiSession.token || "", apiSession.refresh_token || ""));
                       })];
               });
@@ -1288,8 +1288,7 @@
           });
       };
       /** Publish an event for this session. */
-      Client.prototype.event = function (session, name, value, metadata) {
-          if (metadata === void 0) { metadata = {}; }
+      Client.prototype.event = function (session, event) {
           return __awaiter(this, void 0, void 0, function () {
               var request;
               return __generator(this, function (_a) {
@@ -1303,11 +1302,31 @@
                           _a.label = 2;
                       case 2:
                           request = {
-                              events: [{
-                                      name: name,
-                                      metadata: metadata,
-                                      value: value
-                                  }]
+                              events: [event]
+                          };
+                          return [2 /*return*/, this.apiClient.satoriEvent(session.token, request).then(function (response) {
+                                  return Promise.resolve(response !== undefined);
+                              })];
+                  }
+              });
+          });
+      };
+      /** Publish multiple events for this session */
+      Client.prototype.events = function (session, events) {
+          return __awaiter(this, void 0, void 0, function () {
+              var request;
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0:
+                          if (!(this.autoRefreshSession && session.refresh_token &&
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
+                      case 1:
+                          _a.sent();
+                          _a.label = 2;
+                      case 2:
+                          request = {
+                              events: events
                           };
                           return [2 /*return*/, this.apiClient.satoriEvent(session.token, request).then(function (response) {
                                   return Promise.resolve(response !== undefined);

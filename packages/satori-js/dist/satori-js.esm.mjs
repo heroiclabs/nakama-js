@@ -558,8 +558,8 @@ function buildFetchOptions(method, options, bodyJson) {
 
 // api.gen.ts
 var SatoriApi = class {
-  constructor(serverKey, basePath, timeoutMs) {
-    this.serverKey = serverKey;
+  constructor(apiKey, basePath, timeoutMs) {
+    this.apiKey = apiKey;
     this.basePath = basePath;
     this.timeoutMs = timeoutMs;
   }
@@ -947,12 +947,12 @@ var Session = class {
 // client.ts
 var DEFAULT_HOST = "127.0.0.1";
 var DEFAULT_PORT = "7450";
-var DEFAULT_SERVER_KEY = "defaultkey";
+var DEFAULT_API_KEY = "defaultkey";
 var DEFAULT_TIMEOUT_MS = 7e3;
 var DEFAULT_EXPIRED_TIMESPAN_MS = 5 * 60 * 1e3;
 var Client = class {
-  constructor(serverkey = DEFAULT_SERVER_KEY, host = DEFAULT_HOST, port = DEFAULT_PORT, useSSL = false, timeout = DEFAULT_TIMEOUT_MS, autoRefreshSession = true) {
-    this.serverkey = serverkey;
+  constructor(apiKey = DEFAULT_API_KEY, host = DEFAULT_HOST, port = DEFAULT_PORT, useSSL = false, timeout = DEFAULT_TIMEOUT_MS, autoRefreshSession = true) {
+    this.apiKey = apiKey;
     this.host = host;
     this.port = port;
     this.useSSL = useSSL;
@@ -962,7 +962,7 @@ var Client = class {
     this.expiredTimespanMs = DEFAULT_EXPIRED_TIMESPAN_MS;
     const scheme = useSSL ? "https://" : "http://";
     const basePath = `${scheme}${host}:${port}`;
-    this.apiClient = new SatoriApi(serverkey, basePath, timeout);
+    this.apiClient = new SatoriApi(apiKey, basePath, timeout);
   }
   /** Authenticate a user with an ID against the server. */
   authenticate(id) {
@@ -970,7 +970,7 @@ var Client = class {
       const request = {
         "id": id
       };
-      return this.apiClient.satoriAuthenticate(this.serverkey, "", request).then((apiSession) => {
+      return this.apiClient.satoriAuthenticate(this.apiKey, "", request).then((apiSession) => {
         return Promise.resolve(new Session(apiSession.token || "", apiSession.refresh_token || ""));
       });
     });
@@ -981,7 +981,7 @@ var Client = class {
       const request = {
         "refresh_token": session.refresh_token
       };
-      return this.apiClient.satoriAuthenticateRefresh(this.serverkey, "", request).then((apiSession) => {
+      return this.apiClient.satoriAuthenticateRefresh(this.apiKey, "", request).then((apiSession) => {
         return Promise.resolve(new Session(apiSession.token || "", apiSession.refresh_token || ""));
       });
     });
@@ -999,17 +999,27 @@ var Client = class {
     });
   }
   /** Publish an event for this session. */
-  event(_0, _1, _2) {
-    return __async(this, arguments, function* (session, name, value, metadata = {}) {
+  event(session, event) {
+    return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
       const request = {
-        events: [{
-          name,
-          metadata,
-          value
-        }]
+        events: [event]
+      };
+      return this.apiClient.satoriEvent(session.token, request).then((response) => {
+        return Promise.resolve(response !== void 0);
+      });
+    });
+  }
+  /** Publish multiple events for this session */
+  events(session, events) {
+    return __async(this, null, function* () {
+      if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+        yield this.sessionRefresh(session);
+      }
+      const request = {
+        events
       };
       return this.apiClient.satoriEvent(session.token, request).then((response) => {
         return Promise.resolve(response !== void 0);

@@ -88,10 +88,10 @@ export interface RpcStatus {
     message?: string;
 }
 export declare class SatoriApi {
-    readonly serverKey: string;
+    readonly apiKey: string;
     readonly basePath: string;
     readonly timeoutMs: number;
-    constructor(serverKey: string, basePath: string, timeoutMs: number);
+    constructor(apiKey: string, basePath: string, timeoutMs: number);
     /** A healthcheck which load balancers can use to check the service. */
     satoriHealthcheck(bearerToken: string, options?: any): Promise<any>;
     /** A readycheck which load balancers can use to check the service. */

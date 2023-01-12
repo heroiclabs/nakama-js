@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ApiEvent } from "./api.gen";
 import { Session } from "./session";
 /** A client for Satori server. */
 export declare class Client {
-    readonly serverkey: string;
+    readonly apiKey: string;
     readonly host: string;
     readonly port: string;
     readonly useSSL: boolean;
@@ -26,7 +27,7 @@ export declare class Client {
     expiredTimespanMs: number;
     /** The low level API client for Nakama server. */
     private readonly apiClient;
-    constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number, autoRefreshSession?: boolean);
+    constructor(apiKey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number, autoRefreshSession?: boolean);
     /** Authenticate a user with an ID against the server. */
     authenticate(id: string): Promise<Session>;
     /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
@@ -34,7 +35,9 @@ export declare class Client {
     /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
     logout(session: Session): Promise<boolean>;
     /** Publish an event for this session. */
-    event(session: Session, name: string, value?: string, metadata?: any): Promise<boolean>;
+    event(session: Session, event: ApiEvent): Promise<boolean>;
+    /** Publish multiple events for this session */
+    events(session: Session, events: Array<ApiEvent>): Promise<boolean>;
     /** Get or list all available experiments for this identity. */
     getExperiments(session: Session, names?: Array<string>): Promise<import("./api.gen").ApiExperimentList>;
     /** List all available flags for this identity. */

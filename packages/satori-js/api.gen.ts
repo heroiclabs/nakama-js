@@ -150,7 +150,7 @@ export interface RpcStatus {
 
 export class SatoriApi {
 
-  constructor(readonly serverKey: string, readonly basePath: string, readonly timeoutMs: number) {}
+  constructor(readonly apiKey: string, readonly basePath: string, readonly timeoutMs: number) {}
 
   /** A healthcheck which load balancers can use to check the service. */
   satoriHealthcheck(bearerToken: string,
