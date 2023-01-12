@@ -39,7 +39,9 @@
       "packages/nakama-js-protobuf",
       "packages/nakama-js-react-native-example",
       "packages/nakama-js-test",
-      "packages/nakama-js-webpack-example"
+      "packages/nakama-js-webpack-example",
+      "packages/satori-js",
+      "packages/satori-js-test"
     ]
   },
   "dependencies": {

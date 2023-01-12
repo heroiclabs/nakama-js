@@ -1,32 +1,31 @@
 {
-    "name": "@heroiclabs/nakama-js",
+    "name": "@heroiclabs/satori-js",
     "version": "2.5.0",
     "scripts": {
         "build": "node build.js",
         "docs": "typedoc index.ts --gaID UA-89839802-1 --out ../../docs"
     },
-    "description": "JavaScript client for Nakama server written in TypeScript.",
-    "main": "dist/nakama-js.cjs.js",
-    "module": "dist/nakama-js.esm.mjs",
+    "description": "JavaScript client for Satori server written in TypeScript.",
+    "main": "dist/satori-js.cjs.js",
+    "module": "dist/satori-js.esm.mjs",
     "types": "dist/index.d.ts",
     "exports": {
         "./package.json": "./package.json",
         ".": {
-            "import": "./dist/nakama-js.esm.mjs",
-            "require": "./dist/nakama-js.cjs.js"
+            "import": "./dist/satori-js.esm.mjs",
+            "require": "./dist/satori-js.cjs.js"
         }
     },
     "keywords": [
         "app server",
         "client library",
         "game server",
-        "nakama",
-        "realtime",
-        "realtime chat"
+        "satori",
+        "live ops"
     ],
-    "repository": "https://github.com/heroiclabs/nakama-js",
+    "repository": "https://github.com/heroiclabs/satori-js",
     "homepage": "https://heroiclabs.com",
-    "bugs": "https://github.com/heroiclabs/nakama-js/issues",
+    "bugs": "https://github.com/heroiclabs/satori-js/issues",
     "author": "Chris Molozian <chris@heroiclabs.com>",
     "contributors": [
         "Andrei Mihu <andrei@heroiclabs.com>",

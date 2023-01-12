@@ -5,6 +5,9 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ### Unreleased
 
+### Added
+- Added [Satori](https://heroiclabs.com/docs/satori) client package (`satori-js`)
+
 ### [2.4.1]
 
 ### Fixed
