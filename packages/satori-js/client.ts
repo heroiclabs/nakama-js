@@ -215,13 +215,8 @@ export class Client {
     return this.apiClient.satoriGetFlags(session.token, "", "", names);
   }
 
-  /** List all available default flags for this identity. */
-  async getFlagsDefault(session: Session, names?: Array<string>) {
-    if (this.autoRefreshSession && session.refresh_token &&
-      session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
-      await this.sessionRefresh(session);
-    }
-
+  /** List all available default flags. */
+  async getFlagsDefault(names?: Array<string>) {
     return this.apiClient.satoriGetFlags("", this.apiKey, "", names);
   }
 

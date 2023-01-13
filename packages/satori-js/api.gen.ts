@@ -394,7 +394,8 @@ export class SatoriApi {
 }
 
   /** List all available flags for this identity. */
-  satoriGetFlags(bearerToken: string,basicAuthUsername: string,
+  satoriGetFlags(bearerToken: string,
+    basicAuthUsername: string,
 		basicAuthPassword: string,
       names?:Array<string>,
       options: any = {}): Promise<ApiFlagList> {
