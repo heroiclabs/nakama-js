@@ -1133,6 +1133,15 @@ var satorijs = (() => {
         return this.apiClient.satoriGetFlags(session.token, "", "", names);
       });
     }
+    /** List all available default flags for this identity. */
+    getFlagsDefault(session, names) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        return this.apiClient.satoriGetFlags("", this.apiKey, "", names);
+      });
+    }
     /** Enrich/replace the current session with new identifier. */
     identify(session, id, defaultProperties, customProperties) {
       return __async(this, null, function* () {

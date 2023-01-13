@@ -1468,6 +1468,23 @@
               });
           });
       };
+      /** List all available default flags for this identity. */
+      Client.prototype.getFlagsDefault = function (session, names) {
+          return __awaiter(this, void 0, void 0, function () {
+              return __generator(this, function (_a) {
+                  switch (_a.label) {
+                      case 0:
+                          if (!(this.autoRefreshSession && session.refresh_token &&
+                              session.isexpired((Date.now() + this.expiredTimespanMs) / 1000))) return [3 /*break*/, 2];
+                          return [4 /*yield*/, this.sessionRefresh(session)];
+                      case 1:
+                          _a.sent();
+                          _a.label = 2;
+                      case 2: return [2 /*return*/, this.apiClient.satoriGetFlags("", this.apiKey, "", names)];
+                  }
+              });
+          });
+      };
       /** Enrich/replace the current session with new identifier. */
       Client.prototype.identify = function (session, id, defaultProperties, customProperties) {
           return __awaiter(this, void 0, void 0, function () {

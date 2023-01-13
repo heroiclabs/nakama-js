@@ -52,6 +52,8 @@ export declare class Client {
     }>;
     /** List all available flags for this identity. */
     getFlags(session: Session, names?: Array<string>): Promise<import("./api.gen").ApiFlagList>;
+    /** List all available default flags for this identity. */
+    getFlagsDefault(session: Session, names?: Array<string>): Promise<import("./api.gen").ApiFlagList>;
     /** Enrich/replace the current session with new identifier. */
     identify(session: Session, id: string, defaultProperties?: Record<string, string>, customProperties?: Record<string, string>): Promise<Session>;
     /** List available live events. */
