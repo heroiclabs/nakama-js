@@ -40,20 +40,24 @@ export declare class Client {
     events(session: Session, events: Array<ApiEvent>): Promise<boolean>;
     /** Get or list all available experiments for this identity. */
     getExperiments(session: Session, names?: Array<string>): Promise<import("./api.gen").ApiExperimentList>;
+    /** Get a single flag for this identity. Throws an error when the flag does not exist. */
+    getFlag(session: Session, name: string): Promise<never>;
     /** Get a single flag for this identity. */
-    getFlag(session: Session, name: string, defaultValue?: string): Promise<{
+    getFlagWithFallback(session: Session, name: string, fallbackValue?: string): Promise<{
         name: string;
         value: string | undefined;
     }>;
-    /** Get a single flag with its configured default value. */
-    getFlagDefault(session: Session, name: string, defaultValue?: string): Promise<{
+    /** Get a single flag with its configured default value. Throws an error when the flag does not exist. */
+    getFlagDefault(name: string): Promise<never>;
+    /** Get a single flag with its configured default value.  */
+    getFlagDefaultWithFallback(name: string, fallbackValue?: string): Promise<{
         name: string;
         value: string | undefined;
     }>;
     /** List all available flags for this identity. */
     getFlags(session: Session, names?: Array<string>): Promise<import("./api.gen").ApiFlagList>;
-    /** List all available default flags for this identity. */
-    getFlagsDefault(session: Session, names?: Array<string>): Promise<import("./api.gen").ApiFlagList>;
+    /** List all available default flags. */
+    getFlagsDefault(names?: Array<string>): Promise<import("./api.gen").ApiFlagList>;
     /** Enrich/replace the current session with new identifier. */
     identify(session: Session, id: string, defaultProperties?: Record<string, string>, customProperties?: Record<string, string>): Promise<Session>;
     /** List available live events. */

@@ -125,84 +125,80 @@ export class Client {
     return this.apiClient.satoriGetExperiments(session.token, names);
   }
 
-  /** Get a single flag for this identity. */
-  async getFlag(session: Session, name: string, defaultValue?: string) {
-    try
-    {
-      if (this.autoRefreshSession && session.refresh_token &&
-        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
-        await this.sessionRefresh(session);
-      }
+  /** Get a single flag for this identity. Throws an error when the flag does not exist. */
+  async getFlag(session: Session, name: string) {
+    if (this.autoRefreshSession && session.refresh_token &&
+      session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+      await this.sessionRefresh(session);
+    }
 
-      return this.apiClient.satoriGetFlags(session.token, "", "", [name]).then((flagList) => {
-        let flag = null;
+    return this.apiClient.satoriGetFlags(session.token, "", "", [name]).then((flagList) => {
+      let flag = null;
 
-        flagList.flags?.forEach((f) => {
-          if (f.name === name) {
-            flag = f
-          }
-        });
-
-        if (flag === null) {
-          flag = {
-            name,
-            value: defaultValue
-          };
+      flagList.flags?.forEach((f) => {
+        if (f.name === name) {
+          flag = f;
         }
-
-        return Promise.resolve(flag);
       });
-    }
-    catch (error) {
-      if (defaultValue !== undefined) {
-        return Promise.resolve({
-          name,
-          value: defaultValue
-        });
-      } else {
-        return Promise.reject(error);
+
+      if (flag === null) {
+        return Promise.reject("Flag does not exist.");
       }
-    }
+
+      return Promise.resolve(flag);
+    });
   }
 
-  /** Get a single flag with its configured default value. */
-  async getFlagDefault(session: Session, name: string, defaultValue?: string) {
-    try
-    {
-      if (this.autoRefreshSession && session.refresh_token &&
-        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
-        await this.sessionRefresh(session);
-      }
-
-      return this.apiClient.satoriGetFlags("", this.apiKey, "", [name]).then((flagList) => {
-        let flag = null;
-
-        flagList.flags?.forEach((f) => {
-          if (f.name === name) {
-            flag = f
-          }
-        });
-
-        if (flag === null) {
-          flag = {
-            name,
-            value: defaultValue
-          };
-        }
-
-        return Promise.resolve(flag);
-      });
-    }
-    catch (error) {
-      if (defaultValue !== undefined) {
-        return Promise.resolve({
+  
+  /** Get a single flag for this identity. */
+  async getFlagWithFallback(session: Session, name: string, fallbackValue?: string) {
+    return this.getFlag(session, name)
+      .then((flag) => {
+        return flag;
+      })
+      .catch(() => {
+        const flag = {
           name,
-          value: defaultValue
-        });
-      } else {
-        return Promise.reject(error);
+          value: fallbackValue
+        };
+
+        return Promise.resolve(flag)
+      });
+  }
+
+  /** Get a single flag with its configured default value. Throws an error when the flag does not exist. */
+  async getFlagDefault(name: string) {
+    return this.apiClient.satoriGetFlags("", this.apiKey, "", [name]).then((flagList) => {
+      let flag = null;
+
+      flagList.flags?.forEach((f) => {
+        if (f.name === name) {
+          flag = f;
+        }
+      });
+
+      if (flag === null) {
+        return Promise.reject("Flag does not exist.");
       }
-    }
+
+      return Promise.resolve(flag);
+    });
+  }
+
+  /** Get a single flag with its configured default value.  */
+  async getFlagDefaultWithFallback(name: string, fallbackValue?: string) {
+    return this.getFlagDefault(name)
+      .then((flag) => {
+        return flag;
+      })
+      .catch(() => {
+        const flag = {
+          name,
+          value: fallbackValue
+        };
+
+        return Promise.resolve(flag)
+      });
   }
 
   /** List all available flags for this identity. */
