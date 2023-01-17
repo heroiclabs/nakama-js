@@ -8,6 +8,9 @@
     "realtime",
     "realtime chat"
   ],
+  "scripts": {
+    "docs": "typedoc --tsconfig tsconfig.typedoc.json --entryPoints ./packages/nakama-js/index.ts --entryPoints ./packages/satori-js/index.ts --gaID UA-89839802-1 --out docs"
+  },
   "repository": "https://github.com/heroiclabs/nakama-js",
   "homepage": "https://heroiclabs.com",
   "bugs": "https://github.com/heroiclabs/nakama-js/issues",
@@ -18,34 +21,17 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "base64url": "^3.0.1",
-    "bufferutil": "4.0.1",
-    "chalk": "^2.4.2",
-    "esbuild": "^0.14.39",
-    "merge": "^1.2.1",
-    "mkdirp": "^0.5.1",
-    "rimraf": "^2.6.3",
-    "typedoc": "^0.14.2",
-    "typescript": "3.9.7",
-    "utf-8-validate": "5.0.2",
-    "ws": "7.3.1"
+    "esbuild": "^0.17.2",
+    "typedoc": "^0.23.24",
+    "typescript": "^4.9.4"
   },
   "private": true,
-  "workspaces": {
-    "packages": [
-      "packages/nakama-js",
-      "packages/nakama-js-create-react-app-example",
-      "packages/nakama-js-iife-example",
-      "packages/nakama-js-protobuf",
-      "packages/nakama-js-react-native-example",
-      "packages/nakama-js-test",
-      "packages/nakama-js-webpack-example",
-      "packages/satori-js",
-      "packages/satori-js-test"
-    ]
-  },
+  "workspaces": [
+    "packages/nakama-js",
+    "packages/nakama-js-protobuf",
+    "packages/satori-js"
+  ],
   "dependencies": {
-    "@scarf/scarf": "^1.1.1",
-    "base64-arraybuffer": "^1.0.2"
+    "@scarf/scarf": "^1.1.1"
   }
 }

@@ -12,7 +12,7 @@
         }
     },
     "scripts": {
-        "build": "node build.js"
+        "build": "npx tsc && node build.mjs"
     },
     "devDependencies": {
         "ts-proto": "^1.80.1",

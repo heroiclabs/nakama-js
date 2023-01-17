@@ -2,8 +2,7 @@
     "name": "@heroiclabs/nakama-js",
     "version": "2.5.0",
     "scripts": {
-        "build": "node build.js",
-        "docs": "typedoc index.ts --gaID UA-89839802-1 --out ../../docs"
+        "build": "npx tsc && npx rollup -c --bundleConfigAsCjs && node build.mjs"
     },
     "description": "JavaScript client for Nakama server written in TypeScript.",
     "main": "dist/nakama-js.cjs.js",
@@ -34,15 +33,14 @@
     ],
     "license": "Apache-2.0",
     "dependencies": {
-        "js-base64": "^3.6.0",
-        "whatwg-fetch": "^2.0.3"
+        "base64-arraybuffer": "^1.0.2",
+        "js-base64": "^3.7.4",
+        "whatwg-fetch": "^3.6.2"
     },
     "devDependencies": {
-        "@babel/runtime": "^7.12.5",
-        "@rollup/plugin-node-resolve": "^11.2.0",
-        "@rollup/plugin-typescript": "^6.1.0",
-        "rollup": "latest",
-        "tslib": "^2.0.3",
-        "typedoc": "^0.22.10"
+        "@rollup/plugin-node-resolve": "^15.0.1",
+        "@rollup/plugin-typescript": "^11.0.0",
+        "rollup": "^3.10.0",
+        "tslib": "^2.4.1"
     }
 }
