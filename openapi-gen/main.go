@@ -50,7 +50,7 @@ export enum {{ $classname | title }}
 export interface {{$classname | title}} {
           {{- range $key, $property := $definition.Properties}}
               {{- $fieldname := camelToSnake $key }}
-  // {{$property.Description}}
+  // {{- replace $property.Description "\n" " "}}
               {{- if eq $property.Type "integer"}}
   {{$fieldname}}?: number;
               {{- else if eq $property.Type "number" }}
@@ -87,9 +87,9 @@ export interface {{$classname | title}} {
     {{- end}}
 {{- end }}
 
-export class NakamaApi {
+export class {{ .Namespace }}Api {
 
-  constructor(readonly serverKey: string, readonly basePath: string, readonly timeoutMs: number) {}
+  constructor(readonly{{- if eq .Namespace "Nakama" }} serverKey{{- end }}{{- if eq .Namespace "Satori" }} apiKey{{- end }}: string, readonly basePath: string, readonly timeoutMs: number) {}
 
 {{- range $url, $path := .Paths}}
   {{- range $method, $operation := $path}}
@@ -97,13 +97,16 @@ export class NakamaApi {
   /** {{$operation.Summary}} */
   {{ $operation.OperationId | stripOperationPrefix | snakeToCamel }}(
   {{- if $operation.Security }}
-    {{- with (index $operation.Security 0) }}
-        {{- range $key, $value := . }}
+    {{- range $idx, $security := $operation.Security }}
+        {{- range $key, $value := $security }}
           {{- if eq $key "BasicAuth" -}}
     basicAuthUsername: string,
     basicAuthPassword: string,
           {{- else if eq $key "HttpKeyAuth" -}}
-    bearerToken: string,
+		basicAuthUsername: string,
+		basicAuthPassword: string,
+					{{- else if eq $key "BearerJwt" -}}
+		bearerToken: string,
           {{- end }}
         {{- end }}
     {{- end }}
@@ -165,18 +168,24 @@ export class NakamaApi {
 
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("{{- $method | uppercase}}", options, bodyJson);
-            {{- if $operation.Security }}
-            {{- with (index $operation.Security 0) }}
-                {{- range $key, $value := . }}
-                      {{- if eq $key "BasicAuth" }}
-    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
-                      {{- else if eq $key "HttpKeyAuth" }}
-    if (bearerToken) {
-        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
-    }
-                    {{- end }}
-                {{- end }}
-            {{- end }}
+					{{- if $operation.Security }}
+						{{- range $idx, $security := $operation.Security }}
+							{{- range $key, $value := $security }}
+								{{- if eq $key "BasicAuth" }}
+		if (basicAuthUsername) {
+			fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+		}
+								{{- else if eq $key "HttpKeyAuth" }}
+		if (basicAuthUsername) {
+			fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+		}
+								{{- else if eq $key "BearerJwt" }}
+		if (bearerToken) {
+				fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+		}
+								{{- end }}
+							{{- end }}
+						{{- end }}
           {{- else }}
     if (bearerToken) {
         fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
@@ -363,6 +372,10 @@ func pascalToCamel(input string) (camelCase string) {
 	return camelCase
 }
 
+func replace(input, from, to string) string {
+	return strings.Replace(input, from, to, -1)
+}
+
 func main() {
 	// Argument flags
 	var output = flag.String("output", "", "The output for generated code.")
@@ -375,8 +388,27 @@ func main() {
 		return
 	}
 
+	input := inputs[0]
+	content, err := ioutil.ReadFile(input)
+	if err != nil {
+		fmt.Printf("Unable to read file: %s\n", err)
+		return
+	}
+
+	var namespace (string) = ""
+
+	if len(inputs) > 1 {
+		if len(inputs[1]) <= 0 {
+			fmt.Println("Empty Namespace provided.")
+			return
+		}
+
+		namespace = inputs[1]
+	}
+
 	var schema struct {
-		Paths map[string]map[string]struct {
+		Namespace string
+		Paths     map[string]map[string]struct {
 			Summary     string
 			OperationId string
 			Responses   struct {
@@ -403,6 +435,13 @@ func main() {
 		}
 		Definitions map[string]Definition
 	}
+
+	if err := json.Unmarshal(content, &schema); err != nil {
+		fmt.Printf("Unable to decode input %s : %s\n", input, err)
+		return
+	}
+
+	schema.Namespace = namespace
 
 	fmap := template.FuncMap{
 		"enumDescriptions": enumDescriptions,
@@ -436,18 +475,7 @@ func main() {
 		"camelToSnake":         camelToSnake,
 		"uppercase":            strings.ToUpper,
 		"stripOperationPrefix": stripOperationPrefix,
-	}
-
-	input := inputs[0]
-	content, err := ioutil.ReadFile(input)
-	if err != nil {
-		fmt.Printf("Unable to read file: %s\n", err)
-		return
-	}
-
-	if err := json.Unmarshal(content, &schema); err != nil {
-		fmt.Printf("Unable to decode input %s : %s\n", input, err)
-		return
+		"replace":              replace,
 	}
 
 	tmpl, err := template.New(input).Funcs(fmap).Parse(codeTemplate)

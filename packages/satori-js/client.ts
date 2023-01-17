@@ -125,6 +125,82 @@ export class Client {
     return this.apiClient.satoriGetExperiments(session.token, names);
   }
 
+  /** Get a single flag for this identity. Throws an error when the flag does not exist. */
+  async getFlag(session: Session, name: string) {
+    if (this.autoRefreshSession && session.refresh_token &&
+      session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+      await this.sessionRefresh(session);
+    }
+
+    return this.apiClient.satoriGetFlags(session.token, "", "", [name]).then((flagList) => {
+      let flag = null;
+
+      flagList.flags?.forEach((f) => {
+        if (f.name === name) {
+          flag = f;
+        }
+      });
+
+      if (flag === null) {
+        return Promise.reject("Flag does not exist.");
+      }
+
+      return Promise.resolve(flag);
+    });
+  }
+
+  
+  /** Get a single flag for this identity. */
+  async getFlagWithFallback(session: Session, name: string, fallbackValue?: string) {
+    return this.getFlag(session, name)
+      .then((flag) => {
+        return flag;
+      })
+      .catch(() => {
+        const flag = {
+          name,
+          value: fallbackValue
+        };
+
+        return Promise.resolve(flag)
+      });
+  }
+
+  /** Get a single flag with its configured default value. Throws an error when the flag does not exist. */
+  async getFlagDefault(name: string) {
+    return this.apiClient.satoriGetFlags("", this.apiKey, "", [name]).then((flagList) => {
+      let flag = null;
+
+      flagList.flags?.forEach((f) => {
+        if (f.name === name) {
+          flag = f;
+        }
+      });
+
+      if (flag === null) {
+        return Promise.reject("Flag does not exist.");
+      }
+
+      return Promise.resolve(flag);
+    });
+  }
+
+  /** Get a single flag with its configured default value.  */
+  async getFlagDefaultWithFallback(name: string, fallbackValue?: string) {
+    return this.getFlagDefault(name)
+      .then((flag) => {
+        return flag;
+      })
+      .catch(() => {
+        const flag = {
+          name,
+          value: fallbackValue
+        };
+
+        return Promise.resolve(flag)
+      });
+  }
+
   /** List all available flags for this identity. */
   async getFlags(session: Session, names?: Array<string>) {
     if (this.autoRefreshSession && session.refresh_token &&
@@ -132,7 +208,12 @@ export class Client {
       await this.sessionRefresh(session);
     }
 
-    return this.apiClient.satoriGetFlags(session.token, names);
+    return this.apiClient.satoriGetFlags(session.token, "", "", names);
+  }
+
+  /** List all available default flags. */
+  async getFlagsDefault(names?: Array<string>) {
+    return this.apiClient.satoriGetFlags("", this.apiKey, "", names);
   }
 
   /** Enrich/replace the current session with new identifier. */

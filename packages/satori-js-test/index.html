@@ -17,23 +17,6 @@
         .then(session => {
           _session = session;
           console.log("session", session);
-          client.sessionRefresh(session).then((session) => console.log("session refreshed, new token: ", session.token));
-          client.event(session, { name: "testEvent", value: "A value", metadata: { hello: "world" }}).then(() => console.log("sent event"));
-          client.events(session, [
-            { name: "sampleEventOne", value: "One", metadata: { meta: "data" }},
-            { name: "sampleEventTwo", value: "Two", metadata: { data: "meta" }}
-          ]).then(() => console.log("sent event"));
-          client.updateProperties(session, { email: "hello@world.com" }, { customProperty1: "A value here" });
-          client.listProperties(session).then((result) => console.log("properties:", result));
-          client.getExperiments(session, []).then((result) => console.log("experiments: ", result));
-          client.getFlags(session, []).then((result) => console.log("flags: ", result));
-          client.getLiveEvents(session, []).then((result) => console.log("live events:", result));
-          // client.identify(session, "anotheruser", { "email": "foo@bar.com" }, { "customProperty1": "aValue" })
-          //   .then(newSession => console.log("got new session by calling identify", newSession))
-          //   .catch(error => {
-          //     console.log("got an error:", error);
-          //   });
-          //client.logout(session).then(() => console.log("logged out"));
         }).catch(error => {
           console.log(error);
         });

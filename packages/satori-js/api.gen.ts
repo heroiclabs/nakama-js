@@ -6,145 +6,145 @@ import { encode } from 'js-base64';
 
 /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 export interface ApiAuthenticateLogoutRequest {
-  // Refresh token to invalidate.
+  //Refresh token to invalidate.
   refresh_token?: string;
-  // Session token to log out.
+  //Session token to log out.
   token?: string;
 }
 
 /** Authenticate against the server with a refresh token. */
 export interface ApiAuthenticateRefreshRequest {
-  // Refresh token.
+  //Refresh token.
   refresh_token?: string;
 }
 
 /**  */
 export interface ApiAuthenticateRequest {
-  // Identity ID. Must be between eight and 128 characters (inclusive). Must be an alphanumeric string with only underscores and hyphens allowed.
+  //Identity ID. Must be between eight and 128 characters (inclusive). Must be an alphanumeric string with only underscores and hyphens allowed.
   id?: string;
 }
 
 /** A single event. Usually, but not necessarily, part of a batch. */
 export interface ApiEvent {
-  // Optional event ID assigned by the client, used to de-duplicate in retransmission scenarios. If not supplied the server will assign a randomly generated unique event identifier.
+  //Optional event ID assigned by the client, used to de-duplicate in retransmission scenarios. If not supplied the server will assign a randomly generated unique event identifier.
   id?: string;
-  // Event metadata, if any.
+  //Event metadata, if any.
   metadata?: Record<string, string>;
-  // Event name.
+  //Event name.
   name?: string;
-  // The time when the event was triggered on the producer side.
+  //The time when the event was triggered on the producer side.
   timestamp?: string;
-  // Optional value.
+  //Optional value.
   value?: string;
 }
 
 /**  */
 export interface ApiEventRequest {
-  // Some number of events produced by a client.
+  //Some number of events produced by a client.
   events?: Array<ApiEvent>;
 }
 
 /** An experiment that this user is partaking. */
 export interface ApiExperiment {
-  // 
+  //
   name?: string;
-  // Value associated with this Experiment.
+  //Value associated with this Experiment.
   value?: string;
 }
 
 /** All experiments that this identity is involved with. */
 export interface ApiExperimentList {
-  // All experiments for this identity.
+  //All experiments for this identity.
   experiments?: Array<ApiExperiment>;
 }
 
 /** Feature flag available to the identity. */
 export interface ApiFlag {
-  // Whether the value for this flag has conditionally changed from the default state.
+  //Whether the value for this flag has conditionally changed from the default state.
   condition_changed?: boolean;
-  // 
+  //
   name?: string;
-  // Value associated with this flag.
+  //Value associated with this flag.
   value?: string;
 }
 
 /**  */
 export interface ApiFlagList {
-  // 
+  //
   flags?: Array<ApiFlag>;
 }
 
 /** Enrich/replace the current session with a new ID. */
 export interface ApiIdentifyRequest {
-  // Optional custom properties to update with this call. If not set, properties are left as they are on the server.
+  //Optional custom properties to update with this call. If not set, properties are left as they are on the server.
   custom?: Record<string, string>;
-  // Optional default properties to update with this call. If not set, properties are left as they are on the server.
+  //Optional default properties to update with this call. If not set, properties are left as they are on the server.
   default?: Record<string, string>;
-  // Identity ID to enrich the current session and return a new session. Old session will no longer be usable.
+  //Identity ID to enrich the current session and return a new session. Old session will no longer be usable.
   id?: string;
 }
 
 /** A single live event. */
 export interface ApiLiveEvent {
-  // End time of current event run.
+  //End time of current event run.
   active_end_time_sec?: string;
-  // Start time of current event run.
+  //Start time of current event run.
   active_start_time_sec?: string;
-  // Description.
+  //Description.
   description?: string;
-  // Name.
+  //Name.
   name?: string;
-  // Event value.
+  //Event value.
   value?: string;
 }
 
 /** List of Live events. */
 export interface ApiLiveEventList {
-  // Live events.
+  //Live events.
   live_events?: Array<ApiLiveEvent>;
 }
 
 /** Properties associated with an identity. */
 export interface ApiProperties {
-  // Event computed properties.
+  //Event computed properties.
   computed?: Record<string, string>;
-  // Event custom properties.
+  //Event custom properties.
   custom?: Record<string, string>;
-  // Event default properties.
+  //Event default properties.
   default?: Record<string, string>;
 }
 
 /** A session. */
 export interface ApiSession {
-  // Properties associated with this identity.
+  //Properties associated with this identity.
   properties?: ApiProperties;
-  // Refresh token.
+  //Refresh token.
   refresh_token?: string;
-  // Token credential.
+  //Token credential.
   token?: string;
 }
 
 /** Update Properties associated with this identity. */
 export interface ApiUpdatePropertiesRequest {
-  // Event custom properties.
+  //Event custom properties.
   custom?: Record<string, string>;
-  // Event default properties.
+  //Event default properties.
   default?: Record<string, string>;
 }
 
 /**  */
 export interface ProtobufAny {
-  // 
+  //
   type?: string;
 }
 
 /**  */
 export interface RpcStatus {
-  // 
+  //
   code?: number;
-  // 
+  //
   details?: Array<ProtobufAny>;
-  // 
+  //
   message?: string;
 }
 
@@ -231,7 +231,9 @@ export class SatoriApi {
 
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+		if (basicAuthUsername) {
+			fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+		}
 
     return Promise.race([
       fetch(fullUrl, fetchOptions).then((response) => {
@@ -302,7 +304,9 @@ export class SatoriApi {
 
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-    fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+		if (basicAuthUsername) {
+			fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+		}
 
     return Promise.race([
       fetch(fullUrl, fetchOptions).then((response) => {
@@ -391,6 +395,8 @@ export class SatoriApi {
 
   /** List all available flags for this identity. */
   satoriGetFlags(bearerToken: string,
+    basicAuthUsername: string,
+		basicAuthPassword: string,
       names?:Array<string>,
       options: any = {}): Promise<ApiFlagList> {
     
@@ -402,9 +408,12 @@ export class SatoriApi {
 
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-    if (bearerToken) {
-        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
-    }
+		if (bearerToken) {
+				fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+		}
+		if (basicAuthUsername) {
+			fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+		}
 
     return Promise.race([
       fetch(fullUrl, fetchOptions).then((response) => {
