@@ -18,7 +18,7 @@ You'll need to setup the server and database before you can connect with the cli
 2. Import the client into your project. It's [available on NPM](https://www.npmjs.com/package/@heroiclabs/nakama-js) and can be also be added to a project with Bower or other package managers.
 
     ```shell
-    yarn add "@heroiclabs/nakama-js"
+    npm install @heroiclabs/nakama-js
     ```
 
     You'll now see the code in the "node_modules" folder and package listed in your "package.json".
@@ -26,7 +26,7 @@ You'll need to setup the server and database before you can connect with the cli
     Optionally, if you would like to use the Protocol Buffers wire format with your sockets, you can import the adapter found in this package:
 
     ```shell
-    yarn add "@heroiclabs/nakama-js-protobuf"
+    npm install @heroiclabs/nakama-js-protobuf
     ```
 
 3. Use the connection credentials to build a client object.
@@ -165,8 +165,8 @@ The codebase is multi-package monorepo written in TypeScript and can be built wi
 To build from source, install dependencies and build the `nakama-js` and `nakama-js-protobuf` subrepositories:
 
 ```shell
-yarn workspace @heroiclabs/nakama-js install && yarn workspace @heroiclabs/nakama-js build
-yarn workspace @heroiclabs/nakama-js-protobuf install && yarn workspace @heroiclabs/nakama-js-protobuf build
+npm install --workspace=@heroiclabs/nakama-js && npm run build --workspace=@heroiclabs/nakama-js
+npm install --workspace=@heroiclabs/nakama-js-protobuf && npm run build --workspace=@heroiclabs/nakama-js-protobuf
 ```
 
 ### Run Tests
@@ -177,13 +177,8 @@ Tests are run against each workspace bundle; if you have made source code change
 
 ```shell
 docker-compose -f ./docker-compose.yml up
-yarn workspace @heroiclabs/nakama-js-test run test
+npm run test --workspace=@heroiclabs/nakama-js-test
 ```
-
-Note on Yarn workspaces and testing particular versions of `nakama-js` from the `nakama-js-test` workspace:
-Yarn will first look at the remote NPM registry for the `nakama-js` version specified. If that is not found,
-it will symlink the local `nakama-js` workspace into `node_modules` which is necessary for running tests
-against local changes.
 
 ### Protocol Buffer Web Socket Adapter
 
@@ -203,10 +198,10 @@ $GOPATH/src/github.com/heroiclabs/nakama-common/api/api.proto
 
 ### Release Process
 
-To release onto NPM if you have access to the "@heroiclabs" organization you can use Yarn.
+To release onto NPM if you have access to the "@heroiclabs" organization you can use NPM.
 
 ```shell
-yarn workspace <workspace> run build && yarn workspace <workspace> npm publish --access=public
+npm run build --workspace=<workspace> && npm public --access=public --workspace=<workspace>
 ```
 
 ### Generate Docs
@@ -216,7 +211,7 @@ API docs are generated with typedoc and deployed to GitHub pages.
 To run typedoc:
 
 ```
-yarn workspace @heroiclabs/nakama-js install && yarn workspace @heroiclabs/nakama-js docs
+npm install && npm run docs
 ```
 
 ### License
