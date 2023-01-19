@@ -158,9 +158,9 @@ The development roadmap is managed as GitHub issues and pull requests are welcom
 
 ### Source Builds
 
-Ensure you are using Node v12.18.1.
+Ensure you are using Node v18>.
 
-The codebase is multi-package monorepo written in TypeScript and can be built with [esbuild](https://github.com/evanw/esbuild). All dependencies are managed with Yarn.
+The codebase is multi-package monorepo written in TypeScript and can be built with [esbuild](https://github.com/evanw/esbuild). All dependencies are managed with NPM.
 
 To build from source, install dependencies and build the `nakama-js` and `nakama-js-protobuf` subrepositories:
 
@@ -173,7 +173,7 @@ npm install --workspace=@heroiclabs/nakama-js-protobuf && npm run build --worksp
 
 To run tests you will need to run the server and database. Most tests are written as integration tests which execute against the server. A quick approach we use with our test workflow is to use the Docker compose file described in the [documentation](https://heroiclabs.com/docs/install-docker-quickstart).
 
-Tests are run against each workspace bundle; if you have made source code changes, you should `yarn workspace <workspace> build` prior to running tests.
+Tests are run against each workspace bundle; if you have made source code changes, you should `npm run build --workspace=<workspace>` prior to running tests.
 
 ```shell
 docker-compose -f ./docker-compose.yml up
