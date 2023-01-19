@@ -1,3 +1,4 @@
+"use strict";
 var nakamajsprotobuf = (() => {
   var __create = Object.create;
   var __defProp = Object.defineProperty;
@@ -34,12 +35,19 @@ var nakamajsprotobuf = (() => {
     }
     return to;
   };
-  var __toESM = (mod2, isNodeMode, target) => (target = mod2 != null ? __create(__getProtoOf(mod2)) : {}, __copyProps(isNodeMode || !mod2 || !mod2.__esModule ? __defProp(target, "default", { value: mod2, enumerable: true }) : target, mod2));
+  var __toESM = (mod2, isNodeMode, target) => (target = mod2 != null ? __create(__getProtoOf(mod2)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod2 || !mod2.__esModule ? __defProp(target, "default", { value: mod2, enumerable: true }) : target,
+    mod2
+  ));
   var __toCommonJS = (mod2) => __copyProps(__defProp({}, "__esModule", { value: true }), mod2);
 
-  // node_modules/long/src/long.js
+  // ../../node_modules/long/src/long.js
   var require_long = __commonJS({
-    "node_modules/long/src/long.js"(exports2, module2) {
+    "../../node_modules/long/src/long.js"(exports2, module2) {
       module2.exports = Long5;
       var wasm = null;
       try {
@@ -544,25 +552,40 @@ var nakamajsprotobuf = (() => {
       };
       LongPrototype.eq = LongPrototype.equals;
       LongPrototype.notEquals = function notEquals(other) {
-        return !this.eq(other);
+        return !this.eq(
+          /* validates */
+          other
+        );
       };
       LongPrototype.neq = LongPrototype.notEquals;
       LongPrototype.ne = LongPrototype.notEquals;
       LongPrototype.lessThan = function lessThan(other) {
-        return this.comp(other) < 0;
+        return this.comp(
+          /* validates */
+          other
+        ) < 0;
       };
       LongPrototype.lt = LongPrototype.lessThan;
       LongPrototype.lessThanOrEqual = function lessThanOrEqual(other) {
-        return this.comp(other) <= 0;
+        return this.comp(
+          /* validates */
+          other
+        ) <= 0;
       };
       LongPrototype.lte = LongPrototype.lessThanOrEqual;
       LongPrototype.le = LongPrototype.lessThanOrEqual;
       LongPrototype.greaterThan = function greaterThan(other) {
-        return this.comp(other) > 0;
+        return this.comp(
+          /* validates */
+          other
+        ) > 0;
       };
       LongPrototype.gt = LongPrototype.greaterThan;
       LongPrototype.greaterThanOrEqual = function greaterThanOrEqual(other) {
-        return this.comp(other) >= 0;
+        return this.comp(
+          /* validates */
+          other
+        ) >= 0;
       };
       LongPrototype.gte = LongPrototype.greaterThanOrEqual;
       LongPrototype.ge = LongPrototype.greaterThanOrEqual;
@@ -624,7 +647,12 @@ var nakamajsprotobuf = (() => {
         if (!isLong(multiplier))
           multiplier = fromValue(multiplier);
         if (wasm) {
-          var low = wasm.mul(this.low, this.high, multiplier.low, multiplier.high);
+          var low = wasm.mul(
+            this.low,
+            this.high,
+            multiplier.low,
+            multiplier.high
+          );
           return fromBits(low, wasm.get_high(), this.unsigned);
         }
         if (multiplier.isZero())
@@ -683,7 +711,12 @@ var nakamajsprotobuf = (() => {
           if (!this.unsigned && this.high === -2147483648 && divisor.low === -1 && divisor.high === -1) {
             return this;
           }
-          var low = (this.unsigned ? wasm.div_u : wasm.div_s)(this.low, this.high, divisor.low, divisor.high);
+          var low = (this.unsigned ? wasm.div_u : wasm.div_s)(
+            this.low,
+            this.high,
+            divisor.low,
+            divisor.high
+          );
           return fromBits(low, wasm.get_high(), this.unsigned);
         }
         if (this.isZero())
@@ -745,7 +778,12 @@ var nakamajsprotobuf = (() => {
         if (!isLong(divisor))
           divisor = fromValue(divisor);
         if (wasm) {
-          var low = (this.unsigned ? wasm.rem_u : wasm.rem_s)(this.low, this.high, divisor.low, divisor.high);
+          var low = (this.unsigned ? wasm.rem_u : wasm.rem_s)(
+            this.low,
+            this.high,
+            divisor.low,
+            divisor.high
+          );
           return fromBits(low, wasm.get_high(), this.unsigned);
         }
         return this.sub(this.div(divisor).mul(divisor));
@@ -854,17 +892,25 @@ var nakamajsprotobuf = (() => {
         return le ? Long5.fromBytesLE(bytes, unsigned) : Long5.fromBytesBE(bytes, unsigned);
       };
       Long5.fromBytesLE = function fromBytesLE(bytes, unsigned) {
-        return new Long5(bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24, bytes[4] | bytes[5] << 8 | bytes[6] << 16 | bytes[7] << 24, unsigned);
+        return new Long5(
+          bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24,
+          bytes[4] | bytes[5] << 8 | bytes[6] << 16 | bytes[7] << 24,
+          unsigned
+        );
       };
       Long5.fromBytesBE = function fromBytesBE(bytes, unsigned) {
-        return new Long5(bytes[4] << 24 | bytes[5] << 16 | bytes[6] << 8 | bytes[7], bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], unsigned);
+        return new Long5(
+          bytes[4] << 24 | bytes[5] << 16 | bytes[6] << 8 | bytes[7],
+          bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3],
+          unsigned
+        );
       };
     }
   });
 
-  // node_modules/@protobufjs/aspromise/index.js
+  // ../../node_modules/@protobufjs/aspromise/index.js
   var require_aspromise = __commonJS({
-    "node_modules/@protobufjs/aspromise/index.js"(exports2, module2) {
+    "../../node_modules/@protobufjs/aspromise/index.js"(exports2, module2) {
       "use strict";
       module2.exports = asPromise;
       function asPromise(fn, ctx) {
@@ -898,9 +944,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/@protobufjs/base64/index.js
+  // ../../node_modules/@protobufjs/base64/index.js
   var require_base64 = __commonJS({
-    "node_modules/@protobufjs/base64/index.js"(exports2) {
+    "../../node_modules/@protobufjs/base64/index.js"(exports2) {
       "use strict";
       var base64 = exports2;
       base64.length = function length(string) {
@@ -998,9 +1044,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/@protobufjs/eventemitter/index.js
+  // ../../node_modules/@protobufjs/eventemitter/index.js
   var require_eventemitter = __commonJS({
-    "node_modules/@protobufjs/eventemitter/index.js"(exports2, module2) {
+    "../../node_modules/@protobufjs/eventemitter/index.js"(exports2, module2) {
       "use strict";
       module2.exports = EventEmitter;
       function EventEmitter() {
@@ -1044,9 +1090,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/@protobufjs/float/index.js
+  // ../../node_modules/@protobufjs/float/index.js
   var require_float = __commonJS({
-    "node_modules/@protobufjs/float/index.js"(exports2, module2) {
+    "../../node_modules/@protobufjs/float/index.js"(exports2, module2) {
       "use strict";
       module2.exports = factory(factory);
       function factory(exports3) {
@@ -1093,7 +1139,13 @@ var nakamajsprotobuf = (() => {
               if (sign)
                 val = -val;
               if (val === 0)
-                writeUint(1 / val > 0 ? 0 : 2147483648, buf, pos);
+                writeUint(1 / val > 0 ? (
+                  /* positive */
+                  0
+                ) : (
+                  /* negative 0 */
+                  2147483648
+                ), buf, pos);
               else if (isNaN(val))
                 writeUint(2143289344, buf, pos);
               else if (val > 34028234663852886e22)
@@ -1174,7 +1226,13 @@ var nakamajsprotobuf = (() => {
                 val = -val;
               if (val === 0) {
                 writeUint(0, buf, pos + off0);
-                writeUint(1 / val > 0 ? 0 : 2147483648, buf, pos + off1);
+                writeUint(1 / val > 0 ? (
+                  /* positive */
+                  0
+                ) : (
+                  /* negative 0 */
+                  2147483648
+                ), buf, pos + off1);
               } else if (isNaN(val)) {
                 writeUint(0, buf, pos + off0);
                 writeUint(2146959360, buf, pos + off1);
@@ -1230,9 +1288,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/@protobufjs/inquire/index.js
+  // ../../node_modules/@protobufjs/inquire/index.js
   var require_inquire = __commonJS({
-    "node_modules/@protobufjs/inquire/index.js"(exports, module) {
+    "../../node_modules/@protobufjs/inquire/index.js"(exports, module) {
       "use strict";
       module.exports = inquire;
       function inquire(moduleName) {
@@ -1247,9 +1305,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/@protobufjs/utf8/index.js
+  // ../../node_modules/@protobufjs/utf8/index.js
   var require_utf8 = __commonJS({
-    "node_modules/@protobufjs/utf8/index.js"(exports2) {
+    "../../node_modules/@protobufjs/utf8/index.js"(exports2) {
       "use strict";
       var utf8 = exports2;
       utf8.length = function utf8_length(string) {
@@ -1324,9 +1382,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/@protobufjs/pool/index.js
+  // ../../node_modules/@protobufjs/pool/index.js
   var require_pool = __commonJS({
-    "node_modules/@protobufjs/pool/index.js"(exports2, module2) {
+    "../../node_modules/@protobufjs/pool/index.js"(exports2, module2) {
       "use strict";
       module2.exports = pool;
       function pool(alloc, slice, size) {
@@ -1350,9 +1408,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/protobufjs/src/util/longbits.js
+  // ../../node_modules/protobufjs/src/util/longbits.js
   var require_longbits = __commonJS({
-    "node_modules/protobufjs/src/util/longbits.js"(exports2, module2) {
+    "../../node_modules/protobufjs/src/util/longbits.js"(exports2, module2) {
       "use strict";
       module2.exports = LongBits;
       var util3 = require_minimal();
@@ -1416,10 +1474,22 @@ var nakamajsprotobuf = (() => {
       LongBits.fromHash = function fromHash(hash) {
         if (hash === zeroHash)
           return zero;
-        return new LongBits((charCodeAt.call(hash, 0) | charCodeAt.call(hash, 1) << 8 | charCodeAt.call(hash, 2) << 16 | charCodeAt.call(hash, 3) << 24) >>> 0, (charCodeAt.call(hash, 4) | charCodeAt.call(hash, 5) << 8 | charCodeAt.call(hash, 6) << 16 | charCodeAt.call(hash, 7) << 24) >>> 0);
+        return new LongBits(
+          (charCodeAt.call(hash, 0) | charCodeAt.call(hash, 1) << 8 | charCodeAt.call(hash, 2) << 16 | charCodeAt.call(hash, 3) << 24) >>> 0,
+          (charCodeAt.call(hash, 4) | charCodeAt.call(hash, 5) << 8 | charCodeAt.call(hash, 6) << 16 | charCodeAt.call(hash, 7) << 24) >>> 0
+        );
       };
       LongBits.prototype.toHash = function toHash() {
-        return String.fromCharCode(this.lo & 255, this.lo >>> 8 & 255, this.lo >>> 16 & 255, this.lo >>> 24, this.hi & 255, this.hi >>> 8 & 255, this.hi >>> 16 & 255, this.hi >>> 24);
+        return String.fromCharCode(
+          this.lo & 255,
+          this.lo >>> 8 & 255,
+          this.lo >>> 16 & 255,
+          this.lo >>> 24,
+          this.hi & 255,
+          this.hi >>> 8 & 255,
+          this.hi >>> 16 & 255,
+          this.hi >>> 24
+        );
       };
       LongBits.prototype.zzEncode = function zzEncode() {
         var mask = this.hi >> 31;
@@ -1440,9 +1510,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/protobufjs/src/util/minimal.js
+  // ../../node_modules/protobufjs/src/util/minimal.js
   var require_minimal = __commonJS({
-    "node_modules/protobufjs/src/util/minimal.js"(exports2) {
+    "../../node_modules/protobufjs/src/util/minimal.js"(exports2) {
       "use strict";
       var util3 = exports2;
       util3.asPromise = require_aspromise();
@@ -1455,9 +1525,16 @@ var nakamajsprotobuf = (() => {
       util3.LongBits = require_longbits();
       util3.isNode = Boolean(typeof global !== "undefined" && global && global.process && global.process.versions && global.process.versions.node);
       util3.global = util3.isNode && global || typeof window !== "undefined" && window || typeof self !== "undefined" && self || exports2;
-      util3.emptyArray = Object.freeze ? Object.freeze([]) : [];
-      util3.emptyObject = Object.freeze ? Object.freeze({}) : {};
-      util3.isInteger = Number.isInteger || function isInteger(value) {
+      util3.emptyArray = Object.freeze ? Object.freeze([]) : (
+        /* istanbul ignore next */
+        []
+      );
+      util3.emptyObject = Object.freeze ? Object.freeze({}) : (
+        /* istanbul ignore next */
+        {}
+      );
+      util3.isInteger = Number.isInteger || /* istanbul ignore next */
+      function isInteger(value) {
         return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
       };
       util3.isString = function isString(value) {
@@ -1466,7 +1543,13 @@ var nakamajsprotobuf = (() => {
       util3.isObject = function isObject(value) {
         return value && typeof value === "object";
       };
-      util3.isset = util3.isSet = function isSet(obj, prop) {
+      util3.isset = /**
+       * Checks if a property on a message is considered to be present.
+       * @param {Object} obj Plain object or message instance
+       * @param {string} prop Property name
+       * @returns {boolean} `true` if considered to be present, otherwise `false`
+       */
+      util3.isSet = function isSet(obj, prop) {
         var value = obj[prop];
         if (value != null && obj.hasOwnProperty(prop))
           return typeof value !== "object" || (Array.isArray(value) ? value.length : Object.keys(value).length) > 0;
@@ -1475,7 +1558,10 @@ var nakamajsprotobuf = (() => {
       util3.Buffer = function() {
         try {
           var Buffer2 = util3.inquire("buffer").Buffer;
-          return Buffer2.prototype.utf8Write ? Buffer2 : null;
+          return Buffer2.prototype.utf8Write ? Buffer2 : (
+            /* istanbul ignore next */
+            null
+          );
         } catch (e) {
           return null;
         }
@@ -1486,7 +1572,10 @@ var nakamajsprotobuf = (() => {
         return typeof sizeOrArray === "number" ? util3.Buffer ? util3._Buffer_allocUnsafe(sizeOrArray) : new util3.Array(sizeOrArray) : util3.Buffer ? util3._Buffer_from(sizeOrArray) : typeof Uint8Array === "undefined" ? sizeOrArray : new Uint8Array(sizeOrArray);
       };
       util3.Array = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
-      util3.Long = util3.global.dcodeIO && util3.global.dcodeIO.Long || util3.global.Long || util3.inquire("long");
+      util3.Long = /* istanbul ignore next */
+      util3.global.dcodeIO && /* istanbul ignore next */
+      util3.global.dcodeIO.Long || /* istanbul ignore next */
+      util3.global.Long || util3.inquire("long");
       util3.key2Re = /^true|false|0|1$/;
       util3.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
       util3.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
@@ -1563,19 +1652,21 @@ var nakamajsprotobuf = (() => {
           util3._Buffer_from = util3._Buffer_allocUnsafe = null;
           return;
         }
-        util3._Buffer_from = Buffer2.from !== Uint8Array.from && Buffer2.from || function Buffer_from(value, encoding) {
+        util3._Buffer_from = Buffer2.from !== Uint8Array.from && Buffer2.from || /* istanbul ignore next */
+        function Buffer_from(value, encoding) {
           return new Buffer2(value, encoding);
         };
-        util3._Buffer_allocUnsafe = Buffer2.allocUnsafe || function Buffer_allocUnsafe(size) {
+        util3._Buffer_allocUnsafe = Buffer2.allocUnsafe || /* istanbul ignore next */
+        function Buffer_allocUnsafe(size) {
           return new Buffer2(size);
         };
       };
     }
   });
 
-  // node_modules/protobufjs/src/writer.js
+  // ../../node_modules/protobufjs/src/writer.js
   var require_writer = __commonJS({
-    "node_modules/protobufjs/src/writer.js"(exports2, module2) {
+    "../../node_modules/protobufjs/src/writer.js"(exports2, module2) {
       "use strict";
       module2.exports = Writer3;
       var util3 = require_minimal();
@@ -1641,7 +1732,10 @@ var nakamajsprotobuf = (() => {
       VarintOp.prototype = Object.create(Op.prototype);
       VarintOp.prototype.fn = writeVarint32;
       Writer3.prototype.uint32 = function write_uint32(value) {
-        this.len += (this.tail = this.tail.next = new VarintOp((value = value >>> 0) < 128 ? 1 : value < 16384 ? 2 : value < 2097152 ? 3 : value < 268435456 ? 4 : 5, value)).len;
+        this.len += (this.tail = this.tail.next = new VarintOp(
+          (value = value >>> 0) < 128 ? 1 : value < 16384 ? 2 : value < 2097152 ? 3 : value < 268435456 ? 4 : 5,
+          value
+        )).len;
         return this;
       };
       Writer3.prototype.int32 = function write_int32(value) {
@@ -1761,9 +1855,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/protobufjs/src/writer_buffer.js
+  // ../../node_modules/protobufjs/src/writer_buffer.js
   var require_writer_buffer = __commonJS({
-    "node_modules/protobufjs/src/writer_buffer.js"(exports2, module2) {
+    "../../node_modules/protobufjs/src/writer_buffer.js"(exports2, module2) {
       "use strict";
       module2.exports = BufferWriter;
       var Writer3 = require_writer();
@@ -1812,9 +1906,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/protobufjs/src/reader.js
+  // ../../node_modules/protobufjs/src/reader.js
   var require_reader = __commonJS({
-    "node_modules/protobufjs/src/reader.js"(exports2, module2) {
+    "../../node_modules/protobufjs/src/reader.js"(exports2, module2) {
       "use strict";
       module2.exports = Reader3;
       var util3 = require_minimal();
@@ -1846,7 +1940,8 @@ var nakamajsprotobuf = (() => {
         } : create_array;
       };
       Reader3.create = create();
-      Reader3.prototype._slice = util3.Array.prototype.subarray || util3.Array.prototype.slice;
+      Reader3.prototype._slice = util3.Array.prototype.subarray || /* istanbul ignore next */
+      util3.Array.prototype.slice;
       Reader3.prototype.uint32 = function read_uint32_setup() {
         var value = 4294967295;
         return function read_uint32() {
@@ -2010,7 +2105,10 @@ var nakamajsprotobuf = (() => {
         BufferReader = BufferReader_;
         Reader3.create = create();
         BufferReader._configure();
-        var fn = util3.Long ? "toLong" : "toNumber";
+        var fn = util3.Long ? "toLong" : (
+          /* istanbul ignore next */
+          "toNumber"
+        );
         util3.merge(Reader3.prototype, {
           int64: function read_int64() {
             return readLongVarint.call(this)[fn](false);
@@ -2032,9 +2130,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/protobufjs/src/reader_buffer.js
+  // ../../node_modules/protobufjs/src/reader_buffer.js
   var require_reader_buffer = __commonJS({
-    "node_modules/protobufjs/src/reader_buffer.js"(exports2, module2) {
+    "../../node_modules/protobufjs/src/reader_buffer.js"(exports2, module2) {
       "use strict";
       module2.exports = BufferReader;
       var Reader3 = require_reader();
@@ -2055,9 +2153,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/protobufjs/src/rpc/service.js
+  // ../../node_modules/protobufjs/src/rpc/service.js
   var require_service = __commonJS({
-    "node_modules/protobufjs/src/rpc/service.js"(exports2, module2) {
+    "../../node_modules/protobufjs/src/rpc/service.js"(exports2, module2) {
       "use strict";
       module2.exports = Service;
       var util3 = require_minimal();
@@ -2083,26 +2181,33 @@ var nakamajsprotobuf = (() => {
           return void 0;
         }
         try {
-          return self2.rpcImpl(method, requestCtor[self2.requestDelimited ? "encodeDelimited" : "encode"](request).finish(), function rpcCallback(err, response) {
-            if (err) {
-              self2.emit("error", err, method);
-              return callback(err);
-            }
-            if (response === null) {
-              self2.end(true);
-              return void 0;
-            }
-            if (!(response instanceof responseCtor)) {
-              try {
-                response = responseCtor[self2.responseDelimited ? "decodeDelimited" : "decode"](response);
-              } catch (err2) {
-                self2.emit("error", err2, method);
-                return callback(err2);
+          return self2.rpcImpl(
+            method,
+            requestCtor[self2.requestDelimited ? "encodeDelimited" : "encode"](request).finish(),
+            function rpcCallback(err, response) {
+              if (err) {
+                self2.emit("error", err, method);
+                return callback(err);
               }
+              if (response === null) {
+                self2.end(
+                  /* endedByRPC */
+                  true
+                );
+                return void 0;
+              }
+              if (!(response instanceof responseCtor)) {
+                try {
+                  response = responseCtor[self2.responseDelimited ? "decodeDelimited" : "decode"](response);
+                } catch (err2) {
+                  self2.emit("error", err2, method);
+                  return callback(err2);
+                }
+              }
+              self2.emit("data", response, method);
+              return callback(null, response);
             }
-            self2.emit("data", response, method);
-            return callback(null, response);
-          });
+          );
         } catch (err) {
           self2.emit("error", err, method);
           setTimeout(function() {
@@ -2123,26 +2228,26 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/protobufjs/src/rpc.js
+  // ../../node_modules/protobufjs/src/rpc.js
   var require_rpc = __commonJS({
-    "node_modules/protobufjs/src/rpc.js"(exports2) {
+    "../../node_modules/protobufjs/src/rpc.js"(exports2) {
       "use strict";
       var rpc = exports2;
       rpc.Service = require_service();
     }
   });
 
-  // node_modules/protobufjs/src/roots.js
+  // ../../node_modules/protobufjs/src/roots.js
   var require_roots = __commonJS({
-    "node_modules/protobufjs/src/roots.js"(exports2, module2) {
+    "../../node_modules/protobufjs/src/roots.js"(exports2, module2) {
       "use strict";
       module2.exports = {};
     }
   });
 
-  // node_modules/protobufjs/src/index-minimal.js
+  // ../../node_modules/protobufjs/src/index-minimal.js
   var require_index_minimal = __commonJS({
-    "node_modules/protobufjs/src/index-minimal.js"(exports2) {
+    "../../node_modules/protobufjs/src/index-minimal.js"(exports2) {
       "use strict";
       var protobuf = exports2;
       protobuf.build = "minimal";
@@ -2163,9 +2268,9 @@ var nakamajsprotobuf = (() => {
     }
   });
 
-  // node_modules/protobufjs/minimal.js
+  // ../../node_modules/protobufjs/minimal.js
   var require_minimal2 = __commonJS({
-    "node_modules/protobufjs/minimal.js"(exports2, module2) {
+    "../../node_modules/protobufjs/minimal.js"(exports2, module2) {
       "use strict";
       module2.exports = require_index_minimal();
     }
@@ -2423,7 +2528,10 @@ var nakamajsprotobuf = (() => {
         writer.uint32(18).string(message.message_id);
       }
       if (message.code !== void 0) {
-        Int32Value.encode({ value: message.code }, writer.uint32(26).fork()).ldelim();
+        Int32Value.encode(
+          { value: message.code },
+          writer.uint32(26).fork()
+        ).ldelim();
       }
       if (message.sender_id !== "") {
         writer.uint32(34).string(message.sender_id);
@@ -2435,13 +2543,22 @@ var nakamajsprotobuf = (() => {
         writer.uint32(50).string(message.content);
       }
       if (message.create_time !== void 0) {
-        Timestamp.encode(toTimestamp(message.create_time), writer.uint32(58).fork()).ldelim();
+        Timestamp.encode(
+          toTimestamp(message.create_time),
+          writer.uint32(58).fork()
+        ).ldelim();
       }
       if (message.update_time !== void 0) {
-        Timestamp.encode(toTimestamp(message.update_time), writer.uint32(66).fork()).ldelim();
+        Timestamp.encode(
+          toTimestamp(message.update_time),
+          writer.uint32(66).fork()
+        ).ldelim();
       }
       if (message.persistent !== void 0) {
-        BoolValue.encode({ value: message.persistent }, writer.uint32(74).fork()).ldelim();
+        BoolValue.encode(
+          { value: message.persistent },
+          writer.uint32(74).fork()
+        ).ldelim();
       }
       if (message.room_name !== "") {
         writer.uint32(82).string(message.room_name);
@@ -2483,10 +2600,14 @@ var nakamajsprotobuf = (() => {
             message.content = reader.string();
             break;
           case 7:
-            message.create_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+            message.create_time = fromTimestamp(
+              Timestamp.decode(reader, reader.uint32())
+            );
             break;
           case 8:
-            message.update_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+            message.update_time = fromTimestamp(
+              Timestamp.decode(reader, reader.uint32())
+            );
             break;
           case 9:
             message.persistent = BoolValue.decode(reader, reader.uint32()).value;
@@ -2692,7 +2813,10 @@ var nakamajsprotobuf = (() => {
         writer.uint32(42).string(message.sender_id);
       }
       if (message.create_time !== void 0) {
-        Timestamp.encode(toTimestamp(message.create_time), writer.uint32(50).fork()).ldelim();
+        Timestamp.encode(
+          toTimestamp(message.create_time),
+          writer.uint32(50).fork()
+        ).ldelim();
       }
       if (message.persistent === true) {
         writer.uint32(56).bool(message.persistent);
@@ -2722,7 +2846,9 @@ var nakamajsprotobuf = (() => {
             message.sender_id = reader.string();
             break;
           case 6:
-            message.create_time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+            message.create_time = fromTimestamp(
+              Timestamp.decode(reader, reader.uint32())
+            );
             break;
           case 7:
             message.persistent = reader.bool();
@@ -2953,28 +3079,52 @@ var nakamajsprotobuf = (() => {
         Channel.encode(message.channel, writer.uint32(18).fork()).ldelim();
       }
       if (message.channel_join !== void 0) {
-        ChannelJoin.encode(message.channel_join, writer.uint32(26).fork()).ldelim();
+        ChannelJoin.encode(
+          message.channel_join,
+          writer.uint32(26).fork()
+        ).ldelim();
       }
       if (message.channel_leave !== void 0) {
-        ChannelLeave.encode(message.channel_leave, writer.uint32(34).fork()).ldelim();
+        ChannelLeave.encode(
+          message.channel_leave,
+          writer.uint32(34).fork()
+        ).ldelim();
       }
       if (message.channel_message !== void 0) {
-        ChannelMessage.encode(message.channel_message, writer.uint32(42).fork()).ldelim();
+        ChannelMessage.encode(
+          message.channel_message,
+          writer.uint32(42).fork()
+        ).ldelim();
       }
       if (message.channel_message_ack !== void 0) {
-        ChannelMessageAck.encode(message.channel_message_ack, writer.uint32(50).fork()).ldelim();
+        ChannelMessageAck.encode(
+          message.channel_message_ack,
+          writer.uint32(50).fork()
+        ).ldelim();
       }
       if (message.channel_message_send !== void 0) {
-        ChannelMessageSend.encode(message.channel_message_send, writer.uint32(58).fork()).ldelim();
+        ChannelMessageSend.encode(
+          message.channel_message_send,
+          writer.uint32(58).fork()
+        ).ldelim();
       }
       if (message.channel_message_update !== void 0) {
-        ChannelMessageUpdate.encode(message.channel_message_update, writer.uint32(66).fork()).ldelim();
+        ChannelMessageUpdate.encode(
+          message.channel_message_update,
+          writer.uint32(66).fork()
+        ).ldelim();
       }
       if (message.channel_message_remove !== void 0) {
-        ChannelMessageRemove.encode(message.channel_message_remove, writer.uint32(74).fork()).ldelim();
+        ChannelMessageRemove.encode(
+          message.channel_message_remove,
+          writer.uint32(74).fork()
+        ).ldelim();
       }
       if (message.channel_presence_event !== void 0) {
-        ChannelPresenceEvent.encode(message.channel_presence_event, writer.uint32(82).fork()).ldelim();
+        ChannelPresenceEvent.encode(
+          message.channel_presence_event,
+          writer.uint32(82).fork()
+        ).ldelim();
       }
       if (message.error !== void 0) {
         Error2.encode(message.error, writer.uint32(90).fork()).ldelim();
@@ -2983,37 +3133,64 @@ var nakamajsprotobuf = (() => {
         Match.encode(message.match, writer.uint32(98).fork()).ldelim();
       }
       if (message.match_create !== void 0) {
-        MatchCreate.encode(message.match_create, writer.uint32(106).fork()).ldelim();
+        MatchCreate.encode(
+          message.match_create,
+          writer.uint32(106).fork()
+        ).ldelim();
       }
       if (message.match_data !== void 0) {
         MatchData.encode(message.match_data, writer.uint32(114).fork()).ldelim();
       }
       if (message.match_data_send !== void 0) {
-        MatchDataSend.encode(message.match_data_send, writer.uint32(122).fork()).ldelim();
+        MatchDataSend.encode(
+          message.match_data_send,
+          writer.uint32(122).fork()
+        ).ldelim();
       }
       if (message.match_join !== void 0) {
         MatchJoin.encode(message.match_join, writer.uint32(130).fork()).ldelim();
       }
       if (message.match_leave !== void 0) {
-        MatchLeave.encode(message.match_leave, writer.uint32(138).fork()).ldelim();
+        MatchLeave.encode(
+          message.match_leave,
+          writer.uint32(138).fork()
+        ).ldelim();
       }
       if (message.match_presence_event !== void 0) {
-        MatchPresenceEvent.encode(message.match_presence_event, writer.uint32(146).fork()).ldelim();
+        MatchPresenceEvent.encode(
+          message.match_presence_event,
+          writer.uint32(146).fork()
+        ).ldelim();
       }
       if (message.matchmaker_add !== void 0) {
-        MatchmakerAdd.encode(message.matchmaker_add, writer.uint32(154).fork()).ldelim();
+        MatchmakerAdd.encode(
+          message.matchmaker_add,
+          writer.uint32(154).fork()
+        ).ldelim();
       }
       if (message.matchmaker_matched !== void 0) {
-        MatchmakerMatched.encode(message.matchmaker_matched, writer.uint32(162).fork()).ldelim();
+        MatchmakerMatched.encode(
+          message.matchmaker_matched,
+          writer.uint32(162).fork()
+        ).ldelim();
       }
       if (message.matchmaker_remove !== void 0) {
-        MatchmakerRemove.encode(message.matchmaker_remove, writer.uint32(170).fork()).ldelim();
+        MatchmakerRemove.encode(
+          message.matchmaker_remove,
+          writer.uint32(170).fork()
+        ).ldelim();
       }
       if (message.matchmaker_ticket !== void 0) {
-        MatchmakerTicket.encode(message.matchmaker_ticket, writer.uint32(178).fork()).ldelim();
+        MatchmakerTicket.encode(
+          message.matchmaker_ticket,
+          writer.uint32(178).fork()
+        ).ldelim();
       }
       if (message.notifications !== void 0) {
-        Notifications.encode(message.notifications, writer.uint32(186).fork()).ldelim();
+        Notifications.encode(
+          message.notifications,
+          writer.uint32(186).fork()
+        ).ldelim();
       }
       if (message.rpc !== void 0) {
         Rpc.encode(message.rpc, writer.uint32(194).fork()).ldelim();
@@ -3022,22 +3199,40 @@ var nakamajsprotobuf = (() => {
         Status.encode(message.status, writer.uint32(202).fork()).ldelim();
       }
       if (message.status_follow !== void 0) {
-        StatusFollow.encode(message.status_follow, writer.uint32(210).fork()).ldelim();
+        StatusFollow.encode(
+          message.status_follow,
+          writer.uint32(210).fork()
+        ).ldelim();
       }
       if (message.status_presence_event !== void 0) {
-        StatusPresenceEvent.encode(message.status_presence_event, writer.uint32(218).fork()).ldelim();
+        StatusPresenceEvent.encode(
+          message.status_presence_event,
+          writer.uint32(218).fork()
+        ).ldelim();
       }
       if (message.status_unfollow !== void 0) {
-        StatusUnfollow.encode(message.status_unfollow, writer.uint32(226).fork()).ldelim();
+        StatusUnfollow.encode(
+          message.status_unfollow,
+          writer.uint32(226).fork()
+        ).ldelim();
       }
       if (message.status_update !== void 0) {
-        StatusUpdate.encode(message.status_update, writer.uint32(234).fork()).ldelim();
+        StatusUpdate.encode(
+          message.status_update,
+          writer.uint32(234).fork()
+        ).ldelim();
       }
       if (message.stream_data !== void 0) {
-        StreamData.encode(message.stream_data, writer.uint32(242).fork()).ldelim();
+        StreamData.encode(
+          message.stream_data,
+          writer.uint32(242).fork()
+        ).ldelim();
       }
       if (message.stream_presence_event !== void 0) {
-        StreamPresenceEvent.encode(message.stream_presence_event, writer.uint32(250).fork()).ldelim();
+        StreamPresenceEvent.encode(
+          message.stream_presence_event,
+          writer.uint32(250).fork()
+        ).ldelim();
       }
       if (message.ping !== void 0) {
         Ping.encode(message.ping, writer.uint32(258).fork()).ldelim();
@@ -3049,52 +3244,94 @@ var nakamajsprotobuf = (() => {
         Party.encode(message.party, writer.uint32(274).fork()).ldelim();
       }
       if (message.party_create !== void 0) {
-        PartyCreate.encode(message.party_create, writer.uint32(282).fork()).ldelim();
+        PartyCreate.encode(
+          message.party_create,
+          writer.uint32(282).fork()
+        ).ldelim();
       }
       if (message.party_join !== void 0) {
         PartyJoin.encode(message.party_join, writer.uint32(290).fork()).ldelim();
       }
       if (message.party_leave !== void 0) {
-        PartyLeave.encode(message.party_leave, writer.uint32(298).fork()).ldelim();
+        PartyLeave.encode(
+          message.party_leave,
+          writer.uint32(298).fork()
+        ).ldelim();
       }
       if (message.party_promote !== void 0) {
-        PartyPromote.encode(message.party_promote, writer.uint32(306).fork()).ldelim();
+        PartyPromote.encode(
+          message.party_promote,
+          writer.uint32(306).fork()
+        ).ldelim();
       }
       if (message.party_leader !== void 0) {
-        PartyLeader.encode(message.party_leader, writer.uint32(314).fork()).ldelim();
+        PartyLeader.encode(
+          message.party_leader,
+          writer.uint32(314).fork()
+        ).ldelim();
       }
       if (message.party_accept !== void 0) {
-        PartyAccept.encode(message.party_accept, writer.uint32(322).fork()).ldelim();
+        PartyAccept.encode(
+          message.party_accept,
+          writer.uint32(322).fork()
+        ).ldelim();
       }
       if (message.party_remove !== void 0) {
-        PartyRemove.encode(message.party_remove, writer.uint32(330).fork()).ldelim();
+        PartyRemove.encode(
+          message.party_remove,
+          writer.uint32(330).fork()
+        ).ldelim();
       }
       if (message.party_close !== void 0) {
-        PartyClose.encode(message.party_close, writer.uint32(338).fork()).ldelim();
+        PartyClose.encode(
+          message.party_close,
+          writer.uint32(338).fork()
+        ).ldelim();
       }
       if (message.party_join_request_list !== void 0) {
-        PartyJoinRequestList.encode(message.party_join_request_list, writer.uint32(346).fork()).ldelim();
+        PartyJoinRequestList.encode(
+          message.party_join_request_list,
+          writer.uint32(346).fork()
+        ).ldelim();
       }
       if (message.party_join_request !== void 0) {
-        PartyJoinRequest.encode(message.party_join_request, writer.uint32(354).fork()).ldelim();
+        PartyJoinRequest.encode(
+          message.party_join_request,
+          writer.uint32(354).fork()
+        ).ldelim();
       }
       if (message.party_matchmaker_add !== void 0) {
-        PartyMatchmakerAdd.encode(message.party_matchmaker_add, writer.uint32(362).fork()).ldelim();
+        PartyMatchmakerAdd.encode(
+          message.party_matchmaker_add,
+          writer.uint32(362).fork()
+        ).ldelim();
       }
       if (message.party_matchmaker_remove !== void 0) {
-        PartyMatchmakerRemove.encode(message.party_matchmaker_remove, writer.uint32(370).fork()).ldelim();
+        PartyMatchmakerRemove.encode(
+          message.party_matchmaker_remove,
+          writer.uint32(370).fork()
+        ).ldelim();
       }
       if (message.party_matchmaker_ticket !== void 0) {
-        PartyMatchmakerTicket.encode(message.party_matchmaker_ticket, writer.uint32(378).fork()).ldelim();
+        PartyMatchmakerTicket.encode(
+          message.party_matchmaker_ticket,
+          writer.uint32(378).fork()
+        ).ldelim();
       }
       if (message.party_data !== void 0) {
         PartyData.encode(message.party_data, writer.uint32(386).fork()).ldelim();
       }
       if (message.party_data_send !== void 0) {
-        PartyDataSend.encode(message.party_data_send, writer.uint32(394).fork()).ldelim();
+        PartyDataSend.encode(
+          message.party_data_send,
+          writer.uint32(394).fork()
+        ).ldelim();
       }
       if (message.party_presence_event !== void 0) {
-        PartyPresenceEvent.encode(message.party_presence_event, writer.uint32(402).fork()).ldelim();
+        PartyPresenceEvent.encode(
+          message.party_presence_event,
+          writer.uint32(402).fork()
+        ).ldelim();
       }
       return writer;
     },
@@ -3118,22 +3355,40 @@ var nakamajsprotobuf = (() => {
             message.channel_leave = ChannelLeave.decode(reader, reader.uint32());
             break;
           case 5:
-            message.channel_message = ChannelMessage.decode(reader, reader.uint32());
+            message.channel_message = ChannelMessage.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 6:
-            message.channel_message_ack = ChannelMessageAck.decode(reader, reader.uint32());
+            message.channel_message_ack = ChannelMessageAck.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 7:
-            message.channel_message_send = ChannelMessageSend.decode(reader, reader.uint32());
+            message.channel_message_send = ChannelMessageSend.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 8:
-            message.channel_message_update = ChannelMessageUpdate.decode(reader, reader.uint32());
+            message.channel_message_update = ChannelMessageUpdate.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 9:
-            message.channel_message_remove = ChannelMessageRemove.decode(reader, reader.uint32());
+            message.channel_message_remove = ChannelMessageRemove.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 10:
-            message.channel_presence_event = ChannelPresenceEvent.decode(reader, reader.uint32());
+            message.channel_presence_event = ChannelPresenceEvent.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 11:
             message.error = Error2.decode(reader, reader.uint32());
@@ -3148,7 +3403,10 @@ var nakamajsprotobuf = (() => {
             message.match_data = MatchData.decode(reader, reader.uint32());
             break;
           case 15:
-            message.match_data_send = MatchDataSend.decode(reader, reader.uint32());
+            message.match_data_send = MatchDataSend.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 16:
             message.match_join = MatchJoin.decode(reader, reader.uint32());
@@ -3157,19 +3415,34 @@ var nakamajsprotobuf = (() => {
             message.match_leave = MatchLeave.decode(reader, reader.uint32());
             break;
           case 18:
-            message.match_presence_event = MatchPresenceEvent.decode(reader, reader.uint32());
+            message.match_presence_event = MatchPresenceEvent.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 19:
-            message.matchmaker_add = MatchmakerAdd.decode(reader, reader.uint32());
+            message.matchmaker_add = MatchmakerAdd.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 20:
-            message.matchmaker_matched = MatchmakerMatched.decode(reader, reader.uint32());
+            message.matchmaker_matched = MatchmakerMatched.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 21:
-            message.matchmaker_remove = MatchmakerRemove.decode(reader, reader.uint32());
+            message.matchmaker_remove = MatchmakerRemove.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 22:
-            message.matchmaker_ticket = MatchmakerTicket.decode(reader, reader.uint32());
+            message.matchmaker_ticket = MatchmakerTicket.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 23:
             message.notifications = Notifications.decode(reader, reader.uint32());
@@ -3184,10 +3457,16 @@ var nakamajsprotobuf = (() => {
             message.status_follow = StatusFollow.decode(reader, reader.uint32());
             break;
           case 27:
-            message.status_presence_event = StatusPresenceEvent.decode(reader, reader.uint32());
+            message.status_presence_event = StatusPresenceEvent.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 28:
-            message.status_unfollow = StatusUnfollow.decode(reader, reader.uint32());
+            message.status_unfollow = StatusUnfollow.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 29:
             message.status_update = StatusUpdate.decode(reader, reader.uint32());
@@ -3196,7 +3475,10 @@ var nakamajsprotobuf = (() => {
             message.stream_data = StreamData.decode(reader, reader.uint32());
             break;
           case 31:
-            message.stream_presence_event = StreamPresenceEvent.decode(reader, reader.uint32());
+            message.stream_presence_event = StreamPresenceEvent.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 32:
             message.ping = Ping.decode(reader, reader.uint32());
@@ -3232,28 +3514,49 @@ var nakamajsprotobuf = (() => {
             message.party_close = PartyClose.decode(reader, reader.uint32());
             break;
           case 43:
-            message.party_join_request_list = PartyJoinRequestList.decode(reader, reader.uint32());
+            message.party_join_request_list = PartyJoinRequestList.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 44:
-            message.party_join_request = PartyJoinRequest.decode(reader, reader.uint32());
+            message.party_join_request = PartyJoinRequest.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 45:
-            message.party_matchmaker_add = PartyMatchmakerAdd.decode(reader, reader.uint32());
+            message.party_matchmaker_add = PartyMatchmakerAdd.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 46:
-            message.party_matchmaker_remove = PartyMatchmakerRemove.decode(reader, reader.uint32());
+            message.party_matchmaker_remove = PartyMatchmakerRemove.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 47:
-            message.party_matchmaker_ticket = PartyMatchmakerTicket.decode(reader, reader.uint32());
+            message.party_matchmaker_ticket = PartyMatchmakerTicket.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 48:
             message.party_data = PartyData.decode(reader, reader.uint32());
             break;
           case 49:
-            message.party_data_send = PartyDataSend.decode(reader, reader.uint32());
+            message.party_data_send = PartyDataSend.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           case 50:
-            message.party_presence_event = PartyPresenceEvent.decode(reader, reader.uint32());
+            message.party_presence_event = PartyPresenceEvent.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           default:
             reader.skipType(tag & 7);
@@ -3290,27 +3593,37 @@ var nakamajsprotobuf = (() => {
         message.channel_message = void 0;
       }
       if (object.channel_message_ack !== void 0 && object.channel_message_ack !== null) {
-        message.channel_message_ack = ChannelMessageAck.fromJSON(object.channel_message_ack);
+        message.channel_message_ack = ChannelMessageAck.fromJSON(
+          object.channel_message_ack
+        );
       } else {
         message.channel_message_ack = void 0;
       }
       if (object.channel_message_send !== void 0 && object.channel_message_send !== null) {
-        message.channel_message_send = ChannelMessageSend.fromJSON(object.channel_message_send);
+        message.channel_message_send = ChannelMessageSend.fromJSON(
+          object.channel_message_send
+        );
       } else {
         message.channel_message_send = void 0;
       }
       if (object.channel_message_update !== void 0 && object.channel_message_update !== null) {
-        message.channel_message_update = ChannelMessageUpdate.fromJSON(object.channel_message_update);
+        message.channel_message_update = ChannelMessageUpdate.fromJSON(
+          object.channel_message_update
+        );
       } else {
         message.channel_message_update = void 0;
       }
       if (object.channel_message_remove !== void 0 && object.channel_message_remove !== null) {
-        message.channel_message_remove = ChannelMessageRemove.fromJSON(object.channel_message_remove);
+        message.channel_message_remove = ChannelMessageRemove.fromJSON(
+          object.channel_message_remove
+        );
       } else {
         message.channel_message_remove = void 0;
       }
       if (object.channel_presence_event !== void 0 && object.channel_presence_event !== null) {
-        message.channel_presence_event = ChannelPresenceEvent.fromJSON(object.channel_presence_event);
+        message.channel_presence_event = ChannelPresenceEvent.fromJSON(
+          object.channel_presence_event
+        );
       } else {
         message.channel_presence_event = void 0;
       }
@@ -3350,7 +3663,9 @@ var nakamajsprotobuf = (() => {
         message.match_leave = void 0;
       }
       if (object.match_presence_event !== void 0 && object.match_presence_event !== null) {
-        message.match_presence_event = MatchPresenceEvent.fromJSON(object.match_presence_event);
+        message.match_presence_event = MatchPresenceEvent.fromJSON(
+          object.match_presence_event
+        );
       } else {
         message.match_presence_event = void 0;
       }
@@ -3360,17 +3675,23 @@ var nakamajsprotobuf = (() => {
         message.matchmaker_add = void 0;
       }
       if (object.matchmaker_matched !== void 0 && object.matchmaker_matched !== null) {
-        message.matchmaker_matched = MatchmakerMatched.fromJSON(object.matchmaker_matched);
+        message.matchmaker_matched = MatchmakerMatched.fromJSON(
+          object.matchmaker_matched
+        );
       } else {
         message.matchmaker_matched = void 0;
       }
       if (object.matchmaker_remove !== void 0 && object.matchmaker_remove !== null) {
-        message.matchmaker_remove = MatchmakerRemove.fromJSON(object.matchmaker_remove);
+        message.matchmaker_remove = MatchmakerRemove.fromJSON(
+          object.matchmaker_remove
+        );
       } else {
         message.matchmaker_remove = void 0;
       }
       if (object.matchmaker_ticket !== void 0 && object.matchmaker_ticket !== null) {
-        message.matchmaker_ticket = MatchmakerTicket.fromJSON(object.matchmaker_ticket);
+        message.matchmaker_ticket = MatchmakerTicket.fromJSON(
+          object.matchmaker_ticket
+        );
       } else {
         message.matchmaker_ticket = void 0;
       }
@@ -3395,7 +3716,9 @@ var nakamajsprotobuf = (() => {
         message.status_follow = void 0;
       }
       if (object.status_presence_event !== void 0 && object.status_presence_event !== null) {
-        message.status_presence_event = StatusPresenceEvent.fromJSON(object.status_presence_event);
+        message.status_presence_event = StatusPresenceEvent.fromJSON(
+          object.status_presence_event
+        );
       } else {
         message.status_presence_event = void 0;
       }
@@ -3415,7 +3738,9 @@ var nakamajsprotobuf = (() => {
         message.stream_data = void 0;
       }
       if (object.stream_presence_event !== void 0 && object.stream_presence_event !== null) {
-        message.stream_presence_event = StreamPresenceEvent.fromJSON(object.stream_presence_event);
+        message.stream_presence_event = StreamPresenceEvent.fromJSON(
+          object.stream_presence_event
+        );
       } else {
         message.stream_presence_event = void 0;
       }
@@ -3475,27 +3800,37 @@ var nakamajsprotobuf = (() => {
         message.party_close = void 0;
       }
       if (object.party_join_request_list !== void 0 && object.party_join_request_list !== null) {
-        message.party_join_request_list = PartyJoinRequestList.fromJSON(object.party_join_request_list);
+        message.party_join_request_list = PartyJoinRequestList.fromJSON(
+          object.party_join_request_list
+        );
       } else {
         message.party_join_request_list = void 0;
       }
       if (object.party_join_request !== void 0 && object.party_join_request !== null) {
-        message.party_join_request = PartyJoinRequest.fromJSON(object.party_join_request);
+        message.party_join_request = PartyJoinRequest.fromJSON(
+          object.party_join_request
+        );
       } else {
         message.party_join_request = void 0;
       }
       if (object.party_matchmaker_add !== void 0 && object.party_matchmaker_add !== null) {
-        message.party_matchmaker_add = PartyMatchmakerAdd.fromJSON(object.party_matchmaker_add);
+        message.party_matchmaker_add = PartyMatchmakerAdd.fromJSON(
+          object.party_matchmaker_add
+        );
       } else {
         message.party_matchmaker_add = void 0;
       }
       if (object.party_matchmaker_remove !== void 0 && object.party_matchmaker_remove !== null) {
-        message.party_matchmaker_remove = PartyMatchmakerRemove.fromJSON(object.party_matchmaker_remove);
+        message.party_matchmaker_remove = PartyMatchmakerRemove.fromJSON(
+          object.party_matchmaker_remove
+        );
       } else {
         message.party_matchmaker_remove = void 0;
       }
       if (object.party_matchmaker_ticket !== void 0 && object.party_matchmaker_ticket !== null) {
-        message.party_matchmaker_ticket = PartyMatchmakerTicket.fromJSON(object.party_matchmaker_ticket);
+        message.party_matchmaker_ticket = PartyMatchmakerTicket.fromJSON(
+          object.party_matchmaker_ticket
+        );
       } else {
         message.party_matchmaker_ticket = void 0;
       }
@@ -3510,7 +3845,9 @@ var nakamajsprotobuf = (() => {
         message.party_data_send = void 0;
       }
       if (object.party_presence_event !== void 0 && object.party_presence_event !== null) {
-        message.party_presence_event = PartyPresenceEvent.fromJSON(object.party_presence_event);
+        message.party_presence_event = PartyPresenceEvent.fromJSON(
+          object.party_presence_event
+        );
       } else {
         message.party_presence_event = void 0;
       }
@@ -3593,32 +3930,44 @@ var nakamajsprotobuf = (() => {
         message.channel_leave = void 0;
       }
       if (object.channel_message !== void 0 && object.channel_message !== null) {
-        message.channel_message = ChannelMessage.fromPartial(object.channel_message);
+        message.channel_message = ChannelMessage.fromPartial(
+          object.channel_message
+        );
       } else {
         message.channel_message = void 0;
       }
       if (object.channel_message_ack !== void 0 && object.channel_message_ack !== null) {
-        message.channel_message_ack = ChannelMessageAck.fromPartial(object.channel_message_ack);
+        message.channel_message_ack = ChannelMessageAck.fromPartial(
+          object.channel_message_ack
+        );
       } else {
         message.channel_message_ack = void 0;
       }
       if (object.channel_message_send !== void 0 && object.channel_message_send !== null) {
-        message.channel_message_send = ChannelMessageSend.fromPartial(object.channel_message_send);
+        message.channel_message_send = ChannelMessageSend.fromPartial(
+          object.channel_message_send
+        );
       } else {
         message.channel_message_send = void 0;
       }
       if (object.channel_message_update !== void 0 && object.channel_message_update !== null) {
-        message.channel_message_update = ChannelMessageUpdate.fromPartial(object.channel_message_update);
+        message.channel_message_update = ChannelMessageUpdate.fromPartial(
+          object.channel_message_update
+        );
       } else {
         message.channel_message_update = void 0;
       }
       if (object.channel_message_remove !== void 0 && object.channel_message_remove !== null) {
-        message.channel_message_remove = ChannelMessageRemove.fromPartial(object.channel_message_remove);
+        message.channel_message_remove = ChannelMessageRemove.fromPartial(
+          object.channel_message_remove
+        );
       } else {
         message.channel_message_remove = void 0;
       }
       if (object.channel_presence_event !== void 0 && object.channel_presence_event !== null) {
-        message.channel_presence_event = ChannelPresenceEvent.fromPartial(object.channel_presence_event);
+        message.channel_presence_event = ChannelPresenceEvent.fromPartial(
+          object.channel_presence_event
+        );
       } else {
         message.channel_presence_event = void 0;
       }
@@ -3643,7 +3992,9 @@ var nakamajsprotobuf = (() => {
         message.match_data = void 0;
       }
       if (object.match_data_send !== void 0 && object.match_data_send !== null) {
-        message.match_data_send = MatchDataSend.fromPartial(object.match_data_send);
+        message.match_data_send = MatchDataSend.fromPartial(
+          object.match_data_send
+        );
       } else {
         message.match_data_send = void 0;
       }
@@ -3658,7 +4009,9 @@ var nakamajsprotobuf = (() => {
         message.match_leave = void 0;
       }
       if (object.match_presence_event !== void 0 && object.match_presence_event !== null) {
-        message.match_presence_event = MatchPresenceEvent.fromPartial(object.match_presence_event);
+        message.match_presence_event = MatchPresenceEvent.fromPartial(
+          object.match_presence_event
+        );
       } else {
         message.match_presence_event = void 0;
       }
@@ -3668,17 +4021,23 @@ var nakamajsprotobuf = (() => {
         message.matchmaker_add = void 0;
       }
       if (object.matchmaker_matched !== void 0 && object.matchmaker_matched !== null) {
-        message.matchmaker_matched = MatchmakerMatched.fromPartial(object.matchmaker_matched);
+        message.matchmaker_matched = MatchmakerMatched.fromPartial(
+          object.matchmaker_matched
+        );
       } else {
         message.matchmaker_matched = void 0;
       }
       if (object.matchmaker_remove !== void 0 && object.matchmaker_remove !== null) {
-        message.matchmaker_remove = MatchmakerRemove.fromPartial(object.matchmaker_remove);
+        message.matchmaker_remove = MatchmakerRemove.fromPartial(
+          object.matchmaker_remove
+        );
       } else {
         message.matchmaker_remove = void 0;
       }
       if (object.matchmaker_ticket !== void 0 && object.matchmaker_ticket !== null) {
-        message.matchmaker_ticket = MatchmakerTicket.fromPartial(object.matchmaker_ticket);
+        message.matchmaker_ticket = MatchmakerTicket.fromPartial(
+          object.matchmaker_ticket
+        );
       } else {
         message.matchmaker_ticket = void 0;
       }
@@ -3703,12 +4062,16 @@ var nakamajsprotobuf = (() => {
         message.status_follow = void 0;
       }
       if (object.status_presence_event !== void 0 && object.status_presence_event !== null) {
-        message.status_presence_event = StatusPresenceEvent.fromPartial(object.status_presence_event);
+        message.status_presence_event = StatusPresenceEvent.fromPartial(
+          object.status_presence_event
+        );
       } else {
         message.status_presence_event = void 0;
       }
       if (object.status_unfollow !== void 0 && object.status_unfollow !== null) {
-        message.status_unfollow = StatusUnfollow.fromPartial(object.status_unfollow);
+        message.status_unfollow = StatusUnfollow.fromPartial(
+          object.status_unfollow
+        );
       } else {
         message.status_unfollow = void 0;
       }
@@ -3723,7 +4086,9 @@ var nakamajsprotobuf = (() => {
         message.stream_data = void 0;
       }
       if (object.stream_presence_event !== void 0 && object.stream_presence_event !== null) {
-        message.stream_presence_event = StreamPresenceEvent.fromPartial(object.stream_presence_event);
+        message.stream_presence_event = StreamPresenceEvent.fromPartial(
+          object.stream_presence_event
+        );
       } else {
         message.stream_presence_event = void 0;
       }
@@ -3783,27 +4148,37 @@ var nakamajsprotobuf = (() => {
         message.party_close = void 0;
       }
       if (object.party_join_request_list !== void 0 && object.party_join_request_list !== null) {
-        message.party_join_request_list = PartyJoinRequestList.fromPartial(object.party_join_request_list);
+        message.party_join_request_list = PartyJoinRequestList.fromPartial(
+          object.party_join_request_list
+        );
       } else {
         message.party_join_request_list = void 0;
       }
       if (object.party_join_request !== void 0 && object.party_join_request !== null) {
-        message.party_join_request = PartyJoinRequest.fromPartial(object.party_join_request);
+        message.party_join_request = PartyJoinRequest.fromPartial(
+          object.party_join_request
+        );
       } else {
         message.party_join_request = void 0;
       }
       if (object.party_matchmaker_add !== void 0 && object.party_matchmaker_add !== null) {
-        message.party_matchmaker_add = PartyMatchmakerAdd.fromPartial(object.party_matchmaker_add);
+        message.party_matchmaker_add = PartyMatchmakerAdd.fromPartial(
+          object.party_matchmaker_add
+        );
       } else {
         message.party_matchmaker_add = void 0;
       }
       if (object.party_matchmaker_remove !== void 0 && object.party_matchmaker_remove !== null) {
-        message.party_matchmaker_remove = PartyMatchmakerRemove.fromPartial(object.party_matchmaker_remove);
+        message.party_matchmaker_remove = PartyMatchmakerRemove.fromPartial(
+          object.party_matchmaker_remove
+        );
       } else {
         message.party_matchmaker_remove = void 0;
       }
       if (object.party_matchmaker_ticket !== void 0 && object.party_matchmaker_ticket !== null) {
-        message.party_matchmaker_ticket = PartyMatchmakerTicket.fromPartial(object.party_matchmaker_ticket);
+        message.party_matchmaker_ticket = PartyMatchmakerTicket.fromPartial(
+          object.party_matchmaker_ticket
+        );
       } else {
         message.party_matchmaker_ticket = void 0;
       }
@@ -3813,12 +4188,16 @@ var nakamajsprotobuf = (() => {
         message.party_data = void 0;
       }
       if (object.party_data_send !== void 0 && object.party_data_send !== null) {
-        message.party_data_send = PartyDataSend.fromPartial(object.party_data_send);
+        message.party_data_send = PartyDataSend.fromPartial(
+          object.party_data_send
+        );
       } else {
         message.party_data_send = void 0;
       }
       if (object.party_presence_event !== void 0 && object.party_presence_event !== null) {
-        message.party_presence_event = PartyPresenceEvent.fromPartial(object.party_presence_event);
+        message.party_presence_event = PartyPresenceEvent.fromPartial(
+          object.party_presence_event
+        );
       } else {
         message.party_presence_event = void 0;
       }
@@ -3937,7 +4316,9 @@ var nakamajsprotobuf = (() => {
       const obj = {};
       message.id !== void 0 && (obj.id = message.id);
       if (message.presences) {
-        obj.presences = message.presences.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.presences = message.presences.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.presences = [];
       }
@@ -3999,10 +4380,16 @@ var nakamajsprotobuf = (() => {
         writer.uint32(16).int32(message.type);
       }
       if (message.persistence !== void 0) {
-        BoolValue.encode({ value: message.persistence }, writer.uint32(26).fork()).ldelim();
+        BoolValue.encode(
+          { value: message.persistence },
+          writer.uint32(26).fork()
+        ).ldelim();
       }
       if (message.hidden !== void 0) {
-        BoolValue.encode({ value: message.hidden }, writer.uint32(34).fork()).ldelim();
+        BoolValue.encode(
+          { value: message.hidden },
+          writer.uint32(34).fork()
+        ).ldelim();
       }
       return writer;
     },
@@ -4156,19 +4543,31 @@ var nakamajsprotobuf = (() => {
         writer.uint32(18).string(message.message_id);
       }
       if (message.code !== void 0) {
-        Int32Value.encode({ value: message.code }, writer.uint32(26).fork()).ldelim();
+        Int32Value.encode(
+          { value: message.code },
+          writer.uint32(26).fork()
+        ).ldelim();
       }
       if (message.username !== "") {
         writer.uint32(34).string(message.username);
       }
       if (message.create_time !== void 0) {
-        Timestamp.encode(toTimestamp2(message.create_time), writer.uint32(42).fork()).ldelim();
+        Timestamp.encode(
+          toTimestamp2(message.create_time),
+          writer.uint32(42).fork()
+        ).ldelim();
       }
       if (message.update_time !== void 0) {
-        Timestamp.encode(toTimestamp2(message.update_time), writer.uint32(50).fork()).ldelim();
+        Timestamp.encode(
+          toTimestamp2(message.update_time),
+          writer.uint32(50).fork()
+        ).ldelim();
       }
       if (message.persistent !== void 0) {
-        BoolValue.encode({ value: message.persistent }, writer.uint32(58).fork()).ldelim();
+        BoolValue.encode(
+          { value: message.persistent },
+          writer.uint32(58).fork()
+        ).ldelim();
       }
       if (message.room_name !== "") {
         writer.uint32(66).string(message.room_name);
@@ -4204,10 +4603,14 @@ var nakamajsprotobuf = (() => {
             message.username = reader.string();
             break;
           case 5:
-            message.create_time = fromTimestamp2(Timestamp.decode(reader, reader.uint32()));
+            message.create_time = fromTimestamp2(
+              Timestamp.decode(reader, reader.uint32())
+            );
             break;
           case 6:
-            message.update_time = fromTimestamp2(Timestamp.decode(reader, reader.uint32()));
+            message.update_time = fromTimestamp2(
+              Timestamp.decode(reader, reader.uint32())
+            );
             break;
           case 7:
             message.persistent = BoolValue.decode(reader, reader.uint32()).value;
@@ -4698,12 +5101,16 @@ var nakamajsprotobuf = (() => {
       const obj = {};
       message.channel_id !== void 0 && (obj.channel_id = message.channel_id);
       if (message.joins) {
-        obj.joins = message.joins.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.joins = message.joins.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.joins = [];
       }
       if (message.leaves) {
-        obj.leaves = message.leaves.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.leaves = message.leaves.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.leaves = [];
       }
@@ -4765,7 +5172,10 @@ var nakamajsprotobuf = (() => {
         writer.uint32(18).string(message.message);
       }
       Object.entries(message.context).forEach(([key, value]) => {
-        Error_ContextEntry.encode({ key, value }, writer.uint32(26).fork()).ldelim();
+        Error_ContextEntry.encode(
+          { key, value },
+          writer.uint32(26).fork()
+        ).ldelim();
       });
       return writer;
     },
@@ -4927,7 +5337,10 @@ var nakamajsprotobuf = (() => {
         writer.uint32(16).bool(message.authoritative);
       }
       if (message.label !== void 0) {
-        StringValue.encode({ value: message.label }, writer.uint32(26).fork()).ldelim();
+        StringValue.encode(
+          { value: message.label },
+          writer.uint32(26).fork()
+        ).ldelim();
       }
       if (message.size !== 0) {
         writer.uint32(32).int32(message.size);
@@ -5015,7 +5428,9 @@ var nakamajsprotobuf = (() => {
       message.label !== void 0 && (obj.label = message.label);
       message.size !== void 0 && (obj.size = message.size);
       if (message.presences) {
-        obj.presences = message.presences.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.presences = message.presences.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.presences = [];
       }
@@ -5173,7 +5588,9 @@ var nakamajsprotobuf = (() => {
       message.match_id !== void 0 && (obj.match_id = message.match_id);
       message.presence !== void 0 && (obj.presence = message.presence ? UserPresence.toJSON(message.presence) : void 0);
       message.op_code !== void 0 && (obj.op_code = message.op_code);
-      message.data !== void 0 && (obj.data = base64FromBytes(message.data !== void 0 ? message.data : new Uint8Array()));
+      message.data !== void 0 && (obj.data = base64FromBytes(
+        message.data !== void 0 ? message.data : new Uint8Array()
+      ));
       message.reliable !== void 0 && (obj.reliable = message.reliable);
       return obj;
     },
@@ -5291,9 +5708,13 @@ var nakamajsprotobuf = (() => {
       const obj = {};
       message.match_id !== void 0 && (obj.match_id = message.match_id);
       message.op_code !== void 0 && (obj.op_code = message.op_code);
-      message.data !== void 0 && (obj.data = base64FromBytes(message.data !== void 0 ? message.data : new Uint8Array()));
+      message.data !== void 0 && (obj.data = base64FromBytes(
+        message.data !== void 0 ? message.data : new Uint8Array()
+      ));
       if (message.presences) {
-        obj.presences = message.presences.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.presences = message.presences.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.presences = [];
       }
@@ -5341,7 +5762,10 @@ var nakamajsprotobuf = (() => {
         writer.uint32(18).string(message.token);
       }
       Object.entries(message.metadata).forEach(([key, value]) => {
-        MatchJoin_MetadataEntry.encode({ key, value }, writer.uint32(26).fork()).ldelim();
+        MatchJoin_MetadataEntry.encode(
+          { key, value },
+          writer.uint32(26).fork()
+        ).ldelim();
       });
       return writer;
     },
@@ -5360,7 +5784,10 @@ var nakamajsprotobuf = (() => {
             message.token = reader.string();
             break;
           case 3:
-            const entry3 = MatchJoin_MetadataEntry.decode(reader, reader.uint32());
+            const entry3 = MatchJoin_MetadataEntry.decode(
+              reader,
+              reader.uint32()
+            );
             if (entry3.value !== void 0) {
               message.metadata[entry3.key] = entry3.value;
             }
@@ -5606,12 +6033,16 @@ var nakamajsprotobuf = (() => {
       const obj = {};
       message.match_id !== void 0 && (obj.match_id = message.match_id);
       if (message.joins) {
-        obj.joins = message.joins.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.joins = message.joins.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.joins = [];
       }
       if (message.leaves) {
-        obj.leaves = message.leaves.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.leaves = message.leaves.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.leaves = [];
       }
@@ -5652,10 +6083,16 @@ var nakamajsprotobuf = (() => {
         writer.uint32(26).string(message.query);
       }
       Object.entries(message.string_properties).forEach(([key, value]) => {
-        MatchmakerAdd_StringPropertiesEntry.encode({ key, value }, writer.uint32(34).fork()).ldelim();
+        MatchmakerAdd_StringPropertiesEntry.encode(
+          { key, value },
+          writer.uint32(34).fork()
+        ).ldelim();
       });
       Object.entries(message.numeric_properties).forEach(([key, value]) => {
-        MatchmakerAdd_NumericPropertiesEntry.encode({ key, value }, writer.uint32(42).fork()).ldelim();
+        MatchmakerAdd_NumericPropertiesEntry.encode(
+          { key, value },
+          writer.uint32(42).fork()
+        ).ldelim();
       });
       return writer;
     },
@@ -5678,13 +6115,19 @@ var nakamajsprotobuf = (() => {
             message.query = reader.string();
             break;
           case 4:
-            const entry4 = MatchmakerAdd_StringPropertiesEntry.decode(reader, reader.uint32());
+            const entry4 = MatchmakerAdd_StringPropertiesEntry.decode(
+              reader,
+              reader.uint32()
+            );
             if (entry4.value !== void 0) {
               message.string_properties[entry4.key] = entry4.value;
             }
             break;
           case 5:
-            const entry5 = MatchmakerAdd_NumericPropertiesEntry.decode(reader, reader.uint32());
+            const entry5 = MatchmakerAdd_NumericPropertiesEntry.decode(
+              reader,
+              reader.uint32()
+            );
             if (entry5.value !== void 0) {
               message.numeric_properties[entry5.key] = entry5.value;
             }
@@ -5927,10 +6370,16 @@ var nakamajsprotobuf = (() => {
         writer.uint32(26).string(message.token);
       }
       for (const v of message.users) {
-        MatchmakerMatched_MatchmakerUser.encode(v, writer.uint32(34).fork()).ldelim();
+        MatchmakerMatched_MatchmakerUser.encode(
+          v,
+          writer.uint32(34).fork()
+        ).ldelim();
       }
       if (message.self !== void 0) {
-        MatchmakerMatched_MatchmakerUser.encode(message.self, writer.uint32(42).fork()).ldelim();
+        MatchmakerMatched_MatchmakerUser.encode(
+          message.self,
+          writer.uint32(42).fork()
+        ).ldelim();
       }
       return writer;
     },
@@ -5952,10 +6401,15 @@ var nakamajsprotobuf = (() => {
             message.token = reader.string();
             break;
           case 4:
-            message.users.push(MatchmakerMatched_MatchmakerUser.decode(reader, reader.uint32()));
+            message.users.push(
+              MatchmakerMatched_MatchmakerUser.decode(reader, reader.uint32())
+            );
             break;
           case 5:
-            message.self = MatchmakerMatched_MatchmakerUser.decode(reader, reader.uint32());
+            message.self = MatchmakerMatched_MatchmakerUser.decode(
+              reader,
+              reader.uint32()
+            );
             break;
           default:
             reader.skipType(tag & 7);
@@ -6000,7 +6454,9 @@ var nakamajsprotobuf = (() => {
       message.match_id !== void 0 && (obj.match_id = message.match_id);
       message.token !== void 0 && (obj.token = message.token);
       if (message.users) {
-        obj.users = message.users.map((e) => e ? MatchmakerMatched_MatchmakerUser.toJSON(e) : void 0);
+        obj.users = message.users.map(
+          (e) => e ? MatchmakerMatched_MatchmakerUser.toJSON(e) : void 0
+        );
       } else {
         obj.users = [];
       }
@@ -6048,10 +6504,16 @@ var nakamajsprotobuf = (() => {
         writer.uint32(18).string(message.party_id);
       }
       Object.entries(message.string_properties).forEach(([key, value]) => {
-        MatchmakerMatched_MatchmakerUser_StringPropertiesEntry.encode({ key, value }, writer.uint32(42).fork()).ldelim();
+        MatchmakerMatched_MatchmakerUser_StringPropertiesEntry.encode(
+          { key, value },
+          writer.uint32(42).fork()
+        ).ldelim();
       });
       Object.entries(message.numeric_properties).forEach(([key, value]) => {
-        MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry.encode({ key, value }, writer.uint32(50).fork()).ldelim();
+        MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry.encode(
+          { key, value },
+          writer.uint32(50).fork()
+        ).ldelim();
       });
       return writer;
     },
@@ -6071,13 +6533,19 @@ var nakamajsprotobuf = (() => {
             message.party_id = reader.string();
             break;
           case 5:
-            const entry5 = MatchmakerMatched_MatchmakerUser_StringPropertiesEntry.decode(reader, reader.uint32());
+            const entry5 = MatchmakerMatched_MatchmakerUser_StringPropertiesEntry.decode(
+              reader,
+              reader.uint32()
+            );
             if (entry5.value !== void 0) {
               message.string_properties[entry5.key] = entry5.value;
             }
             break;
           case 6:
-            const entry6 = MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry.decode(reader, reader.uint32());
+            const entry6 = MatchmakerMatched_MatchmakerUser_NumericPropertiesEntry.decode(
+              reader,
+              reader.uint32()
+            );
             if (entry6.value !== void 0) {
               message.numeric_properties[entry6.key] = entry6.value;
             }
@@ -6417,7 +6885,9 @@ var nakamajsprotobuf = (() => {
         const tag = reader.uint32();
         switch (tag >>> 3) {
           case 1:
-            message.notifications.push(Notification.decode(reader, reader.uint32()));
+            message.notifications.push(
+              Notification.decode(reader, reader.uint32())
+            );
             break;
           default:
             reader.skipType(tag & 7);
@@ -6439,7 +6909,9 @@ var nakamajsprotobuf = (() => {
     toJSON(message) {
       const obj = {};
       if (message.notifications) {
-        obj.notifications = message.notifications.map((e) => e ? Notification.toJSON(e) : void 0);
+        obj.notifications = message.notifications.map(
+          (e) => e ? Notification.toJSON(e) : void 0
+        );
       } else {
         obj.notifications = [];
       }
@@ -6555,7 +7027,9 @@ var nakamajsprotobuf = (() => {
       message.self !== void 0 && (obj.self = message.self ? UserPresence.toJSON(message.self) : void 0);
       message.leader !== void 0 && (obj.leader = message.leader ? UserPresence.toJSON(message.leader) : void 0);
       if (message.presences) {
-        obj.presences = message.presences.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.presences = message.presences.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.presences = [];
       }
@@ -7174,7 +7648,9 @@ var nakamajsprotobuf = (() => {
       const obj = {};
       message.party_id !== void 0 && (obj.party_id = message.party_id);
       if (message.presences) {
-        obj.presences = message.presences.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.presences = message.presences.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.presences = [];
       }
@@ -7217,10 +7693,16 @@ var nakamajsprotobuf = (() => {
         writer.uint32(34).string(message.query);
       }
       Object.entries(message.string_properties).forEach(([key, value]) => {
-        PartyMatchmakerAdd_StringPropertiesEntry.encode({ key, value }, writer.uint32(42).fork()).ldelim();
+        PartyMatchmakerAdd_StringPropertiesEntry.encode(
+          { key, value },
+          writer.uint32(42).fork()
+        ).ldelim();
       });
       Object.entries(message.numeric_properties).forEach(([key, value]) => {
-        PartyMatchmakerAdd_NumericPropertiesEntry.encode({ key, value }, writer.uint32(50).fork()).ldelim();
+        PartyMatchmakerAdd_NumericPropertiesEntry.encode(
+          { key, value },
+          writer.uint32(50).fork()
+        ).ldelim();
       });
       return writer;
     },
@@ -7246,13 +7728,19 @@ var nakamajsprotobuf = (() => {
             message.query = reader.string();
             break;
           case 5:
-            const entry5 = PartyMatchmakerAdd_StringPropertiesEntry.decode(reader, reader.uint32());
+            const entry5 = PartyMatchmakerAdd_StringPropertiesEntry.decode(
+              reader,
+              reader.uint32()
+            );
             if (entry5.value !== void 0) {
               message.string_properties[entry5.key] = entry5.value;
             }
             break;
           case 6:
-            const entry6 = PartyMatchmakerAdd_NumericPropertiesEntry.decode(reader, reader.uint32());
+            const entry6 = PartyMatchmakerAdd_NumericPropertiesEntry.decode(
+              reader,
+              reader.uint32()
+            );
             if (entry6.value !== void 0) {
               message.numeric_properties[entry6.key] = entry6.value;
             }
@@ -7703,7 +8191,9 @@ var nakamajsprotobuf = (() => {
       message.party_id !== void 0 && (obj.party_id = message.party_id);
       message.presence !== void 0 && (obj.presence = message.presence ? UserPresence.toJSON(message.presence) : void 0);
       message.op_code !== void 0 && (obj.op_code = message.op_code);
-      message.data !== void 0 && (obj.data = base64FromBytes(message.data !== void 0 ? message.data : new Uint8Array()));
+      message.data !== void 0 && (obj.data = base64FromBytes(
+        message.data !== void 0 ? message.data : new Uint8Array()
+      ));
       return obj;
     },
     fromPartial(object) {
@@ -7791,7 +8281,9 @@ var nakamajsprotobuf = (() => {
       const obj = {};
       message.party_id !== void 0 && (obj.party_id = message.party_id);
       message.op_code !== void 0 && (obj.op_code = message.op_code);
-      message.data !== void 0 && (obj.data = base64FromBytes(message.data !== void 0 ? message.data : new Uint8Array()));
+      message.data !== void 0 && (obj.data = base64FromBytes(
+        message.data !== void 0 ? message.data : new Uint8Array()
+      ));
       return obj;
     },
     fromPartial(object) {
@@ -7878,12 +8370,16 @@ var nakamajsprotobuf = (() => {
       const obj = {};
       message.party_id !== void 0 && (obj.party_id = message.party_id);
       if (message.joins) {
-        obj.joins = message.joins.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.joins = message.joins.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.joins = [];
       }
       if (message.leaves) {
-        obj.leaves = message.leaves.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.leaves = message.leaves.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.leaves = [];
       }
@@ -8014,7 +8510,9 @@ var nakamajsprotobuf = (() => {
     toJSON(message) {
       const obj = {};
       if (message.presences) {
-        obj.presences = message.presences.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.presences = message.presences.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.presences = [];
       }
@@ -8163,12 +8661,16 @@ var nakamajsprotobuf = (() => {
     toJSON(message) {
       const obj = {};
       if (message.joins) {
-        obj.joins = message.joins.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.joins = message.joins.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.joins = [];
       }
       if (message.leaves) {
-        obj.leaves = message.leaves.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.leaves = message.leaves.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.leaves = [];
       }
@@ -8251,7 +8753,10 @@ var nakamajsprotobuf = (() => {
   var StatusUpdate = {
     encode(message, writer = import_minimal4.default.Writer.create()) {
       if (message.status !== void 0) {
-        StringValue.encode({ value: message.status }, writer.uint32(10).fork()).ldelim();
+        StringValue.encode(
+          { value: message.status },
+          writer.uint32(10).fork()
+        ).ldelim();
       }
       return writer;
     },
@@ -8560,12 +9065,16 @@ var nakamajsprotobuf = (() => {
       const obj = {};
       message.stream !== void 0 && (obj.stream = message.stream ? Stream.toJSON(message.stream) : void 0);
       if (message.joins) {
-        obj.joins = message.joins.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.joins = message.joins.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.joins = [];
       }
       if (message.leaves) {
-        obj.leaves = message.leaves.map((e) => e ? UserPresence.toJSON(e) : void 0);
+        obj.leaves = message.leaves.map(
+          (e) => e ? UserPresence.toJSON(e) : void 0
+        );
       } else {
         obj.leaves = [];
       }
@@ -8614,7 +9123,10 @@ var nakamajsprotobuf = (() => {
         writer.uint32(32).bool(message.persistence);
       }
       if (message.status !== void 0) {
-        StringValue.encode({ value: message.status }, writer.uint32(42).fork()).ldelim();
+        StringValue.encode(
+          { value: message.status },
+          writer.uint32(42).fork()
+        ).ldelim();
       }
       return writer;
     },

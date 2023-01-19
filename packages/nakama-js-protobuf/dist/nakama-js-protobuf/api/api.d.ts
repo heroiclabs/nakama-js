@@ -1217,818 +1217,818 @@ export interface WriteTournamentRecordRequest_TournamentRecordWrite {
 }
 export declare const Account: {
     encode(message: Account, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Account;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Account;
     fromJSON(object: any): Account;
     toJSON(message: Account): unknown;
     fromPartial(object: DeepPartial<Account>): Account;
 };
 export declare const AccountRefresh: {
     encode(message: AccountRefresh, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountRefresh;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountRefresh;
     fromJSON(object: any): AccountRefresh;
     toJSON(message: AccountRefresh): unknown;
     fromPartial(object: DeepPartial<AccountRefresh>): AccountRefresh;
 };
 export declare const AccountRefresh_VarsEntry: {
     encode(message: AccountRefresh_VarsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountRefresh_VarsEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountRefresh_VarsEntry;
     fromJSON(object: any): AccountRefresh_VarsEntry;
     toJSON(message: AccountRefresh_VarsEntry): unknown;
     fromPartial(object: DeepPartial<AccountRefresh_VarsEntry>): AccountRefresh_VarsEntry;
 };
 export declare const AccountApple: {
     encode(message: AccountApple, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountApple;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountApple;
     fromJSON(object: any): AccountApple;
     toJSON(message: AccountApple): unknown;
     fromPartial(object: DeepPartial<AccountApple>): AccountApple;
 };
 export declare const AccountApple_VarsEntry: {
     encode(message: AccountApple_VarsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountApple_VarsEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountApple_VarsEntry;
     fromJSON(object: any): AccountApple_VarsEntry;
     toJSON(message: AccountApple_VarsEntry): unknown;
     fromPartial(object: DeepPartial<AccountApple_VarsEntry>): AccountApple_VarsEntry;
 };
 export declare const AccountCustom: {
     encode(message: AccountCustom, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountCustom;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountCustom;
     fromJSON(object: any): AccountCustom;
     toJSON(message: AccountCustom): unknown;
     fromPartial(object: DeepPartial<AccountCustom>): AccountCustom;
 };
 export declare const AccountCustom_VarsEntry: {
     encode(message: AccountCustom_VarsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountCustom_VarsEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountCustom_VarsEntry;
     fromJSON(object: any): AccountCustom_VarsEntry;
     toJSON(message: AccountCustom_VarsEntry): unknown;
     fromPartial(object: DeepPartial<AccountCustom_VarsEntry>): AccountCustom_VarsEntry;
 };
 export declare const AccountDevice: {
     encode(message: AccountDevice, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountDevice;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountDevice;
     fromJSON(object: any): AccountDevice;
     toJSON(message: AccountDevice): unknown;
     fromPartial(object: DeepPartial<AccountDevice>): AccountDevice;
 };
 export declare const AccountDevice_VarsEntry: {
     encode(message: AccountDevice_VarsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountDevice_VarsEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountDevice_VarsEntry;
     fromJSON(object: any): AccountDevice_VarsEntry;
     toJSON(message: AccountDevice_VarsEntry): unknown;
     fromPartial(object: DeepPartial<AccountDevice_VarsEntry>): AccountDevice_VarsEntry;
 };
 export declare const AccountEmail: {
     encode(message: AccountEmail, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountEmail;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountEmail;
     fromJSON(object: any): AccountEmail;
     toJSON(message: AccountEmail): unknown;
     fromPartial(object: DeepPartial<AccountEmail>): AccountEmail;
 };
 export declare const AccountEmail_VarsEntry: {
     encode(message: AccountEmail_VarsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountEmail_VarsEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountEmail_VarsEntry;
     fromJSON(object: any): AccountEmail_VarsEntry;
     toJSON(message: AccountEmail_VarsEntry): unknown;
     fromPartial(object: DeepPartial<AccountEmail_VarsEntry>): AccountEmail_VarsEntry;
 };
 export declare const AccountFacebook: {
     encode(message: AccountFacebook, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountFacebook;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountFacebook;
     fromJSON(object: any): AccountFacebook;
     toJSON(message: AccountFacebook): unknown;
     fromPartial(object: DeepPartial<AccountFacebook>): AccountFacebook;
 };
 export declare const AccountFacebook_VarsEntry: {
     encode(message: AccountFacebook_VarsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountFacebook_VarsEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountFacebook_VarsEntry;
     fromJSON(object: any): AccountFacebook_VarsEntry;
     toJSON(message: AccountFacebook_VarsEntry): unknown;
     fromPartial(object: DeepPartial<AccountFacebook_VarsEntry>): AccountFacebook_VarsEntry;
 };
 export declare const AccountFacebookInstantGame: {
     encode(message: AccountFacebookInstantGame, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountFacebookInstantGame;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountFacebookInstantGame;
     fromJSON(object: any): AccountFacebookInstantGame;
     toJSON(message: AccountFacebookInstantGame): unknown;
     fromPartial(object: DeepPartial<AccountFacebookInstantGame>): AccountFacebookInstantGame;
 };
 export declare const AccountFacebookInstantGame_VarsEntry: {
     encode(message: AccountFacebookInstantGame_VarsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountFacebookInstantGame_VarsEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountFacebookInstantGame_VarsEntry;
     fromJSON(object: any): AccountFacebookInstantGame_VarsEntry;
     toJSON(message: AccountFacebookInstantGame_VarsEntry): unknown;
     fromPartial(object: DeepPartial<AccountFacebookInstantGame_VarsEntry>): AccountFacebookInstantGame_VarsEntry;
 };
 export declare const AccountGameCenter: {
     encode(message: AccountGameCenter, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountGameCenter;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountGameCenter;
     fromJSON(object: any): AccountGameCenter;
     toJSON(message: AccountGameCenter): unknown;
     fromPartial(object: DeepPartial<AccountGameCenter>): AccountGameCenter;
 };
 export declare const AccountGameCenter_VarsEntry: {
     encode(message: AccountGameCenter_VarsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountGameCenter_VarsEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountGameCenter_VarsEntry;
     fromJSON(object: any): AccountGameCenter_VarsEntry;
     toJSON(message: AccountGameCenter_VarsEntry): unknown;
     fromPartial(object: DeepPartial<AccountGameCenter_VarsEntry>): AccountGameCenter_VarsEntry;
 };
 export declare const AccountGoogle: {
     encode(message: AccountGoogle, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountGoogle;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountGoogle;
     fromJSON(object: any): AccountGoogle;
     toJSON(message: AccountGoogle): unknown;
     fromPartial(object: DeepPartial<AccountGoogle>): AccountGoogle;
 };
 export declare const AccountGoogle_VarsEntry: {
     encode(message: AccountGoogle_VarsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountGoogle_VarsEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountGoogle_VarsEntry;
     fromJSON(object: any): AccountGoogle_VarsEntry;
     toJSON(message: AccountGoogle_VarsEntry): unknown;
     fromPartial(object: DeepPartial<AccountGoogle_VarsEntry>): AccountGoogle_VarsEntry;
 };
 export declare const AccountSteam: {
     encode(message: AccountSteam, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountSteam;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountSteam;
     fromJSON(object: any): AccountSteam;
     toJSON(message: AccountSteam): unknown;
     fromPartial(object: DeepPartial<AccountSteam>): AccountSteam;
 };
 export declare const AccountSteam_VarsEntry: {
     encode(message: AccountSteam_VarsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AccountSteam_VarsEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AccountSteam_VarsEntry;
     fromJSON(object: any): AccountSteam_VarsEntry;
     toJSON(message: AccountSteam_VarsEntry): unknown;
     fromPartial(object: DeepPartial<AccountSteam_VarsEntry>): AccountSteam_VarsEntry;
 };
 export declare const AddFriendsRequest: {
     encode(message: AddFriendsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AddFriendsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AddFriendsRequest;
     fromJSON(object: any): AddFriendsRequest;
     toJSON(message: AddFriendsRequest): unknown;
     fromPartial(object: DeepPartial<AddFriendsRequest>): AddFriendsRequest;
 };
 export declare const AddGroupUsersRequest: {
     encode(message: AddGroupUsersRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AddGroupUsersRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AddGroupUsersRequest;
     fromJSON(object: any): AddGroupUsersRequest;
     toJSON(message: AddGroupUsersRequest): unknown;
     fromPartial(object: DeepPartial<AddGroupUsersRequest>): AddGroupUsersRequest;
 };
 export declare const SessionRefreshRequest: {
     encode(message: SessionRefreshRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): SessionRefreshRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): SessionRefreshRequest;
     fromJSON(object: any): SessionRefreshRequest;
     toJSON(message: SessionRefreshRequest): unknown;
     fromPartial(object: DeepPartial<SessionRefreshRequest>): SessionRefreshRequest;
 };
 export declare const SessionRefreshRequest_VarsEntry: {
     encode(message: SessionRefreshRequest_VarsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): SessionRefreshRequest_VarsEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): SessionRefreshRequest_VarsEntry;
     fromJSON(object: any): SessionRefreshRequest_VarsEntry;
     toJSON(message: SessionRefreshRequest_VarsEntry): unknown;
     fromPartial(object: DeepPartial<SessionRefreshRequest_VarsEntry>): SessionRefreshRequest_VarsEntry;
 };
 export declare const SessionLogoutRequest: {
     encode(message: SessionLogoutRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): SessionLogoutRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): SessionLogoutRequest;
     fromJSON(object: any): SessionLogoutRequest;
     toJSON(message: SessionLogoutRequest): unknown;
     fromPartial(object: DeepPartial<SessionLogoutRequest>): SessionLogoutRequest;
 };
 export declare const AuthenticateAppleRequest: {
     encode(message: AuthenticateAppleRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AuthenticateAppleRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AuthenticateAppleRequest;
     fromJSON(object: any): AuthenticateAppleRequest;
     toJSON(message: AuthenticateAppleRequest): unknown;
     fromPartial(object: DeepPartial<AuthenticateAppleRequest>): AuthenticateAppleRequest;
 };
 export declare const AuthenticateCustomRequest: {
     encode(message: AuthenticateCustomRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AuthenticateCustomRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AuthenticateCustomRequest;
     fromJSON(object: any): AuthenticateCustomRequest;
     toJSON(message: AuthenticateCustomRequest): unknown;
     fromPartial(object: DeepPartial<AuthenticateCustomRequest>): AuthenticateCustomRequest;
 };
 export declare const AuthenticateDeviceRequest: {
     encode(message: AuthenticateDeviceRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AuthenticateDeviceRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AuthenticateDeviceRequest;
     fromJSON(object: any): AuthenticateDeviceRequest;
     toJSON(message: AuthenticateDeviceRequest): unknown;
     fromPartial(object: DeepPartial<AuthenticateDeviceRequest>): AuthenticateDeviceRequest;
 };
 export declare const AuthenticateEmailRequest: {
     encode(message: AuthenticateEmailRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AuthenticateEmailRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AuthenticateEmailRequest;
     fromJSON(object: any): AuthenticateEmailRequest;
     toJSON(message: AuthenticateEmailRequest): unknown;
     fromPartial(object: DeepPartial<AuthenticateEmailRequest>): AuthenticateEmailRequest;
 };
 export declare const AuthenticateFacebookRequest: {
     encode(message: AuthenticateFacebookRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AuthenticateFacebookRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AuthenticateFacebookRequest;
     fromJSON(object: any): AuthenticateFacebookRequest;
     toJSON(message: AuthenticateFacebookRequest): unknown;
     fromPartial(object: DeepPartial<AuthenticateFacebookRequest>): AuthenticateFacebookRequest;
 };
 export declare const AuthenticateFacebookInstantGameRequest: {
     encode(message: AuthenticateFacebookInstantGameRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AuthenticateFacebookInstantGameRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AuthenticateFacebookInstantGameRequest;
     fromJSON(object: any): AuthenticateFacebookInstantGameRequest;
     toJSON(message: AuthenticateFacebookInstantGameRequest): unknown;
     fromPartial(object: DeepPartial<AuthenticateFacebookInstantGameRequest>): AuthenticateFacebookInstantGameRequest;
 };
 export declare const AuthenticateGameCenterRequest: {
     encode(message: AuthenticateGameCenterRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AuthenticateGameCenterRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AuthenticateGameCenterRequest;
     fromJSON(object: any): AuthenticateGameCenterRequest;
     toJSON(message: AuthenticateGameCenterRequest): unknown;
     fromPartial(object: DeepPartial<AuthenticateGameCenterRequest>): AuthenticateGameCenterRequest;
 };
 export declare const AuthenticateGoogleRequest: {
     encode(message: AuthenticateGoogleRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AuthenticateGoogleRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AuthenticateGoogleRequest;
     fromJSON(object: any): AuthenticateGoogleRequest;
     toJSON(message: AuthenticateGoogleRequest): unknown;
     fromPartial(object: DeepPartial<AuthenticateGoogleRequest>): AuthenticateGoogleRequest;
 };
 export declare const AuthenticateSteamRequest: {
     encode(message: AuthenticateSteamRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): AuthenticateSteamRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): AuthenticateSteamRequest;
     fromJSON(object: any): AuthenticateSteamRequest;
     toJSON(message: AuthenticateSteamRequest): unknown;
     fromPartial(object: DeepPartial<AuthenticateSteamRequest>): AuthenticateSteamRequest;
 };
 export declare const BanGroupUsersRequest: {
     encode(message: BanGroupUsersRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): BanGroupUsersRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): BanGroupUsersRequest;
     fromJSON(object: any): BanGroupUsersRequest;
     toJSON(message: BanGroupUsersRequest): unknown;
     fromPartial(object: DeepPartial<BanGroupUsersRequest>): BanGroupUsersRequest;
 };
 export declare const BlockFriendsRequest: {
     encode(message: BlockFriendsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): BlockFriendsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): BlockFriendsRequest;
     fromJSON(object: any): BlockFriendsRequest;
     toJSON(message: BlockFriendsRequest): unknown;
     fromPartial(object: DeepPartial<BlockFriendsRequest>): BlockFriendsRequest;
 };
 export declare const ChannelMessage: {
     encode(message: ChannelMessage, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ChannelMessage;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ChannelMessage;
     fromJSON(object: any): ChannelMessage;
     toJSON(message: ChannelMessage): unknown;
     fromPartial(object: DeepPartial<ChannelMessage>): ChannelMessage;
 };
 export declare const ChannelMessageList: {
     encode(message: ChannelMessageList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ChannelMessageList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ChannelMessageList;
     fromJSON(object: any): ChannelMessageList;
     toJSON(message: ChannelMessageList): unknown;
     fromPartial(object: DeepPartial<ChannelMessageList>): ChannelMessageList;
 };
 export declare const CreateGroupRequest: {
     encode(message: CreateGroupRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): CreateGroupRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): CreateGroupRequest;
     fromJSON(object: any): CreateGroupRequest;
     toJSON(message: CreateGroupRequest): unknown;
     fromPartial(object: DeepPartial<CreateGroupRequest>): CreateGroupRequest;
 };
 export declare const DeleteFriendsRequest: {
     encode(message: DeleteFriendsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): DeleteFriendsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DeleteFriendsRequest;
     fromJSON(object: any): DeleteFriendsRequest;
     toJSON(message: DeleteFriendsRequest): unknown;
     fromPartial(object: DeepPartial<DeleteFriendsRequest>): DeleteFriendsRequest;
 };
 export declare const DeleteGroupRequest: {
     encode(message: DeleteGroupRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): DeleteGroupRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DeleteGroupRequest;
     fromJSON(object: any): DeleteGroupRequest;
     toJSON(message: DeleteGroupRequest): unknown;
     fromPartial(object: DeepPartial<DeleteGroupRequest>): DeleteGroupRequest;
 };
 export declare const DeleteLeaderboardRecordRequest: {
     encode(message: DeleteLeaderboardRecordRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): DeleteLeaderboardRecordRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DeleteLeaderboardRecordRequest;
     fromJSON(object: any): DeleteLeaderboardRecordRequest;
     toJSON(message: DeleteLeaderboardRecordRequest): unknown;
     fromPartial(object: DeepPartial<DeleteLeaderboardRecordRequest>): DeleteLeaderboardRecordRequest;
 };
 export declare const DeleteNotificationsRequest: {
     encode(message: DeleteNotificationsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): DeleteNotificationsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DeleteNotificationsRequest;
     fromJSON(object: any): DeleteNotificationsRequest;
     toJSON(message: DeleteNotificationsRequest): unknown;
     fromPartial(object: DeepPartial<DeleteNotificationsRequest>): DeleteNotificationsRequest;
 };
 export declare const DeleteStorageObjectId: {
     encode(message: DeleteStorageObjectId, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): DeleteStorageObjectId;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DeleteStorageObjectId;
     fromJSON(object: any): DeleteStorageObjectId;
     toJSON(message: DeleteStorageObjectId): unknown;
     fromPartial(object: DeepPartial<DeleteStorageObjectId>): DeleteStorageObjectId;
 };
 export declare const DeleteStorageObjectsRequest: {
     encode(message: DeleteStorageObjectsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): DeleteStorageObjectsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DeleteStorageObjectsRequest;
     fromJSON(object: any): DeleteStorageObjectsRequest;
     toJSON(message: DeleteStorageObjectsRequest): unknown;
     fromPartial(object: DeepPartial<DeleteStorageObjectsRequest>): DeleteStorageObjectsRequest;
 };
 export declare const Event: {
     encode(message: Event, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Event;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Event;
     fromJSON(object: any): Event;
     toJSON(message: Event): unknown;
     fromPartial(object: DeepPartial<Event>): Event;
 };
 export declare const Event_PropertiesEntry: {
     encode(message: Event_PropertiesEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Event_PropertiesEntry;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Event_PropertiesEntry;
     fromJSON(object: any): Event_PropertiesEntry;
     toJSON(message: Event_PropertiesEntry): unknown;
     fromPartial(object: DeepPartial<Event_PropertiesEntry>): Event_PropertiesEntry;
 };
 export declare const Friend: {
     encode(message: Friend, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Friend;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Friend;
     fromJSON(object: any): Friend;
     toJSON(message: Friend): unknown;
     fromPartial(object: DeepPartial<Friend>): Friend;
 };
 export declare const FriendList: {
     encode(message: FriendList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): FriendList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): FriendList;
     fromJSON(object: any): FriendList;
     toJSON(message: FriendList): unknown;
     fromPartial(object: DeepPartial<FriendList>): FriendList;
 };
 export declare const GetUsersRequest: {
     encode(message: GetUsersRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): GetUsersRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): GetUsersRequest;
     fromJSON(object: any): GetUsersRequest;
     toJSON(message: GetUsersRequest): unknown;
     fromPartial(object: DeepPartial<GetUsersRequest>): GetUsersRequest;
 };
 export declare const Group: {
     encode(message: Group, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Group;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Group;
     fromJSON(object: any): Group;
     toJSON(message: Group): unknown;
     fromPartial(object: DeepPartial<Group>): Group;
 };
 export declare const GroupList: {
     encode(message: GroupList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): GroupList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): GroupList;
     fromJSON(object: any): GroupList;
     toJSON(message: GroupList): unknown;
     fromPartial(object: DeepPartial<GroupList>): GroupList;
 };
 export declare const GroupUserList: {
     encode(message: GroupUserList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): GroupUserList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): GroupUserList;
     fromJSON(object: any): GroupUserList;
     toJSON(message: GroupUserList): unknown;
     fromPartial(object: DeepPartial<GroupUserList>): GroupUserList;
 };
 export declare const GroupUserList_GroupUser: {
     encode(message: GroupUserList_GroupUser, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): GroupUserList_GroupUser;
+    decode(input: _m0.Reader | Uint8Array, length?: number): GroupUserList_GroupUser;
     fromJSON(object: any): GroupUserList_GroupUser;
     toJSON(message: GroupUserList_GroupUser): unknown;
     fromPartial(object: DeepPartial<GroupUserList_GroupUser>): GroupUserList_GroupUser;
 };
 export declare const ImportFacebookFriendsRequest: {
     encode(message: ImportFacebookFriendsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ImportFacebookFriendsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ImportFacebookFriendsRequest;
     fromJSON(object: any): ImportFacebookFriendsRequest;
     toJSON(message: ImportFacebookFriendsRequest): unknown;
     fromPartial(object: DeepPartial<ImportFacebookFriendsRequest>): ImportFacebookFriendsRequest;
 };
 export declare const ImportSteamFriendsRequest: {
     encode(message: ImportSteamFriendsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ImportSteamFriendsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ImportSteamFriendsRequest;
     fromJSON(object: any): ImportSteamFriendsRequest;
     toJSON(message: ImportSteamFriendsRequest): unknown;
     fromPartial(object: DeepPartial<ImportSteamFriendsRequest>): ImportSteamFriendsRequest;
 };
 export declare const JoinGroupRequest: {
     encode(message: JoinGroupRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): JoinGroupRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): JoinGroupRequest;
     fromJSON(object: any): JoinGroupRequest;
     toJSON(message: JoinGroupRequest): unknown;
     fromPartial(object: DeepPartial<JoinGroupRequest>): JoinGroupRequest;
 };
 export declare const JoinTournamentRequest: {
     encode(message: JoinTournamentRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): JoinTournamentRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): JoinTournamentRequest;
     fromJSON(object: any): JoinTournamentRequest;
     toJSON(message: JoinTournamentRequest): unknown;
     fromPartial(object: DeepPartial<JoinTournamentRequest>): JoinTournamentRequest;
 };
 export declare const KickGroupUsersRequest: {
     encode(message: KickGroupUsersRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): KickGroupUsersRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): KickGroupUsersRequest;
     fromJSON(object: any): KickGroupUsersRequest;
     toJSON(message: KickGroupUsersRequest): unknown;
     fromPartial(object: DeepPartial<KickGroupUsersRequest>): KickGroupUsersRequest;
 };
 export declare const Leaderboard: {
     encode(message: Leaderboard, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Leaderboard;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Leaderboard;
     fromJSON(object: any): Leaderboard;
     toJSON(message: Leaderboard): unknown;
     fromPartial(object: DeepPartial<Leaderboard>): Leaderboard;
 };
 export declare const LeaderboardList: {
     encode(message: LeaderboardList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): LeaderboardList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): LeaderboardList;
     fromJSON(object: any): LeaderboardList;
     toJSON(message: LeaderboardList): unknown;
     fromPartial(object: DeepPartial<LeaderboardList>): LeaderboardList;
 };
 export declare const LeaderboardRecord: {
     encode(message: LeaderboardRecord, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): LeaderboardRecord;
+    decode(input: _m0.Reader | Uint8Array, length?: number): LeaderboardRecord;
     fromJSON(object: any): LeaderboardRecord;
     toJSON(message: LeaderboardRecord): unknown;
     fromPartial(object: DeepPartial<LeaderboardRecord>): LeaderboardRecord;
 };
 export declare const LeaderboardRecordList: {
     encode(message: LeaderboardRecordList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): LeaderboardRecordList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): LeaderboardRecordList;
     fromJSON(object: any): LeaderboardRecordList;
     toJSON(message: LeaderboardRecordList): unknown;
     fromPartial(object: DeepPartial<LeaderboardRecordList>): LeaderboardRecordList;
 };
 export declare const LeaveGroupRequest: {
     encode(message: LeaveGroupRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): LeaveGroupRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): LeaveGroupRequest;
     fromJSON(object: any): LeaveGroupRequest;
     toJSON(message: LeaveGroupRequest): unknown;
     fromPartial(object: DeepPartial<LeaveGroupRequest>): LeaveGroupRequest;
 };
 export declare const LinkFacebookRequest: {
     encode(message: LinkFacebookRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): LinkFacebookRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): LinkFacebookRequest;
     fromJSON(object: any): LinkFacebookRequest;
     toJSON(message: LinkFacebookRequest): unknown;
     fromPartial(object: DeepPartial<LinkFacebookRequest>): LinkFacebookRequest;
 };
 export declare const LinkSteamRequest: {
     encode(message: LinkSteamRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): LinkSteamRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): LinkSteamRequest;
     fromJSON(object: any): LinkSteamRequest;
     toJSON(message: LinkSteamRequest): unknown;
     fromPartial(object: DeepPartial<LinkSteamRequest>): LinkSteamRequest;
 };
 export declare const ListChannelMessagesRequest: {
     encode(message: ListChannelMessagesRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListChannelMessagesRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListChannelMessagesRequest;
     fromJSON(object: any): ListChannelMessagesRequest;
     toJSON(message: ListChannelMessagesRequest): unknown;
     fromPartial(object: DeepPartial<ListChannelMessagesRequest>): ListChannelMessagesRequest;
 };
 export declare const ListFriendsRequest: {
     encode(message: ListFriendsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListFriendsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListFriendsRequest;
     fromJSON(object: any): ListFriendsRequest;
     toJSON(message: ListFriendsRequest): unknown;
     fromPartial(object: DeepPartial<ListFriendsRequest>): ListFriendsRequest;
 };
 export declare const ListGroupsRequest: {
     encode(message: ListGroupsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListGroupsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListGroupsRequest;
     fromJSON(object: any): ListGroupsRequest;
     toJSON(message: ListGroupsRequest): unknown;
     fromPartial(object: DeepPartial<ListGroupsRequest>): ListGroupsRequest;
 };
 export declare const ListGroupUsersRequest: {
     encode(message: ListGroupUsersRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListGroupUsersRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListGroupUsersRequest;
     fromJSON(object: any): ListGroupUsersRequest;
     toJSON(message: ListGroupUsersRequest): unknown;
     fromPartial(object: DeepPartial<ListGroupUsersRequest>): ListGroupUsersRequest;
 };
 export declare const ListLeaderboardRecordsAroundOwnerRequest: {
     encode(message: ListLeaderboardRecordsAroundOwnerRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListLeaderboardRecordsAroundOwnerRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListLeaderboardRecordsAroundOwnerRequest;
     fromJSON(object: any): ListLeaderboardRecordsAroundOwnerRequest;
     toJSON(message: ListLeaderboardRecordsAroundOwnerRequest): unknown;
     fromPartial(object: DeepPartial<ListLeaderboardRecordsAroundOwnerRequest>): ListLeaderboardRecordsAroundOwnerRequest;
 };
 export declare const ListLeaderboardRecordsRequest: {
     encode(message: ListLeaderboardRecordsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListLeaderboardRecordsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListLeaderboardRecordsRequest;
     fromJSON(object: any): ListLeaderboardRecordsRequest;
     toJSON(message: ListLeaderboardRecordsRequest): unknown;
     fromPartial(object: DeepPartial<ListLeaderboardRecordsRequest>): ListLeaderboardRecordsRequest;
 };
 export declare const ListMatchesRequest: {
     encode(message: ListMatchesRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListMatchesRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListMatchesRequest;
     fromJSON(object: any): ListMatchesRequest;
     toJSON(message: ListMatchesRequest): unknown;
     fromPartial(object: DeepPartial<ListMatchesRequest>): ListMatchesRequest;
 };
 export declare const ListNotificationsRequest: {
     encode(message: ListNotificationsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListNotificationsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListNotificationsRequest;
     fromJSON(object: any): ListNotificationsRequest;
     toJSON(message: ListNotificationsRequest): unknown;
     fromPartial(object: DeepPartial<ListNotificationsRequest>): ListNotificationsRequest;
 };
 export declare const ListStorageObjectsRequest: {
     encode(message: ListStorageObjectsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListStorageObjectsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListStorageObjectsRequest;
     fromJSON(object: any): ListStorageObjectsRequest;
     toJSON(message: ListStorageObjectsRequest): unknown;
     fromPartial(object: DeepPartial<ListStorageObjectsRequest>): ListStorageObjectsRequest;
 };
 export declare const ListTournamentRecordsAroundOwnerRequest: {
     encode(message: ListTournamentRecordsAroundOwnerRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListTournamentRecordsAroundOwnerRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListTournamentRecordsAroundOwnerRequest;
     fromJSON(object: any): ListTournamentRecordsAroundOwnerRequest;
     toJSON(message: ListTournamentRecordsAroundOwnerRequest): unknown;
     fromPartial(object: DeepPartial<ListTournamentRecordsAroundOwnerRequest>): ListTournamentRecordsAroundOwnerRequest;
 };
 export declare const ListTournamentRecordsRequest: {
     encode(message: ListTournamentRecordsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListTournamentRecordsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListTournamentRecordsRequest;
     fromJSON(object: any): ListTournamentRecordsRequest;
     toJSON(message: ListTournamentRecordsRequest): unknown;
     fromPartial(object: DeepPartial<ListTournamentRecordsRequest>): ListTournamentRecordsRequest;
 };
 export declare const ListTournamentsRequest: {
     encode(message: ListTournamentsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListTournamentsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListTournamentsRequest;
     fromJSON(object: any): ListTournamentsRequest;
     toJSON(message: ListTournamentsRequest): unknown;
     fromPartial(object: DeepPartial<ListTournamentsRequest>): ListTournamentsRequest;
 };
 export declare const ListUserGroupsRequest: {
     encode(message: ListUserGroupsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ListUserGroupsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ListUserGroupsRequest;
     fromJSON(object: any): ListUserGroupsRequest;
     toJSON(message: ListUserGroupsRequest): unknown;
     fromPartial(object: DeepPartial<ListUserGroupsRequest>): ListUserGroupsRequest;
 };
 export declare const Match: {
     encode(message: Match, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Match;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Match;
     fromJSON(object: any): Match;
     toJSON(message: Match): unknown;
     fromPartial(object: DeepPartial<Match>): Match;
 };
 export declare const MatchList: {
     encode(message: MatchList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): MatchList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): MatchList;
     fromJSON(object: any): MatchList;
     toJSON(message: MatchList): unknown;
     fromPartial(object: DeepPartial<MatchList>): MatchList;
 };
 export declare const Notification: {
     encode(message: Notification, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Notification;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Notification;
     fromJSON(object: any): Notification;
     toJSON(message: Notification): unknown;
     fromPartial(object: DeepPartial<Notification>): Notification;
 };
 export declare const NotificationList: {
     encode(message: NotificationList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): NotificationList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): NotificationList;
     fromJSON(object: any): NotificationList;
     toJSON(message: NotificationList): unknown;
     fromPartial(object: DeepPartial<NotificationList>): NotificationList;
 };
 export declare const PromoteGroupUsersRequest: {
     encode(message: PromoteGroupUsersRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PromoteGroupUsersRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): PromoteGroupUsersRequest;
     fromJSON(object: any): PromoteGroupUsersRequest;
     toJSON(message: PromoteGroupUsersRequest): unknown;
     fromPartial(object: DeepPartial<PromoteGroupUsersRequest>): PromoteGroupUsersRequest;
 };
 export declare const DemoteGroupUsersRequest: {
     encode(message: DemoteGroupUsersRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): DemoteGroupUsersRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): DemoteGroupUsersRequest;
     fromJSON(object: any): DemoteGroupUsersRequest;
     toJSON(message: DemoteGroupUsersRequest): unknown;
     fromPartial(object: DeepPartial<DemoteGroupUsersRequest>): DemoteGroupUsersRequest;
 };
 export declare const ReadStorageObjectId: {
     encode(message: ReadStorageObjectId, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ReadStorageObjectId;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ReadStorageObjectId;
     fromJSON(object: any): ReadStorageObjectId;
     toJSON(message: ReadStorageObjectId): unknown;
     fromPartial(object: DeepPartial<ReadStorageObjectId>): ReadStorageObjectId;
 };
 export declare const ReadStorageObjectsRequest: {
     encode(message: ReadStorageObjectsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ReadStorageObjectsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ReadStorageObjectsRequest;
     fromJSON(object: any): ReadStorageObjectsRequest;
     toJSON(message: ReadStorageObjectsRequest): unknown;
     fromPartial(object: DeepPartial<ReadStorageObjectsRequest>): ReadStorageObjectsRequest;
 };
 export declare const Rpc: {
     encode(message: Rpc, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Rpc;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Rpc;
     fromJSON(object: any): Rpc;
     toJSON(message: Rpc): unknown;
     fromPartial(object: DeepPartial<Rpc>): Rpc;
 };
 export declare const Session: {
     encode(message: Session, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Session;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Session;
     fromJSON(object: any): Session;
     toJSON(message: Session): unknown;
     fromPartial(object: DeepPartial<Session>): Session;
 };
 export declare const StorageObject: {
     encode(message: StorageObject, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): StorageObject;
+    decode(input: _m0.Reader | Uint8Array, length?: number): StorageObject;
     fromJSON(object: any): StorageObject;
     toJSON(message: StorageObject): unknown;
     fromPartial(object: DeepPartial<StorageObject>): StorageObject;
 };
 export declare const StorageObjectAck: {
     encode(message: StorageObjectAck, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): StorageObjectAck;
+    decode(input: _m0.Reader | Uint8Array, length?: number): StorageObjectAck;
     fromJSON(object: any): StorageObjectAck;
     toJSON(message: StorageObjectAck): unknown;
     fromPartial(object: DeepPartial<StorageObjectAck>): StorageObjectAck;
 };
 export declare const StorageObjectAcks: {
     encode(message: StorageObjectAcks, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): StorageObjectAcks;
+    decode(input: _m0.Reader | Uint8Array, length?: number): StorageObjectAcks;
     fromJSON(object: any): StorageObjectAcks;
     toJSON(message: StorageObjectAcks): unknown;
     fromPartial(object: DeepPartial<StorageObjectAcks>): StorageObjectAcks;
 };
 export declare const StorageObjects: {
     encode(message: StorageObjects, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): StorageObjects;
+    decode(input: _m0.Reader | Uint8Array, length?: number): StorageObjects;
     fromJSON(object: any): StorageObjects;
     toJSON(message: StorageObjects): unknown;
     fromPartial(object: DeepPartial<StorageObjects>): StorageObjects;
 };
 export declare const StorageObjectList: {
     encode(message: StorageObjectList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): StorageObjectList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): StorageObjectList;
     fromJSON(object: any): StorageObjectList;
     toJSON(message: StorageObjectList): unknown;
     fromPartial(object: DeepPartial<StorageObjectList>): StorageObjectList;
 };
 export declare const Tournament: {
     encode(message: Tournament, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Tournament;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Tournament;
     fromJSON(object: any): Tournament;
     toJSON(message: Tournament): unknown;
     fromPartial(object: DeepPartial<Tournament>): Tournament;
 };
 export declare const TournamentList: {
     encode(message: TournamentList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): TournamentList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): TournamentList;
     fromJSON(object: any): TournamentList;
     toJSON(message: TournamentList): unknown;
     fromPartial(object: DeepPartial<TournamentList>): TournamentList;
 };
 export declare const TournamentRecordList: {
     encode(message: TournamentRecordList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): TournamentRecordList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): TournamentRecordList;
     fromJSON(object: any): TournamentRecordList;
     toJSON(message: TournamentRecordList): unknown;
     fromPartial(object: DeepPartial<TournamentRecordList>): TournamentRecordList;
 };
 export declare const UpdateAccountRequest: {
     encode(message: UpdateAccountRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): UpdateAccountRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): UpdateAccountRequest;
     fromJSON(object: any): UpdateAccountRequest;
     toJSON(message: UpdateAccountRequest): unknown;
     fromPartial(object: DeepPartial<UpdateAccountRequest>): UpdateAccountRequest;
 };
 export declare const UpdateGroupRequest: {
     encode(message: UpdateGroupRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): UpdateGroupRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): UpdateGroupRequest;
     fromJSON(object: any): UpdateGroupRequest;
     toJSON(message: UpdateGroupRequest): unknown;
     fromPartial(object: DeepPartial<UpdateGroupRequest>): UpdateGroupRequest;
 };
 export declare const User: {
     encode(message: User, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): User;
+    decode(input: _m0.Reader | Uint8Array, length?: number): User;
     fromJSON(object: any): User;
     toJSON(message: User): unknown;
     fromPartial(object: DeepPartial<User>): User;
 };
 export declare const UserGroupList: {
     encode(message: UserGroupList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): UserGroupList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): UserGroupList;
     fromJSON(object: any): UserGroupList;
     toJSON(message: UserGroupList): unknown;
     fromPartial(object: DeepPartial<UserGroupList>): UserGroupList;
 };
 export declare const UserGroupList_UserGroup: {
     encode(message: UserGroupList_UserGroup, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): UserGroupList_UserGroup;
+    decode(input: _m0.Reader | Uint8Array, length?: number): UserGroupList_UserGroup;
     fromJSON(object: any): UserGroupList_UserGroup;
     toJSON(message: UserGroupList_UserGroup): unknown;
     fromPartial(object: DeepPartial<UserGroupList_UserGroup>): UserGroupList_UserGroup;
 };
 export declare const Users: {
     encode(message: Users, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): Users;
+    decode(input: _m0.Reader | Uint8Array, length?: number): Users;
     fromJSON(object: any): Users;
     toJSON(message: Users): unknown;
     fromPartial(object: DeepPartial<Users>): Users;
 };
 export declare const ValidatePurchaseAppleRequest: {
     encode(message: ValidatePurchaseAppleRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ValidatePurchaseAppleRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ValidatePurchaseAppleRequest;
     fromJSON(object: any): ValidatePurchaseAppleRequest;
     toJSON(message: ValidatePurchaseAppleRequest): unknown;
     fromPartial(object: DeepPartial<ValidatePurchaseAppleRequest>): ValidatePurchaseAppleRequest;
 };
 export declare const ValidatePurchaseGoogleRequest: {
     encode(message: ValidatePurchaseGoogleRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ValidatePurchaseGoogleRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ValidatePurchaseGoogleRequest;
     fromJSON(object: any): ValidatePurchaseGoogleRequest;
     toJSON(message: ValidatePurchaseGoogleRequest): unknown;
     fromPartial(object: DeepPartial<ValidatePurchaseGoogleRequest>): ValidatePurchaseGoogleRequest;
 };
 export declare const ValidatePurchaseHuaweiRequest: {
     encode(message: ValidatePurchaseHuaweiRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ValidatePurchaseHuaweiRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ValidatePurchaseHuaweiRequest;
     fromJSON(object: any): ValidatePurchaseHuaweiRequest;
     toJSON(message: ValidatePurchaseHuaweiRequest): unknown;
     fromPartial(object: DeepPartial<ValidatePurchaseHuaweiRequest>): ValidatePurchaseHuaweiRequest;
 };
 export declare const ValidatedPurchase: {
     encode(message: ValidatedPurchase, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ValidatedPurchase;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ValidatedPurchase;
     fromJSON(object: any): ValidatedPurchase;
     toJSON(message: ValidatedPurchase): unknown;
     fromPartial(object: DeepPartial<ValidatedPurchase>): ValidatedPurchase;
 };
 export declare const ValidatePurchaseResponse: {
     encode(message: ValidatePurchaseResponse, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): ValidatePurchaseResponse;
+    decode(input: _m0.Reader | Uint8Array, length?: number): ValidatePurchaseResponse;
     fromJSON(object: any): ValidatePurchaseResponse;
     toJSON(message: ValidatePurchaseResponse): unknown;
     fromPartial(object: DeepPartial<ValidatePurchaseResponse>): ValidatePurchaseResponse;
 };
 export declare const PurchaseList: {
     encode(message: PurchaseList, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): PurchaseList;
+    decode(input: _m0.Reader | Uint8Array, length?: number): PurchaseList;
     fromJSON(object: any): PurchaseList;
     toJSON(message: PurchaseList): unknown;
     fromPartial(object: DeepPartial<PurchaseList>): PurchaseList;
 };
 export declare const WriteLeaderboardRecordRequest: {
     encode(message: WriteLeaderboardRecordRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): WriteLeaderboardRecordRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): WriteLeaderboardRecordRequest;
     fromJSON(object: any): WriteLeaderboardRecordRequest;
     toJSON(message: WriteLeaderboardRecordRequest): unknown;
     fromPartial(object: DeepPartial<WriteLeaderboardRecordRequest>): WriteLeaderboardRecordRequest;
 };
 export declare const WriteLeaderboardRecordRequest_LeaderboardRecordWrite: {
     encode(message: WriteLeaderboardRecordRequest_LeaderboardRecordWrite, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
+    decode(input: _m0.Reader | Uint8Array, length?: number): WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
     fromJSON(object: any): WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
     toJSON(message: WriteLeaderboardRecordRequest_LeaderboardRecordWrite): unknown;
     fromPartial(object: DeepPartial<WriteLeaderboardRecordRequest_LeaderboardRecordWrite>): WriteLeaderboardRecordRequest_LeaderboardRecordWrite;
 };
 export declare const WriteStorageObject: {
     encode(message: WriteStorageObject, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): WriteStorageObject;
+    decode(input: _m0.Reader | Uint8Array, length?: number): WriteStorageObject;
     fromJSON(object: any): WriteStorageObject;
     toJSON(message: WriteStorageObject): unknown;
     fromPartial(object: DeepPartial<WriteStorageObject>): WriteStorageObject;
 };
 export declare const WriteStorageObjectsRequest: {
     encode(message: WriteStorageObjectsRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): WriteStorageObjectsRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): WriteStorageObjectsRequest;
     fromJSON(object: any): WriteStorageObjectsRequest;
     toJSON(message: WriteStorageObjectsRequest): unknown;
     fromPartial(object: DeepPartial<WriteStorageObjectsRequest>): WriteStorageObjectsRequest;
 };
 export declare const WriteTournamentRecordRequest: {
     encode(message: WriteTournamentRecordRequest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): WriteTournamentRecordRequest;
+    decode(input: _m0.Reader | Uint8Array, length?: number): WriteTournamentRecordRequest;
     fromJSON(object: any): WriteTournamentRecordRequest;
     toJSON(message: WriteTournamentRecordRequest): unknown;
     fromPartial(object: DeepPartial<WriteTournamentRecordRequest>): WriteTournamentRecordRequest;
 };
 export declare const WriteTournamentRecordRequest_TournamentRecordWrite: {
     encode(message: WriteTournamentRecordRequest_TournamentRecordWrite, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): WriteTournamentRecordRequest_TournamentRecordWrite;
+    decode(input: _m0.Reader | Uint8Array, length?: number): WriteTournamentRecordRequest_TournamentRecordWrite;
     fromJSON(object: any): WriteTournamentRecordRequest_TournamentRecordWrite;
     toJSON(message: WriteTournamentRecordRequest_TournamentRecordWrite): unknown;
     fromPartial(object: DeepPartial<WriteTournamentRecordRequest_TournamentRecordWrite>): WriteTournamentRecordRequest_TournamentRecordWrite;
 };
-declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+export type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
     [K in keyof T]?: DeepPartial<T[K]>;
 } : Partial<T>;
 export {};

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": [
+    "packages/nakama-js/**/*",
+    "packages/satori-js/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

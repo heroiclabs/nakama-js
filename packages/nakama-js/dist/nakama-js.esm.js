@@ -1,9 +1,5 @@
-var __create = Object.create;
 var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
@@ -17,21 +13,6 @@ var __spreadValues = (a, b) => {
         __defNormalProp(a, prop, b[prop]);
     }
   return a;
-};
-var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
-var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
-};
-var __reExport = (target, module, desc) => {
-  if (module && typeof module === "object" || typeof module === "function") {
-    for (let key of __getOwnPropNames(module))
-      if (!__hasOwnProp.call(target, key) && key !== "default")
-        __defProp(target, key, { get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable });
-  }
-  return target;
-};
-var __toModule = (module) => {
-  return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
 };
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
@@ -54,422 +35,505 @@ var __async = (__this, __arguments, generator) => {
   });
 };
 
-// node_modules/whatwg-fetch/fetch.js
-var require_fetch = __commonJS({
-  "node_modules/whatwg-fetch/fetch.js"(exports) {
-    (function(self2) {
-      "use strict";
-      if (self2.fetch) {
-        return;
-      }
-      var support = {
-        searchParams: "URLSearchParams" in self2,
-        iterable: "Symbol" in self2 && "iterator" in Symbol,
-        blob: "FileReader" in self2 && "Blob" in self2 && function() {
-          try {
-            new Blob();
-            return true;
-          } catch (e) {
-            return false;
-          }
-        }(),
-        formData: "FormData" in self2,
-        arrayBuffer: "ArrayBuffer" in self2
-      };
-      if (support.arrayBuffer) {
-        var viewClasses = [
-          "[object Int8Array]",
-          "[object Uint8Array]",
-          "[object Uint8ClampedArray]",
-          "[object Int16Array]",
-          "[object Uint16Array]",
-          "[object Int32Array]",
-          "[object Uint32Array]",
-          "[object Float32Array]",
-          "[object Float64Array]"
-        ];
-        var isDataView = function(obj) {
-          return obj && DataView.prototype.isPrototypeOf(obj);
-        };
-        var isArrayBufferView = ArrayBuffer.isView || function(obj) {
-          return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1;
-        };
-      }
-      function normalizeName(name) {
-        if (typeof name !== "string") {
-          name = String(name);
-        }
-        if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
-          throw new TypeError("Invalid character in header field name");
-        }
-        return name.toLowerCase();
-      }
-      function normalizeValue(value) {
-        if (typeof value !== "string") {
-          value = String(value);
-        }
-        return value;
-      }
-      function iteratorFor(items) {
-        var iterator = {
-          next: function() {
-            var value = items.shift();
-            return { done: value === void 0, value };
-          }
-        };
-        if (support.iterable) {
-          iterator[Symbol.iterator] = function() {
-            return iterator;
-          };
-        }
-        return iterator;
-      }
-      function Headers(headers) {
-        this.map = {};
-        if (headers instanceof Headers) {
-          headers.forEach(function(value, name) {
-            this.append(name, value);
-          }, this);
-        } else if (Array.isArray(headers)) {
-          headers.forEach(function(header) {
-            this.append(header[0], header[1]);
-          }, this);
-        } else if (headers) {
-          Object.getOwnPropertyNames(headers).forEach(function(name) {
-            this.append(name, headers[name]);
-          }, this);
-        }
-      }
-      Headers.prototype.append = function(name, value) {
-        name = normalizeName(name);
-        value = normalizeValue(value);
-        var oldValue = this.map[name];
-        this.map[name] = oldValue ? oldValue + "," + value : value;
-      };
-      Headers.prototype["delete"] = function(name) {
-        delete this.map[normalizeName(name)];
-      };
-      Headers.prototype.get = function(name) {
-        name = normalizeName(name);
-        return this.has(name) ? this.map[name] : null;
-      };
-      Headers.prototype.has = function(name) {
-        return this.map.hasOwnProperty(normalizeName(name));
-      };
-      Headers.prototype.set = function(name, value) {
-        this.map[normalizeName(name)] = normalizeValue(value);
-      };
-      Headers.prototype.forEach = function(callback, thisArg) {
-        for (var name in this.map) {
-          if (this.map.hasOwnProperty(name)) {
-            callback.call(thisArg, this.map[name], name, this);
-          }
-        }
-      };
-      Headers.prototype.keys = function() {
-        var items = [];
-        this.forEach(function(value, name) {
-          items.push(name);
-        });
-        return iteratorFor(items);
-      };
-      Headers.prototype.values = function() {
-        var items = [];
-        this.forEach(function(value) {
-          items.push(value);
-        });
-        return iteratorFor(items);
-      };
-      Headers.prototype.entries = function() {
-        var items = [];
-        this.forEach(function(value, name) {
-          items.push([name, value]);
-        });
-        return iteratorFor(items);
-      };
-      if (support.iterable) {
-        Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
-      }
-      function consumed(body) {
-        if (body.bodyUsed) {
-          return Promise.reject(new TypeError("Already read"));
-        }
-        body.bodyUsed = true;
-      }
-      function fileReaderReady(reader) {
-        return new Promise(function(resolve, reject) {
-          reader.onload = function() {
-            resolve(reader.result);
-          };
-          reader.onerror = function() {
-            reject(reader.error);
-          };
-        });
-      }
-      function readBlobAsArrayBuffer(blob) {
-        var reader = new FileReader();
-        var promise = fileReaderReady(reader);
-        reader.readAsArrayBuffer(blob);
-        return promise;
-      }
-      function readBlobAsText(blob) {
-        var reader = new FileReader();
-        var promise = fileReaderReady(reader);
-        reader.readAsText(blob);
-        return promise;
-      }
-      function readArrayBufferAsText(buf) {
-        var view = new Uint8Array(buf);
-        var chars = new Array(view.length);
-        for (var i = 0; i < view.length; i++) {
-          chars[i] = String.fromCharCode(view[i]);
-        }
-        return chars.join("");
-      }
-      function bufferClone(buf) {
-        if (buf.slice) {
-          return buf.slice(0);
-        } else {
-          var view = new Uint8Array(buf.byteLength);
-          view.set(new Uint8Array(buf));
-          return view.buffer;
-        }
-      }
-      function Body() {
-        this.bodyUsed = false;
-        this._initBody = function(body) {
-          this._bodyInit = body;
-          if (!body) {
-            this._bodyText = "";
-          } else if (typeof body === "string") {
-            this._bodyText = body;
-          } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-            this._bodyBlob = body;
-          } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-            this._bodyFormData = body;
-          } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-            this._bodyText = body.toString();
-          } else if (support.arrayBuffer && support.blob && isDataView(body)) {
-            this._bodyArrayBuffer = bufferClone(body.buffer);
-            this._bodyInit = new Blob([this._bodyArrayBuffer]);
-          } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
-            this._bodyArrayBuffer = bufferClone(body);
-          } else {
-            throw new Error("unsupported BodyInit type");
-          }
-          if (!this.headers.get("content-type")) {
-            if (typeof body === "string") {
-              this.headers.set("content-type", "text/plain;charset=UTF-8");
-            } else if (this._bodyBlob && this._bodyBlob.type) {
-              this.headers.set("content-type", this._bodyBlob.type);
-            } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-              this.headers.set("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
-            }
-          }
-        };
-        if (support.blob) {
-          this.blob = function() {
-            var rejected = consumed(this);
-            if (rejected) {
-              return rejected;
-            }
-            if (this._bodyBlob) {
-              return Promise.resolve(this._bodyBlob);
-            } else if (this._bodyArrayBuffer) {
-              return Promise.resolve(new Blob([this._bodyArrayBuffer]));
-            } else if (this._bodyFormData) {
-              throw new Error("could not read FormData body as blob");
-            } else {
-              return Promise.resolve(new Blob([this._bodyText]));
-            }
-          };
-          this.arrayBuffer = function() {
-            if (this._bodyArrayBuffer) {
-              return consumed(this) || Promise.resolve(this._bodyArrayBuffer);
-            } else {
-              return this.blob().then(readBlobAsArrayBuffer);
-            }
-          };
-        }
-        this.text = function() {
-          var rejected = consumed(this);
-          if (rejected) {
-            return rejected;
-          }
-          if (this._bodyBlob) {
-            return readBlobAsText(this._bodyBlob);
-          } else if (this._bodyArrayBuffer) {
-            return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer));
-          } else if (this._bodyFormData) {
-            throw new Error("could not read FormData body as text");
-          } else {
-            return Promise.resolve(this._bodyText);
-          }
-        };
-        if (support.formData) {
-          this.formData = function() {
-            return this.text().then(decode2);
-          };
-        }
-        this.json = function() {
-          return this.text().then(JSON.parse);
-        };
-        return this;
-      }
-      var methods = ["DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT"];
-      function normalizeMethod(method) {
-        var upcased = method.toUpperCase();
-        return methods.indexOf(upcased) > -1 ? upcased : method;
-      }
-      function Request(input, options) {
-        options = options || {};
-        var body = options.body;
-        if (input instanceof Request) {
-          if (input.bodyUsed) {
-            throw new TypeError("Already read");
-          }
-          this.url = input.url;
-          this.credentials = input.credentials;
-          if (!options.headers) {
-            this.headers = new Headers(input.headers);
-          }
-          this.method = input.method;
-          this.mode = input.mode;
-          if (!body && input._bodyInit != null) {
-            body = input._bodyInit;
-            input.bodyUsed = true;
-          }
-        } else {
-          this.url = String(input);
-        }
-        this.credentials = options.credentials || this.credentials || "omit";
-        if (options.headers || !this.headers) {
-          this.headers = new Headers(options.headers);
-        }
-        this.method = normalizeMethod(options.method || this.method || "GET");
-        this.mode = options.mode || this.mode || null;
-        this.referrer = null;
-        if ((this.method === "GET" || this.method === "HEAD") && body) {
-          throw new TypeError("Body not allowed for GET or HEAD requests");
-        }
-        this._initBody(body);
-      }
-      Request.prototype.clone = function() {
-        return new Request(this, { body: this._bodyInit });
-      };
-      function decode2(body) {
-        var form = new FormData();
-        body.trim().split("&").forEach(function(bytes) {
-          if (bytes) {
-            var split = bytes.split("=");
-            var name = split.shift().replace(/\+/g, " ");
-            var value = split.join("=").replace(/\+/g, " ");
-            form.append(decodeURIComponent(name), decodeURIComponent(value));
-          }
-        });
-        return form;
-      }
-      function parseHeaders(rawHeaders) {
-        var headers = new Headers();
-        var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, " ");
-        preProcessedHeaders.split(/\r?\n/).forEach(function(line) {
-          var parts = line.split(":");
-          var key = parts.shift().trim();
-          if (key) {
-            var value = parts.join(":").trim();
-            headers.append(key, value);
-          }
-        });
-        return headers;
-      }
-      Body.call(Request.prototype);
-      function Response(bodyInit, options) {
-        if (!options) {
-          options = {};
-        }
-        this.type = "default";
-        this.status = options.status === void 0 ? 200 : options.status;
-        this.ok = this.status >= 200 && this.status < 300;
-        this.statusText = "statusText" in options ? options.statusText : "OK";
-        this.headers = new Headers(options.headers);
-        this.url = options.url || "";
-        this._initBody(bodyInit);
-      }
-      Body.call(Response.prototype);
-      Response.prototype.clone = function() {
-        return new Response(this._bodyInit, {
-          status: this.status,
-          statusText: this.statusText,
-          headers: new Headers(this.headers),
-          url: this.url
-        });
-      };
-      Response.error = function() {
-        var response = new Response(null, { status: 0, statusText: "" });
-        response.type = "error";
-        return response;
-      };
-      var redirectStatuses = [301, 302, 303, 307, 308];
-      Response.redirect = function(url, status) {
-        if (redirectStatuses.indexOf(status) === -1) {
-          throw new RangeError("Invalid status code");
-        }
-        return new Response(null, { status, headers: { location: url } });
-      };
-      self2.Headers = Headers;
-      self2.Request = Request;
-      self2.Response = Response;
-      self2.fetch = function(input, init) {
-        return new Promise(function(resolve, reject) {
-          var request = new Request(input, init);
-          var xhr = new XMLHttpRequest();
-          xhr.onload = function() {
-            var options = {
-              status: xhr.status,
-              statusText: xhr.statusText,
-              headers: parseHeaders(xhr.getAllResponseHeaders() || "")
-            };
-            options.url = "responseURL" in xhr ? xhr.responseURL : options.headers.get("X-Request-URL");
-            var body = "response" in xhr ? xhr.response : xhr.responseText;
-            resolve(new Response(body, options));
-          };
-          xhr.onerror = function() {
-            reject(new TypeError("Network request failed"));
-          };
-          xhr.ontimeout = function() {
-            reject(new TypeError("Network request failed"));
-          };
-          xhr.open(request.method, request.url, true);
-          if (request.credentials === "include") {
-            xhr.withCredentials = true;
-          } else if (request.credentials === "omit") {
-            xhr.withCredentials = false;
-          }
-          if ("responseType" in xhr && support.blob) {
-            xhr.responseType = "blob";
-          }
-          request.headers.forEach(function(value, name) {
-            xhr.setRequestHeader(name, value);
-          });
-          xhr.send(typeof request._bodyInit === "undefined" ? null : request._bodyInit);
-        });
-      };
-      self2.fetch.polyfill = true;
-    })(typeof self !== "undefined" ? self : exports);
+// ../../node_modules/whatwg-fetch/fetch.js
+var global = typeof globalThis !== "undefined" && globalThis || typeof self !== "undefined" && self || typeof global !== "undefined" && global;
+var support = {
+  searchParams: "URLSearchParams" in global,
+  iterable: "Symbol" in global && "iterator" in Symbol,
+  blob: "FileReader" in global && "Blob" in global && function() {
+    try {
+      new Blob();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }(),
+  formData: "FormData" in global,
+  arrayBuffer: "ArrayBuffer" in global
+};
+function isDataView(obj) {
+  return obj && DataView.prototype.isPrototypeOf(obj);
+}
+if (support.arrayBuffer) {
+  viewClasses = [
+    "[object Int8Array]",
+    "[object Uint8Array]",
+    "[object Uint8ClampedArray]",
+    "[object Int16Array]",
+    "[object Uint16Array]",
+    "[object Int32Array]",
+    "[object Uint32Array]",
+    "[object Float32Array]",
+    "[object Float64Array]"
+  ];
+  isArrayBufferView = ArrayBuffer.isView || function(obj) {
+    return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1;
+  };
+}
+var viewClasses;
+var isArrayBufferView;
+function normalizeName(name) {
+  if (typeof name !== "string") {
+    name = String(name);
   }
-});
+  if (/[^a-z0-9\-#$%&'*+.^_`|~!]/i.test(name) || name === "") {
+    throw new TypeError('Invalid character in header field name: "' + name + '"');
+  }
+  return name.toLowerCase();
+}
+function normalizeValue(value) {
+  if (typeof value !== "string") {
+    value = String(value);
+  }
+  return value;
+}
+function iteratorFor(items) {
+  var iterator = {
+    next: function() {
+      var value = items.shift();
+      return { done: value === void 0, value };
+    }
+  };
+  if (support.iterable) {
+    iterator[Symbol.iterator] = function() {
+      return iterator;
+    };
+  }
+  return iterator;
+}
+function Headers(headers) {
+  this.map = {};
+  if (headers instanceof Headers) {
+    headers.forEach(function(value, name) {
+      this.append(name, value);
+    }, this);
+  } else if (Array.isArray(headers)) {
+    headers.forEach(function(header) {
+      this.append(header[0], header[1]);
+    }, this);
+  } else if (headers) {
+    Object.getOwnPropertyNames(headers).forEach(function(name) {
+      this.append(name, headers[name]);
+    }, this);
+  }
+}
+Headers.prototype.append = function(name, value) {
+  name = normalizeName(name);
+  value = normalizeValue(value);
+  var oldValue = this.map[name];
+  this.map[name] = oldValue ? oldValue + ", " + value : value;
+};
+Headers.prototype["delete"] = function(name) {
+  delete this.map[normalizeName(name)];
+};
+Headers.prototype.get = function(name) {
+  name = normalizeName(name);
+  return this.has(name) ? this.map[name] : null;
+};
+Headers.prototype.has = function(name) {
+  return this.map.hasOwnProperty(normalizeName(name));
+};
+Headers.prototype.set = function(name, value) {
+  this.map[normalizeName(name)] = normalizeValue(value);
+};
+Headers.prototype.forEach = function(callback, thisArg) {
+  for (var name in this.map) {
+    if (this.map.hasOwnProperty(name)) {
+      callback.call(thisArg, this.map[name], name, this);
+    }
+  }
+};
+Headers.prototype.keys = function() {
+  var items = [];
+  this.forEach(function(value, name) {
+    items.push(name);
+  });
+  return iteratorFor(items);
+};
+Headers.prototype.values = function() {
+  var items = [];
+  this.forEach(function(value) {
+    items.push(value);
+  });
+  return iteratorFor(items);
+};
+Headers.prototype.entries = function() {
+  var items = [];
+  this.forEach(function(value, name) {
+    items.push([name, value]);
+  });
+  return iteratorFor(items);
+};
+if (support.iterable) {
+  Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
+}
+function consumed(body) {
+  if (body.bodyUsed) {
+    return Promise.reject(new TypeError("Already read"));
+  }
+  body.bodyUsed = true;
+}
+function fileReaderReady(reader) {
+  return new Promise(function(resolve, reject) {
+    reader.onload = function() {
+      resolve(reader.result);
+    };
+    reader.onerror = function() {
+      reject(reader.error);
+    };
+  });
+}
+function readBlobAsArrayBuffer(blob) {
+  var reader = new FileReader();
+  var promise = fileReaderReady(reader);
+  reader.readAsArrayBuffer(blob);
+  return promise;
+}
+function readBlobAsText(blob) {
+  var reader = new FileReader();
+  var promise = fileReaderReady(reader);
+  reader.readAsText(blob);
+  return promise;
+}
+function readArrayBufferAsText(buf) {
+  var view = new Uint8Array(buf);
+  var chars2 = new Array(view.length);
+  for (var i = 0; i < view.length; i++) {
+    chars2[i] = String.fromCharCode(view[i]);
+  }
+  return chars2.join("");
+}
+function bufferClone(buf) {
+  if (buf.slice) {
+    return buf.slice(0);
+  } else {
+    var view = new Uint8Array(buf.byteLength);
+    view.set(new Uint8Array(buf));
+    return view.buffer;
+  }
+}
+function Body() {
+  this.bodyUsed = false;
+  this._initBody = function(body) {
+    this.bodyUsed = this.bodyUsed;
+    this._bodyInit = body;
+    if (!body) {
+      this._bodyText = "";
+    } else if (typeof body === "string") {
+      this._bodyText = body;
+    } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+      this._bodyBlob = body;
+    } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+      this._bodyFormData = body;
+    } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+      this._bodyText = body.toString();
+    } else if (support.arrayBuffer && support.blob && isDataView(body)) {
+      this._bodyArrayBuffer = bufferClone(body.buffer);
+      this._bodyInit = new Blob([this._bodyArrayBuffer]);
+    } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+      this._bodyArrayBuffer = bufferClone(body);
+    } else {
+      this._bodyText = body = Object.prototype.toString.call(body);
+    }
+    if (!this.headers.get("content-type")) {
+      if (typeof body === "string") {
+        this.headers.set("content-type", "text/plain;charset=UTF-8");
+      } else if (this._bodyBlob && this._bodyBlob.type) {
+        this.headers.set("content-type", this._bodyBlob.type);
+      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+        this.headers.set("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+      }
+    }
+  };
+  if (support.blob) {
+    this.blob = function() {
+      var rejected = consumed(this);
+      if (rejected) {
+        return rejected;
+      }
+      if (this._bodyBlob) {
+        return Promise.resolve(this._bodyBlob);
+      } else if (this._bodyArrayBuffer) {
+        return Promise.resolve(new Blob([this._bodyArrayBuffer]));
+      } else if (this._bodyFormData) {
+        throw new Error("could not read FormData body as blob");
+      } else {
+        return Promise.resolve(new Blob([this._bodyText]));
+      }
+    };
+    this.arrayBuffer = function() {
+      if (this._bodyArrayBuffer) {
+        var isConsumed = consumed(this);
+        if (isConsumed) {
+          return isConsumed;
+        }
+        if (ArrayBuffer.isView(this._bodyArrayBuffer)) {
+          return Promise.resolve(
+            this._bodyArrayBuffer.buffer.slice(
+              this._bodyArrayBuffer.byteOffset,
+              this._bodyArrayBuffer.byteOffset + this._bodyArrayBuffer.byteLength
+            )
+          );
+        } else {
+          return Promise.resolve(this._bodyArrayBuffer);
+        }
+      } else {
+        return this.blob().then(readBlobAsArrayBuffer);
+      }
+    };
+  }
+  this.text = function() {
+    var rejected = consumed(this);
+    if (rejected) {
+      return rejected;
+    }
+    if (this._bodyBlob) {
+      return readBlobAsText(this._bodyBlob);
+    } else if (this._bodyArrayBuffer) {
+      return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer));
+    } else if (this._bodyFormData) {
+      throw new Error("could not read FormData body as text");
+    } else {
+      return Promise.resolve(this._bodyText);
+    }
+  };
+  if (support.formData) {
+    this.formData = function() {
+      return this.text().then(decode);
+    };
+  }
+  this.json = function() {
+    return this.text().then(JSON.parse);
+  };
+  return this;
+}
+var methods = ["DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT"];
+function normalizeMethod(method) {
+  var upcased = method.toUpperCase();
+  return methods.indexOf(upcased) > -1 ? upcased : method;
+}
+function Request(input, options) {
+  if (!(this instanceof Request)) {
+    throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.');
+  }
+  options = options || {};
+  var body = options.body;
+  if (input instanceof Request) {
+    if (input.bodyUsed) {
+      throw new TypeError("Already read");
+    }
+    this.url = input.url;
+    this.credentials = input.credentials;
+    if (!options.headers) {
+      this.headers = new Headers(input.headers);
+    }
+    this.method = input.method;
+    this.mode = input.mode;
+    this.signal = input.signal;
+    if (!body && input._bodyInit != null) {
+      body = input._bodyInit;
+      input.bodyUsed = true;
+    }
+  } else {
+    this.url = String(input);
+  }
+  this.credentials = options.credentials || this.credentials || "same-origin";
+  if (options.headers || !this.headers) {
+    this.headers = new Headers(options.headers);
+  }
+  this.method = normalizeMethod(options.method || this.method || "GET");
+  this.mode = options.mode || this.mode || null;
+  this.signal = options.signal || this.signal;
+  this.referrer = null;
+  if ((this.method === "GET" || this.method === "HEAD") && body) {
+    throw new TypeError("Body not allowed for GET or HEAD requests");
+  }
+  this._initBody(body);
+  if (this.method === "GET" || this.method === "HEAD") {
+    if (options.cache === "no-store" || options.cache === "no-cache") {
+      var reParamSearch = /([?&])_=[^&]*/;
+      if (reParamSearch.test(this.url)) {
+        this.url = this.url.replace(reParamSearch, "$1_=" + new Date().getTime());
+      } else {
+        var reQueryString = /\?/;
+        this.url += (reQueryString.test(this.url) ? "&" : "?") + "_=" + new Date().getTime();
+      }
+    }
+  }
+}
+Request.prototype.clone = function() {
+  return new Request(this, { body: this._bodyInit });
+};
+function decode(body) {
+  var form = new FormData();
+  body.trim().split("&").forEach(function(bytes) {
+    if (bytes) {
+      var split = bytes.split("=");
+      var name = split.shift().replace(/\+/g, " ");
+      var value = split.join("=").replace(/\+/g, " ");
+      form.append(decodeURIComponent(name), decodeURIComponent(value));
+    }
+  });
+  return form;
+}
+function parseHeaders(rawHeaders) {
+  var headers = new Headers();
+  var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, " ");
+  preProcessedHeaders.split("\r").map(function(header) {
+    return header.indexOf("\n") === 0 ? header.substr(1, header.length) : header;
+  }).forEach(function(line) {
+    var parts = line.split(":");
+    var key = parts.shift().trim();
+    if (key) {
+      var value = parts.join(":").trim();
+      headers.append(key, value);
+    }
+  });
+  return headers;
+}
+Body.call(Request.prototype);
+function Response(bodyInit, options) {
+  if (!(this instanceof Response)) {
+    throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.');
+  }
+  if (!options) {
+    options = {};
+  }
+  this.type = "default";
+  this.status = options.status === void 0 ? 200 : options.status;
+  this.ok = this.status >= 200 && this.status < 300;
+  this.statusText = options.statusText === void 0 ? "" : "" + options.statusText;
+  this.headers = new Headers(options.headers);
+  this.url = options.url || "";
+  this._initBody(bodyInit);
+}
+Body.call(Response.prototype);
+Response.prototype.clone = function() {
+  return new Response(this._bodyInit, {
+    status: this.status,
+    statusText: this.statusText,
+    headers: new Headers(this.headers),
+    url: this.url
+  });
+};
+Response.error = function() {
+  var response = new Response(null, { status: 0, statusText: "" });
+  response.type = "error";
+  return response;
+};
+var redirectStatuses = [301, 302, 303, 307, 308];
+Response.redirect = function(url, status) {
+  if (redirectStatuses.indexOf(status) === -1) {
+    throw new RangeError("Invalid status code");
+  }
+  return new Response(null, { status, headers: { location: url } });
+};
+var DOMException = global.DOMException;
+try {
+  new DOMException();
+} catch (err) {
+  DOMException = function(message, name) {
+    this.message = message;
+    this.name = name;
+    var error = Error(message);
+    this.stack = error.stack;
+  };
+  DOMException.prototype = Object.create(Error.prototype);
+  DOMException.prototype.constructor = DOMException;
+}
+function fetch2(input, init) {
+  return new Promise(function(resolve, reject) {
+    var request = new Request(input, init);
+    if (request.signal && request.signal.aborted) {
+      return reject(new DOMException("Aborted", "AbortError"));
+    }
+    var xhr = new XMLHttpRequest();
+    function abortXhr() {
+      xhr.abort();
+    }
+    xhr.onload = function() {
+      var options = {
+        status: xhr.status,
+        statusText: xhr.statusText,
+        headers: parseHeaders(xhr.getAllResponseHeaders() || "")
+      };
+      options.url = "responseURL" in xhr ? xhr.responseURL : options.headers.get("X-Request-URL");
+      var body = "response" in xhr ? xhr.response : xhr.responseText;
+      setTimeout(function() {
+        resolve(new Response(body, options));
+      }, 0);
+    };
+    xhr.onerror = function() {
+      setTimeout(function() {
+        reject(new TypeError("Network request failed"));
+      }, 0);
+    };
+    xhr.ontimeout = function() {
+      setTimeout(function() {
+        reject(new TypeError("Network request failed"));
+      }, 0);
+    };
+    xhr.onabort = function() {
+      setTimeout(function() {
+        reject(new DOMException("Aborted", "AbortError"));
+      }, 0);
+    };
+    function fixUrl(url) {
+      try {
+        return url === "" && global.location.href ? global.location.href : url;
+      } catch (e) {
+        return url;
+      }
+    }
+    xhr.open(request.method, fixUrl(request.url), true);
+    if (request.credentials === "include") {
+      xhr.withCredentials = true;
+    } else if (request.credentials === "omit") {
+      xhr.withCredentials = false;
+    }
+    if ("responseType" in xhr) {
+      if (support.blob) {
+        xhr.responseType = "blob";
+      } else if (support.arrayBuffer && request.headers.get("Content-Type") && request.headers.get("Content-Type").indexOf("application/octet-stream") !== -1) {
+        xhr.responseType = "arraybuffer";
+      }
+    }
+    if (init && typeof init.headers === "object" && !(init.headers instanceof Headers)) {
+      Object.getOwnPropertyNames(init.headers).forEach(function(name) {
+        xhr.setRequestHeader(name, normalizeValue(init.headers[name]));
+      });
+    } else {
+      request.headers.forEach(function(value, name) {
+        xhr.setRequestHeader(name, value);
+      });
+    }
+    if (request.signal) {
+      request.signal.addEventListener("abort", abortXhr);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          request.signal.removeEventListener("abort", abortXhr);
+        }
+      };
+    }
+    xhr.send(typeof request._bodyInit === "undefined" ? null : request._bodyInit);
+  });
+}
+fetch2.polyfill = true;
+if (!global.fetch) {
+  global.fetch = fetch2;
+  global.Headers = Headers;
+  global.Request = Request;
+  global.Response = Response;
+}
 
-// index.ts
-var import_whatwg_fetch = __toModule(require_fetch());
-
-// node_modules/js-base64/base64.mjs
+// ../../node_modules/js-base64/base64.mjs
 var _hasatob = typeof atob === "function";
 var _hasbtoa = typeof btoa === "function";
 var _hasBuffer = typeof Buffer === "function";
 var _TD = typeof TextDecoder === "function" ? new TextDecoder() : void 0;
 var _TE = typeof TextEncoder === "function" ? new TextEncoder() : void 0;
 var b64ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-var b64chs = [...b64ch];
+var b64chs = Array.prototype.slice.call(b64ch);
 var b64tab = ((a) => {
   let tab = {};
   a.forEach((c, i) => tab[c] = i);
@@ -478,7 +542,7 @@ var b64tab = ((a) => {
 var b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
 var _fromCC = String.fromCharCode.bind(String);
 var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it, fn = (x) => x) => new Uint8Array(Array.prototype.slice.call(it, 0).map(fn));
-var _mkUriSafe = (src) => src.replace(/[+\/]/g, (m0) => m0 == "+" ? "-" : "_").replace(/=+$/m, "");
+var _mkUriSafe = (src) => src.replace(/=/g, "").replace(/[+\/]/g, (m0) => m0 == "+" ? "-" : "_");
 var _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, "");
 var btoaPolyfill = (bin) => {
   let u32, c0, c1, c2, asc = "";
@@ -513,19 +577,6 @@ var re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g;
 var utob = (u) => u.replace(re_utob, cb_utob);
 var _encode = _hasBuffer ? (s) => Buffer.from(s, "utf8").toString("base64") : _TE ? (s) => _fromUint8Array(_TE.encode(s)) : (s) => _btoa(utob(s));
 var encode = (src, urlsafe = false) => urlsafe ? _mkUriSafe(_encode(src)) : _encode(src);
-var re_btou = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
-var cb_btou = (cccc) => {
-  switch (cccc.length) {
-    case 4:
-      var cp = (7 & cccc.charCodeAt(0)) << 18 | (63 & cccc.charCodeAt(1)) << 12 | (63 & cccc.charCodeAt(2)) << 6 | 63 & cccc.charCodeAt(3), offset = cp - 65536;
-      return _fromCC((offset >>> 10) + 55296) + _fromCC((offset & 1023) + 56320);
-    case 3:
-      return _fromCC((15 & cccc.charCodeAt(0)) << 12 | (63 & cccc.charCodeAt(1)) << 6 | 63 & cccc.charCodeAt(2));
-    default:
-      return _fromCC((31 & cccc.charCodeAt(0)) << 6 | 63 & cccc.charCodeAt(1));
-  }
-};
-var btou = (b) => b.replace(re_btou, cb_btou);
 var atobPolyfill = (asc) => {
   asc = asc.replace(/\s+/g, "");
   if (!b64re.test(asc))
@@ -539,10 +590,6 @@ var atobPolyfill = (asc) => {
   return bin;
 };
 var _atob = _hasatob ? (asc) => atob(_tidyB64(asc)) : _hasBuffer ? (asc) => Buffer.from(asc, "base64").toString("binary") : atobPolyfill;
-var _toUint8Array = _hasBuffer ? (a) => _U8Afrom(Buffer.from(a, "base64")) : (a) => _U8Afrom(_atob(a), (c) => c.charCodeAt(0));
-var _decode = _hasBuffer ? (a) => Buffer.from(a, "base64").toString("utf8") : _TD ? (a) => _TD.decode(_toUint8Array(a)) : (a) => btou(_atob(a));
-var _unURI = (a) => _tidyB64(a.replace(/[-_]/g, (m0) => m0 == "-" ? "+" : "/"));
-var decode = (src) => _decode(_unURI(src));
 
 // utils.ts
 function buildFetchOptions(method, options, bodyJson) {
@@ -568,16 +615,6 @@ function buildFetchOptions(method, options, bodyJson) {
   }
   return fetchOptions;
 }
-function b64EncodeUnicode(str) {
-  return encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(_match, p1) {
-    return String.fromCharCode(Number("0x" + p1));
-  }));
-}
-function b64DecodeUnicode(str) {
-  return decodeURIComponent(decode(str).split("").map(function(c) {
-    return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(""));
-}
 
 // api.gen.ts
 var NakamaApi = class {
@@ -586,6 +623,7 @@ var NakamaApi = class {
     this.basePath = basePath;
     this.timeoutMs = timeoutMs;
   }
+  /** A healthcheck which load balancers can use to check the service. */
   healthcheck(bearerToken, options = {}) {
     const urlPath = "/healthcheck";
     const queryParams = /* @__PURE__ */ new Map();
@@ -605,9 +643,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Fetch the current user's account. */
   getAccount(bearerToken, options = {}) {
     const urlPath = "/v2/account";
     const queryParams = /* @__PURE__ */ new Map();
@@ -627,9 +668,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Update fields in the current user's account. */
   updateAccount(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -653,9 +697,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Authenticate a user with an Apple ID against the server. */
   authenticateApple(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -679,9 +726,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Authenticate a user with a custom id against the server. */
   authenticateCustom(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -705,9 +755,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Authenticate a user with a device id against the server. */
   authenticateDevice(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -731,9 +784,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Authenticate a user with an email+password against the server. */
   authenticateEmail(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -757,9 +813,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Authenticate a user with a Facebook OAuth token against the server. */
   authenticateFacebook(basicAuthUsername, basicAuthPassword, body, create, username, sync, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -784,9 +843,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Authenticate a user with a Facebook Instant Game token against the server. */
   authenticateFacebookInstantGame(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -810,9 +872,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Authenticate a user with Apple's GameCenter against the server. */
   authenticateGameCenter(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -836,9 +901,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Authenticate a user with Google against the server. */
   authenticateGoogle(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -862,9 +930,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Authenticate a user with Steam against the server. */
   authenticateSteam(basicAuthUsername, basicAuthPassword, body, create, username, sync, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -889,9 +960,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Add an Apple ID to the social profiles on the current user's account. */
   linkApple(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -915,9 +989,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Add a custom ID to the social profiles on the current user's account. */
   linkCustom(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -941,9 +1018,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Add a device ID to the social profiles on the current user's account. */
   linkDevice(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -967,9 +1047,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Add an email+password to the social profiles on the current user's account. */
   linkEmail(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -993,9 +1076,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Add Facebook to the social profiles on the current user's account. */
   linkFacebook(bearerToken, body, sync, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1020,9 +1106,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Add Facebook Instant Game to the social profiles on the current user's account. */
   linkFacebookInstantGame(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1046,9 +1135,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Add Apple's GameCenter to the social profiles on the current user's account. */
   linkGameCenter(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1072,9 +1164,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Add Google to the social profiles on the current user's account. */
   linkGoogle(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1098,9 +1193,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Add Steam to the social profiles on the current user's account. */
   linkSteam(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1124,9 +1222,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
   sessionRefresh(basicAuthUsername, basicAuthPassword, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1148,9 +1249,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Remove the Apple ID from the social profiles on the current user's account. */
   unlinkApple(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1174,9 +1278,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Remove the custom ID from the social profiles on the current user's account. */
   unlinkCustom(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1200,9 +1307,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Remove the device ID from the social profiles on the current user's account. */
   unlinkDevice(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1226,9 +1336,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Remove the email+password from the social profiles on the current user's account. */
   unlinkEmail(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1252,9 +1365,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Remove Facebook from the social profiles on the current user's account. */
   unlinkFacebook(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1278,9 +1394,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Remove Facebook Instant Game profile from the social profiles on the current user's account. */
   unlinkFacebookInstantGame(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1304,9 +1423,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Remove Apple's GameCenter from the social profiles on the current user's account. */
   unlinkGameCenter(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1330,9 +1452,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Remove Google from the social profiles on the current user's account. */
   unlinkGoogle(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1356,9 +1481,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Remove Steam from the social profiles on the current user's account. */
   unlinkSteam(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1382,9 +1510,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List a channel's message history. */
   listChannelMessages(bearerToken, channelId, limit, forward, cursor, options = {}) {
     if (channelId === null || channelId === void 0) {
       throw new Error("'channelId' is a required parameter but is null or undefined.");
@@ -1410,9 +1541,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Submit an event for processing in the server's registered runtime custom events handler. */
   event(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1436,9 +1570,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Delete one or more users by ID or username. */
   deleteFriends(bearerToken, ids, usernames, options = {}) {
     const urlPath = "/v2/friend";
     const queryParams = /* @__PURE__ */ new Map();
@@ -1460,9 +1597,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List all friends for the current user. */
   listFriends(bearerToken, limit, state, cursor, options = {}) {
     const urlPath = "/v2/friend";
     const queryParams = /* @__PURE__ */ new Map();
@@ -1485,9 +1625,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Add friends by ID or username to a user's account. */
   addFriends(bearerToken, ids, usernames, options = {}) {
     const urlPath = "/v2/friend";
     const queryParams = /* @__PURE__ */ new Map();
@@ -1509,9 +1652,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Block one or more users by ID or username. */
   blockFriends(bearerToken, ids, usernames, options = {}) {
     const urlPath = "/v2/friend/block";
     const queryParams = /* @__PURE__ */ new Map();
@@ -1533,9 +1679,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Import Facebook friends and add them to a user's account. */
   importFacebookFriends(bearerToken, body, reset, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1560,9 +1709,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Import Steam friends and add them to a user's account. */
   importSteamFriends(bearerToken, body, reset, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1587,9 +1739,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List groups based on given filters. */
   listGroups(bearerToken, name, cursor, limit, langTag, members, open, options = {}) {
     const urlPath = "/v2/group";
     const queryParams = /* @__PURE__ */ new Map();
@@ -1615,9 +1770,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Create a new group with the current user as the owner. */
   createGroup(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1641,9 +1799,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Delete a group by ID. */
   deleteGroup(bearerToken, groupId, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1666,9 +1827,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Update fields in a given group. */
   updateGroup(bearerToken, groupId, body, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1695,9 +1859,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Add users to a group. */
   addGroupUsers(bearerToken, groupId, userIds, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1721,9 +1888,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Ban a set of users from a group. */
   banGroupUsers(bearerToken, groupId, userIds, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1747,9 +1917,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Demote a set of users in a group to the next role down. */
   demoteGroupUsers(bearerToken, groupId, userIds, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1776,9 +1949,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Immediately join an open group, or request to join a closed one. */
   joinGroup(bearerToken, groupId, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1801,9 +1977,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Kick a set of users from a group. */
   kickGroupUsers(bearerToken, groupId, userIds, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1827,9 +2006,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Leave a group the user is a member of. */
   leaveGroup(bearerToken, groupId, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1852,9 +2034,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Promote a set of users in a group to the next role up. */
   promoteGroupUsers(bearerToken, groupId, userIds, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1878,9 +2063,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List all users that are part of a group. */
   listGroupUsers(bearerToken, groupId, limit, state, cursor, options = {}) {
     if (groupId === null || groupId === void 0) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
@@ -1906,9 +2094,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Validate Apple IAP Receipt */
   validatePurchaseApple(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1932,9 +2123,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Validate Google IAP Receipt */
   validatePurchaseGoogle(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1958,9 +2152,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Validate Huawei IAP Receipt */
   validatePurchaseHuawei(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -1984,9 +2181,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Delete a leaderboard record. */
   deleteLeaderboardRecord(bearerToken, leaderboardId, options = {}) {
     if (leaderboardId === null || leaderboardId === void 0) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
@@ -2009,9 +2209,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List leaderboard records. */
   listLeaderboardRecords(bearerToken, leaderboardId, ownerIds, limit, cursor, expiry, options = {}) {
     if (leaderboardId === null || leaderboardId === void 0) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
@@ -2038,9 +2241,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Write a record to a leaderboard. */
   writeLeaderboardRecord(bearerToken, leaderboardId, body, options = {}) {
     if (leaderboardId === null || leaderboardId === void 0) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
@@ -2067,9 +2273,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List leaderboard records that belong to a user. */
   listLeaderboardRecordsAroundOwner(bearerToken, leaderboardId, ownerId, limit, expiry, options = {}) {
     if (leaderboardId === null || leaderboardId === void 0) {
       throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
@@ -2097,9 +2306,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Fetch list of running matches. */
   listMatches(bearerToken, limit, authoritative, label, minSize, maxSize, query, options = {}) {
     const urlPath = "/v2/match";
     const queryParams = /* @__PURE__ */ new Map();
@@ -2125,9 +2337,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Delete one or more notifications for the current user. */
   deleteNotifications(bearerToken, ids, options = {}) {
     const urlPath = "/v2/notification";
     const queryParams = /* @__PURE__ */ new Map();
@@ -2148,9 +2363,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Fetch list of notifications. */
   listNotifications(bearerToken, limit, cacheableCursor, options = {}) {
     const urlPath = "/v2/notification";
     const queryParams = /* @__PURE__ */ new Map();
@@ -2172,9 +2390,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Execute a Lua function on the server. */
   rpcFunc2(bearerToken, id, payload, httpKey, options = {}) {
     if (id === null || id === void 0) {
       throw new Error("'id' is a required parameter but is null or undefined.");
@@ -2199,9 +2420,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Execute a Lua function on the server. */
   rpcFunc(bearerToken, id, body, httpKey, options = {}) {
     if (id === null || id === void 0) {
       throw new Error("'id' is a required parameter but is null or undefined.");
@@ -2229,9 +2453,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
   sessionLogout(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -2255,9 +2482,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Get storage objects. */
   readStorageObjects(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -2281,9 +2511,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Write objects into the storage engine. */
   writeStorageObjects(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -2307,9 +2540,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Delete one or more objects by ID or username. */
   deleteStorageObjects(bearerToken, body, options = {}) {
     if (body === null || body === void 0) {
       throw new Error("'body' is a required parameter but is null or undefined.");
@@ -2333,9 +2569,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List publicly readable storage objects in a given collection. */
   listStorageObjects(bearerToken, collection, userId, limit, cursor, options = {}) {
     if (collection === null || collection === void 0) {
       throw new Error("'collection' is a required parameter but is null or undefined.");
@@ -2361,9 +2600,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List publicly readable storage objects in a given collection. */
   listStorageObjects2(bearerToken, collection, userId, limit, cursor, options = {}) {
     if (collection === null || collection === void 0) {
       throw new Error("'collection' is a required parameter but is null or undefined.");
@@ -2391,9 +2633,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List current or upcoming tournaments. */
   listTournaments(bearerToken, categoryStart, categoryEnd, startTime, endTime, limit, cursor, options = {}) {
     const urlPath = "/v2/tournament";
     const queryParams = /* @__PURE__ */ new Map();
@@ -2419,9 +2664,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List tournament records. */
   listTournamentRecords(bearerToken, tournamentId, ownerIds, limit, cursor, expiry, options = {}) {
     if (tournamentId === null || tournamentId === void 0) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
@@ -2448,9 +2696,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Write a record to a tournament. */
   writeTournamentRecord2(bearerToken, tournamentId, body, options = {}) {
     if (tournamentId === null || tournamentId === void 0) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
@@ -2477,9 +2728,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Write a record to a tournament. */
   writeTournamentRecord(bearerToken, tournamentId, body, options = {}) {
     if (tournamentId === null || tournamentId === void 0) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
@@ -2506,9 +2760,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Attempt to join an open and running tournament. */
   joinTournament(bearerToken, tournamentId, options = {}) {
     if (tournamentId === null || tournamentId === void 0) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
@@ -2531,9 +2788,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List tournament records for a given owner. */
   listTournamentRecordsAroundOwner(bearerToken, tournamentId, ownerId, limit, expiry, options = {}) {
     if (tournamentId === null || tournamentId === void 0) {
       throw new Error("'tournamentId' is a required parameter but is null or undefined.");
@@ -2561,9 +2821,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** Fetch zero or more users by ID and/or username. */
   getUsers(bearerToken, ids, usernames, facebookIds, options = {}) {
     const urlPath = "/v2/user";
     const queryParams = /* @__PURE__ */ new Map();
@@ -2586,9 +2849,12 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
+  /** List groups the current user belongs to. */
   listUserGroups(bearerToken, userId, limit, state, cursor, options = {}) {
     if (userId === null || userId === void 0) {
       throw new Error("'userId' is a required parameter but is null or undefined.");
@@ -2614,7 +2880,9 @@ var NakamaApi = class {
           throw response;
         }
       }),
-      new Promise((_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out."))
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
     ]);
   }
   buildFullUrl(basePath, fragment, queryParams) {
@@ -2654,14 +2922,14 @@ var Session = class {
     if (tokenParts.length != 3) {
       throw "jwt is not valid.";
     }
-    const tokenDecoded = JSON.parse(atob(tokenParts[1]));
+    const tokenDecoded = JSON.parse(_atob(tokenParts[1]));
     const tokenExpiresAt = Math.floor(parseInt(tokenDecoded["exp"]));
     if (refreshToken) {
       const refreshTokenParts = refreshToken.split(".");
       if (refreshTokenParts.length != 3) {
         throw "refresh jwt is not valid.";
       }
-      const refreshTokenDecoded = JSON.parse(atob(refreshTokenParts[1]));
+      const refreshTokenDecoded = JSON.parse(_atob(refreshTokenParts[1]));
       const refreshTokenExpiresAt = Math.floor(parseInt(refreshTokenDecoded["exp"]));
       this.refresh_expires_at = refreshTokenExpiresAt;
       this.refresh_token = refreshToken;
@@ -2675,6 +2943,49 @@ var Session = class {
   static restore(token, refreshToken) {
     return new Session(token, refreshToken, false);
   }
+};
+
+// ../../node_modules/base64-arraybuffer/dist/base64-arraybuffer.es5.js
+var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var lookup = typeof Uint8Array === "undefined" ? [] : new Uint8Array(256);
+for (i = 0; i < chars.length; i++) {
+  lookup[chars.charCodeAt(i)] = i;
+}
+var i;
+var encode2 = function(arraybuffer) {
+  var bytes = new Uint8Array(arraybuffer), i, len = bytes.length, base64 = "";
+  for (i = 0; i < len; i += 3) {
+    base64 += chars[bytes[i] >> 2];
+    base64 += chars[(bytes[i] & 3) << 4 | bytes[i + 1] >> 4];
+    base64 += chars[(bytes[i + 1] & 15) << 2 | bytes[i + 2] >> 6];
+    base64 += chars[bytes[i + 2] & 63];
+  }
+  if (len % 3 === 2) {
+    base64 = base64.substring(0, base64.length - 1) + "=";
+  } else if (len % 3 === 1) {
+    base64 = base64.substring(0, base64.length - 2) + "==";
+  }
+  return base64;
+};
+var decode2 = function(base64) {
+  var bufferLength = base64.length * 0.75, len = base64.length, i, p = 0, encoded1, encoded2, encoded3, encoded4;
+  if (base64[base64.length - 1] === "=") {
+    bufferLength--;
+    if (base64[base64.length - 2] === "=") {
+      bufferLength--;
+    }
+  }
+  var arraybuffer = new ArrayBuffer(bufferLength), bytes = new Uint8Array(arraybuffer);
+  for (i = 0; i < len; i += 4) {
+    encoded1 = lookup[base64.charCodeAt(i)];
+    encoded2 = lookup[base64.charCodeAt(i + 1)];
+    encoded3 = lookup[base64.charCodeAt(i + 2)];
+    encoded4 = lookup[base64.charCodeAt(i + 3)];
+    bytes[p++] = encoded1 << 2 | encoded2 >> 4;
+    bytes[p++] = (encoded2 & 15) << 4 | encoded3 >> 2;
+    bytes[p++] = (encoded3 & 3) << 6 | encoded4 & 63;
+  }
+  return arraybuffer;
 };
 
 // web_socket_adapter.ts
@@ -2701,6 +3012,11 @@ var WebSocketAdapterText = class {
     if (value) {
       this._socket.onmessage = (evt) => {
         const message = JSON.parse(evt.data);
+        if (message.match_data && message.match_data.data) {
+          message.match_data.data = new Uint8Array(decode2(message.match_data.data));
+        } else if (message.party_data && message.party_data.data) {
+          message.party_data.data = new Uint8Array(decode2(message.party_data.data));
+        }
         value(message);
       };
     } else {
@@ -2729,8 +3045,20 @@ var WebSocketAdapterText = class {
   send(msg) {
     if (msg.match_data_send) {
       msg.match_data_send.op_code = msg.match_data_send.op_code.toString();
+      let payload = msg.match_data_send.data;
+      if (payload && payload instanceof Uint8Array) {
+        msg.match_data_send.data = encode2(payload.buffer);
+      } else if (payload) {
+        msg.match_data_send.data = _btoa(payload);
+      }
     } else if (msg.party_data_send) {
       msg.party_data_send.op_code = msg.party_data_send.op_code.toString();
+      let payload = msg.party_data_send.data;
+      if (payload && payload instanceof Uint8Array) {
+        msg.party_data_send.data = encode2(payload.buffer);
+      } else if (payload) {
+        msg.party_data_send.data = _btoa(payload);
+      }
     }
     this._socket.send(JSON.stringify(msg));
   }
@@ -2768,14 +3096,13 @@ var DefaultSocket = class {
       if (this.verbose && window && window.console) {
         console.log("Response: %o", JSON.stringify(message));
       }
-      if (message.cid == void 0) {
+      if (!message.cid) {
         if (message.notifications) {
           message.notifications.notifications.forEach((n) => {
             n.content = n.content ? JSON.parse(n.content) : void 0;
             this.onnotification(n);
           });
         } else if (message.match_data) {
-          message.match_data.data = message.match_data.data != null ? JSON.parse(b64DecodeUnicode(message.match_data.data)) : null;
           message.match_data.op_code = parseInt(message.match_data.op_code);
           this.onmatchdata(message.match_data);
         } else if (message.match_presence_event) {
@@ -2796,7 +3123,6 @@ var DefaultSocket = class {
         } else if (message.channel_presence_event) {
           this.onchannelpresence(message.channel_presence_event);
         } else if (message.party_data) {
-          message.party_data.data = message.party_data.data != null ? JSON.parse(b64DecodeUnicode(message.party_data.data)) : null;
           message.party_data.op_code = parseInt(message.party_data.op_code);
           this.onpartydata(message.party_data);
         } else if (message.on_party_close) {
@@ -2955,11 +3281,9 @@ var DefaultSocket = class {
         reject("Socket connection has not been established yet.");
       } else {
         if (untypedMessage.match_data_send) {
-          untypedMessage.match_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.match_data_send.data));
           this.adapter.send(untypedMessage);
           resolve();
         } else if (untypedMessage.party_data_send) {
-          untypedMessage.party_data_send.data = b64EncodeUnicode(JSON.stringify(untypedMessage.party_data_send.data));
           this.adapter.send(untypedMessage);
           resolve();
         } else {
@@ -3036,14 +3360,16 @@ var DefaultSocket = class {
   }
   joinChat(target, type, persistence, hidden) {
     return __async(this, null, function* () {
-      const response = yield this.send({
-        channel_join: {
-          target,
-          type,
-          persistence,
-          hidden
+      const response = yield this.send(
+        {
+          channel_join: {
+            target,
+            type,
+            persistence,
+            hidden
+          }
         }
-      });
+      );
       return response.channel;
     });
   }
@@ -3087,12 +3413,14 @@ var DefaultSocket = class {
   }
   removeChatMessage(channel_id, message_id) {
     return __async(this, null, function* () {
-      const response = yield this.send({
-        channel_message_remove: {
-          channel_id,
-          message_id
+      const response = yield this.send(
+        {
+          channel_message_remove: {
+            channel_id,
+            message_id
+          }
         }
-      });
+      );
       return response.channel_message_ack;
     });
   }
@@ -3100,12 +3428,14 @@ var DefaultSocket = class {
     return this.send({ matchmaker_remove: { ticket } });
   }
   removeMatchmakerParty(party_id, ticket) {
-    return this.send({
-      party_matchmaker_remove: {
-        party_id,
-        ticket
+    return this.send(
+      {
+        party_matchmaker_remove: {
+          party_id,
+          ticket
+        }
       }
-    });
+    );
   }
   removePartyMember(party_id, member) {
     return __async(this, null, function* () {
@@ -3117,26 +3447,31 @@ var DefaultSocket = class {
   }
   rpc(id, payload, http_key) {
     return __async(this, null, function* () {
-      const response = yield this.send({
-        rpc: {
-          id,
-          payload,
-          http_key
+      const response = yield this.send(
+        {
+          rpc: {
+            id,
+            payload,
+            http_key
+          }
         }
-      });
+      );
       return response.rpc;
     });
   }
-  sendMatchState(matchId, opCode, data, presences) {
+  sendMatchState(matchId, opCode, data, presences, reliable) {
     return __async(this, null, function* () {
-      return this.send({
-        match_data_send: {
-          match_id: matchId,
-          op_code: opCode,
-          data,
-          presences: presences != null ? presences : []
+      return this.send(
+        {
+          match_data_send: {
+            match_id: matchId,
+            op_code: opCode,
+            data,
+            presences: presences != null ? presences : [],
+            reliable
+          }
         }
-      });
+      );
     });
   }
   sendPartyData(party_id, op_code, data) {
@@ -3176,11 +3511,13 @@ var Client = class {
     this.useSSL = useSSL;
     this.timeout = timeout;
     this.autoRefreshSession = autoRefreshSession;
+    /** The expired timespan used to check session lifetime. */
     this.expiredTimespanMs = DEFAULT_EXPIRED_TIMESPAN_MS;
     const scheme = useSSL ? "https://" : "http://";
     const basePath = `${scheme}${host}:${port}`;
     this.apiClient = new NakamaApi(serverkey, basePath, timeout);
   }
+  /** Add users to a group, or accept their join requests. */
   addGroupUsers(session, groupId, ids) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3191,6 +3528,7 @@ var Client = class {
       });
     });
   }
+  /** Add friends by ID or username to a user's account. */
   addFriends(session, ids, usernames) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3201,8 +3539,9 @@ var Client = class {
       });
     });
   }
+  /** Authenticate a user with an Apple ID against the server. */
   authenticateApple(_0, _1, _2) {
-    return __async(this, arguments, function* (token, create, username, vars = /* @__PURE__ */ new Map(), options = {}) {
+    return __async(this, arguments, function* (token, create, username, vars = {}, options = {}) {
       const request = {
         "token": token,
         "vars": vars
@@ -3212,7 +3551,8 @@ var Client = class {
       });
     });
   }
-  authenticateCustom(id, create, username, vars = /* @__PURE__ */ new Map(), options = {}) {
+  /** Authenticate a user with a custom id against the server. */
+  authenticateCustom(id, create, username, vars = {}, options = {}) {
     const request = {
       "id": id,
       "vars": vars
@@ -3221,6 +3561,7 @@ var Client = class {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
+  /** Authenticate a user with a device id against the server. */
   authenticateDevice(id, create, username, vars) {
     const request = {
       "id": id,
@@ -3230,6 +3571,7 @@ var Client = class {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
+  /** Authenticate a user with an email+password against the server. */
   authenticateEmail(email, password, create, username, vars) {
     const request = {
       "email": email,
@@ -3240,15 +3582,24 @@ var Client = class {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
+  /** Authenticate a user with a Facebook Instant Game token against the server. */
   authenticateFacebookInstantGame(signedPlayerInfo, create, username, vars, options = {}) {
     const request = {
       "signed_player_info": signedPlayerInfo,
       "vars": vars
     };
-    return this.apiClient.authenticateFacebookInstantGame(this.serverkey, "", { signed_player_info: request.signed_player_info, vars: request.vars }, create, username, options).then((apiSession) => {
+    return this.apiClient.authenticateFacebookInstantGame(
+      this.serverkey,
+      "",
+      { signed_player_info: request.signed_player_info, vars: request.vars },
+      create,
+      username,
+      options
+    ).then((apiSession) => {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
+  /** Authenticate a user with a Facebook OAuth token against the server. */
   authenticateFacebook(token, create, username, sync, vars, options = {}) {
     const request = {
       "token": token,
@@ -3258,6 +3609,7 @@ var Client = class {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
+  /** Authenticate a user with Google against the server. */
   authenticateGoogle(token, create, username, vars, options = {}) {
     const request = {
       "token": token,
@@ -3267,6 +3619,7 @@ var Client = class {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
+  /** Authenticate a user with GameCenter against the server. */
   authenticateGameCenter(token, create, username, vars) {
     const request = {
       "token": token,
@@ -3276,6 +3629,7 @@ var Client = class {
       return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
     });
   }
+  /** Authenticate a user with Steam against the server. */
   authenticateSteam(token, create, username, sync, vars) {
     return __async(this, null, function* () {
       const request = {
@@ -3288,6 +3642,7 @@ var Client = class {
       });
     });
   }
+  /** Ban users from a group. */
   banGroupUsers(session, groupId, ids) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3298,6 +3653,7 @@ var Client = class {
       });
     });
   }
+  /** Block one or more users by ID or username. */
   blockFriends(session, ids, usernames) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3308,6 +3664,7 @@ var Client = class {
       });
     });
   }
+  /** Create a new group with the current user as the creator and superadmin. */
   createGroup(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3331,9 +3688,11 @@ var Client = class {
       });
     });
   }
+  /** A socket created with the client's configuration. */
   createSocket(useSSL = false, verbose = false, adapter = new WebSocketAdapterText()) {
     return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter);
   }
+  /** Delete one or more users by ID or username. */
   deleteFriends(session, ids, usernames) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3344,6 +3703,7 @@ var Client = class {
       });
     });
   }
+  /** Delete a group the user is part of and has permissions to delete. */
   deleteGroup(session, groupId) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3354,6 +3714,7 @@ var Client = class {
       });
     });
   }
+  /** Delete one or more notifications */
   deleteNotifications(session, ids) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3364,6 +3725,7 @@ var Client = class {
       });
     });
   }
+  /** Delete one or more storage objects */
   deleteStorageObjects(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3374,6 +3736,7 @@ var Client = class {
       });
     });
   }
+  /** Demote a set of users in a group to the next role down. */
   demoteGroupUsers(session, groupId, ids) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3384,6 +3747,7 @@ var Client = class {
       });
     });
   }
+  /** Submit an event for processing in the server's registered runtime custom events handler. */
   emitEvent(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3394,6 +3758,7 @@ var Client = class {
       });
     });
   }
+  /** Fetch the current user's account. */
   getAccount(session) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3402,6 +3767,7 @@ var Client = class {
       return this.apiClient.getAccount(session.token);
     });
   }
+  /** Import Facebook friends and add them to a user's account. */
   importFacebookFriends(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3412,6 +3778,7 @@ var Client = class {
       });
     });
   }
+  /** Import Steam friends and add them to a user's account. */
   importSteamFriends(session, request, reset) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3422,6 +3789,7 @@ var Client = class {
       });
     });
   }
+  /** Fetch zero or more users by ID and/or username. */
   getUsers(session, ids, usernames, facebookIds) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3458,6 +3826,7 @@ var Client = class {
       });
     });
   }
+  /** Join a group that's open, or send a request to join a group that is closed. */
   joinGroup(session, groupId) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3478,6 +3847,7 @@ var Client = class {
       });
     });
   }
+  /** Kick users from a group, or decline their join requests. */
   kickGroupUsers(session, groupId, ids) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3488,6 +3858,7 @@ var Client = class {
       });
     });
   }
+  /** Leave a group the user is part of. */
   leaveGroup(session, groupId) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3498,6 +3869,7 @@ var Client = class {
       });
     });
   }
+  /** List a channel's message history. */
   listChannelMessages(session, channelId, limit, forward, cursor) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3534,6 +3906,7 @@ var Client = class {
       });
     });
   }
+  /** List a group's users. */
   listGroupUsers(session, groupId, state, limit, cursor) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3574,6 +3947,7 @@ var Client = class {
       });
     });
   }
+  /** List a user's groups. */
   listUserGroups(session, userId, state, limit, cursor) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3610,6 +3984,7 @@ var Client = class {
       });
     });
   }
+  /** List groups based on given filters. */
   listGroups(session, name, cursor, limit) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3643,6 +4018,7 @@ var Client = class {
       });
     });
   }
+  /** Add an Apple ID to the social profiles on the current user's account. */
   linkApple(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3653,6 +4029,7 @@ var Client = class {
       });
     });
   }
+  /** Add a custom ID to the social profiles on the current user's account. */
   linkCustom(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3663,6 +4040,7 @@ var Client = class {
       });
     });
   }
+  /** Add a device ID to the social profiles on the current user's account. */
   linkDevice(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3673,6 +4051,7 @@ var Client = class {
       });
     });
   }
+  /** Add an email+password to the social profiles on the current user's account. */
   linkEmail(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3683,6 +4062,7 @@ var Client = class {
       });
     });
   }
+  /** Add Facebook to the social profiles on the current user's account. */
   linkFacebook(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3693,6 +4073,7 @@ var Client = class {
       });
     });
   }
+  /** Add Facebook Instant to the social profiles on the current user's account. */
   linkFacebookInstantGame(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3703,6 +4084,7 @@ var Client = class {
       });
     });
   }
+  /** Add Google to the social profiles on the current user's account. */
   linkGoogle(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3713,6 +4095,7 @@ var Client = class {
       });
     });
   }
+  /** Add GameCenter to the social profiles on the current user's account. */
   linkGameCenter(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3723,6 +4106,7 @@ var Client = class {
       });
     });
   }
+  /** Add Steam to the social profiles on the current user's account. */
   linkSteam(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3733,6 +4117,7 @@ var Client = class {
       });
     });
   }
+  /** List all friends for the current user. */
   listFriends(session, state, limit, cursor) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3774,6 +4159,7 @@ var Client = class {
       });
     });
   }
+  /** List leaderboard records */
   listLeaderboardRecords(session, leaderboardId, ownerIds, limit, cursor, expiry) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3874,6 +4260,7 @@ var Client = class {
       });
     });
   }
+  /** Fetch list of running matches. */
   listMatches(session, limit, authoritative, label, minSize, maxSize, query) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3882,6 +4269,7 @@ var Client = class {
       return this.apiClient.listMatches(session.token, limit, authoritative, label, minSize, maxSize, query);
     });
   }
+  /** Fetch list of notifications. */
   listNotifications(session, limit, cacheableCursor) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3910,6 +4298,7 @@ var Client = class {
       });
     });
   }
+  /** List storage objects. */
   listStorageObjects(session, collection, userId, limit, cursor) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3940,6 +4329,7 @@ var Client = class {
       });
     });
   }
+  /** List current or upcoming tournaments. */
   listTournaments(session, categoryStart, categoryEnd, startTime, endTime, limit, cursor) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -3977,6 +4367,7 @@ var Client = class {
       });
     });
   }
+  /** List tournament records from a given tournament. */
   listTournamentRecords(session, tournamentId, ownerIds, limit, cursor, expiry) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4027,6 +4418,7 @@ var Client = class {
       });
     });
   }
+  /** List tournament records from a given tournament around the owner. */
   listTournamentRecordsAroundOwner(session, tournamentId, ownerId, limit, expiry) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4077,6 +4469,7 @@ var Client = class {
       });
     });
   }
+  /** Promote users in a group to the next role up. */
   promoteGroupUsers(session, groupId, ids) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4085,6 +4478,7 @@ var Client = class {
       return this.apiClient.promoteGroupUsers(session.token, groupId, ids);
     });
   }
+  /** Fetch storage objects. */
   readStorageObjects(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4112,6 +4506,7 @@ var Client = class {
       });
     });
   }
+  /** Execute an RPC function on the server. */
   rpc(session, id, input) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4125,6 +4520,7 @@ var Client = class {
       });
     });
   }
+  /** Execute an RPC function on the server. */
   rpcHttpKey(httpKey, id, input) {
     return __async(this, null, function* () {
       return this.apiClient.rpcFunc2("", id, input && JSON.stringify(input) || "", httpKey).then((response) => {
@@ -4137,6 +4533,7 @@ var Client = class {
       });
     });
   }
+  /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
   sessionLogout(session, token, refreshToken) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4147,23 +4544,25 @@ var Client = class {
       });
     });
   }
+  /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
   sessionRefresh(_0) {
-    return __async(this, arguments, function* (session, vars = /* @__PURE__ */ new Map()) {
+    return __async(this, arguments, function* (session, vars = {}) {
       if (!session) {
         console.error("Cannot refresh a null session.");
         return session;
       }
       if (session.created && session.expires_at - session.created_at < 70) {
-        console.warn("Session lifetime too short, please set '--session.token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+        console.warn("Session lifetime too short, please set '--session.token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/nakama/getting-started/configuration/#session");
       }
       if (session.created && session.refresh_expires_at - session.created_at < 3700) {
-        console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/install-configuration/#session");
+        console.warn("Session refresh lifetime too short, please set '--session.refresh_token_expiry_sec' option. See the documentation for more info: https://heroiclabs.com/docs/nakama/getting-started/configuration/#session");
       }
       const apiSession = yield this.apiClient.sessionRefresh(this.serverkey, "", { token: session.refresh_token, vars });
       session.update(apiSession.token, apiSession.refresh_token);
       return session;
     });
   }
+  /** Remove the Apple ID from the social profiles on the current user's account. */
   unlinkApple(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4174,6 +4573,7 @@ var Client = class {
       });
     });
   }
+  /** Remove custom ID from the social profiles on the current user's account. */
   unlinkCustom(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4184,6 +4584,7 @@ var Client = class {
       });
     });
   }
+  /** Remove a device ID from the social profiles on the current user's account. */
   unlinkDevice(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4194,6 +4595,7 @@ var Client = class {
       });
     });
   }
+  /** Remove an email+password from the social profiles on the current user's account. */
   unlinkEmail(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4204,6 +4606,7 @@ var Client = class {
       });
     });
   }
+  /** Remove Facebook from the social profiles on the current user's account. */
   unlinkFacebook(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4214,6 +4617,7 @@ var Client = class {
       });
     });
   }
+  /** Remove Facebook Instant social profiles from the current user's account. */
   unlinkFacebookInstantGame(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4224,6 +4628,7 @@ var Client = class {
       });
     });
   }
+  /** Remove Google from the social profiles on the current user's account. */
   unlinkGoogle(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4234,6 +4639,7 @@ var Client = class {
       });
     });
   }
+  /** Remove GameCenter from the social profiles on the current user's account. */
   unlinkGameCenter(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4244,6 +4650,7 @@ var Client = class {
       });
     });
   }
+  /** Remove Steam from the social profiles on the current user's account. */
   unlinkSteam(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4254,6 +4661,7 @@ var Client = class {
       });
     });
   }
+  /** Update fields in the current user's account. */
   updateAccount(session, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4264,6 +4672,7 @@ var Client = class {
       });
     });
   }
+  /** Update a group the user is part of and has permissions to update. */
   updateGroup(session, groupId, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4274,6 +4683,7 @@ var Client = class {
       });
     });
   }
+  /** Validate an Apple IAP receipt. */
   validatePurchaseApple(session, receipt) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4282,6 +4692,7 @@ var Client = class {
       return this.apiClient.validatePurchaseApple(session.token, { receipt });
     });
   }
+  /** Validate a Google IAP receipt. */
   validatePurchaseGoogle(session, purchase) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4290,6 +4701,7 @@ var Client = class {
       return this.apiClient.validatePurchaseGoogle(session.token, { purchase });
     });
   }
+  /** Validate a Huawei IAP receipt. */
   validatePurchaseHuawei(session, purchase, signature) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4298,6 +4710,7 @@ var Client = class {
       return this.apiClient.validatePurchaseHuawei(session.token, { purchase, signature });
     });
   }
+  /** Write a record to a leaderboard. */
   writeLeaderboardRecord(session, leaderboardId, request) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4324,6 +4737,7 @@ var Client = class {
       });
     });
   }
+  /** Write storage objects. */
   writeStorageObjects(session, objects) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
@@ -4343,6 +4757,7 @@ var Client = class {
       return this.apiClient.writeStorageObjects(session.token, request);
     });
   }
+  /** Write a record to a tournament. */
   writeTournamentRecord(session, tournamentId, request) {
     return __async(this, null, function* () {
       return this.apiClient.writeTournamentRecord(session.token, tournamentId, {

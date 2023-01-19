@@ -103,13 +103,13 @@ export interface Timestamp {
 export declare const protobufPackage = "google.protobuf";
 export declare const Timestamp: {
     encode(message: Timestamp, writer?: Writer): Writer;
-    decode(input: Uint8Array | Reader, length?: number | undefined): Timestamp;
+    decode(input: Uint8Array | Reader, length?: number): Timestamp;
     fromJSON(object: any): Timestamp;
     fromPartial(object: DeepPartial<Timestamp>): Timestamp;
     toJSON(message: Timestamp): unknown;
 };
-declare type Builtin = Date | Function | Uint8Array | string | number | undefined;
-export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {
+type Builtin = Date | Function | Uint8Array | string | number | undefined;
+export type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {
     $case: string;
 } ? {
     [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]>;
