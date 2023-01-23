@@ -1,6 +1,6 @@
 {
     "name": "@heroiclabs/satori-js",
-    "version": "2.5.0",
+    "version": "2.5.1",
     "scripts": {
         "build": "npx tsc && npx rollup -c --bundleConfigAsCjs && node build.mjs",
         "docs": "typedoc index.ts --gaID UA-89839802-1 --out ../../docs"
@@ -23,9 +23,9 @@
         "satori",
         "live ops"
     ],
-    "repository": "https://github.com/heroiclabs/satori-js",
+    "repository": "https://github.com/heroiclabs/nakama-js",
     "homepage": "https://heroiclabs.com",
-    "bugs": "https://github.com/heroiclabs/satori-js/issues",
+    "bugs": "https://github.com/heroiclabs/nakama-js/issues",
     "author": "Chris Molozian <chris@heroiclabs.com>",
     "contributors": [
         "Andrei Mihu <andrei@heroiclabs.com>",

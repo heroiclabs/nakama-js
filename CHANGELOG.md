@@ -5,8 +5,13 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ### Unreleased
 
+### [2.5.1]
+
 ### Added
 - Added [Satori](https://heroiclabs.com/docs/satori) client package (`satori-js`)
+
+### Changed
+- Remove Yarn in favour of NPM and updates dependencies to support Node 18 LTS
 
 ### [2.4.1]
 
