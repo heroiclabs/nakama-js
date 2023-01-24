@@ -1,6 +1,6 @@
 {
     "name": "@heroiclabs/satori-js",
-    "version": "2.5.1",
+    "version": "2.5.2",
     "scripts": {
         "build": "npx tsc && npx rollup -c --bundleConfigAsCjs && node build.mjs",
         "docs": "typedoc index.ts --gaID UA-89839802-1 --out ../../docs"
@@ -39,6 +39,7 @@
         "tslib": "^2.4.1"
     },
     "dependencies": {
+        "@scarf/scarf": "^1.1.1",
         "base64-arraybuffer": "^1.0.2",
         "js-base64": "^3.7.4",
         "whatwg-fetch": "^3.6.2"
