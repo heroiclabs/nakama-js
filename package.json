@@ -30,8 +30,5 @@
     "packages/nakama-js",
     "packages/nakama-js-protobuf",
     "packages/satori-js"
-  ],
-  "dependencies": {
-    "@scarf/scarf": "^1.1.1"
-  }
+  ]
 }

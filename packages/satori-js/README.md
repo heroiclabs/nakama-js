@@ -127,7 +127,7 @@ npm run test --workspace=@heroiclabs/satori-js-test
 To release onto NPM if you have access to the "@heroiclabs" organization you can use NPM.
 
 ```shell
-npm run build --workspace=<workspace> && npm public --access=public --workspace=<workspace>
+npm run build --workspace=<workspace> && npm publish --access=public --workspace=<workspace>
 ```
 
 ### Generate Docs
