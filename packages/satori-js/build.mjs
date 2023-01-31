@@ -34,7 +34,7 @@ await esbuild.build({
 await esbuild.build({
   ...config,
   format: 'esm',
-  outfile: 'dist/satori-js.esm.js'
+  outfile: 'dist/satori-js.esm.mjs'
 });
 
 // Build IIFE

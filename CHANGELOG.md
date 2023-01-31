@@ -5,6 +5,11 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ### Unreleased
 
+### [2.5.3]
+
+### Fixed
+- Nakama and Satori ESM module files now correctly end in the `.mjs` extension.
+
 ### [2.5.1]
 
 ### Added

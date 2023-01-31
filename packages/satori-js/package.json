@@ -1,6 +1,6 @@
 {
     "name": "@heroiclabs/satori-js",
-    "version": "2.5.2",
+    "version": "2.5.3",
     "scripts": {
         "build": "npx tsc && npx rollup -c --bundleConfigAsCjs && node build.mjs",
         "docs": "typedoc index.ts --gaID UA-89839802-1 --out ../../docs"
