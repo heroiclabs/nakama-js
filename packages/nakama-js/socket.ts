@@ -770,8 +770,8 @@ export class DefaultSocket implements Socket {
         } else if (message.party_data) {
           message.party_data.op_code = parseInt(message.party_data.op_code);
           this.onpartydata(<PartyData>message.party_data);
-        } else if (message.on_party_close) {
-          this.onpartyclose();
+        } else if (message.party_close) {
+          this.onpartyclose(<PartyClose>message.party_close);
         } else if (message.party_join_request) {
           this.onpartyjoinrequest(message.party_join_request);
         } else if (message.party_leader) {
@@ -888,9 +888,9 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  onpartyclose() {
+  onpartyclose(close: PartyClose) {
     if (this.verbose && window && window.console) {
-      console.log("Party closed.");
+      console.log("Party closed: " + close);
     }
   }
 
