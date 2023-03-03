@@ -10,8 +10,8 @@
     <script src="../nakama-js-protobuf/dist/nakama-js-protobuf.iife.js"></script>
 
     <script>
-      const client = new nakamajs.Client("we4INqzP5e1E", "lukenewproj.us-east1.nakamacloud.io", 443, true);
-      const socket = client.createSocket(true, true);
+      const client = new nakamajs.Client();
+      const socket = client.createSocket(false, true);
       const customid = "someuniqueidentifier";
       var _session;
 
