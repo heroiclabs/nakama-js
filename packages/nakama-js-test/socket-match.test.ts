@@ -20,6 +20,7 @@ import {Match, MatchData, MatchPresenceEvent, Presence} from "@heroiclabs/nakama
 import * as nakamajsprotobuf from "../nakama-js-protobuf";
 import {adapters, createPage, generateid, AdapterType} from "./utils"
 import {describe, expect, it} from '@jest/globals'
+import { ApiMatch } from "@heroiclabs/nakama-js/dist/api.gen";
 
 describe('Match Tests', () => {
 
@@ -131,7 +132,7 @@ describe('Match Tests', () => {
     }, customid1, customid2, outerPayload, adapter);
 
     expect(matchDataString).not.toBeNull();
-    expect(JSON.parse(matchDataString)).toEqual(outerPayload);
+    expect(JSON.parse(matchDataString!)).toEqual(outerPayload);
   });
 
   it.each(adapters)('should join a match, then send data to included presences', async (adapter) => {
@@ -188,7 +189,7 @@ describe('Match Tests', () => {
     }, customid1, customid2, customid3, JSON.stringify(outerPayload), adapter);
 
     expect(matchDataString).not.toBeNull();
-    expect(JSON.parse(matchDataString)).toEqual(outerPayload);
+    expect(JSON.parse(matchDataString!)).toEqual(outerPayload);
   });
 
   it.each(adapters)('should join a match, then do not send data to excluded presences', async (adapter) => {
@@ -221,7 +222,7 @@ describe('Match Tests', () => {
       await socket3.connect(session3, false);
 
 
-      let presenceToReceive : Presence = null;
+      let presenceToReceive : Presence | null = null;
 
       var socket3PresencePromise = new Promise<void>((resolve, reject) => {
         socket2.onmatchpresence = (presenceEvt) => {
@@ -246,7 +247,7 @@ describe('Match Tests', () => {
         }
       });
 
-      await socket1.sendMatchState(match.match_id, 20, payload, [presenceToReceive]);
+      await socket1.sendMatchState(match.match_id, 20, JSON.stringify(payload), [presenceToReceive!]);
       return Promise.race([matchDataPromise, timeout]);
     }, customid1, customid2, customid3, PAYLOAD, adapter);
 
@@ -267,9 +268,9 @@ describe('Match Tests', () => {
       await socket.connect(session, false);
 
       var res = await socket.rpc(id, "{}");
-      var match = JSON.parse(res.payload);
+      var match = JSON.parse(res.payload!);
       var metadata = { key: "value" };
-      await socket.joinMatch(match.match_id, null, metadata);
+      await socket.joinMatch(match.match_id, undefined, metadata);
     }, customid, ID, adapter);
   });
 
@@ -293,8 +294,8 @@ describe('Match Tests', () => {
     expect(response).not.toBeNull();
     expect(response.matches).not.toBeNull();
     expect(response.matches).toHaveLength(1);
-    expect(response.matches[0].match_id).not.toBeNull();
-    expect(response.matches[0].authoritative).toBe(true);
+    expect(response.matches?.[0].match_id).not.toBeNull();
+    expect(response.matches?.[0].authoritative).toBe(true);
   });
 
   it.each(adapters)('should create authoritative match, list matches with querying', async (adapter) => {
@@ -322,8 +323,10 @@ describe('Match Tests', () => {
     expect(response).not.toBeNull();
     expect(response.matches).not.toBeNull();
     expect(response.matches).toHaveLength(1);
-    expect(response.matches[0].match_id).not.toBeNull();
-    expect(response.matches[0].authoritative).toBe(true);
+
+    const match : ApiMatch = response.matches?.[0]!;
+    expect(match).not.toBeNull();
+    expect(match.authoritative).toBe(true);
   });
 
   it.each(adapters)('should create authoritative match, list matches with querying arrays', async (adapter) => {
@@ -354,7 +357,8 @@ describe('Match Tests', () => {
     expect(response).not.toBeNull();
     expect(response.matches).not.toBeNull();
     expect(response.matches).toHaveLength(1);
-    expect(response.matches[0].match_id).not.toBeNull();
-    expect(response.matches[0].authoritative).toBe(true);
+    const match : ApiMatch = response.matches?.[0]!;
+    expect(match.match_id).not.toBeNull();
+    expect(match.authoritative).toBe(true);
   });
 });

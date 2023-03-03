@@ -6,7 +6,8 @@
     "license": "Apache-2.0",
     "dependencies": {
         "@heroiclabs/nakama-js": "2.5.3",
-        "@heroiclabs/nakama-js-protobuf": "1.2.0"
+        "@heroiclabs/nakama-js-protobuf": "1.2.0",
+        "merge": "^2.1.1"
     },
     "devDependencies": {
         "@types/expect-puppeteer": "^4.4.5",
@@ -14,12 +15,12 @@
         "@types/jest-environment-puppeteer": "^4.4.1",
         "@types/node": "12.12.6",
         "@types/puppeteer": "^5.4.2",
-        "jest": "26.6.0",
-        "jest-puppeteer": "^4.4.0",
-        "puppeteer": "5.5.0",
-        "ts-jest": "26.4.4"
+        "jest": "29.0.0",
+        "jest-puppeteer": "7.0.1",
+        "puppeteer": "19.7.2",
+        "ts-jest": "29.0.5"
     },
     "scripts": {
-        "test": "npx typescript --project tsconfig.test.json && jest --runInBand"
+        "test": "npx tsc --project tsconfig.test.json && jest --runInBand"
     }
 }
