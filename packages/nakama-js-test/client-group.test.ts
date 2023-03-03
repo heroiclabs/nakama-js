@@ -309,7 +309,7 @@ describe('Group Tests', () => {
     expect(result.user_groups![0].group!.edge_count).toBe(2);
   });
 
-  it('should create closed, request to join, promote, then list user groups and see count affected', async () => {
+  it('should create closed group, request to join, promote, then list user groups and see count affected', async () => {
     const page : Page = await createPage();
 
     const customid1 = generateid();

@@ -162,7 +162,7 @@ Ensure you are using Node v18>.
 
 The codebase is multi-package monorepo written in TypeScript and can be built with [esbuild](https://github.com/evanw/esbuild). All dependencies are managed with NPM.
 
-To build from source, first install all workspace dependencies from the repository rot with `npm install`.
+To build from source, first install all workspace dependencies from the repository root with `npm install`.
 
 Then to build a specific workspace, pass the `--workspace` flag to your build command, for example:
 
