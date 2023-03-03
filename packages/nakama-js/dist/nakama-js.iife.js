@@ -3088,7 +3088,7 @@ var nakamajs = (() => {
 
   // socket.ts
   var _DefaultSocket = class {
-    constructor(host, port, useSSL = false, verbose = false, adapter = new WebSocketAdapterText(), sendTimeoutMs = 10) {
+    constructor(host, port, useSSL = false, verbose = false, adapter = new WebSocketAdapterText(), sendTimeoutMs = _DefaultSocket.DefaultSendTimeoutMs) {
       this.host = host;
       this.port = port;
       this.useSSL = useSSL;
@@ -3196,7 +3196,6 @@ var nakamajs = (() => {
         };
         window.setTimeout(() => {
           reject("The socket timed out when trying to connect.");
-          this.adapter.close();
         }, connectTimeoutMs);
       });
     }

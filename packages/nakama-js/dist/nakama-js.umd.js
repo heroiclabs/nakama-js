@@ -3795,7 +3795,7 @@
           if (useSSL === void 0) { useSSL = false; }
           if (verbose === void 0) { verbose = false; }
           if (adapter === void 0) { adapter = new WebSocketAdapterText(); }
-          if (sendTimeoutMs === void 0) { sendTimeoutMs = 10; }
+          if (sendTimeoutMs === void 0) { sendTimeoutMs = DefaultSocket.DefaultSendTimeoutMs; }
           this.host = host;
           this.port = port;
           this.useSSL = useSSL;
@@ -3925,8 +3925,8 @@
                   _this.adapter.close();
               };
               window.setTimeout(function () {
+                  // if promise has resolved by now, the reject() is a no-op
                   reject("The socket timed out when trying to connect.");
-                  _this.adapter.close();
               }, connectTimeoutMs);
           });
       };

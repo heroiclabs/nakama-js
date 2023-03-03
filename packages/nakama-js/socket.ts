@@ -839,8 +839,8 @@ export class DefaultSocket implements Socket {
 
 
       window.setTimeout(() => {
+        // if promise has resolved by now, the reject() is a no-op
         reject("The socket timed out when trying to connect.");
-        this.adapter.close();
       }, connectTimeoutMs);
     });
   }

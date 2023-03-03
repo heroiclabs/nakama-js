@@ -16,6 +16,9 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 The connect, send, and heartbeat timeouts are set to sensible default values.
 
+### Fixed
+- Fixed dispatching of `onpartyclose`.
+
 ### [2.5.3]
 
 ### Fixed
