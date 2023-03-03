@@ -82,7 +82,7 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
         this._socket!.onopen = value;
     }
 
-    get isOpen(): boolean {
+    isOpen(): boolean {
         return this._socket?.readyState == WebSocket.OPEN;
     }
 

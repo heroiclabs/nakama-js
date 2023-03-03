@@ -710,7 +710,9 @@ export interface SocketError {
 
 /** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
 export class DefaultSocket implements Socket {
-  public static readonly DefaultHeartbeatTimeoutMs = 5000;
+  public static readonly DefaultHeartbeatTimeoutMs = 10000;
+  public static readonly DefaultSendTimeoutMs = 10000;
+  public static readonly DefaultConnectTimeoutMs = 30000;
 
   private readonly cIds: { [key: string]: PromiseExecutor };
   private nextCid: number;
@@ -722,7 +724,7 @@ export class DefaultSocket implements Socket {
       readonly useSSL: boolean = false,
       public verbose: boolean = false,
       readonly adapter : WebSocketAdapter = new WebSocketAdapterText(),
-      readonly sendTimeoutSec : number = 10
+      readonly sendTimeoutMs : number = DefaultSocket.DefaultSendTimeoutMs
       ) {
     this.cIds = {};
     this.nextCid = 1;
@@ -735,7 +737,7 @@ export class DefaultSocket implements Socket {
     return cid;
   }
 
-  connect(session: Session, createStatus: boolean = false, connectTimeoutSec: number = 30): Promise<Session> {
+  connect(session: Session, createStatus: boolean = false, connectTimeoutMs: number = DefaultSocket.DefaultConnectTimeoutMs): Promise<Session> {
     if (this.adapter.isOpen()) {
       return Promise.resolve(session);
     }
@@ -839,7 +841,7 @@ export class DefaultSocket implements Socket {
       window.setTimeout(() => {
         reject("The socket timed out when trying to connect.");
         this.adapter.close();
-      }, connectTimeoutSec * 1000);
+      }, connectTimeoutMs);
     });
   }
 
@@ -979,7 +981,7 @@ export class DefaultSocket implements Socket {
     ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd |
     MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin |
     PartyJoinRequestList | PartyLeave | PartyMatchmakerAdd | PartyMatchmakerRemove | PartyPromote |
-    PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate | Ping, sendTimeout = this.sendTimeoutSec * 1000): Promise<any> {
+    PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate | Ping, sendTimeout = DefaultSocket.DefaultSendTimeoutMs): Promise<any> {
     const untypedMessage = message as any;
 
     return new Promise<void>((resolve, reject) => {

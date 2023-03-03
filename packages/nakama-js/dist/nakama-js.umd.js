@@ -3791,17 +3791,17 @@
    */
   /** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
   var DefaultSocket = /** @class */ (function () {
-      function DefaultSocket(host, port, useSSL, verbose, adapter, sendTimeoutSec) {
+      function DefaultSocket(host, port, useSSL, verbose, adapter, sendTimeoutMs) {
           if (useSSL === void 0) { useSSL = false; }
           if (verbose === void 0) { verbose = false; }
           if (adapter === void 0) { adapter = new WebSocketAdapterText(); }
-          if (sendTimeoutSec === void 0) { sendTimeoutSec = 10; }
+          if (sendTimeoutMs === void 0) { sendTimeoutMs = 10; }
           this.host = host;
           this.port = port;
           this.useSSL = useSSL;
           this.verbose = verbose;
           this.adapter = adapter;
-          this.sendTimeoutSec = sendTimeoutSec;
+          this.sendTimeoutMs = sendTimeoutMs;
           this.cIds = {};
           this.nextCid = 1;
           this._heartbeatTimeoutMs = DefaultSocket.DefaultHeartbeatTimeoutMs;
@@ -3811,10 +3811,10 @@
           ++this.nextCid;
           return cid;
       };
-      DefaultSocket.prototype.connect = function (session, createStatus, connectTimeoutSec) {
+      DefaultSocket.prototype.connect = function (session, createStatus, connectTimeoutMs) {
           var _this = this;
           if (createStatus === void 0) { createStatus = false; }
-          if (connectTimeoutSec === void 0) { connectTimeoutSec = 30; }
+          if (connectTimeoutMs === void 0) { connectTimeoutMs = DefaultSocket.DefaultConnectTimeoutMs; }
           if (this.adapter.isOpen()) {
               return Promise.resolve(session);
           }
@@ -3927,7 +3927,7 @@
               window.setTimeout(function () {
                   reject("The socket timed out when trying to connect.");
                   _this.adapter.close();
-              }, connectTimeoutSec * 1000);
+              }, connectTimeoutMs);
           });
       };
       DefaultSocket.prototype.disconnect = function (fireDisconnectEvent) {
@@ -4042,7 +4042,7 @@
       };
       DefaultSocket.prototype.send = function (message, sendTimeout) {
           var _this = this;
-          if (sendTimeout === void 0) { sendTimeout = this.sendTimeoutSec * 1000; }
+          if (sendTimeout === void 0) { sendTimeout = DefaultSocket.DefaultSendTimeoutMs; }
           var untypedMessage = message;
           return new Promise(function (resolve, reject) {
               if (!_this.adapter.isOpen()) {
@@ -4402,7 +4402,9 @@
               });
           });
       };
-      DefaultSocket.DefaultHeartbeatTimeoutMs = 5000;
+      DefaultSocket.DefaultHeartbeatTimeoutMs = 10000;
+      DefaultSocket.DefaultSendTimeoutMs = 10000;
+      DefaultSocket.DefaultConnectTimeoutMs = 30000;
       return DefaultSocket;
   }());
 
@@ -4665,11 +4667,12 @@
           });
       };
       /** A socket created with the client's configuration. */
-      Client.prototype.createSocket = function (useSSL, verbose, adapter, sendTimeoutSec) {
+      Client.prototype.createSocket = function (useSSL, verbose, adapter, sendTimeoutMs) {
           if (useSSL === void 0) { useSSL = false; }
           if (verbose === void 0) { verbose = false; }
           if (adapter === void 0) { adapter = new WebSocketAdapterText(); }
-          return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter, sendTimeoutSec);
+          if (sendTimeoutMs === void 0) { sendTimeoutMs = DefaultSocket.DefaultSendTimeoutMs; }
+          return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter, sendTimeoutMs);
       };
       /** Delete one or more users by ID or username. */
       Client.prototype.deleteFriends = function (session, ids, usernames) {

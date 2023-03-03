@@ -11,8 +11,8 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 - The socket will now automatically heartbeat with the server from within `nakama-js`. If the server doesn't reply after a heartbeat timeout has elapsed, `ondisconnect` will be called. This should resolve issues with the socket detecting lack of internet connectivity in Chrome. You can configure the heartbeat tiemout with `setHeartbeatTimeoutMs(ms : number) : void`.
 
-- You can now pass a `connectTimeoutSec` to the socket `connect` call in order to set a connect timeout.
-- You can now pass a `sendTimeoutSec` to the socket constructor to detect timeouts for socket calls that expect a response.
+- You can now pass a `connectTimeoutMs` to the socket `connect` call in order to set a connect timeout.
+- You can now pass a `sendTimeoutMs` to the socket constructor to detect timeouts for socket calls that expect a response.
 
 The connect, send, and heartbeat timeouts are set to sensible default values.
 

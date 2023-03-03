@@ -3088,13 +3088,13 @@ var nakamajs = (() => {
 
   // socket.ts
   var _DefaultSocket = class {
-    constructor(host, port, useSSL = false, verbose = false, adapter = new WebSocketAdapterText(), sendTimeoutSec = 10) {
+    constructor(host, port, useSSL = false, verbose = false, adapter = new WebSocketAdapterText(), sendTimeoutMs = 10) {
       this.host = host;
       this.port = port;
       this.useSSL = useSSL;
       this.verbose = verbose;
       this.adapter = adapter;
-      this.sendTimeoutSec = sendTimeoutSec;
+      this.sendTimeoutMs = sendTimeoutMs;
       this.cIds = {};
       this.nextCid = 1;
       this._heartbeatTimeoutMs = _DefaultSocket.DefaultHeartbeatTimeoutMs;
@@ -3104,7 +3104,7 @@ var nakamajs = (() => {
       ++this.nextCid;
       return cid;
     }
-    connect(session, createStatus = false, connectTimeoutSec = 30) {
+    connect(session, createStatus = false, connectTimeoutMs = _DefaultSocket.DefaultConnectTimeoutMs) {
       if (this.adapter.isOpen()) {
         return Promise.resolve(session);
       }
@@ -3197,7 +3197,7 @@ var nakamajs = (() => {
         window.setTimeout(() => {
           reject("The socket timed out when trying to connect.");
           this.adapter.close();
-        }, connectTimeoutSec * 1e3);
+        }, connectTimeoutMs);
       });
     }
     disconnect(fireDisconnectEvent = true) {
@@ -3309,7 +3309,7 @@ var nakamajs = (() => {
         console.log(streamData);
       }
     }
-    send(message, sendTimeout = this.sendTimeoutSec * 1e3) {
+    send(message, sendTimeout = _DefaultSocket.DefaultSendTimeoutMs) {
       const untypedMessage = message;
       return new Promise((resolve, reject) => {
         if (!this.adapter.isOpen()) {
@@ -3554,7 +3554,9 @@ var nakamajs = (() => {
     }
   };
   var DefaultSocket = _DefaultSocket;
-  DefaultSocket.DefaultHeartbeatTimeoutMs = 5e3;
+  DefaultSocket.DefaultHeartbeatTimeoutMs = 1e4;
+  DefaultSocket.DefaultSendTimeoutMs = 1e4;
+  DefaultSocket.DefaultConnectTimeoutMs = 3e4;
 
   // client.ts
   var DEFAULT_HOST = "127.0.0.1";
@@ -3748,8 +3750,8 @@ var nakamajs = (() => {
       });
     }
     /** A socket created with the client's configuration. */
-    createSocket(useSSL = false, verbose = false, adapter = new WebSocketAdapterText(), sendTimeoutSec) {
-      return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter, sendTimeoutSec);
+    createSocket(useSSL = false, verbose = false, adapter = new WebSocketAdapterText(), sendTimeoutMs = DefaultSocket.DefaultSendTimeoutMs) {
+      return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter, sendTimeoutMs);
     }
     /** Delete one or more users by ID or username. */
     deleteFriends(session, ids, usernames) {
