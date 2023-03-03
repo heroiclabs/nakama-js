@@ -9288,7 +9288,6 @@ if (import_minimal4.default.util.Long !== import_long2.default) {
 // web_socket_adapter_pb.ts
 var WebSocketAdapterPb = class {
   constructor() {
-    this._isConnected = false;
   }
   get onClose() {
     return this._socket.onclose;
@@ -9331,11 +9330,11 @@ var WebSocketAdapterPb = class {
   set onOpen(value) {
     this._socket.onopen = value;
   }
-  get isConnected() {
-    return this._isConnected;
+  isOpen() {
+    var _a;
+    return ((_a = this._socket) == null ? void 0 : _a.readyState) == WebSocket.OPEN;
   }
   close() {
-    this._isConnected = false;
     this._socket.close();
     this._socket = void 0;
   }
@@ -9343,7 +9342,6 @@ var WebSocketAdapterPb = class {
     const url = `${scheme}${host}:${port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(token)}&format=protobuf`;
     this._socket = new WebSocket(url);
     this._socket.binaryType = "arraybuffer";
-    this._isConnected = true;
   }
   send(msg) {
     if (msg.match_data_send) {

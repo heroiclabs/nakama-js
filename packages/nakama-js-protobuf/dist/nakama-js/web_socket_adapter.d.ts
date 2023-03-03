@@ -33,7 +33,7 @@ export interface WebSocketAdapter {
      * Dispatched when the web socket opens.
      */
     onOpen: SocketOpenHandler | null;
-    readonly isConnected: boolean;
+    isOpen(): boolean;
     close(): void;
     connect(scheme: string, host: string, port: string, createStatus: boolean, token: string): void;
     send(message: any): void;
@@ -67,7 +67,6 @@ export interface SocketOpenHandler {
  * A text-based socket adapter that accepts and transmits payloads over UTF-8.
  */
 export declare class WebSocketAdapterText implements WebSocketAdapter {
-    private _isConnected;
     private _socket?;
     get onClose(): SocketCloseHandler | null;
     set onClose(value: SocketCloseHandler | null);
@@ -77,7 +76,7 @@ export declare class WebSocketAdapterText implements WebSocketAdapter {
     set onMessage(value: SocketMessageHandler | null);
     get onOpen(): SocketOpenHandler | null;
     set onOpen(value: SocketOpenHandler | null);
-    get isConnected(): boolean;
+    isOpen(): boolean;
     connect(scheme: string, host: string, port: string, createStatus: boolean, token: string): void;
     close(): void;
     send(msg: any): void;
