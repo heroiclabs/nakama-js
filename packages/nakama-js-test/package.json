@@ -7,7 +7,8 @@
     "dependencies": {
         "@heroiclabs/nakama-js": "file:../nakama-js",
         "@heroiclabs/nakama-js-protobuf": "file:../nakama-js-protobuf",
-        "merge": "^2.1.1"
+        "merge": "^2.1.1",
+        "base64url": "3.0.1"
     },
     "devDependencies": {
         "@types/expect-puppeteer": "^4.4.5",

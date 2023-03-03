@@ -5,7 +5,8 @@
     "private": true,
     "license": "Apache-2.0",
     "dependencies": {
-        "@heroiclabs/satori-js": "file:../satori-js"
+        "@heroiclabs/satori-js": "file:../satori-js",
+        "base64url": "3.0.1"
     },
     "scripts": {
         "test": "npx typescript --project tsconfig.test.json && jest --runInBand"
