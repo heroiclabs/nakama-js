@@ -838,7 +838,7 @@ export class DefaultSocket implements Socket {
       }
 
 
-      window.setTimeout(() => {
+      setTimeout(() => {
         // if promise has resolved by now, the reject() is a no-op
         reject("The socket timed out when trying to connect.");
       }, connectTimeoutMs);
@@ -1007,7 +1007,7 @@ export class DefaultSocket implements Socket {
 
           const cid = this.generatecid();
           this.cIds[cid] = {resolve, reject};
-          window.setTimeout(() => {
+          setTimeout(() => {
             reject("The socket timed out while waiting for a response.")
           }, sendTimeout);
 
@@ -1238,6 +1238,6 @@ export class DefaultSocket implements Socket {
 
     // reuse the timeout as the interval for now.
     // we can separate them out into separate values if needed later.
-    window.setTimeout(() => this.pingPong(), this._heartbeatTimeoutMs);
+    setTimeout(() => this.pingPong(), this._heartbeatTimeoutMs);
   }
 };
