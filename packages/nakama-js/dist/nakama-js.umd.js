@@ -3924,7 +3924,7 @@
                   reject(evt);
                   _this.adapter.close();
               };
-              window.setTimeout(function () {
+              setTimeout(function () {
                   // if promise has resolved by now, the reject() is a no-op
                   reject("The socket timed out when trying to connect.");
               }, connectTimeoutMs);
@@ -4066,7 +4066,7 @@
                       }
                       var cid = _this.generatecid();
                       _this.cIds[cid] = { resolve: resolve, reject: reject };
-                      window.setTimeout(function () {
+                      setTimeout(function () {
                           reject("The socket timed out while waiting for a response.");
                       }, sendTimeout);
                       /** Add id for promise executor. */
@@ -4396,7 +4396,7 @@
                       case 4:
                           // reuse the timeout as the interval for now.
                           // we can separate them out into separate values if needed later.
-                          window.setTimeout(function () { return _this.pingPong(); }, this._heartbeatTimeoutMs);
+                          setTimeout(function () { return _this.pingPong(); }, this._heartbeatTimeoutMs);
                           return [2 /*return*/];
                   }
               });
