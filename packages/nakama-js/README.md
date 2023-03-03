@@ -152,9 +152,6 @@ const message = { "hello": "world" };
 socket.writeChatMessage(channel.channel.id, message);
 ```
 
-You can pass a `connectTimeoutSec` to the socket `connect` call in order to set a connect timeout. You can pass a `sendTimeoutSec` to the socket constructor to detect timeouts for socket calls that expect a response. These
-are currently set to sensible default values.
-
 ## Contribute
 
 The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested in enhancing the code please open an issue to discuss the changes or drop in and discuss it in the [community forum](https://forum.heroiclabs.com).

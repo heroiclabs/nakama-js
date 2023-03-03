@@ -3016,9 +3016,6 @@ var decode2 = function(base64) {
 
 // web_socket_adapter.ts
 var WebSocketAdapterText = class {
-  constructor() {
-    this._isConnected = false;
-  }
   get onClose() {
     return this._socket.onclose;
   }
@@ -3055,16 +3052,15 @@ var WebSocketAdapterText = class {
   set onOpen(value) {
     this._socket.onopen = value;
   }
-  get isConnected() {
-    return this._isConnected;
+  isOpen() {
+    var _a;
+    return ((_a = this._socket) == null ? void 0 : _a.readyState) == WebSocket.OPEN;
   }
   connect(scheme, host, port, createStatus, token) {
     const url = `${scheme}${host}:${port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(token)}`;
     this._socket = new WebSocket(url);
-    this._isConnected = true;
   }
   close() {
-    this._isConnected = false;
     this._socket.close();
     this._socket = void 0;
   }
@@ -3092,24 +3088,24 @@ var WebSocketAdapterText = class {
 
 // socket.ts
 var _DefaultSocket = class {
-  constructor(host, port, useSSL = false, verbose = false, adapter = new WebSocketAdapterText()) {
+  constructor(host, port, useSSL = false, verbose = false, adapter = new WebSocketAdapterText(), sendTimeoutSec = 10) {
     this.host = host;
     this.port = port;
     this.useSSL = useSSL;
     this.verbose = verbose;
     this.adapter = adapter;
+    this.sendTimeoutSec = sendTimeoutSec;
     this.cIds = {};
     this.nextCid = 1;
-    this._heartbeatIntervalMs = _DefaultSocket.DefaultHeartbeatIntervalMs;
-    this._receivedPong = false;
+    this._heartbeatTimeoutMs = _DefaultSocket.DefaultHeartbeatTimeoutMs;
   }
   generatecid() {
     const cid = this.nextCid.toString();
     ++this.nextCid;
     return cid;
   }
-  connect(session, createStatus = false) {
-    if (this.adapter.isConnected) {
+  connect(session, createStatus = false, connectTimeoutSec = 30) {
+    if (this.adapter.isOpen()) {
       return Promise.resolve(session);
     }
     const scheme = this.useSSL ? "wss://" : "ws://";
@@ -3165,8 +3161,6 @@ var _DefaultSocket = class {
           this.onpartypresence(message.party_presence_event);
         } else if (message.party) {
           this.onparty(message.party);
-        } else if (message.pong) {
-          this._receivedPong = true;
         } else {
           if (this.verbose && window && window.console) {
             console.log("Unrecognized message received: %o", message);
@@ -3200,21 +3194,25 @@ var _DefaultSocket = class {
         reject(evt);
         this.adapter.close();
       };
+      window.setTimeout(() => {
+        reject("The socket timed out when trying to connect.");
+        this.adapter.close();
+      }, connectTimeoutSec * 1e3);
     });
   }
   disconnect(fireDisconnectEvent = true) {
-    if (this.adapter.isConnected) {
+    if (this.adapter.isOpen()) {
       this.adapter.close();
     }
     if (fireDisconnectEvent) {
       this.ondisconnect({});
     }
   }
-  setHeartbeatIntervalMs(ms) {
-    this._heartbeatIntervalMs = ms;
+  setHeartbeatTimeoutMs(ms) {
+    this._heartbeatTimeoutMs = ms;
   }
-  getHeartbeatIntervalMs() {
-    return this._heartbeatIntervalMs;
+  getHeartbeatTimeoutMs() {
+    return this._heartbeatTimeoutMs;
   }
   ondisconnect(evt) {
     if (this.verbose && window && window.console) {
@@ -3311,10 +3309,10 @@ var _DefaultSocket = class {
       console.log(streamData);
     }
   }
-  send(message) {
+  send(message, sendTimeout = this.sendTimeoutSec * 1e3) {
     const untypedMessage = message;
     return new Promise((resolve, reject) => {
-      if (!this.adapter.isConnected) {
+      if (!this.adapter.isOpen()) {
         reject("Socket connection has not been established yet.");
       } else {
         if (untypedMessage.match_data_send) {
@@ -3331,6 +3329,9 @@ var _DefaultSocket = class {
           }
           const cid = this.generatecid();
           this.cIds[cid] = { resolve, reject };
+          window.setTimeout(() => {
+            reject("The socket timed out while waiting for a response.");
+          }, sendTimeout);
           untypedMessage.cid = cid;
           this.adapter.send(untypedMessage);
         }
@@ -3533,29 +3534,27 @@ var _DefaultSocket = class {
     });
   }
   pingPong() {
-    console.log("pingpong called");
-    if (!this.adapter.isConnected) {
-      return;
-    }
-    this._receivedPong = false;
-    this.send({ ping: {} });
-    window.setTimeout(() => {
-      if (!this.adapter.isConnected) {
+    return __async(this, null, function* () {
+      if (!this.adapter.isOpen()) {
         return;
       }
-      if (this._receivedPong) {
-        this.pingPong();
-      } else {
-        if (window && window.console) {
-          console.error("Server did not reply to heartbeat.");
+      try {
+        yield this.send({ ping: {} }, this._heartbeatTimeoutMs);
+      } catch (e) {
+        if (this.adapter.isOpen()) {
+          if (window && window.console) {
+            console.error("Server unreachable from heartbeat.");
+          }
+          this.adapter.close();
         }
-        this.adapter.close();
+        return;
       }
-    }, this._heartbeatIntervalMs);
+      window.setTimeout(() => this.pingPong(), this._heartbeatTimeoutMs);
+    });
   }
 };
 var DefaultSocket = _DefaultSocket;
-DefaultSocket.DefaultHeartbeatIntervalMs = 5e3;
+DefaultSocket.DefaultHeartbeatTimeoutMs = 5e3;
 
 // client.ts
 var DEFAULT_HOST = "127.0.0.1";
@@ -3749,8 +3748,8 @@ var Client = class {
     });
   }
   /** A socket created with the client's configuration. */
-  createSocket(useSSL = false, verbose = false, adapter = new WebSocketAdapterText()) {
-    return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter);
+  createSocket(useSSL = false, verbose = false, adapter = new WebSocketAdapterText(), sendTimeoutSec) {
+    return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter, sendTimeoutSec);
   }
   /** Delete one or more users by ID or username. */
   deleteFriends(session, ids, usernames) {

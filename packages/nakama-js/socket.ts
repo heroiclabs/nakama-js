@@ -693,11 +693,11 @@ export interface Socket {
   /** Receive channel presence updates. */
   onchannelpresence: (channelPresence: ChannelPresenceEvent) => void;
 
-  /* Set the heartbeat interval used by the socket to detect if it has lost connectivity to the server. */
-  setHeartbeatIntervalMs(ms : number) : void;
+  /* Set the heartbeat timeout used by the socket to detect if it has lost connectivity to the server. */
+  setHeartbeatTimeoutMs(ms : number) : void;
 
-  /* Get the heartbeat interval used by the socket to detect if it has lost connectivity to the server. */
-  getHeartbeatIntervalMs() :  number;
+  /* Get the heartbeat timeout used by the socket to detect if it has lost connectivity to the server. */
+  getHeartbeatTimeoutMs() :  number;
 }
 
 /** Reports an error received from a socket message. */
@@ -710,11 +710,11 @@ export interface SocketError {
 
 /** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
 export class DefaultSocket implements Socket {
-  public static readonly DefaultHeartbeatIntervalMs = 5000;
+  public static readonly DefaultHeartbeatTimeoutMs = 5000;
 
   private readonly cIds: { [key: string]: PromiseExecutor };
   private nextCid: number;
-  private _heartbeatIntervalMs: number;
+  private _heartbeatTimeoutMs: number;
 
   constructor(
       readonly host: string,
@@ -726,7 +726,7 @@ export class DefaultSocket implements Socket {
       ) {
     this.cIds = {};
     this.nextCid = 1;
-    this._heartbeatIntervalMs = DefaultSocket.DefaultHeartbeatIntervalMs;
+    this._heartbeatTimeoutMs = DefaultSocket.DefaultHeartbeatTimeoutMs;
   }
 
   generatecid(): string {
@@ -736,7 +736,7 @@ export class DefaultSocket implements Socket {
   }
 
   connect(session: Session, createStatus: boolean = false, connectTimeoutSec: number = 30): Promise<Session> {
-    if (this.adapter.isConnected) {
+    if (this.adapter.isOpen()) {
       return Promise.resolve(session);
     }
 
@@ -844,7 +844,7 @@ export class DefaultSocket implements Socket {
   }
 
   disconnect(fireDisconnectEvent: boolean = true) {
-    if (this.adapter.isConnected) {
+    if (this.adapter.isOpen()) {
       this.adapter.close();
     }
     if (fireDisconnectEvent) {
@@ -852,12 +852,12 @@ export class DefaultSocket implements Socket {
     }
   }
 
-  setHeartbeatIntervalMs(ms : number) {
-    this._heartbeatIntervalMs = ms;
+  setHeartbeatTimeoutMs(ms : number) {
+    this._heartbeatTimeoutMs = ms;
   }
 
-  getHeartbeatIntervalMs() :  number {
-    return this._heartbeatIntervalMs;
+  getHeartbeatTimeoutMs() :  number {
+    return this._heartbeatTimeoutMs;
   }
 
   ondisconnect(evt: Event) {
@@ -979,11 +979,11 @@ export class DefaultSocket implements Socket {
     ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd |
     MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin |
     PartyJoinRequestList | PartyLeave | PartyMatchmakerAdd | PartyMatchmakerRemove | PartyPromote |
-    PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate | Ping): Promise<any> {
+    PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate | Ping, sendTimeout = this.sendTimeoutSec * 1000): Promise<any> {
     const untypedMessage = message as any;
 
     return new Promise<void>((resolve, reject) => {
-      if (!this.adapter.isConnected) {
+      if (!this.adapter.isOpen()) {
         reject("Socket connection has not been established yet.");
       }
       else {
@@ -1007,7 +1007,7 @@ export class DefaultSocket implements Socket {
           this.cIds[cid] = {resolve, reject};
           window.setTimeout(() => {
             reject("The socket timed out while waiting for a response.")
-          }, this.sendTimeoutSec * 1000);
+          }, sendTimeout);
 
           /** Add id for promise executor. */
           untypedMessage.cid = cid;
@@ -1217,21 +1217,25 @@ export class DefaultSocket implements Socket {
   }
 
   private async pingPong() : Promise<void> {
-    if (!this.adapter.isConnected) {
-      return;
+    if (!this.adapter.isOpen()) {
+        return;
     }
 
-
-    window.setTimeout(() => {
-        if (window && window.console) {
-            console.error("Server did not reply to heartbeat.");
+    try {
+        await this.send({ping: {}}, this._heartbeatTimeoutMs);
+    } catch {
+        if (this.adapter.isOpen()) {
+            if (window && window.console) {
+                console.error("Server unreachable from heartbeat.");
+            }
+            this.adapter.close();
         }
 
-        this.adapter.close();
-    });
+        return;
+    }
 
-    await this.send({ping: {}});
-    this._heartbeatIntervalMs
-    this.pingPong();
+    // reuse the timeout as the interval for now.
+    // we can separate them out into separate values if needed later.
+    window.setTimeout(() => this.pingPong(), this._heartbeatTimeoutMs);
   }
 };

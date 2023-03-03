@@ -22,8 +22,6 @@ import * as tsproto from "./rtapi/realtime"
  */
 export class WebSocketAdapterPb implements WebSocketAdapter {
 
-    private _isConnected: boolean = false;
-
     private _socket?: WebSocket;
 
     constructor() {
@@ -84,12 +82,11 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
         this._socket!.onopen = value;
     }
 
-    get isConnected(): boolean {
-        return this._isConnected;
+    get isOpen(): boolean {
+        return this._socket?.readyState == WebSocket.OPEN;
     }
 
     close() {
-        this._isConnected = false;
         this._socket!.close();
         this._socket = undefined;
     }
@@ -98,7 +95,6 @@ export class WebSocketAdapterPb implements WebSocketAdapter {
         const url = `${scheme}${host}:${port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(token)}&format=protobuf`;
         this._socket = new WebSocket(url);
         this._socket.binaryType = "arraybuffer";
-        this._isConnected = true;
     }
 
     send(msg: any): void {

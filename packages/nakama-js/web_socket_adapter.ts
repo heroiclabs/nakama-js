@@ -42,7 +42,7 @@ export interface WebSocketAdapter {
      */
     onOpen : SocketOpenHandler | null;
 
-    readonly isConnected: boolean;
+    isOpen(): boolean;
     close() : void;
     connect(scheme: string, host: string, port : string, createStatus: boolean, token : string) : void;
     send(message: any) : void;
@@ -81,9 +81,6 @@ export interface SocketOpenHandler {
  * A text-based socket adapter that accepts and transmits payloads over UTF-8.
  */
 export class WebSocketAdapterText implements WebSocketAdapter {
-
-    private _isConnected: boolean = false;
-
     private _socket?: WebSocket;
 
     get onClose(): SocketCloseHandler | null {
@@ -133,18 +130,16 @@ export class WebSocketAdapterText implements WebSocketAdapter {
         this._socket!.onopen = value;
     }
 
-    get isConnected(): boolean {
-        return this._isConnected;
+    isOpen(): boolean {
+        return this._socket?.readyState == WebSocket.OPEN;
     }
 
     connect(scheme: string, host: string, port: string, createStatus: boolean, token: string): void {
         const url = `${scheme}${host}:${port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(token)}`;
         this._socket = new WebSocket(url);
-        this._isConnected = true;
     }
 
     close() {
-        this._isConnected = false;
         this._socket!.close();
         this._socket = undefined;
     }

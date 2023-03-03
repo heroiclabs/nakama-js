@@ -3679,7 +3679,6 @@
    */
   var WebSocketAdapterText = /** @class */ (function () {
       function WebSocketAdapterText() {
-          this._isConnected = false;
       }
       Object.defineProperty(WebSocketAdapterText.prototype, "onClose", {
           get: function () {
@@ -3735,20 +3734,15 @@
           enumerable: false,
           configurable: true
       });
-      Object.defineProperty(WebSocketAdapterText.prototype, "isConnected", {
-          get: function () {
-              return this._isConnected;
-          },
-          enumerable: false,
-          configurable: true
-      });
+      WebSocketAdapterText.prototype.isOpen = function () {
+          var _a;
+          return ((_a = this._socket) === null || _a === void 0 ? void 0 : _a.readyState) == WebSocket.OPEN;
+      };
       WebSocketAdapterText.prototype.connect = function (scheme, host, port, createStatus, token) {
           var url = "".concat(scheme).concat(host, ":").concat(port, "/ws?lang=en&status=").concat(encodeURIComponent(createStatus.toString()), "&token=").concat(encodeURIComponent(token));
           this._socket = new WebSocket(url);
-          this._isConnected = true;
       };
       WebSocketAdapterText.prototype.close = function () {
-          this._isConnected = false;
           this._socket.close();
           this._socket = undefined;
       };
@@ -3797,29 +3791,31 @@
    */
   /** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
   var DefaultSocket = /** @class */ (function () {
-      function DefaultSocket(host, port, useSSL, verbose, adapter) {
+      function DefaultSocket(host, port, useSSL, verbose, adapter, sendTimeoutSec) {
           if (useSSL === void 0) { useSSL = false; }
           if (verbose === void 0) { verbose = false; }
           if (adapter === void 0) { adapter = new WebSocketAdapterText(); }
+          if (sendTimeoutSec === void 0) { sendTimeoutSec = 10; }
           this.host = host;
           this.port = port;
           this.useSSL = useSSL;
           this.verbose = verbose;
           this.adapter = adapter;
+          this.sendTimeoutSec = sendTimeoutSec;
           this.cIds = {};
           this.nextCid = 1;
-          this._heartbeatIntervalMs = DefaultSocket.DefaultHeartbeatIntervalMs;
-          this._receivedPong = false;
+          this._heartbeatTimeoutMs = DefaultSocket.DefaultHeartbeatTimeoutMs;
       }
       DefaultSocket.prototype.generatecid = function () {
           var cid = this.nextCid.toString();
           ++this.nextCid;
           return cid;
       };
-      DefaultSocket.prototype.connect = function (session, createStatus) {
+      DefaultSocket.prototype.connect = function (session, createStatus, connectTimeoutSec) {
           var _this = this;
           if (createStatus === void 0) { createStatus = false; }
-          if (this.adapter.isConnected) {
+          if (connectTimeoutSec === void 0) { connectTimeoutSec = 30; }
+          if (this.adapter.isOpen()) {
               return Promise.resolve(session);
           }
           var scheme = (this.useSSL) ? "wss://" : "ws://";
@@ -3893,9 +3889,6 @@
                   else if (message.party) {
                       _this.onparty(message.party);
                   }
-                  else if (message.pong) {
-                      _this._receivedPong = true;
-                  }
                   else {
                       if (_this.verbose && window && window.console) {
                           console.log("Unrecognized message received: %o", message);
@@ -3931,22 +3924,26 @@
                   reject(evt);
                   _this.adapter.close();
               };
+              window.setTimeout(function () {
+                  reject("The socket timed out when trying to connect.");
+                  _this.adapter.close();
+              }, connectTimeoutSec * 1000);
           });
       };
       DefaultSocket.prototype.disconnect = function (fireDisconnectEvent) {
           if (fireDisconnectEvent === void 0) { fireDisconnectEvent = true; }
-          if (this.adapter.isConnected) {
+          if (this.adapter.isOpen()) {
               this.adapter.close();
           }
           if (fireDisconnectEvent) {
               this.ondisconnect({});
           }
       };
-      DefaultSocket.prototype.setHeartbeatIntervalMs = function (ms) {
-          this._heartbeatIntervalMs = ms;
+      DefaultSocket.prototype.setHeartbeatTimeoutMs = function (ms) {
+          this._heartbeatTimeoutMs = ms;
       };
-      DefaultSocket.prototype.getHeartbeatIntervalMs = function () {
-          return this._heartbeatIntervalMs;
+      DefaultSocket.prototype.getHeartbeatTimeoutMs = function () {
+          return this._heartbeatTimeoutMs;
       };
       DefaultSocket.prototype.ondisconnect = function (evt) {
           if (this.verbose && window && window.console) {
@@ -4043,11 +4040,12 @@
               console.log(streamData);
           }
       };
-      DefaultSocket.prototype.send = function (message) {
+      DefaultSocket.prototype.send = function (message, sendTimeout) {
           var _this = this;
+          if (sendTimeout === void 0) { sendTimeout = this.sendTimeoutSec * 1000; }
           var untypedMessage = message;
           return new Promise(function (resolve, reject) {
-              if (!_this.adapter.isConnected) {
+              if (!_this.adapter.isOpen()) {
                   reject("Socket connection has not been established yet.");
               }
               else {
@@ -4068,6 +4066,9 @@
                       }
                       var cid = _this.generatecid();
                       _this.cIds[cid] = { resolve: resolve, reject: reject };
+                      window.setTimeout(function () {
+                          reject("The socket timed out while waiting for a response.");
+                      }, sendTimeout);
                       /** Add id for promise executor. */
                       untypedMessage.cid = cid;
                       _this.adapter.send(untypedMessage);
@@ -4368,29 +4369,40 @@
           });
       };
       DefaultSocket.prototype.pingPong = function () {
-          var _this = this;
-          console.log("pingpong called");
-          if (!this.adapter.isConnected) {
-              return;
-          }
-          this._receivedPong = false;
-          this.send({ ping: {} });
-          window.setTimeout(function () {
-              if (!_this.adapter.isConnected) {
-                  return;
-              }
-              if (_this._receivedPong) {
-                  _this.pingPong();
-              }
-              else {
-                  if (window && window.console) {
-                      console.error("Server did not reply to heartbeat.");
+          return __awaiter(this, void 0, void 0, function () {
+              var _this = this;
+              return __generator(this, function (_b) {
+                  switch (_b.label) {
+                      case 0:
+                          if (!this.adapter.isOpen()) {
+                              return [2 /*return*/];
+                          }
+                          _b.label = 1;
+                      case 1:
+                          _b.trys.push([1, 3, , 4]);
+                          return [4 /*yield*/, this.send({ ping: {} }, this._heartbeatTimeoutMs)];
+                      case 2:
+                          _b.sent();
+                          return [3 /*break*/, 4];
+                      case 3:
+                          _b.sent();
+                          if (this.adapter.isOpen()) {
+                              if (window && window.console) {
+                                  console.error("Server unreachable from heartbeat.");
+                              }
+                              this.adapter.close();
+                          }
+                          return [2 /*return*/];
+                      case 4:
+                          // reuse the timeout as the interval for now.
+                          // we can separate them out into separate values if needed later.
+                          window.setTimeout(function () { return _this.pingPong(); }, this._heartbeatTimeoutMs);
+                          return [2 /*return*/];
                   }
-                  _this.adapter.close();
-              }
-          }, this._heartbeatIntervalMs);
+              });
+          });
       };
-      DefaultSocket.DefaultHeartbeatIntervalMs = 5000;
+      DefaultSocket.DefaultHeartbeatTimeoutMs = 5000;
       return DefaultSocket;
   }());
 
@@ -4653,11 +4665,11 @@
           });
       };
       /** A socket created with the client's configuration. */
-      Client.prototype.createSocket = function (useSSL, verbose, adapter) {
+      Client.prototype.createSocket = function (useSSL, verbose, adapter, sendTimeoutSec) {
           if (useSSL === void 0) { useSSL = false; }
           if (verbose === void 0) { verbose = false; }
           if (adapter === void 0) { adapter = new WebSocketAdapterText(); }
-          return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter);
+          return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter, sendTimeoutSec);
       };
       /** Delete one or more users by ID or username. */
       Client.prototype.deleteFriends = function (session, ids, usernames) {
