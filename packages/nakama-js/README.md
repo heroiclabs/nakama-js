@@ -165,8 +165,8 @@ The codebase is multi-package monorepo written in TypeScript and can be built wi
 To build from source, install dependencies and build the `nakama-js` and `nakama-js-protobuf` subrepositories:
 
 ```shell
-npm install --workspace=@heroiclabs/nakama-js && npm run build --workspace=@heroiclabs/nakama-js
-npm install --workspace=@heroiclabs/nakama-js-protobuf && npm run build --workspace=@heroiclabs/nakama-js-protobuf
+npm install --workspace=@heroiclabs/nakama-js --include-workspace-root && npm run build --workspace=@heroiclabs/nakama-js
+npm install --workspace=@heroiclabs/nakama-js-protobuf --include-workspace-root && npm run build --workspace=@heroiclabs/nakama-js-protobuf
 ```
 
 ### Run Tests

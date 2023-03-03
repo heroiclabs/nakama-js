@@ -28,8 +28,8 @@ describe('Leaderboard Tests', () => {
     const rpcid = "clientrpc.create_leaderboard"
     const operator = "set"
     const score = {
-      score: 10,
-      subscore: 1,
+      score: "10",
+      subscore: "1",
       metadata: {"key": "value"}
     };
 
@@ -55,8 +55,8 @@ describe('Leaderboard Tests', () => {
     const rpcid = "clientrpc.create_leaderboard"
     const operator = "best"
     const score = {
-      score: 10,
-      subscore: 1,
+      score: "10",
+      subscore: "1",
       metadata: {"key": "value"}
     };
 
@@ -67,8 +67,8 @@ describe('Leaderboard Tests', () => {
       const leaderboardId = (<any>result.payload).leaderboard_id;
       await client.writeLeaderboardRecord(session, leaderboardId, score)
 
-      score.score = 1;
-      score.subscore = 20;
+      score.score = "1";
+      score.subscore = "20";
       return await client.writeLeaderboardRecord(session, leaderboardId, score)
     }, customid, rpcid, operator, score);
 
@@ -86,8 +86,8 @@ describe('Leaderboard Tests', () => {
     const rpcid = "clientrpc.create_leaderboard"
     const operator = "incr"
     const score = {
-      score: 10,
-      subscore: 1,
+      score: "10",
+      subscore: "1",
       metadata: {"key": "value"}
     };
 
@@ -98,8 +98,8 @@ describe('Leaderboard Tests', () => {
       const leaderboardId = (<any>result.payload).leaderboard_id;
       await client.writeLeaderboardRecord(session, leaderboardId, score);
 
-      score.score = 1;
-      score.subscore = 5;
+      score.score = "1";
+      score.subscore = "5";
       return await client.writeLeaderboardRecord(session, leaderboardId, score)
     }, customid, rpcid, operator, score);
 
@@ -117,8 +117,8 @@ describe('Leaderboard Tests', () => {
     const rpcid = "clientrpc.create_leaderboard"
     const operator = "set"
     const score = {
-      score: 10,
-      subscore: 1,
+      score: "10",
+      subscore: "1",
       metadata: {"key": "value"}
     };
 

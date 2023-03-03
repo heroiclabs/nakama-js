@@ -18,7 +18,6 @@ import { WebSocketAdapter, SocketCloseHandler, SocketErrorHandler, SocketMessage
  * A protocol buffer socket adapter that accepts and transmits payloads using the protobuf binary wire format.
  */
 export declare class WebSocketAdapterPb implements WebSocketAdapter {
-    private _isConnected;
     private _socket?;
     constructor();
     get onClose(): SocketCloseHandler | null;
@@ -29,7 +28,7 @@ export declare class WebSocketAdapterPb implements WebSocketAdapter {
     set onMessage(value: SocketMessageHandler | null);
     get onOpen(): SocketOpenHandler | null;
     set onOpen(value: SocketOpenHandler | null);
-    get isConnected(): boolean;
+    isOpen(): boolean;
     close(): void;
     connect(scheme: string, host: string, port: string, createStatus: boolean, token: string): void;
     send(msg: any): void;

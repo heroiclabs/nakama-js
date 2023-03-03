@@ -508,6 +508,11 @@ interface Rpc {
   rpc: ApiRpc;
 }
 
+/** Application-level heartbeat ping. */
+interface Ping {
+
+}
+
 /** A snapshot of statuses for some set of users. */
 export interface Status {
   /** The user presences to view statuses of. */
@@ -687,6 +692,12 @@ export interface Socket {
 
   /** Receive channel presence updates. */
   onchannelpresence: (channelPresence: ChannelPresenceEvent) => void;
+
+  /* Set the heartbeat timeout used by the socket to detect if it has lost connectivity to the server. */
+  setHeartbeatTimeoutMs(ms : number) : void;
+
+  /* Get the heartbeat timeout used by the socket to detect if it has lost connectivity to the server. */
+  getHeartbeatTimeoutMs() :  number;
 }
 
 /** Reports an error received from a socket message. */
@@ -699,18 +710,25 @@ export interface SocketError {
 
 /** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
 export class DefaultSocket implements Socket {
+  public static readonly DefaultHeartbeatTimeoutMs = 10000;
+  public static readonly DefaultSendTimeoutMs = 10000;
+  public static readonly DefaultConnectTimeoutMs = 30000;
+
   private readonly cIds: { [key: string]: PromiseExecutor };
   private nextCid: number;
+  private _heartbeatTimeoutMs: number;
 
   constructor(
       readonly host: string,
       readonly port: string,
       readonly useSSL: boolean = false,
       public verbose: boolean = false,
-      readonly adapter : WebSocketAdapter = new WebSocketAdapterText()
+      readonly adapter : WebSocketAdapter = new WebSocketAdapterText(),
+      readonly sendTimeoutMs : number = DefaultSocket.DefaultSendTimeoutMs
       ) {
     this.cIds = {};
     this.nextCid = 1;
+    this._heartbeatTimeoutMs = DefaultSocket.DefaultHeartbeatTimeoutMs;
   }
 
   generatecid(): string {
@@ -719,8 +737,8 @@ export class DefaultSocket implements Socket {
     return cid;
   }
 
-  connect(session: Session, createStatus: boolean = false): Promise<Session> {
-    if (this.adapter.isConnected) {
+  connect(session: Session, createStatus: boolean = false, connectTimeoutMs: number = DefaultSocket.DefaultConnectTimeoutMs): Promise<Session> {
+    if (this.adapter.isOpen()) {
       return Promise.resolve(session);
     }
 
@@ -810,22 +828,38 @@ export class DefaultSocket implements Socket {
         if (this.verbose && window && window.console) {
           console.log(evt);
         }
+
+        this.pingPong();
         resolve(session);
       }
       this.adapter.onError = (evt: Event) => {
         reject(evt);
         this.adapter.close();
       }
+
+
+      window.setTimeout(() => {
+        // if promise has resolved by now, the reject() is a no-op
+        reject("The socket timed out when trying to connect.");
+      }, connectTimeoutMs);
     });
   }
 
   disconnect(fireDisconnectEvent: boolean = true) {
-    if (this.adapter.isConnected) {
+    if (this.adapter.isOpen()) {
       this.adapter.close();
     }
     if (fireDisconnectEvent) {
       this.ondisconnect(<Event>{});
     }
+  }
+
+  setHeartbeatTimeoutMs(ms : number) {
+    this._heartbeatTimeoutMs = ms;
+  }
+
+  getHeartbeatTimeoutMs() :  number {
+    return this._heartbeatTimeoutMs;
   }
 
   ondisconnect(evt: Event) {
@@ -947,11 +981,11 @@ export class DefaultSocket implements Socket {
     ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd |
     MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin |
     PartyJoinRequestList | PartyLeave | PartyMatchmakerAdd | PartyMatchmakerRemove | PartyPromote |
-    PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any> {
+    PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate | Ping, sendTimeout = DefaultSocket.DefaultSendTimeoutMs): Promise<any> {
     const untypedMessage = message as any;
 
     return new Promise<void>((resolve, reject) => {
-      if (!this.adapter.isConnected) {
+      if (!this.adapter.isOpen()) {
         reject("Socket connection has not been established yet.");
       }
       else {
@@ -973,6 +1007,9 @@ export class DefaultSocket implements Socket {
 
           const cid = this.generatecid();
           this.cIds[cid] = {resolve, reject};
+          window.setTimeout(() => {
+            reject("The socket timed out while waiting for a response.")
+          }, sendTimeout);
 
           /** Add id for promise executor. */
           untypedMessage.cid = cid;
@@ -1179,5 +1216,28 @@ export class DefaultSocket implements Socket {
   async writeChatMessage(channel_id: string, content: any): Promise<ChannelMessageAck> {
     const response = await this.send({channel_message_send: {channel_id: channel_id, content: content}});
     return response.channel_message_ack;
+  }
+
+  private async pingPong() : Promise<void> {
+    if (!this.adapter.isOpen()) {
+        return;
+    }
+
+    try {
+        await this.send({ping: {}}, this._heartbeatTimeoutMs);
+    } catch {
+        if (this.adapter.isOpen()) {
+            if (window && window.console) {
+                console.error("Server unreachable from heartbeat.");
+            }
+            this.adapter.close();
+        }
+
+        return;
+    }
+
+    // reuse the timeout as the interval for now.
+    // we can separate them out into separate values if needed later.
+    window.setTimeout(() => this.pingPong(), this._heartbeatTimeoutMs);
   }
 };

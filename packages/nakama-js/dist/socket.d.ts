@@ -458,6 +458,9 @@ interface PartyRemove {
 interface Rpc {
     rpc: ApiRpc;
 }
+/** Application-level heartbeat ping. */
+interface Ping {
+}
 /** A snapshot of statuses for some set of users. */
 export interface Status {
     /** The user presences to view statuses of. */
@@ -588,6 +591,8 @@ export interface Socket {
     onchannelmessage: (channelMessage: ChannelMessage) => void;
     /** Receive channel presence updates. */
     onchannelpresence: (channelPresence: ChannelPresenceEvent) => void;
+    setHeartbeatTimeoutMs(ms: number): void;
+    getHeartbeatTimeoutMs(): number;
 }
 /** Reports an error received from a socket message. */
 export interface SocketError {
@@ -603,12 +608,19 @@ export declare class DefaultSocket implements Socket {
     readonly useSSL: boolean;
     verbose: boolean;
     readonly adapter: WebSocketAdapter;
+    readonly sendTimeoutMs: number;
+    static readonly DefaultHeartbeatTimeoutMs = 10000;
+    static readonly DefaultSendTimeoutMs = 10000;
+    static readonly DefaultConnectTimeoutMs = 30000;
     private readonly cIds;
     private nextCid;
-    constructor(host: string, port: string, useSSL?: boolean, verbose?: boolean, adapter?: WebSocketAdapter);
+    private _heartbeatTimeoutMs;
+    constructor(host: string, port: string, useSSL?: boolean, verbose?: boolean, adapter?: WebSocketAdapter, sendTimeoutMs?: number);
     generatecid(): string;
-    connect(session: Session, createStatus?: boolean): Promise<Session>;
+    connect(session: Session, createStatus?: boolean, connectTimeoutMs?: number): Promise<Session>;
     disconnect(fireDisconnectEvent?: boolean): void;
+    setHeartbeatTimeoutMs(ms: number): void;
+    getHeartbeatTimeoutMs(): number;
     ondisconnect(evt: Event): void;
     onerror(evt: Event): void;
     onchannelmessage(channelMessage: ChannelMessage): void;
@@ -619,7 +631,7 @@ export declare class DefaultSocket implements Socket {
     onmatchmakerticket(matchmakerTicket: MatchmakerTicket): void;
     onmatchmakermatched(matchmakerMatched: MatchmakerMatched): void;
     onparty(party: Party): void;
-    onpartyclose(): void;
+    onpartyclose(close: PartyClose): void;
     onpartyjoinrequest(partyJoinRequest: PartyJoinRequest): void;
     onpartydata(partyData: PartyData): void;
     onpartyleader(partyLeader: PartyLeader): void;
@@ -628,7 +640,7 @@ export declare class DefaultSocket implements Socket {
     onstatuspresence(statusPresence: StatusPresenceEvent): void;
     onstreampresence(streamPresence: StreamPresenceEvent): void;
     onstreamdata(streamData: StreamData): void;
-    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin | PartyJoinRequestList | PartyLeave | PartyMatchmakerAdd | PartyMatchmakerRemove | PartyPromote | PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any>;
+    send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin | PartyJoinRequestList | PartyLeave | PartyMatchmakerAdd | PartyMatchmakerRemove | PartyPromote | PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate | Ping, sendTimeout?: number): Promise<any>;
     acceptPartyMember(party_id: string, presence: Presence): Promise<void>;
     addMatchmaker(query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<MatchmakerTicket>;
     addMatchmakerParty(party_id: string, query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<PartyMatchmakerTicket>;
@@ -655,5 +667,6 @@ export declare class DefaultSocket implements Socket {
     updateChatMessage(channel_id: string, message_id: string, content: any): Promise<ChannelMessageAck>;
     updateStatus(status?: string): Promise<void>;
     writeChatMessage(channel_id: string, content: any): Promise<ChannelMessageAck>;
+    private pingPong;
 }
 export {};

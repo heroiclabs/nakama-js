@@ -409,7 +409,7 @@ export declare class Client {
     /** Create a new group with the current user as the creator and superadmin. */
     createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group>;
     /** A socket created with the client's configuration. */
-    createSocket(useSSL?: boolean, verbose?: boolean, adapter?: WebSocketAdapter): Socket;
+    createSocket(useSSL?: boolean, verbose?: boolean, adapter?: WebSocketAdapter, sendTimeoutMs?: number): Socket;
     /** Delete one or more users by ID or username. */
     deleteFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     /** Delete a group the user is part of and has permissions to delete. */

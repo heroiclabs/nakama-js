@@ -66,7 +66,7 @@ describe('Channel Tests', () => {
       const channel = await socket.joinChat(channelid, 1, true, false);
 
       return await socket.leaveChat(channel.id);
-    }, customid, channelid);
+    }, customid, channelid, adapter);
 
     expect(response).not.toBeNull();
   });
@@ -88,9 +88,9 @@ describe('Channel Tests', () => {
 
       const group = await client.createGroup(session, { name: group_name, open: true });
       //chat type: 1 = room, 2 = Direct Message 3 = Group
-      const channel = await socket.joinChat(group.id, 3, true, false);
+      const channel = await socket.joinChat(group.id!, 3, true, false);
       return await socket.leaveChat(channel.id);
-    }, customid, group_name);
+    }, customid, group_name, adapter);
 
     expect(response).not.toBeNull();
   });
@@ -103,7 +103,7 @@ describe('Channel Tests', () => {
     const channelid = generateid();
     const payload = { "hello": "world" };
 
-    const message : nakamajs.ChannelMessage = await page.evaluate(async (customid, channelid, payload, adapter) => {
+    const message : nakamajs.ChannelMessage | null = await page.evaluate(async (customid, channelid, payload, adapter) => {
       const client = new nakamajs.Client();
       const socket = client.createSocket(false, false,
         adapter == AdapterType.Protobuf ? new nakamajsprotobuf.WebSocketAdapterPb() : new nakamajs.WebSocketAdapterText());
@@ -170,11 +170,11 @@ describe('Channel Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response.messages).not.toBeNull();
-    expect(response.messages.length).toBe(1);
+    expect(response.messages?.length).toBe(1);
     expect(response.cacheable_cursor).not.toBeNull();
     expect(response.cacheable_cursor).not.toBeUndefined();
 
-    response.messages.forEach(message => {
+    response.messages?.forEach(message => {
       expect(message.content).toEqual(updatedPayload);
       expect(message.code).toEqual(0);
       expect(message.persistent).toBe(true);
@@ -210,7 +210,7 @@ describe('Channel Tests', () => {
 
     expect(response).not.toBeNull();
     expect(response.messages).not.toBeNull();
-    expect(response.messages.length).toBe(0);
+    expect(response.messages!.length).toBe(0);
   });
 
 });

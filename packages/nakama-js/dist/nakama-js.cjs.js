@@ -3016,9 +3016,6 @@ var decode2 = function(base64) {
 
 // web_socket_adapter.ts
 var WebSocketAdapterText = class {
-  constructor() {
-    this._isConnected = false;
-  }
   get onClose() {
     return this._socket.onclose;
   }
@@ -3055,16 +3052,15 @@ var WebSocketAdapterText = class {
   set onOpen(value) {
     this._socket.onopen = value;
   }
-  get isConnected() {
-    return this._isConnected;
+  isOpen() {
+    var _a;
+    return ((_a = this._socket) == null ? void 0 : _a.readyState) == WebSocket.OPEN;
   }
   connect(scheme, host, port, createStatus, token) {
     const url = `${scheme}${host}:${port}/ws?lang=en&status=${encodeURIComponent(createStatus.toString())}&token=${encodeURIComponent(token)}`;
     this._socket = new WebSocket(url);
-    this._isConnected = true;
   }
   close() {
-    this._isConnected = false;
     this._socket.close();
     this._socket = void 0;
   }
@@ -3091,23 +3087,25 @@ var WebSocketAdapterText = class {
 };
 
 // socket.ts
-var DefaultSocket = class {
-  constructor(host, port, useSSL = false, verbose = false, adapter = new WebSocketAdapterText()) {
+var _DefaultSocket = class {
+  constructor(host, port, useSSL = false, verbose = false, adapter = new WebSocketAdapterText(), sendTimeoutMs = _DefaultSocket.DefaultSendTimeoutMs) {
     this.host = host;
     this.port = port;
     this.useSSL = useSSL;
     this.verbose = verbose;
     this.adapter = adapter;
+    this.sendTimeoutMs = sendTimeoutMs;
     this.cIds = {};
     this.nextCid = 1;
+    this._heartbeatTimeoutMs = _DefaultSocket.DefaultHeartbeatTimeoutMs;
   }
   generatecid() {
     const cid = this.nextCid.toString();
     ++this.nextCid;
     return cid;
   }
-  connect(session, createStatus = false) {
-    if (this.adapter.isConnected) {
+  connect(session, createStatus = false, connectTimeoutMs = _DefaultSocket.DefaultConnectTimeoutMs) {
+    if (this.adapter.isOpen()) {
       return Promise.resolve(session);
     }
     const scheme = this.useSSL ? "wss://" : "ws://";
@@ -3151,8 +3149,8 @@ var DefaultSocket = class {
         } else if (message.party_data) {
           message.party_data.op_code = parseInt(message.party_data.op_code);
           this.onpartydata(message.party_data);
-        } else if (message.on_party_close) {
-          this.onpartyclose();
+        } else if (message.party_close) {
+          this.onpartyclose(message.party_close);
         } else if (message.party_join_request) {
           this.onpartyjoinrequest(message.party_join_request);
         } else if (message.party_leader) {
@@ -3189,21 +3187,31 @@ var DefaultSocket = class {
         if (this.verbose && window && window.console) {
           console.log(evt);
         }
+        this.pingPong();
         resolve(session);
       };
       this.adapter.onError = (evt) => {
         reject(evt);
         this.adapter.close();
       };
+      window.setTimeout(() => {
+        reject("The socket timed out when trying to connect.");
+      }, connectTimeoutMs);
     });
   }
   disconnect(fireDisconnectEvent = true) {
-    if (this.adapter.isConnected) {
+    if (this.adapter.isOpen()) {
       this.adapter.close();
     }
     if (fireDisconnectEvent) {
       this.ondisconnect({});
     }
+  }
+  setHeartbeatTimeoutMs(ms) {
+    this._heartbeatTimeoutMs = ms;
+  }
+  getHeartbeatTimeoutMs() {
+    return this._heartbeatTimeoutMs;
   }
   ondisconnect(evt) {
     if (this.verbose && window && window.console) {
@@ -3255,9 +3263,9 @@ var DefaultSocket = class {
       console.log(party);
     }
   }
-  onpartyclose() {
+  onpartyclose(close) {
     if (this.verbose && window && window.console) {
-      console.log("Party closed.");
+      console.log("Party closed: " + close);
     }
   }
   onpartyjoinrequest(partyJoinRequest) {
@@ -3300,10 +3308,10 @@ var DefaultSocket = class {
       console.log(streamData);
     }
   }
-  send(message) {
+  send(message, sendTimeout = _DefaultSocket.DefaultSendTimeoutMs) {
     const untypedMessage = message;
     return new Promise((resolve, reject) => {
-      if (!this.adapter.isConnected) {
+      if (!this.adapter.isOpen()) {
         reject("Socket connection has not been established yet.");
       } else {
         if (untypedMessage.match_data_send) {
@@ -3320,6 +3328,9 @@ var DefaultSocket = class {
           }
           const cid = this.generatecid();
           this.cIds[cid] = { resolve, reject };
+          window.setTimeout(() => {
+            reject("The socket timed out while waiting for a response.");
+          }, sendTimeout);
           untypedMessage.cid = cid;
           this.adapter.send(untypedMessage);
         }
@@ -3521,7 +3532,30 @@ var DefaultSocket = class {
       return response.channel_message_ack;
     });
   }
+  pingPong() {
+    return __async(this, null, function* () {
+      if (!this.adapter.isOpen()) {
+        return;
+      }
+      try {
+        yield this.send({ ping: {} }, this._heartbeatTimeoutMs);
+      } catch (e) {
+        if (this.adapter.isOpen()) {
+          if (window && window.console) {
+            console.error("Server unreachable from heartbeat.");
+          }
+          this.adapter.close();
+        }
+        return;
+      }
+      window.setTimeout(() => this.pingPong(), this._heartbeatTimeoutMs);
+    });
+  }
 };
+var DefaultSocket = _DefaultSocket;
+DefaultSocket.DefaultHeartbeatTimeoutMs = 1e4;
+DefaultSocket.DefaultSendTimeoutMs = 1e4;
+DefaultSocket.DefaultConnectTimeoutMs = 3e4;
 
 // client.ts
 var DEFAULT_HOST = "127.0.0.1";
@@ -3715,8 +3749,8 @@ var Client = class {
     });
   }
   /** A socket created with the client's configuration. */
-  createSocket(useSSL = false, verbose = false, adapter = new WebSocketAdapterText()) {
-    return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter);
+  createSocket(useSSL = false, verbose = false, adapter = new WebSocketAdapterText(), sendTimeoutMs = DefaultSocket.DefaultSendTimeoutMs) {
+    return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter, sendTimeoutMs);
   }
   /** Delete one or more users by ID or username. */
   deleteFriends(session, ids, usernames) {
