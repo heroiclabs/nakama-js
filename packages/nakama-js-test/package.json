@@ -5,8 +5,8 @@
     "private": true,
     "license": "Apache-2.0",
     "dependencies": {
-        "@heroiclabs/nakama-js": "file://../nakama-js",
-        "@heroiclabs/nakama-js-protobuf": "file://../nakama-js-protobuf",
+        "@heroiclabs/nakama-js": "file:../nakama-js",
+        "@heroiclabs/nakama-js-protobuf": "file:../nakama-js-protobuf",
         "merge": "^2.1.1"
     },
     "devDependencies": {
