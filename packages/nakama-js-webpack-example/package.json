@@ -5,7 +5,7 @@
     "private": true,
     "license": "Apache-2.0",
     "dependencies": {
-        "@heroiclabs/nakama-js": "2.5.0",
+        "@heroiclabs/nakama-js": "file://../nakama-js",
         "ts-loader": "^8.0.14",
         "webpack": "^5.12.2",
         "webpack-cli": "^4.3.1"
