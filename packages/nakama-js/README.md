@@ -162,11 +162,12 @@ Ensure you are using Node v18>.
 
 The codebase is multi-package monorepo written in TypeScript and can be built with [esbuild](https://github.com/evanw/esbuild). All dependencies are managed with NPM.
 
-To build from source, install dependencies and build the `nakama-js` and `nakama-js-protobuf` subrepositories:
+To build from source, first install all workspace dependencies from the repository rot with `npm install`.
+
+Then to build a specific workspace, pass the `--workspace` flag to your build command, for example:
 
 ```shell
-npm install --workspace=@heroiclabs/nakama-js --include-workspace-root && npm run build --workspace=@heroiclabs/nakama-js
-npm install --workspace=@heroiclabs/nakama-js-protobuf --include-workspace-root && npm run build --workspace=@heroiclabs/nakama-js-protobuf
+npm run build --workspace=@heroiclabs/nakama-js
 ```
 
 ### Run Tests
