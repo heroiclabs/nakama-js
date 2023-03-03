@@ -3808,6 +3808,8 @@
           this.adapter = adapter;
           this.cIds = {};
           this.nextCid = 1;
+          this._heartbeatIntervalMs = DefaultSocket.DefaultHeartbeatIntervalMs;
+          this._receivedPong = false;
       }
       DefaultSocket.prototype.generatecid = function () {
           var cid = this.nextCid.toString();
@@ -3873,8 +3875,8 @@
                       message.party_data.op_code = parseInt(message.party_data.op_code);
                       _this.onpartydata(message.party_data);
                   }
-                  else if (message.on_party_close) {
-                      _this.onpartyclose();
+                  else if (message.party_close) {
+                      _this.onpartyclose(message.party_close);
                   }
                   else if (message.party_join_request) {
                       _this.onpartyjoinrequest(message.party_join_request);
@@ -3890,6 +3892,9 @@
                   }
                   else if (message.party) {
                       _this.onparty(message.party);
+                  }
+                  else if (message.pong) {
+                      _this._receivedPong = true;
                   }
                   else {
                       if (_this.verbose && window && window.console) {
@@ -3919,6 +3924,7 @@
                   if (_this.verbose && window && window.console) {
                       console.log(evt);
                   }
+                  _this.pingPong();
                   resolve(session);
               };
               _this.adapter.onError = function (evt) {
@@ -3935,6 +3941,12 @@
           if (fireDisconnectEvent) {
               this.ondisconnect({});
           }
+      };
+      DefaultSocket.prototype.setHeartbeatIntervalMs = function (ms) {
+          this._heartbeatIntervalMs = ms;
+      };
+      DefaultSocket.prototype.getHeartbeatIntervalMs = function () {
+          return this._heartbeatIntervalMs;
       };
       DefaultSocket.prototype.ondisconnect = function (evt) {
           if (this.verbose && window && window.console) {
@@ -3986,9 +3998,9 @@
               console.log(party);
           }
       };
-      DefaultSocket.prototype.onpartyclose = function () {
+      DefaultSocket.prototype.onpartyclose = function (close) {
           if (this.verbose && window && window.console) {
-              console.log("Party closed.");
+              console.log("Party closed: " + close);
           }
       };
       DefaultSocket.prototype.onpartyjoinrequest = function (partyJoinRequest) {
@@ -4355,6 +4367,30 @@
               });
           });
       };
+      DefaultSocket.prototype.pingPong = function () {
+          var _this = this;
+          console.log("pingpong called");
+          if (!this.adapter.isConnected) {
+              return;
+          }
+          this._receivedPong = false;
+          this.send({ ping: {} });
+          window.setTimeout(function () {
+              if (!_this.adapter.isConnected) {
+                  return;
+              }
+              if (_this._receivedPong) {
+                  _this.pingPong();
+              }
+              else {
+                  if (window && window.console) {
+                      console.error("Server did not reply to heartbeat.");
+                  }
+                  _this.adapter.close();
+              }
+          }, this._heartbeatIntervalMs);
+      };
+      DefaultSocket.DefaultHeartbeatIntervalMs = 5000;
       return DefaultSocket;
   }());
 

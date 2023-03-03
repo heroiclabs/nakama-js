@@ -5,6 +5,12 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ### Unreleased
 
+### [2.6.0]
+
+### Added
+
+- The socket will now automatically heartbeat with the server from within `nakama-js`. This should resolve issues with the socket detecting lack of internet connectivity in Chrome. If the server doesn't reply after a heartbeat interval has elapsed, `ondisconnect` will be called. You can configure the heartbeat interval with `setHeartbeatIntervalMs(ms : number) : void`.
+
 ### [2.5.3]
 
 ### Fixed

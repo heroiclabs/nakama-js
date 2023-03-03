@@ -3091,7 +3091,7 @@ var nakamajs = (() => {
   };
 
   // socket.ts
-  var DefaultSocket = class {
+  var _DefaultSocket = class {
     constructor(host, port, useSSL = false, verbose = false, adapter = new WebSocketAdapterText()) {
       this.host = host;
       this.port = port;
@@ -3100,6 +3100,8 @@ var nakamajs = (() => {
       this.adapter = adapter;
       this.cIds = {};
       this.nextCid = 1;
+      this._heartbeatIntervalMs = _DefaultSocket.DefaultHeartbeatIntervalMs;
+      this._receivedPong = false;
     }
     generatecid() {
       const cid = this.nextCid.toString();
@@ -3151,8 +3153,8 @@ var nakamajs = (() => {
           } else if (message.party_data) {
             message.party_data.op_code = parseInt(message.party_data.op_code);
             this.onpartydata(message.party_data);
-          } else if (message.on_party_close) {
-            this.onpartyclose();
+          } else if (message.party_close) {
+            this.onpartyclose(message.party_close);
           } else if (message.party_join_request) {
             this.onpartyjoinrequest(message.party_join_request);
           } else if (message.party_leader) {
@@ -3163,6 +3165,8 @@ var nakamajs = (() => {
             this.onpartypresence(message.party_presence_event);
           } else if (message.party) {
             this.onparty(message.party);
+          } else if (message.pong) {
+            this._receivedPong = true;
           } else {
             if (this.verbose && window && window.console) {
               console.log("Unrecognized message received: %o", message);
@@ -3189,6 +3193,7 @@ var nakamajs = (() => {
           if (this.verbose && window && window.console) {
             console.log(evt);
           }
+          this.pingPong();
           resolve(session);
         };
         this.adapter.onError = (evt) => {
@@ -3204,6 +3209,12 @@ var nakamajs = (() => {
       if (fireDisconnectEvent) {
         this.ondisconnect({});
       }
+    }
+    setHeartbeatIntervalMs(ms) {
+      this._heartbeatIntervalMs = ms;
+    }
+    getHeartbeatIntervalMs() {
+      return this._heartbeatIntervalMs;
     }
     ondisconnect(evt) {
       if (this.verbose && window && window.console) {
@@ -3255,9 +3266,9 @@ var nakamajs = (() => {
         console.log(party);
       }
     }
-    onpartyclose() {
+    onpartyclose(close) {
       if (this.verbose && window && window.console) {
-        console.log("Party closed.");
+        console.log("Party closed: " + close);
       }
     }
     onpartyjoinrequest(partyJoinRequest) {
@@ -3521,7 +3532,30 @@ var nakamajs = (() => {
         return response.channel_message_ack;
       });
     }
+    pingPong() {
+      console.log("pingpong called");
+      if (!this.adapter.isConnected) {
+        return;
+      }
+      this._receivedPong = false;
+      this.send({ ping: {} });
+      window.setTimeout(() => {
+        if (!this.adapter.isConnected) {
+          return;
+        }
+        if (this._receivedPong) {
+          this.pingPong();
+        } else {
+          if (window && window.console) {
+            console.error("Server did not reply to heartbeat.");
+          }
+          this.adapter.close();
+        }
+      }, this._heartbeatIntervalMs);
+    }
   };
+  var DefaultSocket = _DefaultSocket;
+  DefaultSocket.DefaultHeartbeatIntervalMs = 5e3;
 
   // client.ts
   var DEFAULT_HOST = "127.0.0.1";

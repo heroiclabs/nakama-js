@@ -508,6 +508,11 @@ interface Rpc {
   rpc: ApiRpc;
 }
 
+/** Application-level heartbeat ping. */
+interface Ping {
+
+}
+
 /** A snapshot of statuses for some set of users. */
 export interface Status {
   /** The user presences to view statuses of. */
@@ -687,6 +692,12 @@ export interface Socket {
 
   /** Receive channel presence updates. */
   onchannelpresence: (channelPresence: ChannelPresenceEvent) => void;
+
+  /* Set the heartbeat interval used by the socket to detect if it has lost connectivity to the server. */
+  setHeartbeatIntervalMs(ms : number) : void;
+
+  /* Get the heartbeat interval used by the socket to detect if it has lost connectivity to the server. */
+  getHeartbeatIntervalMs() :  number;
 }
 
 /** Reports an error received from a socket message. */
@@ -699,8 +710,11 @@ export interface SocketError {
 
 /** A socket connection to Nakama server implemented with the DOM's WebSocket API. */
 export class DefaultSocket implements Socket {
+  public static readonly DefaultHeartbeatIntervalMs = 5000;
+
   private readonly cIds: { [key: string]: PromiseExecutor };
   private nextCid: number;
+  private _heartbeatIntervalMs: number;
 
   constructor(
       readonly host: string,
@@ -711,6 +725,7 @@ export class DefaultSocket implements Socket {
       ) {
     this.cIds = {};
     this.nextCid = 1;
+    this._heartbeatIntervalMs = DefaultSocket.DefaultHeartbeatIntervalMs;
   }
 
   generatecid(): string {
@@ -810,6 +825,8 @@ export class DefaultSocket implements Socket {
         if (this.verbose && window && window.console) {
           console.log(evt);
         }
+
+        this.pingPong();
         resolve(session);
       }
       this.adapter.onError = (evt: Event) => {
@@ -826,6 +843,14 @@ export class DefaultSocket implements Socket {
     if (fireDisconnectEvent) {
       this.ondisconnect(<Event>{});
     }
+  }
+
+  setHeartbeatIntervalMs(ms : number) {
+    this._heartbeatIntervalMs = ms;
+  }
+
+  getHeartbeatIntervalMs() :  number {
+    return this._heartbeatIntervalMs;
   }
 
   ondisconnect(evt: Event) {
@@ -947,7 +972,7 @@ export class DefaultSocket implements Socket {
     ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd |
     MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin |
     PartyJoinRequestList | PartyLeave | PartyMatchmakerAdd | PartyMatchmakerRemove | PartyPromote |
-    PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate): Promise<any> {
+    PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate | Ping): Promise<any> {
     const untypedMessage = message as any;
 
     return new Promise<void>((resolve, reject) => {
@@ -1179,5 +1204,24 @@ export class DefaultSocket implements Socket {
   async writeChatMessage(channel_id: string, content: any): Promise<ChannelMessageAck> {
     const response = await this.send({channel_message_send: {channel_id: channel_id, content: content}});
     return response.channel_message_ack;
+  }
+
+  private async pingPong() : Promise<void> {
+    if (!this.adapter.isConnected) {
+      return;
+    }
+
+
+    window.setTimeout(() => {
+        if (window && window.console) {
+            console.error("Server did not reply to heartbeat.");
+        }
+
+        this.adapter.close();
+    });
+
+    await this.send({ping: {}});
+    this._heartbeatIntervalMs
+    this.pingPong();
   }
 };
