@@ -25,6 +25,7 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "alwaysStrict": true,
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules"

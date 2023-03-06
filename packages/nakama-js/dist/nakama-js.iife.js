@@ -3194,7 +3194,7 @@ var nakamajs = (() => {
           reject(evt);
           this.adapter.close();
         };
-        window.setTimeout(() => {
+        setTimeout(() => {
           reject("The socket timed out when trying to connect.");
         }, connectTimeoutMs);
       });
@@ -3328,7 +3328,7 @@ var nakamajs = (() => {
             }
             const cid = this.generatecid();
             this.cIds[cid] = { resolve, reject };
-            window.setTimeout(() => {
+            setTimeout(() => {
               reject("The socket timed out while waiting for a response.");
             }, sendTimeout);
             untypedMessage.cid = cid;
@@ -3548,7 +3548,7 @@ var nakamajs = (() => {
           }
           return;
         }
-        window.setTimeout(() => this.pingPong(), this._heartbeatTimeoutMs);
+        setTimeout(() => this.pingPong(), this._heartbeatTimeoutMs);
       });
     }
   };

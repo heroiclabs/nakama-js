@@ -28,7 +28,12 @@
   "private": true,
   "workspaces": [
     "packages/nakama-js",
+    "packages/nakama-js-test",
+    "packages/satori-js",
+    "packages/satori-js-test",
+    "packages/nakama-js-create-react-app-example",
+    "packages/nakama-js-iife-example",
     "packages/nakama-js-protobuf",
-    "packages/satori-js"
+    "packages/nakama-js-webpack-example"
   ]
 }
