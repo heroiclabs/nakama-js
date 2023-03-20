@@ -4042,6 +4042,11 @@
               console.log(streamData);
           }
       };
+      DefaultSocket.prototype.onheartbeattimeout = function () {
+          if (this.verbose && window && window.console) {
+              console.log("Heartbeat timeout.");
+          }
+      };
       DefaultSocket.prototype.send = function (message, sendTimeout) {
           var _this = this;
           if (sendTimeout === void 0) { sendTimeout = DefaultSocket.DefaultSendTimeoutMs; }
@@ -4392,6 +4397,7 @@
                               if (window && window.console) {
                                   console.error("Server unreachable from heartbeat.");
                               }
+                              this.onheartbeattimeout();
                               this.adapter.close();
                           }
                           return [2 /*return*/];

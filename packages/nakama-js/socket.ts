@@ -687,6 +687,14 @@ export interface Socket {
   /** Receive stream data. */
   onstreamdata: (streamData: StreamData) => void;
 
+  /**
+   * An application-level heartbeat timeout that fires after the client does not receive a pong from the server after the heartbeat interval.
+   * Most browsers maintain an internal heartbeat, in which case its unlikely you'll need to use this callback. However, Chrome does not implement an internal heartbeat.
+   * We fire this separately from `onclose` because heartbeats fail when there's no connectivity, and many browsers don't fire `onclose` until the closing handshake either succeeds or fails.
+   * In any case, be aware that `onclose` will still fire if there is a heartbeat timeout in a potentially delayed manner.
+   */
+  onheartbeattimeout: () => void;
+
   /** Receive channel message. */
   onchannelmessage: (channelMessage: ChannelMessage) => void;
 
@@ -977,6 +985,12 @@ export class DefaultSocket implements Socket {
     }
   }
 
+  onheartbeattimeout() {
+    if (this.verbose && window && window.console) {
+      console.log("Heartbeat timeout.");
+    }
+  }
+
   send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate |
     ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd |
     MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin |
@@ -1230,6 +1244,7 @@ export class DefaultSocket implements Socket {
             if (window && window.console) {
                 console.error("Server unreachable from heartbeat.");
             }
+            this.onheartbeattimeout();
             this.adapter.close();
         }
 

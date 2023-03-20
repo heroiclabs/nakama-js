@@ -3310,6 +3310,11 @@ var nakamajs = (() => {
         console.log(streamData);
       }
     }
+    onheartbeattimeout() {
+      if (this.verbose && window && window.console) {
+        console.log("Heartbeat timeout.");
+      }
+    }
     send(message, sendTimeout = _DefaultSocket.DefaultSendTimeoutMs) {
       const untypedMessage = message;
       return new Promise((resolve, reject) => {
@@ -3546,6 +3551,7 @@ var nakamajs = (() => {
             if (window && window.console) {
               console.error("Server unreachable from heartbeat.");
             }
+            this.onheartbeattimeout();
             this.adapter.close();
           }
           return;

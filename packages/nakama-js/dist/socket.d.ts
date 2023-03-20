@@ -587,6 +587,13 @@ export interface Socket {
     onstreampresence: (streamPresence: StreamPresenceEvent) => void;
     /** Receive stream data. */
     onstreamdata: (streamData: StreamData) => void;
+    /**
+     * An application-level heartbeat timeout that fires after the client does not receive a pong from the server after the heartbeat interval.
+     * Most browsers maintain an internal heartbeat, in which case its unlikely you'll need to use this callback. However, Chrome does not implement an internal heartbeat.
+     * We fire this separately from `onclose` because heartbeats fail when there's no connectivity, and many browsers don't fire `onclose` until the closing handshake either succeeds or fails.
+     * In any case, be aware that `onclose` will still fire if there is a heartbeat timeout in a potentially delayed manner.
+     */
+    onheartbeattimeout: () => void;
     /** Receive channel message. */
     onchannelmessage: (channelMessage: ChannelMessage) => void;
     /** Receive channel presence updates. */
@@ -640,6 +647,7 @@ export declare class DefaultSocket implements Socket {
     onstatuspresence(statusPresence: StatusPresenceEvent): void;
     onstreampresence(streamPresence: StreamPresenceEvent): void;
     onstreamdata(streamData: StreamData): void;
+    onheartbeattimeout(): void;
     send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin | PartyJoinRequestList | PartyLeave | PartyMatchmakerAdd | PartyMatchmakerRemove | PartyPromote | PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate | Ping, sendTimeout?: number): Promise<any>;
     acceptPartyMember(party_id: string, presence: Presence): Promise<void>;
     addMatchmaker(query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<MatchmakerTicket>;
