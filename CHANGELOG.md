@@ -5,6 +5,13 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ### Unreleased
 
+### [2.6.1]
+
+### Added
+
+- You can now pass a `onheartbeattimeout` to the socket which will be called directly when a heartbeat timeout occurs. It will also still call `ondisconnect` once the socket is closed (which can take a few seconds for some browsers).
+
+
 ### [2.6.0]
 
 ### Added

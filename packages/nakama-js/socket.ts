@@ -977,6 +977,12 @@ export class DefaultSocket implements Socket {
     }
   }
 
+  onheartbeattimeout() {
+    if (this.verbose && window && window.console) {
+      console.log("Heartbeat timeout.");
+    }
+  }
+
   send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate |
     ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd |
     MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin |
@@ -1230,6 +1236,7 @@ export class DefaultSocket implements Socket {
             if (window && window.console) {
                 console.error("Server unreachable from heartbeat.");
             }
+            this.onheartbeattimeout();
             this.adapter.close();
         }
 

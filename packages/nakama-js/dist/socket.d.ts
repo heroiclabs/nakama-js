@@ -640,6 +640,7 @@ export declare class DefaultSocket implements Socket {
     onstatuspresence(statusPresence: StatusPresenceEvent): void;
     onstreampresence(streamPresence: StreamPresenceEvent): void;
     onstreamdata(streamData: StreamData): void;
+    onheartbeattimeout(): void;
     send(message: ChannelJoin | ChannelLeave | ChannelMessageSend | ChannelMessageUpdate | ChannelMessageRemove | CreateMatch | JoinMatch | LeaveMatch | MatchDataSend | MatchmakerAdd | MatchmakerRemove | PartyAccept | PartyClose | PartyCreate | PartyDataSend | PartyJoin | PartyJoinRequestList | PartyLeave | PartyMatchmakerAdd | PartyMatchmakerRemove | PartyPromote | PartyRemove | Rpc | StatusFollow | StatusUnfollow | StatusUpdate | Ping, sendTimeout?: number): Promise<any>;
     acceptPartyMember(party_id: string, presence: Presence): Promise<void>;
     addMatchmaker(query: string, min_count: number, max_count: number, string_properties?: Record<string, string>, numeric_properties?: Record<string, number>): Promise<MatchmakerTicket>;
