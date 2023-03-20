@@ -621,9 +621,11 @@ var _atob = _hasatob ? (asc) => atob(_tidyB64(asc)) : _hasBuffer ? (asc) => Buff
 function buildFetchOptions(method, options, bodyJson) {
   const fetchOptions = __spreadValues(__spreadValues({}, { method }), options);
   fetchOptions.headers = __spreadValues({}, options.headers);
-  const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
-  if (!(descriptor == null ? void 0 : descriptor.set)) {
-    fetchOptions.credentials = "cocos-ignore";
+  if (typeof XMLHttpRequest !== "undefined") {
+    const descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+    if (!(descriptor == null ? void 0 : descriptor.set)) {
+      fetchOptions.credentials = "cocos-ignore";
+    }
   }
   if (!Object.keys(fetchOptions.headers).includes("Accept")) {
     fetchOptions.headers["Accept"] = "application/json";

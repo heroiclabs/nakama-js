@@ -850,11 +850,13 @@
   function buildFetchOptions(method, options, bodyJson) {
       var fetchOptions = __assign({ method: method }, options);
       fetchOptions.headers = __assign({}, options.headers);
-      var descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
-      // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
-      // polyfill avoid writing to it.
-      if (!(descriptor === null || descriptor === void 0 ? void 0 : descriptor.set)) {
-          fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+      if (typeof XMLHttpRequest !== "undefined") {
+          var descriptor = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "withCredentials");
+          // in Cocos Creator, XMLHttpRequest.withCredentials is not writable, so make the fetch
+          // polyfill avoid writing to it.
+          if (!(descriptor === null || descriptor === void 0 ? void 0 : descriptor.set)) {
+              fetchOptions.credentials = 'cocos-ignore'; // string value is arbitrary, cannot be 'omit' or 'include
+          }
       }
       if (!Object.keys(fetchOptions.headers).includes("Accept")) {
           fetchOptions.headers["Accept"] = "application/json";
