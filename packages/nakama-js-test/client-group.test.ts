@@ -324,7 +324,7 @@ describe('Group Tests', () => {
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom(customid2);
       await client2.joinGroup(session2, group.id!);
-      await client1.promoteGroupUsers(session1, group.id!, [session2.user_id]);
+      await client1.addGroupUsers(session1, group.id!, [session2.user_id]);
       return await client1.listUserGroups(session1, session1.user_id);
     }, customid1, customid2, group_name);
 
@@ -424,7 +424,7 @@ describe('Group Tests', () => {
       const client2 = new nakamajs.Client();
       const session2 = await client2.authenticateCustom(customid2)
       await client2.joinGroup(session2, group.id!)
-      await client1.promoteGroupUsers(session1, group.id!, [session2.user_id]);
+      await client1.addGroupUsers(session1, group.id!, [session2.user_id]);
       return await client1.listGroupUsers(session1, group.id!);
     }, customid1, customid2, group_name);
 
