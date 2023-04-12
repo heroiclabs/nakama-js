@@ -139,7 +139,7 @@ export interface ApiUpdatePropertiesRequest {
 /**  */
 export interface ProtobufAny {
   //
-  _@type?: string;
+  type?: string;
 }
 
 /**  */
