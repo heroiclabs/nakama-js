@@ -20,6 +20,10 @@ export interface ApiAuthenticateRefreshRequest {
 
 /**  */
 export interface ApiAuthenticateRequest {
+  //Optional custom properties to update with this call. If not set, properties are left as they are on the server.
+  custom?: Record<string, string>;
+  //Optional default properties to update with this call. If not set, properties are left as they are on the server.
+  default?: Record<string, string>;
   //Identity ID. Must be between eight and 128 characters (inclusive). Must be an alphanumeric string with only underscores and hyphens allowed.
   id?: string;
 }
@@ -135,7 +139,7 @@ export interface ApiUpdatePropertiesRequest {
 /**  */
 export interface ProtobufAny {
   //
-  type?: string;
+  _@type?: string;
 }
 
 /**  */
@@ -394,8 +398,7 @@ export class SatoriApi {
 }
 
   /** List all available flags for this identity. */
-  satoriGetFlags(bearerToken: string,
-    basicAuthUsername: string,
+  satoriGetFlags(bearerToken: string,basicAuthUsername: string,
 		basicAuthPassword: string,
       names?:Array<string>,
       options: any = {}): Promise<ApiFlagList> {
@@ -447,6 +450,42 @@ export class SatoriApi {
 
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+    if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
+
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.timeoutMs, "Request timed out.")
+      ),
+    ]);
+}
+
+  /** Enrich/replace the current session with new identifier. */
+  satoriIdentifyDelete(bearerToken: string,
+      id:string,
+      options: any = {}): Promise<any> {
+    
+    if (id === null || id === undefined) {
+      throw new Error("'id' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v1/identify/{id}"
+        .replace("{id}", encodeURIComponent(String(id)));
+    const queryParams = new Map<string, any>();
+
+    let bodyJson : string = "";
+
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
     if (bearerToken) {
         fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     }
