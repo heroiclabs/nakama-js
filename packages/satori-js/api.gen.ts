@@ -471,7 +471,7 @@ export class SatoriApi {
 }
 
   /** Delete an Identity. */
-  satoriIdentifyDelete(bearerToken: string,
+  satoriDeleteIdentity(bearerToken: string,
       id:string,
       options: any = {}): Promise<any> {
     
