@@ -470,7 +470,7 @@ export class SatoriApi {
     ]);
 }
 
-  /** Enrich/replace the current session with new identifier. */
+  /** Delete an Identity. */
   satoriIdentifyDelete(bearerToken: string,
       id:string,
       options: any = {}): Promise<any> {
