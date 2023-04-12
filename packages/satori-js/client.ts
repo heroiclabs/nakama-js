@@ -270,4 +270,16 @@ export class Client {
       return Promise.resolve(response !== undefined);
     });
   }
+
+    /** Delete an Identity. */
+    async deleteIdentify(session: Session, id: string) {
+      if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+      }
+  
+      return this.apiClient.satoriIdentifyDelete(session.token, id).then((response) => {
+        return Promise.resolve(response !== undefined);
+      });
+    }
 };
