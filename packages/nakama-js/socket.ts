@@ -276,7 +276,9 @@ export interface Match {
 
 /** Create a multiplayer match. */
 interface CreateMatch {
-  match_create: {};
+  match_create: {
+    name?: string;
+  };
 }
 
 /** Join a multiplayer match. */
@@ -570,7 +572,7 @@ export interface Socket {
   closeParty(party_id : string) : Promise<void>;
 
   /** Create a multiplayer match on the server. */
-  createMatch() : Promise<Match>;
+  createMatch(name?: string) : Promise<Match>;
 
   /** Create a party. */
   createParty(open : boolean, max_size : number) : Promise<Party>;
@@ -1077,8 +1079,8 @@ export class DefaultSocket implements Socket {
     return await this.send({party_close: {party_id: party_id}});
   }
 
-  async createMatch(): Promise<Match> {
-    const response = await this.send({match_create: {}});
+  async createMatch(name?: string): Promise<Match> {
+    const response = await this.send({match_create: { name }});
     return response.match;
   }
 

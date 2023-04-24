@@ -380,7 +380,9 @@ export interface Match {
 }
 
 /** Create a new realtime match. */
-export interface MatchCreate {}
+export interface MatchCreate {
+  name?: string;
+}
 
 /** Realtime match data received from the server. */
 export interface MatchData {
