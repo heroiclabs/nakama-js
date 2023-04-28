@@ -564,27 +564,71 @@ export class Client {
   }
 
   /** Authenticate a user with Google against the server. */
-  authenticateGoogle(token : string, create?: boolean, username?: string, vars?: Record<string, string>, options: any = {}): Promise<Session> {
-    const request = {
-      "token": token,
-      "vars": vars
+  async authenticateGoogle(
+    token: string,
+    create?: boolean,
+    username?: string,
+    vars?: Record<string, string>,
+    options: any = {}
+  ): Promise<Session> {
+    const request: ApiAccountGoogle = {
+      token,
+      vars,
     };
 
-    return this.apiClient.authenticateGoogle(this.serverkey, "", request, create, username, options).then((apiSession : ApiSession) => {
-      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
-    });
+    const apiSession = await this.apiClient.authenticateGoogle(
+      this.serverkey,
+      "",
+      request,
+      create,
+      username,
+      options
+    );
+
+    return new Session(
+      apiSession.token || "",
+      apiSession.refresh_token || "",
+      apiSession.created || false
+    );
   }
 
   /** Authenticate a user with GameCenter against the server. */
-  authenticateGameCenter(token: string, create?: boolean, username? :string, vars?: Record<string, string>): Promise<Session> {
-    const request = {
-      "token": token,
-      "vars": vars
+  async authenticateGameCenter(
+    bundleId: string,
+    playerId: string,
+    publicKeyUrl: string,
+    salt: string,
+    signature: string,
+    timestamp: string,
+    username?: string,
+    create?: boolean,
+    vars?: Record<string, string>,
+    options: any = {},
+  ): Promise<Session> {
+    const request: ApiAccountGameCenter = {
+      bundle_id: bundleId,
+      player_id: playerId,
+      public_key_url: publicKeyUrl,
+      salt,
+      signature,
+      timestamp_seconds: timestamp,
+      vars,
     };
 
-    return this.apiClient.authenticateGameCenter(this.serverkey, "", request, create, username).then((apiSession : ApiSession) => {
-      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
-    });
+    const apiSession = await this.apiClient.authenticateGameCenter(
+      this.serverkey,
+      "",
+      request,
+      create,
+      username,
+      options
+    );
+
+    return new Session(
+      apiSession.token || "",
+      apiSession.refresh_token || "",
+      apiSession.created || false
+    );
   }
 
   /** Authenticate a user with Steam against the server. */
