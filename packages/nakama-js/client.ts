@@ -698,6 +698,11 @@ export class Client {
     return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter, sendTimeoutMs);
   }
 
+  /** A socket created from different host or port from client */
+  createSocketCustom(host: string, port: string, useSSL = false, verbose: boolean = false, adapter : WebSocketAdapter = new WebSocketAdapterText(), sendTimeoutMs : number = DefaultSocket.DefaultSendTimeoutMs): Socket {
+    return new DefaultSocket(host, port, useSSL, verbose, adapter, sendTimeoutMs);
+  }
+
   /** Delete one or more users by ID or username. */
   async deleteFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
     if (this.autoRefreshSession && session.refresh_token &&
