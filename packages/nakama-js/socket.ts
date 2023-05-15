@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { decode } from 'js-base64'
+
 import {ApiNotification, ApiRpc} from "./api.gen";
 import {Session} from "./session";
 import {Notification} from "./client";
@@ -1034,7 +1036,15 @@ export class DefaultSocket implements Socket {
       }
 
       if (this.verbose && window && window.console) {
-        console.log("Sent message: %o", JSON.stringify(untypedMessage));
+        const loggedMessage = { ...untypedMessage };
+
+        if (loggedMessage.match_data_send && loggedMessage.match_data_send.data) {
+          loggedMessage.match_data_send.data = decode(loggedMessage.match_data_send.data);
+        } else if (loggedMessage.party_data_send && loggedMessage.party_data_send.data) {
+          loggedMessage.party_data_send.data = decode(loggedMessage.party_data_send.data);
+        }
+
+        console.log("Sent message: %o", JSON.stringify(loggedMessage));
       }
     });
   }
