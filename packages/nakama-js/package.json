@@ -11,6 +11,7 @@
     "exports": {
         "./package.json": "./package.json",
         ".": {
+	    "types": "./dist/index.d.ts",
             "import": "./dist/nakama-js.esm.mjs",
             "require": "./dist/nakama-js.cjs.js"
         }
