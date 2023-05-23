@@ -7,6 +7,7 @@
     "description": "JavaScript client for Nakama server written in TypeScript.",
     "main": "dist/nakama-js.cjs.js",
     "module": "dist/nakama-js.esm.mjs",
+    "types": "dist/index.d.ts",
     "exports": {
         "./package.json": "./package.json",
         ".": {
