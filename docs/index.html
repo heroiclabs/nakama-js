@@ -95,17 +95,18 @@
 <a href="#source-builds" id="source-builds" style="color: inherit; text-decoration: none;">
   <h3>Source Builds</h3>
 </a>
-<p>Ensure you are using Node v12.18.1.</p>
-<p>The codebase is multi-package monorepo written in TypeScript and can be built with <a href="https://github.com/evanw/esbuild">esbuild</a>. All dependencies are managed with Yarn.</p>
-<p>To build from source, install dependencies and build the <code>nakama-js</code> and <code>nakama-js-protobuf</code> subrepositories:</p>
-<pre><code class="language-shell"><span class="hl-0">npm </span><span class="hl-1">install</span><span class="hl-0"> </span><span class="hl-1">--workspace=@heroiclabs/nakama-js</span><span class="hl-0"> &amp;&amp; npm </span><span class="hl-1">run</span><span class="hl-0"> </span><span class="hl-1">build</span><span class="hl-0"> </span><span class="hl-1">--workspace=@heroiclabs/nakama-js</span><br/><span class="hl-0">npm </span><span class="hl-1">install</span><span class="hl-0"> </span><span class="hl-1">--workspace=@heroiclabs/nakama-js-protobuf</span><span class="hl-0"> &amp;&amp; npm </span><span class="hl-1">run</span><span class="hl-0"> </span><span class="hl-1">build</span><span class="hl-0"> </span><span class="hl-1">--workspace=@heroiclabs/nakama-js-protobuf</span>
+<p>Ensure you are using Node v18&gt;.</p>
+<p>The codebase is multi-package monorepo written in TypeScript and can be built with <a href="https://github.com/evanw/esbuild">esbuild</a>. All dependencies are managed with NPM.</p>
+<p>To build from source, first install all workspace dependencies from the repository root with <code>npm install</code>.</p>
+<p>Then to build a specific workspace, pass the <code>--workspace</code> flag to your build command, for example:</p>
+<pre><code class="language-shell"><span class="hl-0">npm </span><span class="hl-1">run</span><span class="hl-0"> </span><span class="hl-1">build</span><span class="hl-0"> </span><span class="hl-1">--workspace=@heroiclabs/nakama-js</span>
 </code></pre>
 
 <a href="#run-tests" id="run-tests" style="color: inherit; text-decoration: none;">
   <h3>Run Tests</h3>
 </a>
 <p>To run tests you will need to run the server and database. Most tests are written as integration tests which execute against the server. A quick approach we use with our test workflow is to use the Docker compose file described in the <a href="https://heroiclabs.com/docs/install-docker-quickstart">documentation</a>.</p>
-<p>Tests are run against each workspace bundle; if you have made source code changes, you should <code>yarn workspace &lt;workspace&gt; build</code> prior to running tests.</p>
+<p>Tests are run against each workspace bundle; if you have made source code changes, you should <code>npm run build --workspace=&lt;workspace&gt;</code> prior to running tests.</p>
 <pre><code class="language-shell"><span class="hl-0">docker-compose </span><span class="hl-1">-f</span><span class="hl-0"> </span><span class="hl-1">./docker-compose.yml</span><span class="hl-0"> </span><span class="hl-1">up</span><br/><span class="hl-0">npm </span><span class="hl-1">run</span><span class="hl-0"> </span><span class="hl-1">test</span><span class="hl-0"> </span><span class="hl-1">--workspace=@heroiclabs/nakama-js-test</span>
 </code></pre>
 
@@ -121,7 +122,7 @@
   <h3>Release Process</h3>
 </a>
 <p>To release onto NPM if you have access to the &quot;@heroiclabs&quot; organization you can use NPM.</p>
-<pre><code class="language-shell"><span class="hl-0">npm </span><span class="hl-1">run</span><span class="hl-0"> </span><span class="hl-1">build</span><span class="hl-0"> </span><span class="hl-1">--workspace=</span><span class="hl-0">&lt;</span><span class="hl-1">workspace</span><span class="hl-0">&gt;</span><span class="hl-0"> &amp;&amp; npm </span><span class="hl-1">public</span><span class="hl-0"> </span><span class="hl-1">--access=public</span><span class="hl-0"> </span><span class="hl-1">--workspace=</span><span class="hl-0">&lt;</span><span class="hl-1">workspace</span><span class="hl-0">&gt;</span>
+<pre><code class="language-shell"><span class="hl-0">npm </span><span class="hl-1">run</span><span class="hl-0"> </span><span class="hl-1">build</span><span class="hl-0"> </span><span class="hl-1">--workspace=</span><span class="hl-0">&lt;</span><span class="hl-1">workspace</span><span class="hl-0">&gt;</span><span class="hl-0"> &amp;&amp; npm </span><span class="hl-1">publish</span><span class="hl-0"> </span><span class="hl-1">--access=public</span><span class="hl-0"> </span><span class="hl-1">--workspace=</span><span class="hl-0">&lt;</span><span class="hl-1">workspace</span><span class="hl-0">&gt;</span>
 </code></pre>
 
 <a href="#generate-docs" id="generate-docs" style="color: inherit; text-decoration: none;">
