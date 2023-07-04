@@ -470,16 +470,11 @@ export class SatoriApi {
     ]);
 }
 
-  /** Delete an Identity. */
+  /** Delete the caller's identity and associated data. */
   satoriDeleteIdentity(bearerToken: string,
-      id:string,
       options: any = {}): Promise<any> {
     
-    if (id === null || id === undefined) {
-      throw new Error("'id' is a required parameter but is null or undefined.");
-    }
-    const urlPath = "/v1/identify/{id}"
-        .replace("{id}", encodeURIComponent(String(id)));
+    const urlPath = "/v1/identity";
     const queryParams = new Map<string, any>();
 
     let bodyJson : string = "";

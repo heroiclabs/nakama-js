@@ -272,13 +272,13 @@ export class Client {
   }
 
     /** Delete an Identity. */
-    async deleteIdentity(session: Session, id: string) {
+    async deleteIdentity(session: Session) {
       if (this.autoRefreshSession && session.refresh_token &&
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
         await this.sessionRefresh(session);
       }
   
-      return this.apiClient.satoriDeleteIdentity(session.token, id).then((response) => {
+      return this.apiClient.satoriDeleteIdentity(session.token).then((response) => {
         return Promise.resolve(response !== undefined);
       });
     }
