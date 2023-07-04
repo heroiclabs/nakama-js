@@ -271,7 +271,7 @@ export class Client {
     });
   }
 
-    /** Delete an Identity. */
+    /** Delete the caller's identity and associated data. */
     async deleteIdentity(session: Session) {
       if (this.autoRefreshSession && session.refresh_token &&
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
