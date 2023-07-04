@@ -20,10 +20,6 @@ export interface ApiAuthenticateRefreshRequest {
 
 /**  */
 export interface ApiAuthenticateRequest {
-  //Optional custom properties to update with this call. If not set, properties are left as they are on the server.
-  custom?: Record<string, string>;
-  //Optional default properties to update with this call. If not set, properties are left as they are on the server.
-  default?: Record<string, string>;
   //Identity ID. Must be between eight and 128 characters (inclusive). Must be an alphanumeric string with only underscores and hyphens allowed.
   id?: string;
 }
