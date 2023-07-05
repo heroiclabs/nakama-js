@@ -394,8 +394,7 @@ export class SatoriApi {
 }
 
   /** List all available flags for this identity. */
-  satoriGetFlags(bearerToken: string,
-    basicAuthUsername: string,
+  satoriGetFlags(bearerToken: string,basicAuthUsername: string,
 		basicAuthPassword: string,
       names?:Array<string>,
       options: any = {}): Promise<ApiFlagList> {
@@ -447,6 +446,37 @@ export class SatoriApi {
 
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
+    if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
+
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.timeoutMs, "Request timed out.")
+      ),
+    ]);
+}
+
+  /** Delete the caller's identity and associated data. */
+  satoriDeleteIdentity(bearerToken: string,
+      options: any = {}): Promise<any> {
+    
+    const urlPath = "/v1/identity";
+    const queryParams = new Map<string, any>();
+
+    let bodyJson : string = "";
+
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
     if (bearerToken) {
         fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     }
