@@ -130,6 +130,8 @@ export interface ApiUpdatePropertiesRequest {
   custom?: Record<string, string>;
   //Event default properties.
   default?: Record<string, string>;
+  //Informs the server to recompute the audience membership of the identity.
+  recompute?: boolean;
 }
 
 /**  */

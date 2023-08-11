@@ -255,7 +255,7 @@ export class Client {
   }
 
   /** Update identity properties. */
-  async updateProperties(session: Session, defaultProperties?: Record<string, string>, customProperties?: Record<string, string>) {
+  async updateProperties(session: Session, defaultProperties?: Record<string, string>, customProperties?: Record<string, string>, recompute?: boolean) {
     if (this.autoRefreshSession && session.refresh_token &&
       session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
       await this.sessionRefresh(session);
@@ -263,7 +263,8 @@ export class Client {
 
     const request : ApiUpdatePropertiesRequest = {
       default: defaultProperties,
-      custom: customProperties
+      custom: customProperties,
+      recompute: recompute,
     };
 
     return this.apiClient.satoriUpdateProperties(session.token, request).then((response) => {
