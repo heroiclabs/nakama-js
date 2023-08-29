@@ -152,6 +152,23 @@ const message = { "hello": "world" };
 socket.writeChatMessage(channel.channel.id, message);
 ```
 
+## Handling errors
+
+For any errors in client requests, we return the original error objects from the Fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+
+In order to capture the Nakama server response associated with the error, when you wrap your client requests in a `try...catch` statement you can invoke `await error.json()` on the `error` object in the catch block:
+
+```js
+try {
+    const account = await client.getAccount(session);
+    console.info(account.user.id);
+    console.info(account.user.username);
+    console.info(account.wallet);
+} catch (error) {
+    console.info("Inner Nakama error", await error.json());
+}
+```
+
 ## Contribute
 
 The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested in enhancing the code please open an issue to discuss the changes or drop in and discuss it in the [community forum](https://forum.heroiclabs.com).
