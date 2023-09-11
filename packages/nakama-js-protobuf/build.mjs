@@ -34,7 +34,7 @@ await esbuild.build({
 await esbuild.build({
   ...config,
   format: 'esm',
-  outfile: 'dist/nakama-js-protobuf.esm.js'
+  outfile: 'dist/nakama-js-protobuf.esm.mjs'
 });
 
 // Build IIFE

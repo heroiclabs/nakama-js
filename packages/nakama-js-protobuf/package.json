@@ -4,6 +4,7 @@
     "description": "Websocket adapter adding protocol buffer support to the Nakama Javascript client.",
     "main": "dist/nakama-js-protobuf.cjs.js",
     "module": "dist/nakama-js-protobuf.esm.mjs",
+    "types": "dist/nakama-js-protobuf/index.d.ts",
     "exports": {
         "./package.json": "./package.json",
         ".": {
@@ -32,7 +33,8 @@
     "author": "Chris Molozian <chris@heroiclabs.com>",
     "contributors": [
         "Andrei Mihu <andrei@heroiclabs.com>",
-        "Mo Firouz <mo@heroiclabs.com>"
+        "Mo Firouz <mo@heroiclabs.com>",
+        "Milton Candelero <miltoncandelero@gmail.com>"
     ],
     "license": "Apache-2.0",
     "dependencies": {
