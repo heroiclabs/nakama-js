@@ -9,6 +9,8 @@ export interface ApiAuthenticateRefreshRequest {
 }
 /**  */
 export interface ApiAuthenticateRequest {
+    custom?: Record<string, string>;
+    default?: Record<string, string>;
     id?: string;
 }
 /** A single event. Usually, but not necessarily, part of a batch. */
@@ -42,6 +44,13 @@ export interface ApiFlag {
 export interface ApiFlagList {
     flags?: Array<ApiFlag>;
 }
+/** A response containing all the messages for an identity. */
+export interface ApiGetMessageListResponse {
+    cacheable_cursor?: string;
+    messages?: Array<ApiMessage>;
+    next_cursor?: string;
+    prev_cursor?: string;
+}
 /** Enrich/replace the current session with a new ID. */
 export interface ApiIdentifyRequest {
     custom?: Record<string, string>;
@@ -53,12 +62,24 @@ export interface ApiLiveEvent {
     active_end_time_sec?: string;
     active_start_time_sec?: string;
     description?: string;
+    id?: string;
     name?: string;
     value?: string;
 }
 /** List of Live events. */
 export interface ApiLiveEventList {
     live_events?: Array<ApiLiveEvent>;
+}
+/** A scheduled message. */
+export interface ApiMessage {
+    consume_time?: string;
+    create_time?: string;
+    metadata?: Record<string, string>;
+    read_time?: string;
+    schedule_id?: string;
+    send_time?: string;
+    text?: string;
+    update_time?: string;
 }
 /** Properties associated with an identity. */
 export interface ApiProperties {
@@ -72,14 +93,22 @@ export interface ApiSession {
     refresh_token?: string;
     token?: string;
 }
+/** The request to update the status of a message. */
+export interface ApiUpdateMessageRequest {
+    consume_time?: string;
+    id?: string;
+    read_time?: string;
+}
 /** Update Properties associated with this identity. */
 export interface ApiUpdatePropertiesRequest {
     custom?: Record<string, string>;
     default?: Record<string, string>;
+    recompute?: boolean;
 }
 /**  */
 export interface ProtobufAny {
-    type?: string;
+    type_url?: string;
+    value?: string;
 }
 /**  */
 export interface RpcStatus {
@@ -110,8 +139,16 @@ export declare class SatoriApi {
     satoriGetFlags(bearerToken: string, basicAuthUsername: string, basicAuthPassword: string, names?: Array<string>, options?: any): Promise<ApiFlagList>;
     /** Enrich/replace the current session with new identifier. */
     satoriIdentify(bearerToken: string, body: ApiIdentifyRequest, options?: any): Promise<ApiSession>;
+    /** Delete the caller's identity and associated data. */
+    satoriDeleteIdentity(bearerToken: string, options?: any): Promise<any>;
     /** List available live events. */
     satoriGetLiveEvents(bearerToken: string, names?: Array<string>, options?: any): Promise<ApiLiveEventList>;
+    /** Get the list of messages for the identity. */
+    satoriGetMessageList(bearerToken: string, limit?: number, forward?: boolean, cursor?: string, options?: any): Promise<ApiGetMessageListResponse>;
+    /** Deletes a message for an identity. */
+    satoriDeleteMessage(bearerToken: string, id: string, options?: any): Promise<any>;
+    /** Updates a message for an identity. */
+    satoriUpdateMessage(bearerToken: string, id: string, body: ApiUpdateMessageRequest, options?: any): Promise<any>;
     /** List properties associated with this identity. */
     satoriListProperties(bearerToken: string, options?: any): Promise<ApiProperties>;
     /** Update identity properties. */

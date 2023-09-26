@@ -20,6 +20,10 @@ export interface ApiAuthenticateRefreshRequest {
 
 /**  */
 export interface ApiAuthenticateRequest {
+  //Optional custom properties to update with this call. If not set, properties are left as they are on the server.
+  custom?: Record<string, string>;
+  //Optional default properties to update with this call. If not set, properties are left as they are on the server.
+  default?: Record<string, string>;
   //Identity ID. Must be between eight and 128 characters (inclusive). Must be an alphanumeric string with only underscores and hyphens allowed.
   id?: string;
 }
@@ -74,6 +78,18 @@ export interface ApiFlagList {
   flags?: Array<ApiFlag>;
 }
 
+/** A response containing all the messages for an identity. */
+export interface ApiGetMessageListResponse {
+  //Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
+  cacheable_cursor?: string;
+  //The list of messages.
+  messages?: Array<ApiMessage>;
+  //The cursor to send when retrieving the next page, if any.
+  next_cursor?: string;
+  //The cursor to send when retrieving the previous page, if any.
+  prev_cursor?: string;
+}
+
 /** Enrich/replace the current session with a new ID. */
 export interface ApiIdentifyRequest {
   //Optional custom properties to update with this call. If not set, properties are left as they are on the server.
@@ -92,6 +108,8 @@ export interface ApiLiveEvent {
   active_start_time_sec?: string;
   //Description.
   description?: string;
+  //The live event identifier.
+  id?: string;
   //Name.
   name?: string;
   //Event value.
@@ -102,6 +120,26 @@ export interface ApiLiveEvent {
 export interface ApiLiveEventList {
   //Live events.
   live_events?: Array<ApiLiveEvent>;
+}
+
+/** A scheduled message. */
+export interface ApiMessage {
+  //The time the message was consumed by the identity.
+  consume_time?: string;
+  //The time the message was created.
+  create_time?: string;
+  //A key-value pairs of metadata.
+  metadata?: Record<string, string>;
+  //The time the message was read by the client.
+  read_time?: string;
+  //The identifier of the schedule.
+  schedule_id?: string;
+  //The send time for the message.
+  send_time?: string;
+  //The message's text.
+  text?: string;
+  //The time the message was updated.
+  update_time?: string;
 }
 
 /** Properties associated with an identity. */
@@ -124,6 +162,16 @@ export interface ApiSession {
   token?: string;
 }
 
+/** The request to update the status of a message. */
+export interface ApiUpdateMessageRequest {
+  //The time the message was consumed by the identity.
+  consume_time?: string;
+  //The identifier of the messages.
+  id?: string;
+  //The time the message was read at the client.
+  read_time?: string;
+}
+
 /** Update Properties associated with this identity. */
 export interface ApiUpdatePropertiesRequest {
   //Event custom properties.
@@ -137,7 +185,9 @@ export interface ApiUpdatePropertiesRequest {
 /**  */
 export interface ProtobufAny {
   //
-  type?: string;
+  type_url?: string;
+  //
+  value?: string;
 }
 
 /**  */
@@ -512,6 +562,120 @@ export class SatoriApi {
 
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
+
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.timeoutMs, "Request timed out.")
+      ),
+    ]);
+}
+
+  /** Get the list of messages for the identity. */
+  satoriGetMessageList(bearerToken: string,
+      limit?:number,
+      forward?:boolean,
+      cursor?:string,
+      options: any = {}): Promise<ApiGetMessageListResponse> {
+    
+    const urlPath = "/v1/message";
+    const queryParams = new Map<string, any>();
+    queryParams.set("limit", limit);
+    queryParams.set("forward", forward);
+    queryParams.set("cursor", cursor);
+
+    let bodyJson : string = "";
+
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
+
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.timeoutMs, "Request timed out.")
+      ),
+    ]);
+}
+
+  /** Deletes a message for an identity. */
+  satoriDeleteMessage(bearerToken: string,
+      id:string,
+      options: any = {}): Promise<any> {
+    
+    if (id === null || id === undefined) {
+      throw new Error("'id' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v1/message/{id}"
+        .replace("{id}", encodeURIComponent(String(id)));
+    const queryParams = new Map<string, any>();
+
+    let bodyJson : string = "";
+
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+    if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
+
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.timeoutMs, "Request timed out.")
+      ),
+    ]);
+}
+
+  /** Updates a message for an identity. */
+  satoriUpdateMessage(bearerToken: string,
+      id:string,
+      body:ApiUpdateMessageRequest,
+      options: any = {}): Promise<any> {
+    
+    if (id === null || id === undefined) {
+      throw new Error("'id' is a required parameter but is null or undefined.");
+    }
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v1/message/{id}"
+        .replace("{id}", encodeURIComponent(String(id)));
+    const queryParams = new Map<string, any>();
+
+    let bodyJson : string = "";
+    bodyJson = JSON.stringify(body || {});
+
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
     if (bearerToken) {
         fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     }

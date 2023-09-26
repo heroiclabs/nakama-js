@@ -14,7 +14,7 @@ go run main.go "$GOPATH/src/github.com/heroiclabs/nakama/apigrpc/apigrpc.swagger
 ### Satori
 
 ```shell
-go run main.go "$GOPATH/src/github.com/heroiclabs/nakama/apigrpc/apigrpc.swagger.json" "Satori" > ../packages/satori-js/api.gen.ts
+go run main.go "$GOPATH/src/github.com/heroiclabs/satori/api/satori.swagger.json" "Satori" > ../packages/satori-js/api.gen.ts
 ```
 
 ### Rationale

@@ -5,6 +5,23 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ### Unreleased
 
+### [2.7.0]
+### Added
+- Satori: Added ability to schedule, update and delete outgoing messages for Live Events.
+- Satori: Added ability to add custom and default properties for a user at the point of authentication.
+- Satori: Add 'recompute' param to Satori's update-properties.
+- Satori: Added ability to delete identity.
+- Nakama: Added ability to create match by name.
+
+### Changed
+- Nakama: Improves how outgoing messages are logged in verbose mode.
+- Nakama: Updated signature for Authenticate Game Center.
+
+### Fixed
+- Nakama: Fixed typings distribution location for protobuf-js.
+- Nakama: Fixed how newer bundlers (such as those used by ViteJs) discover Nakama's type definitions.
+- Satori: Return live event ID when getting all live events.
+
 ### [2.6.1]
 
 ### Added
