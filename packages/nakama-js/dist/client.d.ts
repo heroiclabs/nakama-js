@@ -399,7 +399,7 @@ export declare class Client {
     /** Authenticate a user with Google against the server. */
     authenticateGoogle(token: string, create?: boolean, username?: string, vars?: Record<string, string>, options?: any): Promise<Session>;
     /** Authenticate a user with GameCenter against the server. */
-    authenticateGameCenter(token: string, create?: boolean, username?: string, vars?: Record<string, string>): Promise<Session>;
+    authenticateGameCenter(bundleId: string, playerId: string, publicKeyUrl: string, salt: string, signature: string, timestamp: string, username?: string, create?: boolean, vars?: Record<string, string>, options?: any): Promise<Session>;
     /** Authenticate a user with Steam against the server. */
     authenticateSteam(token: string, create?: boolean, username?: string, sync?: boolean, vars?: Record<string, string>): Promise<Session>;
     /** Ban users from a group. */
