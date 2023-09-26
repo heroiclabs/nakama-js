@@ -377,10 +377,10 @@ function Request(input, options) {
     if (options.cache === "no-store" || options.cache === "no-cache") {
       var reParamSearch = /([?&])_=[^&]*/;
       if (reParamSearch.test(this.url)) {
-        this.url = this.url.replace(reParamSearch, "$1_=" + new Date().getTime());
+        this.url = this.url.replace(reParamSearch, "$1_=" + (/* @__PURE__ */ new Date()).getTime());
       } else {
         var reQueryString = /\?/;
-        this.url += (reQueryString.test(this.url) ? "&" : "?") + "_=" + new Date().getTime();
+        this.url += (reQueryString.test(this.url) ? "&" : "?") + "_=" + (/* @__PURE__ */ new Date()).getTime();
       }
     }
   }
@@ -565,7 +565,7 @@ var b64tab = ((a) => {
 })(b64chs);
 var b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
 var _fromCC = String.fromCharCode.bind(String);
-var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it, fn = (x) => x) => new Uint8Array(Array.prototype.slice.call(it, 0).map(fn));
+var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it) => new Uint8Array(Array.prototype.slice.call(it, 0));
 var _mkUriSafe = (src) => src.replace(/=/g, "").replace(/[+\/]/g, (m0) => m0 == "+" ? "-" : "_");
 var _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, "");
 var btoaPolyfill = (bin) => {
@@ -897,6 +897,31 @@ var SatoriApi = class {
       )
     ]);
   }
+  /** Delete the caller's identity and associated data. */
+  satoriDeleteIdentity(bearerToken, options = {}) {
+    const urlPath = "/v1/identity";
+    const queryParams = /* @__PURE__ */ new Map();
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+    if (bearerToken) {
+      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
+    ]);
+  }
   /** List available live events. */
   satoriGetLiveEvents(bearerToken, names, options = {}) {
     const urlPath = "/v1/live-event";
@@ -905,6 +930,94 @@ var SatoriApi = class {
     let bodyJson = "";
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    if (bearerToken) {
+      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
+    ]);
+  }
+  /** Get the list of messages for the identity. */
+  satoriGetMessageList(bearerToken, limit, forward, cursor, options = {}) {
+    const urlPath = "/v1/message";
+    const queryParams = /* @__PURE__ */ new Map();
+    queryParams.set("limit", limit);
+    queryParams.set("forward", forward);
+    queryParams.set("cursor", cursor);
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+    if (bearerToken) {
+      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
+    ]);
+  }
+  /** Deletes a message for an identity. */
+  satoriDeleteMessage(bearerToken, id, options = {}) {
+    if (id === null || id === void 0) {
+      throw new Error("'id' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v1/message/{id}".replace("{id}", encodeURIComponent(String(id)));
+    const queryParams = /* @__PURE__ */ new Map();
+    let bodyJson = "";
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+    if (bearerToken) {
+      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise(
+        (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+      )
+    ]);
+  }
+  /** Updates a message for an identity. */
+  satoriUpdateMessage(bearerToken, id, body, options = {}) {
+    if (id === null || id === void 0) {
+      throw new Error("'id' is a required parameter but is null or undefined.");
+    }
+    if (body === null || body === void 0) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v1/message/{id}".replace("{id}", encodeURIComponent(String(id)));
+    const queryParams = /* @__PURE__ */ new Map();
+    let bodyJson = "";
+    bodyJson = JSON.stringify(body || {});
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
     if (bearerToken) {
       fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
     }
@@ -999,7 +1112,7 @@ var Session = class {
   constructor(token, refresh_token) {
     this.token = token;
     this.refresh_token = refresh_token;
-    this.created_at = Math.floor(new Date().getTime() / 1e3);
+    this.created_at = Math.floor((/* @__PURE__ */ new Date()).getTime() / 1e3);
     this.update(token, refresh_token);
   }
   isexpired(currenttime) {
@@ -1056,10 +1169,12 @@ var Client = class {
     this.apiClient = new SatoriApi(apiKey, basePath, timeout);
   }
   /** Authenticate a user with an ID against the server. */
-  authenticate(id) {
+  authenticate(id, customProperties, defaultProperties) {
     return __async(this, null, function* () {
       const request = {
-        "id": id
+        "id": id,
+        custom: customProperties,
+        default: defaultProperties
       };
       return this.apiClient.satoriAuthenticate(this.apiKey, "", request).then((apiSession) => {
         return Promise.resolve(new Session(apiSession.token || "", apiSession.refresh_token || ""));
@@ -1243,16 +1358,63 @@ var Client = class {
     });
   }
   /** Update identity properties. */
-  updateProperties(session, defaultProperties, customProperties) {
+  updateProperties(session, defaultProperties, customProperties, recompute) {
     return __async(this, null, function* () {
       if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
         yield this.sessionRefresh(session);
       }
       const request = {
         default: defaultProperties,
-        custom: customProperties
+        custom: customProperties,
+        recompute
       };
       return this.apiClient.satoriUpdateProperties(session.token, request).then((response) => {
+        return Promise.resolve(response !== void 0);
+      });
+    });
+  }
+  /** Delete the caller's identity and associated data. */
+  deleteIdentity(session) {
+    return __async(this, null, function* () {
+      if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+        yield this.sessionRefresh(session);
+      }
+      return this.apiClient.satoriDeleteIdentity(session.token).then((response) => {
+        return Promise.resolve(response !== void 0);
+      });
+    });
+  }
+  getMessageList(session) {
+    return __async(this, null, function* () {
+      if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+        yield this.sessionRefresh(session);
+      }
+      return this.apiClient.satoriGetMessageList(session.token).then((response) => {
+        return Promise.resolve(response !== void 0);
+      });
+    });
+  }
+  deleteMessage(session, id) {
+    return __async(this, null, function* () {
+      if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+        yield this.sessionRefresh(session);
+      }
+      return this.apiClient.satoriDeleteMessage(session.token, id).then((response) => {
+        return Promise.resolve(response !== void 0);
+      });
+    });
+  }
+  updateMessage(session, id, consume_time, read_time) {
+    return __async(this, null, function* () {
+      if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+        yield this.sessionRefresh(session);
+      }
+      const request = {
+        id,
+        consume_time,
+        read_time
+      };
+      return this.apiClient.satoriUpdateMessage(session.token, id, request).then((response) => {
         return Promise.resolve(response !== void 0);
       });
     });

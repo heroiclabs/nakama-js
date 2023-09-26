@@ -320,7 +320,7 @@ export class Client {
             read_time: read_time
         };
 
-        return this.apiClient.satoriUpdateMessage(session.token, request).then((response) => {
+        return this.apiClient.satoriUpdateMessage(session.token, id, request).then((response) => {
             return Promise.resolve(response !== undefined);
         });
     }

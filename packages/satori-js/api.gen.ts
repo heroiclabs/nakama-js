@@ -185,7 +185,9 @@ export interface ApiUpdatePropertiesRequest {
 /**  */
 export interface ProtobufAny {
   //
-  _@type?: string;
+  type_url?: string;
+  //
+  value?: string;
 }
 
 /**  */
@@ -580,39 +582,6 @@ export class SatoriApi {
     ]);
 }
 
-  /** Deletes a message for an identity. */
-  satoriDeleteMessage(bearerToken: string,
-      id?:string,
-      options: any = {}): Promise<any> {
-    
-    const urlPath = "/v1/message";
-    const queryParams = new Map<string, any>();
-    queryParams.set("id", id);
-
-    let bodyJson : string = "";
-
-    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
-    const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
-    if (bearerToken) {
-        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
-    }
-
-    return Promise.race([
-      fetch(fullUrl, fetchOptions).then((response) => {
-        if (response.status == 204) {
-          return response;
-        } else if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      }),
-      new Promise((_, reject) =>
-        setTimeout(reject, this.timeoutMs, "Request timed out.")
-      ),
-    ]);
-}
-
   /** Get the list of messages for the identity. */
   satoriGetMessageList(bearerToken: string,
       limit?:number,
@@ -650,15 +619,56 @@ export class SatoriApi {
     ]);
 }
 
+  /** Deletes a message for an identity. */
+  satoriDeleteMessage(bearerToken: string,
+      id:string,
+      options: any = {}): Promise<any> {
+    
+    if (id === null || id === undefined) {
+      throw new Error("'id' is a required parameter but is null or undefined.");
+    }
+    const urlPath = "/v1/message/{id}"
+        .replace("{id}", encodeURIComponent(String(id)));
+    const queryParams = new Map<string, any>();
+
+    let bodyJson : string = "";
+
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+    if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
+
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.timeoutMs, "Request timed out.")
+      ),
+    ]);
+}
+
   /** Updates a message for an identity. */
   satoriUpdateMessage(bearerToken: string,
+      id:string,
       body:ApiUpdateMessageRequest,
       options: any = {}): Promise<any> {
     
+    if (id === null || id === undefined) {
+      throw new Error("'id' is a required parameter but is null or undefined.");
+    }
     if (body === null || body === undefined) {
       throw new Error("'body' is a required parameter but is null or undefined.");
     }
-    const urlPath = "/v1/message";
+    const urlPath = "/v1/message/{id}"
+        .replace("{id}", encodeURIComponent(String(id)));
     const queryParams = new Map<string, any>();
 
     let bodyJson : string = "";

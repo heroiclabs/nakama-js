@@ -70,5 +70,5 @@ export declare class Client {
     deleteIdentity(session: Session): Promise<boolean>;
     getMessageList(session: Session): Promise<boolean>;
     deleteMessage(session: Session, id: string): Promise<boolean>;
-    updateMessage(session: Session, id: string): Promise<boolean>;
+    updateMessage(session: Session, id: string, consume_time?: string, read_time?: string): Promise<boolean>;
 }
