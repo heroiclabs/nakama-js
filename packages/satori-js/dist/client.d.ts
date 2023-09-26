@@ -29,7 +29,7 @@ export declare class Client {
     private readonly apiClient;
     constructor(apiKey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number, autoRefreshSession?: boolean);
     /** Authenticate a user with an ID against the server. */
-    authenticate(id: string): Promise<Session>;
+    authenticate(id: string, customProperties?: Record<string, string>, defaultProperties?: Record<string, string>): Promise<Session>;
     /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
     sessionRefresh(session: Session): Promise<Session>;
     /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
@@ -65,5 +65,10 @@ export declare class Client {
     /** List properties associated with this identity. */
     listProperties(session: Session): Promise<import("./api.gen").ApiProperties>;
     /** Update identity properties. */
-    updateProperties(session: Session, defaultProperties?: Record<string, string>, customProperties?: Record<string, string>): Promise<boolean>;
+    updateProperties(session: Session, defaultProperties?: Record<string, string>, customProperties?: Record<string, string>, recompute?: boolean): Promise<boolean>;
+    /** Delete the caller's identity and associated data. */
+    deleteIdentity(session: Session): Promise<boolean>;
+    getMessageList(session: Session): Promise<boolean>;
+    deleteMessage(session: Session, id: string): Promise<boolean>;
+    updateMessage(session: Session, id: string): Promise<boolean>;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SatoriApi, ApiSession, ApiAuthenticateRequest, ApiEventRequest, ApiAuthenticateLogoutRequest, ApiAuthenticateRefreshRequest, ApiIdentifyRequest, ApiUpdatePropertiesRequest, ApiEvent } from "./api.gen";
+import { SatoriApi, ApiSession, ApiAuthenticateRequest, ApiEventRequest, ApiAuthenticateLogoutRequest, ApiAuthenticateRefreshRequest, ApiIdentifyRequest, ApiUpdatePropertiesRequest, ApiEvent, ApiUpdateMessageRequest } from "./api.gen";
 
 import { Session } from "./session";
 
@@ -47,10 +47,12 @@ export class Client {
   }
 
   /** Authenticate a user with an ID against the server. */
-  async authenticate(id: string) {
+  async authenticate(id: string, customProperties?: Record<string, string>, defaultProperties?: Record<string, string>) {
 
     const request : ApiAuthenticateRequest = {
       "id": id,
+      custom: customProperties,
+      default: defaultProperties
     };
 
     return this.apiClient.satoriAuthenticate(this.apiKey, "", request).then((apiSession : ApiSession) => {
@@ -149,7 +151,7 @@ export class Client {
     });
   }
 
-  
+
   /** Get a single flag for this identity. */
   async getFlagWithFallback(session: Session, name: string, fallbackValue?: string) {
     return this.getFlag(session, name)
@@ -278,9 +280,48 @@ export class Client {
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
         await this.sessionRefresh(session);
       }
-  
+
       return this.apiClient.satoriDeleteIdentity(session.token).then((response) => {
         return Promise.resolve(response !== undefined);
       });
+    }
+
+    async getMessageList(session : Session) {
+        if (this.autoRefreshSession && session.refresh_token &&
+            session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+            await this.sessionRefresh(session);
+        }
+
+        return this.apiClient.satoriGetMessageList(session.token).then((response) => {
+            return Promise.resolve(response !== undefined);
+        });
+    }
+
+    async deleteMessage(session : Session, id : string) {
+        if (this.autoRefreshSession && session.refresh_token &&
+            session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+            await this.sessionRefresh(session);
+        }
+
+        return this.apiClient.satoriDeleteMessage(session.token, id).then((response) => {
+            return Promise.resolve(response !== undefined);
+        });
+    }
+
+    async updateMessage(session : Session, id : string, consume_time? : string, read_time? : string) {
+        if (this.autoRefreshSession && session.refresh_token &&
+            session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+            await this.sessionRefresh(session);
+        }
+
+        const request : ApiUpdateMessageRequest = {
+            id: id,
+            consume_time: consume_time,
+            read_time: read_time
+        };
+
+        return this.apiClient.satoriUpdateMessage(session.token, request).then((response) => {
+            return Promise.resolve(response !== undefined);
+        });
     }
 };
