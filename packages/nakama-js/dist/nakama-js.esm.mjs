@@ -353,10 +353,10 @@ function Request(input, options) {
     if (options.cache === "no-store" || options.cache === "no-cache") {
       var reParamSearch = /([?&])_=[^&]*/;
       if (reParamSearch.test(this.url)) {
-        this.url = this.url.replace(reParamSearch, "$1_=" + new Date().getTime());
+        this.url = this.url.replace(reParamSearch, "$1_=" + (/* @__PURE__ */ new Date()).getTime());
       } else {
         var reQueryString = /\?/;
-        this.url += (reQueryString.test(this.url) ? "&" : "?") + "_=" + new Date().getTime();
+        this.url += (reQueryString.test(this.url) ? "&" : "?") + "_=" + (/* @__PURE__ */ new Date()).getTime();
       }
     }
   }
@@ -541,7 +541,7 @@ var b64tab = ((a) => {
 })(b64chs);
 var b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
 var _fromCC = String.fromCharCode.bind(String);
-var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it, fn = (x) => x) => new Uint8Array(Array.prototype.slice.call(it, 0).map(fn));
+var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it) => new Uint8Array(Array.prototype.slice.call(it, 0));
 var _mkUriSafe = (src) => src.replace(/=/g, "").replace(/[+\/]/g, (m0) => m0 == "+" ? "-" : "_");
 var _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, "");
 var btoaPolyfill = (bin) => {
@@ -577,6 +577,19 @@ var re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g;
 var utob = (u) => u.replace(re_utob, cb_utob);
 var _encode = _hasBuffer ? (s) => Buffer.from(s, "utf8").toString("base64") : _TE ? (s) => _fromUint8Array(_TE.encode(s)) : (s) => _btoa(utob(s));
 var encode = (src, urlsafe = false) => urlsafe ? _mkUriSafe(_encode(src)) : _encode(src);
+var re_btou = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
+var cb_btou = (cccc) => {
+  switch (cccc.length) {
+    case 4:
+      var cp = (7 & cccc.charCodeAt(0)) << 18 | (63 & cccc.charCodeAt(1)) << 12 | (63 & cccc.charCodeAt(2)) << 6 | 63 & cccc.charCodeAt(3), offset = cp - 65536;
+      return _fromCC((offset >>> 10) + 55296) + _fromCC((offset & 1023) + 56320);
+    case 3:
+      return _fromCC((15 & cccc.charCodeAt(0)) << 12 | (63 & cccc.charCodeAt(1)) << 6 | 63 & cccc.charCodeAt(2));
+    default:
+      return _fromCC((31 & cccc.charCodeAt(0)) << 6 | 63 & cccc.charCodeAt(1));
+  }
+};
+var btou = (b) => b.replace(re_btou, cb_btou);
 var atobPolyfill = (asc) => {
   asc = asc.replace(/\s+/g, "");
   if (!b64re.test(asc))
@@ -590,6 +603,10 @@ var atobPolyfill = (asc) => {
   return bin;
 };
 var _atob = _hasatob ? (asc) => atob(_tidyB64(asc)) : _hasBuffer ? (asc) => Buffer.from(asc, "base64").toString("binary") : atobPolyfill;
+var _toUint8Array = _hasBuffer ? (a) => _U8Afrom(Buffer.from(a, "base64")) : (a) => _U8Afrom(_atob(a).split("").map((c) => c.charCodeAt(0)));
+var _decode = _hasBuffer ? (a) => Buffer.from(a, "base64").toString("utf8") : _TD ? (a) => _TD.decode(_toUint8Array(a)) : (a) => btou(_atob(a));
+var _unURI = (a) => _tidyB64(a.replace(/[-_]/g, (m0) => m0 == "-" ? "+" : "/"));
+var decode2 = (src) => _decode(_unURI(src));
 
 // utils.ts
 function buildFetchOptions(method, options, bodyJson) {
@@ -2910,7 +2927,7 @@ var Session = class {
     this.created = created;
     this.token = token;
     this.refresh_token = refresh_token;
-    this.created_at = Math.floor(new Date().getTime() / 1e3);
+    this.created_at = Math.floor((/* @__PURE__ */ new Date()).getTime() / 1e3);
     this.update(token, refresh_token);
   }
   isexpired(currenttime) {
@@ -2969,7 +2986,7 @@ var encode2 = function(arraybuffer) {
   }
   return base64;
 };
-var decode2 = function(base64) {
+var decode3 = function(base64) {
   var bufferLength = base64.length * 0.75, len = base64.length, i, p = 0, encoded1, encoded2, encoded3, encoded4;
   if (base64[base64.length - 1] === "=") {
     bufferLength--;
@@ -3012,9 +3029,9 @@ var WebSocketAdapterText = class {
       this._socket.onmessage = (evt) => {
         const message = JSON.parse(evt.data);
         if (message.match_data && message.match_data.data) {
-          message.match_data.data = new Uint8Array(decode2(message.match_data.data));
+          message.match_data.data = new Uint8Array(decode3(message.match_data.data));
         } else if (message.party_data && message.party_data.data) {
-          message.party_data.data = new Uint8Array(decode2(message.party_data.data));
+          message.party_data.data = new Uint8Array(decode3(message.party_data.data));
         }
         value(message);
       };
@@ -3317,7 +3334,13 @@ var _DefaultSocket = class {
         }
       }
       if (this.verbose && window && window.console) {
-        console.log("Sent message: %o", JSON.stringify(untypedMessage));
+        const loggedMessage = __spreadValues({}, untypedMessage);
+        if (loggedMessage.match_data_send && loggedMessage.match_data_send.data) {
+          loggedMessage.match_data_send.data = decode2(loggedMessage.match_data_send.data);
+        } else if (loggedMessage.party_data_send && loggedMessage.party_data_send.data) {
+          loggedMessage.party_data_send.data = decode2(loggedMessage.party_data_send.data);
+        }
+        console.log("Sent message: %o", JSON.stringify(loggedMessage));
       }
     });
   }
@@ -3358,9 +3381,9 @@ var _DefaultSocket = class {
       return yield this.send({ party_close: { party_id } });
     });
   }
-  createMatch() {
+  createMatch(name) {
     return __async(this, null, function* () {
-      const response = yield this.send({ match_create: {} });
+      const response = yield this.send({ match_create: { name } });
       return response.match;
     });
   }
@@ -3652,23 +3675,52 @@ var Client = class {
     });
   }
   /** Authenticate a user with Google against the server. */
-  authenticateGoogle(token, create, username, vars, options = {}) {
-    const request = {
-      "token": token,
-      "vars": vars
-    };
-    return this.apiClient.authenticateGoogle(this.serverkey, "", request, create, username, options).then((apiSession) => {
-      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
+  authenticateGoogle(_0, _1, _2, _3) {
+    return __async(this, arguments, function* (token, create, username, vars, options = {}) {
+      const request = {
+        token,
+        vars
+      };
+      const apiSession = yield this.apiClient.authenticateGoogle(
+        this.serverkey,
+        "",
+        request,
+        create,
+        username,
+        options
+      );
+      return new Session(
+        apiSession.token || "",
+        apiSession.refresh_token || "",
+        apiSession.created || false
+      );
     });
   }
   /** Authenticate a user with GameCenter against the server. */
-  authenticateGameCenter(token, create, username, vars) {
-    const request = {
-      "token": token,
-      "vars": vars
-    };
-    return this.apiClient.authenticateGameCenter(this.serverkey, "", request, create, username).then((apiSession) => {
-      return new Session(apiSession.token || "", apiSession.refresh_token || "", apiSession.created || false);
+  authenticateGameCenter(_0, _1, _2, _3, _4, _5, _6, _7, _8) {
+    return __async(this, arguments, function* (bundleId, playerId, publicKeyUrl, salt, signature, timestamp, username, create, vars, options = {}) {
+      const request = {
+        bundle_id: bundleId,
+        player_id: playerId,
+        public_key_url: publicKeyUrl,
+        salt,
+        signature,
+        timestamp_seconds: timestamp,
+        vars
+      };
+      const apiSession = yield this.apiClient.authenticateGameCenter(
+        this.serverkey,
+        "",
+        request,
+        create,
+        username,
+        options
+      );
+      return new Session(
+        apiSession.token || "",
+        apiSession.refresh_token || "",
+        apiSession.created || false
+      );
     });
   }
   /** Authenticate a user with Steam against the server. */
