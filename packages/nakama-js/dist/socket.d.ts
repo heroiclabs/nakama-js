@@ -148,7 +148,7 @@ export interface StreamId {
     /** The primary stream subject, usually a user id. */
     subject: string;
     /** A secondary stream subject, for example for a direct chat. */
-    descriptor: string;
+    subcontext: string;
     /** Meta-information (e.g. chat room name). */
     label: string;
 }
