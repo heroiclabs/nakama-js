@@ -141,15 +141,15 @@ socket.onchannelmessage = (message) => {
 
 
 // 1 = room, 2 = Direct Message, 3 = Group
-const type : number = 1;
 const roomname = "mychannel";
-const persistence : boolean = false;
-const hidden : boolean = false;
+const type: number = 1;
+const persistence: boolean = false;
+const hidden: boolean = false;
 
-const channel = await socket.joinChat(type, roomname, persistence, hidden);
+const channel = await socket.joinChat(roomname, type, persistence, hidden);
 
-const message = { "hello": "world" };
-socket.writeChatMessage(channel.channel.id, message);
+const message = { hello: "world" };
+socket.writeChatMessage(channel.id, message);
 ```
 
 ## Handling errors
