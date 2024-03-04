@@ -7,13 +7,13 @@ Nakama JavaScript client
 
 This client implements the full API and socket options with the server. It's written in TypeScript with minimal dependencies to be compatible with all modern browsers and React Native.
 
-Full documentation is online - https://heroiclabs.com/docs/javascript-client-guide
+Full documentation is online - https://heroiclabs.com/docs/nakama/client-libraries/javascript/
 
 ## Getting Started
 
 You'll need to setup the server and database before you can connect with the client. The simplest way is to use Docker but have a look at the [server documentation](https://github.com/heroiclabs/nakama#getting-started) for other options.
 
-1. Install and run the servers. Follow these [instructions](https://heroiclabs.com/docs/install-docker-quickstart).
+1. Install and run the servers. Follow these [instructions](https://heroiclabs.com/docs/nakama/getting-started/install/docker/).
 
 2. Import the client into your project. It's [available on NPM](https://www.npmjs.com/package/@heroiclabs/nakama-js) and can be also be added to a project with Bower or other package managers.
 
@@ -189,7 +189,7 @@ npm run build --workspace=@heroiclabs/nakama-js
 
 ### Run Tests
 
-To run tests you will need to run the server and database. Most tests are written as integration tests which execute against the server. A quick approach we use with our test workflow is to use the Docker compose file described in the [documentation](https://heroiclabs.com/docs/install-docker-quickstart).
+To run tests you will need to run the server and database. Most tests are written as integration tests which execute against the server. A quick approach we use with our test workflow is to use the Docker compose file described in the [documentation](https://heroiclabs.com/docs/nakama/getting-started/install/docker/).
 
 Tests are run against each workspace bundle; if you have made source code changes, you should `npm run build --workspace=<workspace>` prior to running tests.
 
