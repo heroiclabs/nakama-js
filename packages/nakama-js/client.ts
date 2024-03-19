@@ -1601,7 +1601,7 @@ export class Client {
 
   /** Execute an RPC function on the server. */
   async rpcHttpKey(httpKey: string, id: string, input?: object): Promise<RpcResponse> {
-    return this.apiClient.rpcFunc2("", id, input && JSON.stringify(input) || "", httpKey)
+    return this.apiClient.rpcFunc("", id, input && JSON.stringify(input) || "", httpKey)
       .then((response: ApiRpc) => {
         return Promise.resolve({
           id: response.id,
