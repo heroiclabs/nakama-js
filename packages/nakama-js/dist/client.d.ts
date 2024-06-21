@@ -509,7 +509,7 @@ export declare class Client {
     listFriendsOfFriends(session: Session, limit?: number, cursor?: string): Promise<FriendsOfFriends>;
     /** List leaderboard records */
     listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string): Promise<LeaderboardRecordList>;
-    listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number, expiry?: string): Promise<LeaderboardRecordList>;
+    listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number, expiry?: string, cursor?: string): Promise<LeaderboardRecordList>;
     /** Fetch list of running matches. */
     listMatches(session: Session, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, query?: string): Promise<ApiMatchList>;
     /** Fetch list of notifications. */

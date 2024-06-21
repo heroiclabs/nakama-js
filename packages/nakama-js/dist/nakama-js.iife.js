@@ -693,6 +693,31 @@ var nakamajs = (() => {
         )
       ]);
     }
+    /** Delete the current user's account. */
+    deleteAccount(bearerToken, options = {}) {
+      const urlPath = "/v2/account";
+      const queryParams = /* @__PURE__ */ new Map();
+      let bodyJson = "";
+      const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+      const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
+      return Promise.race([
+        fetch(fullUrl, fetchOptions).then((response) => {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise(
+          (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+        )
+      ]);
+    }
     /** Fetch the current user's account. */
     getAccount(bearerToken, options = {}) {
       const urlPath = "/v2/account";
@@ -748,19 +773,21 @@ var nakamajs = (() => {
       ]);
     }
     /** Authenticate a user with an Apple ID against the server. */
-    authenticateApple(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    authenticateApple(basicAuthUsername, basicAuthPassword, account, create, username, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/apple";
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("create", create);
       queryParams.set("username", username);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -777,19 +804,21 @@ var nakamajs = (() => {
       ]);
     }
     /** Authenticate a user with a custom id against the server. */
-    authenticateCustom(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    authenticateCustom(basicAuthUsername, basicAuthPassword, account, create, username, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/custom";
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("create", create);
       queryParams.set("username", username);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -806,19 +835,21 @@ var nakamajs = (() => {
       ]);
     }
     /** Authenticate a user with a device id against the server. */
-    authenticateDevice(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    authenticateDevice(basicAuthUsername, basicAuthPassword, account, create, username, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/device";
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("create", create);
       queryParams.set("username", username);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -835,19 +866,21 @@ var nakamajs = (() => {
       ]);
     }
     /** Authenticate a user with an email+password against the server. */
-    authenticateEmail(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    authenticateEmail(basicAuthUsername, basicAuthPassword, account, create, username, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/email";
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("create", create);
       queryParams.set("username", username);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -864,9 +897,9 @@ var nakamajs = (() => {
       ]);
     }
     /** Authenticate a user with a Facebook OAuth token against the server. */
-    authenticateFacebook(basicAuthUsername, basicAuthPassword, body, create, username, sync, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    authenticateFacebook(basicAuthUsername, basicAuthPassword, account, create, username, sync, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/facebook";
       const queryParams = /* @__PURE__ */ new Map();
@@ -874,10 +907,12 @@ var nakamajs = (() => {
       queryParams.set("username", username);
       queryParams.set("sync", sync);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -894,19 +929,21 @@ var nakamajs = (() => {
       ]);
     }
     /** Authenticate a user with a Facebook Instant Game token against the server. */
-    authenticateFacebookInstantGame(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    authenticateFacebookInstantGame(basicAuthUsername, basicAuthPassword, account, create, username, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/facebookinstantgame";
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("create", create);
       queryParams.set("username", username);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -923,19 +960,21 @@ var nakamajs = (() => {
       ]);
     }
     /** Authenticate a user with Apple's GameCenter against the server. */
-    authenticateGameCenter(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    authenticateGameCenter(basicAuthUsername, basicAuthPassword, account, create, username, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/gamecenter";
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("create", create);
       queryParams.set("username", username);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -952,19 +991,21 @@ var nakamajs = (() => {
       ]);
     }
     /** Authenticate a user with Google against the server. */
-    authenticateGoogle(basicAuthUsername, basicAuthPassword, body, create, username, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    authenticateGoogle(basicAuthUsername, basicAuthPassword, account, create, username, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/google";
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("create", create);
       queryParams.set("username", username);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -981,9 +1022,9 @@ var nakamajs = (() => {
       ]);
     }
     /** Authenticate a user with Steam against the server. */
-    authenticateSteam(basicAuthUsername, basicAuthPassword, body, create, username, sync, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    authenticateSteam(basicAuthUsername, basicAuthPassword, account, create, username, sync, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/authenticate/steam";
       const queryParams = /* @__PURE__ */ new Map();
@@ -991,10 +1032,12 @@ var nakamajs = (() => {
       queryParams.set("username", username);
       queryParams.set("sync", sync);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1127,15 +1170,15 @@ var nakamajs = (() => {
       ]);
     }
     /** Add Facebook to the social profiles on the current user's account. */
-    linkFacebook(bearerToken, body, sync, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    linkFacebook(bearerToken, account, sync, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/account/link/facebook";
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("sync", sync);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
       if (bearerToken) {
@@ -1283,7 +1326,9 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-      fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      if (basicAuthUsername) {
+        fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+      }
       return Promise.race([
         fetch(fullUrl, fetchOptions).then((response) => {
           if (response.status == 204) {
@@ -1730,15 +1775,15 @@ var nakamajs = (() => {
       ]);
     }
     /** Import Facebook friends and add them to a user's account. */
-    importFacebookFriends(bearerToken, body, reset, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    importFacebookFriends(bearerToken, account, reset, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/friend/facebook";
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("reset", reset);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
       if (bearerToken) {
@@ -1759,16 +1804,43 @@ var nakamajs = (() => {
         )
       ]);
     }
+    /** List friends of friends for the current user. */
+    listFriendsOfFriends(bearerToken, limit, cursor, options = {}) {
+      const urlPath = "/v2/friend/friends";
+      const queryParams = /* @__PURE__ */ new Map();
+      queryParams.set("limit", limit);
+      queryParams.set("cursor", cursor);
+      let bodyJson = "";
+      const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+      const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
+      return Promise.race([
+        fetch(fullUrl, fetchOptions).then((response) => {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise(
+          (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+        )
+      ]);
+    }
     /** Import Steam friends and add them to a user's account. */
-    importSteamFriends(bearerToken, body, reset, options = {}) {
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+    importSteamFriends(bearerToken, account, reset, options = {}) {
+      if (account === null || account === void 0) {
+        throw new Error("'account' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/friend/steam";
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("reset", reset);
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(account || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
       if (bearerToken) {
@@ -1972,9 +2044,6 @@ var nakamajs = (() => {
       if (groupId === null || groupId === void 0) {
         throw new Error("'groupId' is a required parameter but is null or undefined.");
       }
-      if (userIds === null || userIds === void 0) {
-        throw new Error("'userIds' is a required parameter but is null or undefined.");
-      }
       const urlPath = "/v2/group/{groupId}/demote".replace("{groupId}", encodeURIComponent(String(groupId)));
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("user_ids", userIds);
@@ -2173,6 +2242,35 @@ var nakamajs = (() => {
         )
       ]);
     }
+    /** Validate FB Instant IAP Receipt */
+    validatePurchaseFacebookInstant(bearerToken, body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/iap/purchase/facebookinstant";
+      const queryParams = /* @__PURE__ */ new Map();
+      let bodyJson = "";
+      bodyJson = JSON.stringify(body || {});
+      const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+      const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
+      return Promise.race([
+        fetch(fullUrl, fetchOptions).then((response) => {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise(
+          (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+        )
+      ]);
+    }
     /** Validate Google IAP Receipt */
     validatePurchaseGoogle(bearerToken, body, options = {}) {
       if (body === null || body === void 0) {
@@ -2213,6 +2311,121 @@ var nakamajs = (() => {
       bodyJson = JSON.stringify(body || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
+      return Promise.race([
+        fetch(fullUrl, fetchOptions).then((response) => {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise(
+          (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+        )
+      ]);
+    }
+    /** List user's subscriptions. */
+    listSubscriptions(bearerToken, body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/iap/subscription";
+      const queryParams = /* @__PURE__ */ new Map();
+      let bodyJson = "";
+      bodyJson = JSON.stringify(body || {});
+      const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+      const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
+      return Promise.race([
+        fetch(fullUrl, fetchOptions).then((response) => {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise(
+          (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+        )
+      ]);
+    }
+    /** Validate Apple Subscription Receipt */
+    validateSubscriptionApple(bearerToken, body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/iap/subscription/apple";
+      const queryParams = /* @__PURE__ */ new Map();
+      let bodyJson = "";
+      bodyJson = JSON.stringify(body || {});
+      const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+      const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
+      return Promise.race([
+        fetch(fullUrl, fetchOptions).then((response) => {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise(
+          (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+        )
+      ]);
+    }
+    /** Validate Google Subscription Receipt */
+    validateSubscriptionGoogle(bearerToken, body, options = {}) {
+      if (body === null || body === void 0) {
+        throw new Error("'body' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/iap/subscription/google";
+      const queryParams = /* @__PURE__ */ new Map();
+      let bodyJson = "";
+      bodyJson = JSON.stringify(body || {});
+      const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+      const fetchOptions = buildFetchOptions("POST", options, bodyJson);
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
+      return Promise.race([
+        fetch(fullUrl, fetchOptions).then((response) => {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise(
+          (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+        )
+      ]);
+    }
+    /** Get subscription by product id. */
+    getSubscription(bearerToken, productId, options = {}) {
+      if (productId === null || productId === void 0) {
+        throw new Error("'productId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/iap/subscription/{productId}".replace("{productId}", encodeURIComponent(String(productId)));
+      const queryParams = /* @__PURE__ */ new Map();
+      let bodyJson = "";
+      const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+      const fetchOptions = buildFetchOptions("GET", options, bodyJson);
       if (bearerToken) {
         fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
       }
@@ -2292,17 +2505,17 @@ var nakamajs = (() => {
       ]);
     }
     /** Write a record to a leaderboard. */
-    writeLeaderboardRecord(bearerToken, leaderboardId, body, options = {}) {
+    writeLeaderboardRecord(bearerToken, leaderboardId, record, options = {}) {
       if (leaderboardId === null || leaderboardId === void 0) {
         throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
       }
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+      if (record === null || record === void 0) {
+        throw new Error("'record' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/leaderboard/{leaderboardId}".replace("{leaderboardId}", encodeURIComponent(String(leaderboardId)));
       const queryParams = /* @__PURE__ */ new Map();
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(record || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
       if (bearerToken) {
@@ -2324,7 +2537,7 @@ var nakamajs = (() => {
       ]);
     }
     /** List leaderboard records that belong to a user. */
-    listLeaderboardRecordsAroundOwner(bearerToken, leaderboardId, ownerId, limit, expiry, options = {}) {
+    listLeaderboardRecordsAroundOwner(bearerToken, leaderboardId, ownerId, limit, expiry, cursor, options = {}) {
       if (leaderboardId === null || leaderboardId === void 0) {
         throw new Error("'leaderboardId' is a required parameter but is null or undefined.");
       }
@@ -2335,6 +2548,7 @@ var nakamajs = (() => {
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("limit", limit);
       queryParams.set("expiry", expiry);
+      queryParams.set("cursor", cursor);
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
@@ -2714,6 +2928,34 @@ var nakamajs = (() => {
         )
       ]);
     }
+    /** Delete a tournament record. */
+    deleteTournamentRecord(bearerToken, tournamentId, options = {}) {
+      if (tournamentId === null || tournamentId === void 0) {
+        throw new Error("'tournamentId' is a required parameter but is null or undefined.");
+      }
+      const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
+      const queryParams = /* @__PURE__ */ new Map();
+      let bodyJson = "";
+      const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+      const fetchOptions = buildFetchOptions("DELETE", options, bodyJson);
+      if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+      }
+      return Promise.race([
+        fetch(fullUrl, fetchOptions).then((response) => {
+          if (response.status == 204) {
+            return response;
+          } else if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        }),
+        new Promise(
+          (_, reject) => setTimeout(reject, this.timeoutMs, "Request timed out.")
+        )
+      ]);
+    }
     /** List tournament records. */
     listTournamentRecords(bearerToken, tournamentId, ownerIds, limit, cursor, expiry, options = {}) {
       if (tournamentId === null || tournamentId === void 0) {
@@ -2747,17 +2989,17 @@ var nakamajs = (() => {
       ]);
     }
     /** Write a record to a tournament. */
-    writeTournamentRecord2(bearerToken, tournamentId, body, options = {}) {
+    writeTournamentRecord2(bearerToken, tournamentId, record, options = {}) {
       if (tournamentId === null || tournamentId === void 0) {
         throw new Error("'tournamentId' is a required parameter but is null or undefined.");
       }
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+      if (record === null || record === void 0) {
+        throw new Error("'record' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
       const queryParams = /* @__PURE__ */ new Map();
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(record || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("POST", options, bodyJson);
       if (bearerToken) {
@@ -2779,17 +3021,17 @@ var nakamajs = (() => {
       ]);
     }
     /** Write a record to a tournament. */
-    writeTournamentRecord(bearerToken, tournamentId, body, options = {}) {
+    writeTournamentRecord(bearerToken, tournamentId, record, options = {}) {
       if (tournamentId === null || tournamentId === void 0) {
         throw new Error("'tournamentId' is a required parameter but is null or undefined.");
       }
-      if (body === null || body === void 0) {
-        throw new Error("'body' is a required parameter but is null or undefined.");
+      if (record === null || record === void 0) {
+        throw new Error("'record' is a required parameter but is null or undefined.");
       }
       const urlPath = "/v2/tournament/{tournamentId}".replace("{tournamentId}", encodeURIComponent(String(tournamentId)));
       const queryParams = /* @__PURE__ */ new Map();
       let bodyJson = "";
-      bodyJson = JSON.stringify(body || {});
+      bodyJson = JSON.stringify(record || {});
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("PUT", options, bodyJson);
       if (bearerToken) {
@@ -2839,7 +3081,7 @@ var nakamajs = (() => {
       ]);
     }
     /** List tournament records for a given owner. */
-    listTournamentRecordsAroundOwner(bearerToken, tournamentId, ownerId, limit, expiry, options = {}) {
+    listTournamentRecordsAroundOwner(bearerToken, tournamentId, ownerId, limit, expiry, cursor, options = {}) {
       if (tournamentId === null || tournamentId === void 0) {
         throw new Error("'tournamentId' is a required parameter but is null or undefined.");
       }
@@ -2850,6 +3092,7 @@ var nakamajs = (() => {
       const queryParams = /* @__PURE__ */ new Map();
       queryParams.set("limit", limit);
       queryParams.set("expiry", expiry);
+      queryParams.set("cursor", cursor);
       let bodyJson = "";
       const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
       const fetchOptions = buildFetchOptions("GET", options, bodyJson);
@@ -3812,6 +4055,17 @@ var nakamajs = (() => {
     createSocket(useSSL = false, verbose = false, adapter = new WebSocketAdapterText(), sendTimeoutMs = DefaultSocket.DefaultSendTimeoutMs) {
       return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter, sendTimeoutMs);
     }
+    /** Delete the current user's account. */
+    deleteAccount(session) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        return this.apiClient.deleteAccount(session.token).then((response) => {
+          return response !== void 0;
+        });
+      });
+    }
     /** Delete one or more users by ID or username. */
     deleteFriends(session, ids, usernames) {
       return __async(this, null, function* () {
@@ -3856,6 +4110,12 @@ var nakamajs = (() => {
         });
       });
     }
+    /** Delete a tournament record. */
+    deleteTournamentRecord(session, tournamentId) {
+      return __async(this, null, function* () {
+        return this.apiClient.deleteTournamentRecord(session.token, tournamentId);
+      });
+    }
     /** Demote a set of users in a group to the next role down. */
     demoteGroupUsers(session, groupId, ids) {
       return __async(this, null, function* () {
@@ -3885,6 +4145,15 @@ var nakamajs = (() => {
           yield this.sessionRefresh(session);
         }
         return this.apiClient.getAccount(session.token);
+      });
+    }
+    /** Get subscription by product id. */
+    getSubscription(session, productId) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        return this.apiClient.getSubscription(session.token, productId);
       });
     }
     /** Import Facebook friends and add them to a user's account. */
@@ -4279,6 +4548,48 @@ var nakamajs = (() => {
         });
       });
     }
+    /** List friends of friends for the current user. */
+    listFriendsOfFriends(session, limit, cursor) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        return this.apiClient.listFriendsOfFriends(session.token, limit, cursor).then((response) => {
+          var result = {
+            friends_of_friends: [],
+            cursor: response.cursor
+          };
+          if (response.friends_of_friends == null) {
+            return Promise.resolve(result);
+          }
+          response.friends_of_friends.forEach((f) => {
+            result.friends_of_friends.push({
+              referrer: f.referrer,
+              user: {
+                avatar_url: f.user.avatar_url,
+                create_time: f.user.create_time,
+                display_name: f.user.display_name,
+                edge_count: f.user.edge_count ? Number(f.user.edge_count) : 0,
+                facebook_id: f.user.facebook_id,
+                gamecenter_id: f.user.gamecenter_id,
+                google_id: f.user.google_id,
+                id: f.user.id,
+                lang_tag: f.user.lang_tag,
+                location: f.user.location,
+                online: f.user.online,
+                steam_id: f.user.steam_id,
+                timezone: f.user.timezone,
+                update_time: f.user.update_time,
+                username: f.user.username,
+                metadata: f.user.metadata ? JSON.parse(f.user.metadata) : void 0,
+                facebook_instant_game_id: f.user.facebook_instant_game_id
+              }
+            });
+          });
+          return Promise.resolve(result);
+        });
+      });
+    }
     /** List leaderboard records */
     listLeaderboardRecords(session, leaderboardId, ownerIds, limit, cursor, expiry) {
       return __async(this, null, function* () {
@@ -4289,6 +4600,7 @@ var nakamajs = (() => {
           var list = {
             next_cursor: response.next_cursor,
             prev_cursor: response.prev_cursor,
+            rank_count: response.rank_count ? Number(response.rank_count) : 0,
             owner_records: [],
             records: []
           };
@@ -4330,15 +4642,16 @@ var nakamajs = (() => {
         });
       });
     }
-    listLeaderboardRecordsAroundOwner(session, leaderboardId, ownerId, limit, expiry) {
+    listLeaderboardRecordsAroundOwner(session, leaderboardId, ownerId, limit, expiry, cursor) {
       return __async(this, null, function* () {
         if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
           yield this.sessionRefresh(session);
         }
-        return this.apiClient.listLeaderboardRecordsAroundOwner(session.token, leaderboardId, ownerId, limit, expiry).then((response) => {
+        return this.apiClient.listLeaderboardRecordsAroundOwner(session.token, leaderboardId, ownerId, limit, expiry, cursor).then((response) => {
           var list = {
             next_cursor: response.next_cursor,
             prev_cursor: response.prev_cursor,
+            rank_count: response.rank_count ? Number(response.rank_count) : 0,
             owner_records: [],
             records: []
           };
@@ -4479,11 +4792,24 @@ var nakamajs = (() => {
                 create_time: o.create_time,
                 start_time: o.start_time,
                 end_time: o.end_time,
-                start_active: o.start_active
+                start_active: o.start_active,
+                authoritative: o.authoritative
               });
             });
           }
           return Promise.resolve(list);
+        });
+      });
+    }
+    /** List user subscriptions. */
+    listSubscriptions(session, cursor, limit) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        return this.apiClient.listSubscriptions(session.token, {
+          cursor,
+          limit
         });
       });
     }
@@ -4539,12 +4865,12 @@ var nakamajs = (() => {
       });
     }
     /** List tournament records from a given tournament around the owner. */
-    listTournamentRecordsAroundOwner(session, tournamentId, ownerId, limit, expiry) {
+    listTournamentRecordsAroundOwner(session, tournamentId, ownerId, limit, expiry, cursor) {
       return __async(this, null, function* () {
         if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
           yield this.sessionRefresh(session);
         }
-        return this.apiClient.listTournamentRecordsAroundOwner(session.token, tournamentId, ownerId, limit, expiry).then((response) => {
+        return this.apiClient.listTournamentRecordsAroundOwner(session.token, tournamentId, ownerId, limit, expiry, cursor).then((response) => {
           var list = {
             next_cursor: response.next_cursor,
             prev_cursor: response.prev_cursor,
@@ -4804,30 +5130,57 @@ var nakamajs = (() => {
       });
     }
     /** Validate an Apple IAP receipt. */
-    validatePurchaseApple(session, receipt) {
+    validatePurchaseApple(session, receipt, persist = true) {
       return __async(this, null, function* () {
         if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
           yield this.sessionRefresh(session);
         }
-        return this.apiClient.validatePurchaseApple(session.token, { receipt });
+        return this.apiClient.validatePurchaseApple(session.token, { receipt, persist });
+      });
+    }
+    /** Validate a FB Instant IAP receipt. */
+    validatePurchaseFacebookInstant(session, signedRequest, persist = true) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        return this.apiClient.validatePurchaseFacebookInstant(session.token, { signed_request: signedRequest, persist });
       });
     }
     /** Validate a Google IAP receipt. */
-    validatePurchaseGoogle(session, purchase) {
+    validatePurchaseGoogle(session, purchase, persist = true) {
       return __async(this, null, function* () {
         if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
           yield this.sessionRefresh(session);
         }
-        return this.apiClient.validatePurchaseGoogle(session.token, { purchase });
+        return this.apiClient.validatePurchaseGoogle(session.token, { purchase, persist });
       });
     }
     /** Validate a Huawei IAP receipt. */
-    validatePurchaseHuawei(session, purchase, signature) {
+    validatePurchaseHuawei(session, purchase, signature, persist = true) {
       return __async(this, null, function* () {
         if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
           yield this.sessionRefresh(session);
         }
-        return this.apiClient.validatePurchaseHuawei(session.token, { purchase, signature });
+        return this.apiClient.validatePurchaseHuawei(session.token, { purchase, signature, persist });
+      });
+    }
+    /** Validate Apple Subscription Receipt */
+    validateSubscriptionApple(session, receipt, persist = true) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        return this.apiClient.validateSubscriptionApple(session.token, { receipt, persist });
+      });
+    }
+    /** Validate Google Subscription Receipt */
+    validateSubscriptionGoogle(session, receipt, persist = true) {
+      return __async(this, null, function* () {
+        if (this.autoRefreshSession && session.refresh_token && session.isexpired((Date.now() + this.expiredTimespanMs) / 1e3)) {
+          yield this.sessionRefresh(session);
+        }
+        return this.apiClient.validateSubscriptionGoogle(session.token, { receipt, persist });
       });
     }
     /** Write a record to a leaderboard. */

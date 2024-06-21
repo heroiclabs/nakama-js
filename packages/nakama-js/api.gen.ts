@@ -2519,7 +2519,7 @@ export class NakamaApi {
       groupId:string,
       body:ApiUpdateGroupRequest,
       options: any = {}): Promise<any> {
-    
+
     if (groupId === null || groupId === undefined) {
       throw new Error("'groupId' is a required parameter but is null or undefined.");
     }
@@ -3427,62 +3427,57 @@ export class NakamaApi {
 }
 
   /** Execute a Lua function on the server. */
-  rpcFunc2(bearerToken: string,basicAuthUsername: string,
-		basicAuthPassword: string,
-      id:string,
-      payload?:string,
-      httpKey?:string,
-      options: any = {}): Promise<ApiRpc> {
+  rpcFunc2(bearerToken: string,
+    id:string,
+    payload?:string,
+    httpKey?:string,
+    options: any = {}): Promise<ApiRpc> {
 
-    if (id === null || id === undefined) {
-      throw new Error("'id' is a required parameter but is null or undefined.");
-    }
-    const urlPath = "/v2/rpc/{id}"
-        .replace("{id}", encodeURIComponent(String(id)));
-    const queryParams = new Map<string, any>();
-    queryParams.set("payload", payload);
-    queryParams.set("http_key", httpKey);
+  if (id === null || id === undefined) {
+    throw new Error("'id' is a required parameter but is null or undefined.");
+  }
+  const urlPath = "/v2/rpc/{id}"
+      .replace("{id}", encodeURIComponent(String(id)));
+  const queryParams = new Map<string, any>();
+  queryParams.set("payload", payload);
+  queryParams.set("http_key", httpKey);
 
-    let bodyJson : string = "";
+  let bodyJson : string = "";
 
-    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
-    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
-		if (bearerToken) {
-				fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
-		}
-		if (basicAuthUsername) {
-			fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
-		}
+  const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+  const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+  if (bearerToken) {
+      fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+  }
 
-    return Promise.race([
-      fetch(fullUrl, fetchOptions).then((response) => {
-        if (response.status == 204) {
-          return response;
-        } else if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          throw response;
-        }
-      }),
-      new Promise((_, reject) =>
-        setTimeout(reject, this.timeoutMs, "Request timed out.")
-      ),
-    ]);
+  return Promise.race([
+    fetch(fullUrl, fetchOptions).then((response) => {
+      if (response.status == 204) {
+        return response;
+      } else if (response.status >= 200 && response.status < 300) {
+        return response.json();
+      } else {
+        throw response;
+      }
+    }),
+    new Promise((_, reject) =>
+      setTimeout(reject, this.timeoutMs, "Request timed out.")
+    ),
+  ]);
 }
 
   /** Execute a Lua function on the server. */
-  rpcFunc(bearerToken: string,basicAuthUsername: string,
-		basicAuthPassword: string,
+  rpcFunc(bearerToken: string,
       id:string,
-      payload:string,
+      body:string,
       httpKey?:string,
       options: any = {}): Promise<ApiRpc> {
 
     if (id === null || id === undefined) {
       throw new Error("'id' is a required parameter but is null or undefined.");
     }
-    if (payload === null || payload === undefined) {
-      throw new Error("'payload' is a required parameter but is null or undefined.");
+    if (body === null || body === undefined) {
+      throw new Error("'body' is a required parameter but is null or undefined.");
     }
     const urlPath = "/v2/rpc/{id}"
         .replace("{id}", encodeURIComponent(String(id)));
@@ -3490,16 +3485,13 @@ export class NakamaApi {
     queryParams.set("http_key", httpKey);
 
     let bodyJson : string = "";
-    bodyJson = JSON.stringify(payload || {});
+    bodyJson = JSON.stringify(body || {});
 
     const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
     const fetchOptions = buildFetchOptions("POST", options, bodyJson);
-		if (bearerToken) {
-				fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
-		}
-		if (basicAuthUsername) {
-			fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
-		}
+    if (bearerToken) {
+        fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+    }
 
     return Promise.race([
       fetch(fullUrl, fetchOptions).then((response) => {
@@ -3515,7 +3507,7 @@ export class NakamaApi {
         setTimeout(reject, this.timeoutMs, "Request timed out.")
       ),
     ]);
-}
+  }
 
   /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
   sessionLogout(bearerToken: string,
