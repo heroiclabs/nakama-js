@@ -1,3 +1,8 @@
+/** A friend of a friend. */
+export interface FriendsOfFriendsListFriendOfFriend {
+    referrer?: string;
+    user?: ApiUser;
+}
 /** A single user-role pair. */
 export interface GroupUserListGroupUser {
     state?: number;
@@ -7,22 +12,6 @@ export interface GroupUserListGroupUser {
 export interface UserGroupListUserGroup {
     group?: ApiGroup;
     state?: number;
-}
-/**
-* Environment where the purchase took place
-*/
-export declare enum ValidatedPurchaseEnvironment {
-    UNKNOWN = 0,
-    SANDBOX = 1,
-    PRODUCTION = 2
-}
-/**
-* Validation Provider
-*/
-export declare enum ValidatedPurchaseStore {
-    APPLE_APP_STORE = 0,
-    GOOGLE_PLAY_STORE = 1,
-    HUAWEI_APP_GALLERY = 2
 }
 /** Record values to write. */
 export interface WriteLeaderboardRecordRequestLeaderboardRecordWrite {
@@ -79,7 +68,9 @@ export interface ApiAccountFacebookInstantGame {
     signed_player_info?: string;
     vars?: Record<string, string>;
 }
-/** Send Apple's Game Center account credentials to the server. Used with authenticate/link/unlink. */
+/** Send Apple's Game Center account credentials to the server. Used with authenticate/link/unlink.
+
+https://developer.apple.com/documentation/gamekit/gklocalplayer/1515407-generateidentityverificationsign */
 export interface ApiAccountGameCenter {
     bundle_id?: string;
     player_id?: string;
@@ -159,6 +150,11 @@ export interface ApiFriendList {
     cursor?: string;
     friends?: Array<ApiFriend>;
 }
+/**  */
+export interface ApiFriendsOfFriendsList {
+    cursor?: string;
+    friends_of_friends?: Array<FriendsOfFriendsListFriendOfFriend>;
+}
 /** A group in the server. */
 export interface ApiGroup {
     avatar_url?: string;
@@ -204,12 +200,18 @@ export interface ApiLeaderboardRecordList {
     next_cursor?: string;
     owner_records?: Array<ApiLeaderboardRecord>;
     prev_cursor?: string;
+    rank_count?: string;
     records?: Array<ApiLeaderboardRecord>;
 }
 /** Link Steam to the current user's account. */
 export interface ApiLinkSteamRequest {
     account?: ApiAccountSteam;
     sync?: boolean;
+}
+/** List user subscriptions. */
+export interface ApiListSubscriptionsRequest {
+    cursor?: string;
+    limit?: number;
 }
 /** Represents a realtime match. */
 export interface ApiMatch {
@@ -296,7 +298,9 @@ export interface ApiStorageObject {
 /** A storage acknowledgement. */
 export interface ApiStorageObjectAck {
     collection?: string;
+    create_time?: string;
     key?: string;
+    update_time?: string;
     user_id?: string;
     version?: string;
 }
@@ -313,8 +317,32 @@ export interface ApiStorageObjectList {
 export interface ApiStorageObjects {
     objects?: Array<ApiStorageObject>;
 }
+/**
+* Environment where a purchase/subscription took place,
+*/
+export declare enum ApiStoreEnvironment {
+    UNKNOWN = 0,
+    SANDBOX = 1,
+    PRODUCTION = 2
+}
+/**
+* Validation Provider,
+*/
+export declare enum ApiStoreProvider {
+    APPLE_APP_STORE = 0,
+    GOOGLE_PLAY_STORE = 1,
+    HUAWEI_APP_GALLERY = 2,
+    FACEBOOK_INSTANT_STORE = 3
+}
+/** A list of validated subscriptions stored by Nakama. */
+export interface ApiSubscriptionList {
+    cursor?: string;
+    prev_cursor?: string;
+    validated_subscriptions?: Array<ApiValidatedSubscription>;
+}
 /** A tournament on the server. */
 export interface ApiTournament {
+    authoritative?: boolean;
     can_enter?: boolean;
     category?: number;
     create_time?: string;
@@ -345,6 +373,7 @@ export interface ApiTournamentRecordList {
     next_cursor?: string;
     owner_records?: Array<ApiLeaderboardRecord>;
     prev_cursor?: string;
+    rank_count?: string;
     records?: Array<ApiLeaderboardRecord>;
 }
 /** Update a user's account details. */
@@ -397,32 +426,72 @@ export interface ApiUsers {
 }
 /**  */
 export interface ApiValidatePurchaseAppleRequest {
+    persist?: boolean;
     receipt?: string;
 }
 /**  */
+export interface ApiValidatePurchaseFacebookInstantRequest {
+    persist?: boolean;
+    signed_request?: string;
+}
+/**  */
 export interface ApiValidatePurchaseGoogleRequest {
+    persist?: boolean;
     purchase?: string;
 }
 /**  */
 export interface ApiValidatePurchaseHuaweiRequest {
+    persist?: boolean;
     purchase?: string;
     signature?: string;
 }
-/**  */
+/** Validate IAP response. */
 export interface ApiValidatePurchaseResponse {
     validated_purchases?: Array<ApiValidatedPurchase>;
+}
+/**  */
+export interface ApiValidateSubscriptionAppleRequest {
+    persist?: boolean;
+    receipt?: string;
+}
+/**  */
+export interface ApiValidateSubscriptionGoogleRequest {
+    persist?: boolean;
+    receipt?: string;
+}
+/** Validate Subscription response. */
+export interface ApiValidateSubscriptionResponse {
+    validated_subscription?: ApiValidatedSubscription;
 }
 /** Validated Purchase stored by Nakama. */
 export interface ApiValidatedPurchase {
     create_time?: string;
-    environment?: ValidatedPurchaseEnvironment;
+    environment?: ApiStoreEnvironment;
     product_id?: string;
     provider_response?: string;
     purchase_time?: string;
+    refund_time?: string;
     seen_before?: boolean;
-    store?: ValidatedPurchaseStore;
+    store?: ApiStoreProvider;
     transaction_id?: string;
     update_time?: string;
+    user_id?: string;
+}
+/**  */
+export interface ApiValidatedSubscription {
+    active?: boolean;
+    create_time?: string;
+    environment?: ApiStoreEnvironment;
+    expiry_time?: string;
+    original_transaction_id?: string;
+    product_id?: string;
+    provider_notification?: string;
+    provider_response?: string;
+    purchase_time?: string;
+    refund_time?: string;
+    store?: ApiStoreProvider;
+    update_time?: string;
+    user_id?: string;
 }
 /** The object to store. */
 export interface ApiWriteStorageObject {
@@ -437,17 +506,6 @@ export interface ApiWriteStorageObject {
 export interface ApiWriteStorageObjectsRequest {
     objects?: Array<ApiWriteStorageObject>;
 }
-/**  */
-export interface ProtobufAny {
-    type_url?: string;
-    value?: string;
-}
-/**  */
-export interface RpcStatus {
-    code?: number;
-    details?: Array<ProtobufAny>;
-    message?: string;
-}
 export declare class NakamaApi {
     readonly serverKey: string;
     readonly basePath: string;
@@ -455,28 +513,30 @@ export declare class NakamaApi {
     constructor(serverKey: string, basePath: string, timeoutMs: number);
     /** A healthcheck which load balancers can use to check the service. */
     healthcheck(bearerToken: string, options?: any): Promise<any>;
+    /** Delete the current user's account. */
+    deleteAccount(bearerToken: string, options?: any): Promise<any>;
     /** Fetch the current user's account. */
     getAccount(bearerToken: string, options?: any): Promise<ApiAccount>;
     /** Update fields in the current user's account. */
     updateAccount(bearerToken: string, body: ApiUpdateAccountRequest, options?: any): Promise<any>;
     /** Authenticate a user with an Apple ID against the server. */
-    authenticateApple(basicAuthUsername: string, basicAuthPassword: string, body: ApiAccountApple, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
+    authenticateApple(basicAuthUsername: string, basicAuthPassword: string, account: ApiAccountApple, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     /** Authenticate a user with a custom id against the server. */
-    authenticateCustom(basicAuthUsername: string, basicAuthPassword: string, body: ApiAccountCustom, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
+    authenticateCustom(basicAuthUsername: string, basicAuthPassword: string, account: ApiAccountCustom, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     /** Authenticate a user with a device id against the server. */
-    authenticateDevice(basicAuthUsername: string, basicAuthPassword: string, body: ApiAccountDevice, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
+    authenticateDevice(basicAuthUsername: string, basicAuthPassword: string, account: ApiAccountDevice, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     /** Authenticate a user with an email+password against the server. */
-    authenticateEmail(basicAuthUsername: string, basicAuthPassword: string, body: ApiAccountEmail, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
+    authenticateEmail(basicAuthUsername: string, basicAuthPassword: string, account: ApiAccountEmail, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     /** Authenticate a user with a Facebook OAuth token against the server. */
-    authenticateFacebook(basicAuthUsername: string, basicAuthPassword: string, body: ApiAccountFacebook, create?: boolean, username?: string, sync?: boolean, options?: any): Promise<ApiSession>;
+    authenticateFacebook(basicAuthUsername: string, basicAuthPassword: string, account: ApiAccountFacebook, create?: boolean, username?: string, sync?: boolean, options?: any): Promise<ApiSession>;
     /** Authenticate a user with a Facebook Instant Game token against the server. */
-    authenticateFacebookInstantGame(basicAuthUsername: string, basicAuthPassword: string, body: ApiAccountFacebookInstantGame, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
+    authenticateFacebookInstantGame(basicAuthUsername: string, basicAuthPassword: string, account: ApiAccountFacebookInstantGame, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     /** Authenticate a user with Apple's GameCenter against the server. */
-    authenticateGameCenter(basicAuthUsername: string, basicAuthPassword: string, body: ApiAccountGameCenter, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
+    authenticateGameCenter(basicAuthUsername: string, basicAuthPassword: string, account: ApiAccountGameCenter, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     /** Authenticate a user with Google against the server. */
-    authenticateGoogle(basicAuthUsername: string, basicAuthPassword: string, body: ApiAccountGoogle, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
+    authenticateGoogle(basicAuthUsername: string, basicAuthPassword: string, account: ApiAccountGoogle, create?: boolean, username?: string, options?: any): Promise<ApiSession>;
     /** Authenticate a user with Steam against the server. */
-    authenticateSteam(basicAuthUsername: string, basicAuthPassword: string, body: ApiAccountSteam, create?: boolean, username?: string, sync?: boolean, options?: any): Promise<ApiSession>;
+    authenticateSteam(basicAuthUsername: string, basicAuthPassword: string, account: ApiAccountSteam, create?: boolean, username?: string, sync?: boolean, options?: any): Promise<ApiSession>;
     /** Add an Apple ID to the social profiles on the current user's account. */
     linkApple(bearerToken: string, body: ApiAccountApple, options?: any): Promise<any>;
     /** Add a custom ID to the social profiles on the current user's account. */
@@ -486,7 +546,7 @@ export declare class NakamaApi {
     /** Add an email+password to the social profiles on the current user's account. */
     linkEmail(bearerToken: string, body: ApiAccountEmail, options?: any): Promise<any>;
     /** Add Facebook to the social profiles on the current user's account. */
-    linkFacebook(bearerToken: string, body: ApiAccountFacebook, sync?: boolean, options?: any): Promise<any>;
+    linkFacebook(bearerToken: string, account: ApiAccountFacebook, sync?: boolean, options?: any): Promise<any>;
     /** Add Facebook Instant Game to the social profiles on the current user's account. */
     linkFacebookInstantGame(bearerToken: string, body: ApiAccountFacebookInstantGame, options?: any): Promise<any>;
     /** Add Apple's GameCenter to the social profiles on the current user's account. */
@@ -528,9 +588,11 @@ export declare class NakamaApi {
     /** Block one or more users by ID or username. */
     blockFriends(bearerToken: string, ids?: Array<string>, usernames?: Array<string>, options?: any): Promise<any>;
     /** Import Facebook friends and add them to a user's account. */
-    importFacebookFriends(bearerToken: string, body: ApiAccountFacebook, reset?: boolean, options?: any): Promise<any>;
+    importFacebookFriends(bearerToken: string, account: ApiAccountFacebook, reset?: boolean, options?: any): Promise<any>;
+    /** List friends of friends for the current user. */
+    listFriendsOfFriends(bearerToken: string, limit?: number, cursor?: string, options?: any): Promise<ApiFriendsOfFriendsList>;
     /** Import Steam friends and add them to a user's account. */
-    importSteamFriends(bearerToken: string, body: ApiAccountSteam, reset?: boolean, options?: any): Promise<any>;
+    importSteamFriends(bearerToken: string, account: ApiAccountSteam, reset?: boolean, options?: any): Promise<any>;
     /** List groups based on given filters. */
     listGroups(bearerToken: string, name?: string, cursor?: string, limit?: number, langTag?: string, members?: number, open?: boolean, options?: any): Promise<ApiGroupList>;
     /** Create a new group with the current user as the owner. */
@@ -544,7 +606,7 @@ export declare class NakamaApi {
     /** Ban a set of users from a group. */
     banGroupUsers(bearerToken: string, groupId: string, userIds?: Array<string>, options?: any): Promise<any>;
     /** Demote a set of users in a group to the next role down. */
-    demoteGroupUsers(bearerToken: string, groupId: string, userIds: Array<string>, options?: any): Promise<any>;
+    demoteGroupUsers(bearerToken: string, groupId: string, userIds?: Array<string>, options?: any): Promise<any>;
     /** Immediately join an open group, or request to join a closed one. */
     joinGroup(bearerToken: string, groupId: string, options?: any): Promise<any>;
     /** Kick a set of users from a group. */
@@ -557,18 +619,28 @@ export declare class NakamaApi {
     listGroupUsers(bearerToken: string, groupId: string, limit?: number, state?: number, cursor?: string, options?: any): Promise<ApiGroupUserList>;
     /** Validate Apple IAP Receipt */
     validatePurchaseApple(bearerToken: string, body: ApiValidatePurchaseAppleRequest, options?: any): Promise<ApiValidatePurchaseResponse>;
+    /** Validate FB Instant IAP Receipt */
+    validatePurchaseFacebookInstant(bearerToken: string, body: ApiValidatePurchaseFacebookInstantRequest, options?: any): Promise<ApiValidatePurchaseResponse>;
     /** Validate Google IAP Receipt */
     validatePurchaseGoogle(bearerToken: string, body: ApiValidatePurchaseGoogleRequest, options?: any): Promise<ApiValidatePurchaseResponse>;
     /** Validate Huawei IAP Receipt */
     validatePurchaseHuawei(bearerToken: string, body: ApiValidatePurchaseHuaweiRequest, options?: any): Promise<ApiValidatePurchaseResponse>;
+    /** List user's subscriptions. */
+    listSubscriptions(bearerToken: string, body: ApiListSubscriptionsRequest, options?: any): Promise<ApiSubscriptionList>;
+    /** Validate Apple Subscription Receipt */
+    validateSubscriptionApple(bearerToken: string, body: ApiValidateSubscriptionAppleRequest, options?: any): Promise<ApiValidateSubscriptionResponse>;
+    /** Validate Google Subscription Receipt */
+    validateSubscriptionGoogle(bearerToken: string, body: ApiValidateSubscriptionGoogleRequest, options?: any): Promise<ApiValidateSubscriptionResponse>;
+    /** Get subscription by product id. */
+    getSubscription(bearerToken: string, productId: string, options?: any): Promise<ApiValidatedSubscription>;
     /** Delete a leaderboard record. */
     deleteLeaderboardRecord(bearerToken: string, leaderboardId: string, options?: any): Promise<any>;
     /** List leaderboard records. */
     listLeaderboardRecords(bearerToken: string, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string, options?: any): Promise<ApiLeaderboardRecordList>;
     /** Write a record to a leaderboard. */
-    writeLeaderboardRecord(bearerToken: string, leaderboardId: string, body: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
+    writeLeaderboardRecord(bearerToken: string, leaderboardId: string, record: WriteLeaderboardRecordRequestLeaderboardRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
     /** List leaderboard records that belong to a user. */
-    listLeaderboardRecordsAroundOwner(bearerToken: string, leaderboardId: string, ownerId: string, limit?: number, expiry?: string, options?: any): Promise<ApiLeaderboardRecordList>;
+    listLeaderboardRecordsAroundOwner(bearerToken: string, leaderboardId: string, ownerId: string, limit?: number, expiry?: string, cursor?: string, options?: any): Promise<ApiLeaderboardRecordList>;
     /** Fetch list of running matches. */
     listMatches(bearerToken: string, limit?: number, authoritative?: boolean, label?: string, minSize?: number, maxSize?: number, query?: string, options?: any): Promise<ApiMatchList>;
     /** Delete one or more notifications for the current user. */
@@ -593,16 +665,18 @@ export declare class NakamaApi {
     listStorageObjects2(bearerToken: string, collection: string, userId: string, limit?: number, cursor?: string, options?: any): Promise<ApiStorageObjectList>;
     /** List current or upcoming tournaments. */
     listTournaments(bearerToken: string, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string, options?: any): Promise<ApiTournamentList>;
+    /** Delete a tournament record. */
+    deleteTournamentRecord(bearerToken: string, tournamentId: string, options?: any): Promise<any>;
     /** List tournament records. */
     listTournamentRecords(bearerToken: string, tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string, options?: any): Promise<ApiTournamentRecordList>;
     /** Write a record to a tournament. */
-    writeTournamentRecord2(bearerToken: string, tournamentId: string, body: WriteTournamentRecordRequestTournamentRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
+    writeTournamentRecord2(bearerToken: string, tournamentId: string, record: WriteTournamentRecordRequestTournamentRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
     /** Write a record to a tournament. */
-    writeTournamentRecord(bearerToken: string, tournamentId: string, body: WriteTournamentRecordRequestTournamentRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
+    writeTournamentRecord(bearerToken: string, tournamentId: string, record: WriteTournamentRecordRequestTournamentRecordWrite, options?: any): Promise<ApiLeaderboardRecord>;
     /** Attempt to join an open and running tournament. */
     joinTournament(bearerToken: string, tournamentId: string, options?: any): Promise<any>;
     /** List tournament records for a given owner. */
-    listTournamentRecordsAroundOwner(bearerToken: string, tournamentId: string, ownerId: string, limit?: number, expiry?: string, options?: any): Promise<ApiTournamentRecordList>;
+    listTournamentRecordsAroundOwner(bearerToken: string, tournamentId: string, ownerId: string, limit?: number, expiry?: string, cursor?: string, options?: any): Promise<ApiTournamentRecordList>;
     /** Fetch zero or more users by ID and/or username. */
     getUsers(bearerToken: string, ids?: Array<string>, usernames?: Array<string>, facebookIds?: Array<string>, options?: any): Promise<ApiUsers>;
     /** List groups the current user belongs to. */

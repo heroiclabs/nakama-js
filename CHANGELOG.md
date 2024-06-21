@@ -5,6 +5,25 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ### Unreleased
 
+### [2.8.0]
+### Added
+- Nakama: Added ability to invoke `listFriendsOfFriends` on the client which returns a list of friends of the user's friends.
+- Nakama: Added a `rank_count` to `LeaderboardRecordList`.
+- Nakama: Added ability to invoke `listSubscriptions` on the client which lists all the user's validated subscriptions.
+- Nakama: Added ability to invoke `getSubscription` on the client which gets a subscription by product ID.
+- Nakama: Added ability to invoke `deleteAccount` on the client which deletes the user's account.
+- Nakama: Added ability to invoke `validatePurchaseFacebookInstant` on the client which validates a FB Instant IAP receipt.
+- Nakama: Added ability to invoke `deleteTournamentRecord` on the client which deletes a tournament record.
+- Nakama: Added ability to invoke `validateSubscriptionApple` and `validateSubscriptionGoogle` on the client which validates Apple and Google subscription receipts.
+- Nakama: Added `cursor` parameter to `listTournamentRecordsAroundOwner` and `listLeaderboardRecordsAroundOwner`.
+- Nakama: Added `authoritative` field to `Tournament`.
+- Nakama: Added ability to specify whether to `persist` purchases and subscriptions when validating their receipts.
+- Nakama: Added `create_time` and `update_time` to `ApiStorageObjectAck`.
+- Nakama: Added `refund_time`, `update_time` and `user_id` to `ApiValidatedPurchase`.
+
+### Changed
+- Nakama: Changed `StreamId.descriptor` to `StreamId.subcontext`.
+
 ### [2.7.0]
 ### Added
 - Satori: Added ability to schedule, update and delete outgoing messages for Live Events.
