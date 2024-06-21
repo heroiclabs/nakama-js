@@ -53,6 +53,11 @@ import {
   ApiAccountApple,
   ApiLinkSteamRequest,
   ApiValidatePurchaseResponse,
+  ApiFriendsOfFriendsList,
+  ApiStoreEnvironment,
+  ApiStoreProvider,
+  ApiValidateSubscriptionResponse,
+  ApiValidatedSubscription,
 } from "./api.gen";
 
 import { Session } from "./session";
@@ -109,12 +114,16 @@ export interface LeaderboardRecordList {
   owner_records?: Array<LeaderboardRecord>;
   /** The cursor to send when retrieving the previous page, if any. */
   prev_cursor?: string;
+  // The total number of ranks available.
+  rank_count?: number;
   /** A list of leaderboard records. */
   records?: Array<LeaderboardRecord>;
 }
 
 /** A Tournament on the server. */
 export interface Tournament {
+  /** Whether the leaderboard was created authoritatively or not. */
+  authoritative?: boolean;
   /** The ID of the tournament. */
   id?: string;
   /** The title for the tournament. */
@@ -347,6 +356,22 @@ export interface Friends {
   cursor?: string;
 }
 
+/** A friend of a friend. */
+export interface FriendOfFriend {
+  // The user who referred its friend.
+  referrer?: string;
+  // User.
+  user?: User;
+}
+
+/** Friends of the user's friends. */
+export interface FriendsOfFriends {
+  // Cursor for the next page of results, if any.
+  cursor?: string;
+  // User friends of friends.
+  friends_of_friends?: Array<FriendOfFriend>;
+}
+
 /** A user-role pair representing the user's role in a group. */
 export interface GroupUser {
   /** The user. */
@@ -439,6 +464,46 @@ export interface NotificationList {
   cacheable_cursor?: string;
   /** Collection of notifications. */
   notifications?: Array<Notification>;
+}
+
+/* A validated subscription stored by Nakama. */
+export interface ValidatedSubscription {
+  // Whether the subscription is currently active or not.
+  active?: boolean;
+  // UNIX Timestamp when the receipt validation was stored in DB.
+  create_time?: string;
+  // Whether the purchase was done in production or sandbox environment.
+  environment?: ApiStoreEnvironment;
+  // Subscription expiration time. The subscription can still be auto-renewed to extend the expiration time further.
+  expiry_time?: string;
+  // Purchase Original transaction ID (we only keep track of the original subscription, not subsequent renewals).
+  original_transaction_id?: string;
+  // Purchase Product ID.
+  product_id?: string;
+  // Raw provider notification body.
+  provider_notification?: string;
+  // Raw provider validation response body.
+  provider_response?: string;
+  // UNIX Timestamp when the purchase was done.
+  purchase_time?: string;
+  // Subscription refund time. If this time is set, the subscription was refunded.
+  refund_time?: string;
+  // The validation provider.
+  store?: ApiStoreProvider;
+  // UNIX Timestamp when the receipt validation was updated in DB.
+  update_time?: string;
+  // Subscription User ID.
+  user_id?: string;
+}
+
+/** A list of validated subscriptions stored by Nakama. */
+export interface SubscriptionList {
+  // The cursor to send when retrieving the next page, if any.
+  cursor?: string;
+  // The cursor to send when retrieving the previous page, if any.
+  prev_cursor?: string;
+  // Stored validated subscriptions.
+  validated_subscriptions?: Array<ValidatedSubscription>;
 }
 
 /** A client for Nakama server. */
@@ -698,6 +763,18 @@ export class Client {
     return new DefaultSocket(this.host, this.port, useSSL, verbose, adapter, sendTimeoutMs);
   }
 
+  /** Delete the current user's account. */
+  async deleteAccount(session: Session): Promise<boolean> {
+    if (this.autoRefreshSession && session.refresh_token &&
+      session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+      await this.sessionRefresh(session);
+    }
+
+    return this.apiClient.deleteAccount(session.token).then((response: any) => {
+      return response !== undefined;
+    });
+  }
+
   /** Delete one or more users by ID or username. */
   async deleteFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean> {
     if (this.autoRefreshSession && session.refresh_token &&
@@ -746,6 +823,11 @@ export class Client {
     });
   }
 
+  /** Delete a tournament record. */
+  async deleteTournamentRecord(session: Session, tournamentId: string): Promise<any> {
+    return this.apiClient.deleteTournamentRecord(session.token, tournamentId);
+  }
+
   /** Demote a set of users in a group to the next role down. */
   async demoteGroupUsers(session: Session, groupId: string, ids: Array<string>): Promise<boolean> {
     if (this.autoRefreshSession && session.refresh_token &&
@@ -772,13 +854,22 @@ export class Client {
 
   /** Fetch the current user's account. */
   async getAccount(session: Session): Promise<ApiAccount> {
-
     if (this.autoRefreshSession && session.refresh_token &&
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
         await this.sessionRefresh(session);
     }
 
     return this.apiClient.getAccount(session.token);
+  }
+
+  /** Get subscription by product id. */
+  async getSubscription(session: Session, productId: string): Promise<ApiValidatedSubscription> {
+    if (this.autoRefreshSession && session.refresh_token &&
+      session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+      await this.sessionRefresh(session);
+    }
+
+    return this.apiClient.getSubscription(session.token, productId);
   }
 
   /** Import Facebook friends and add them to a user's account. */
@@ -1207,6 +1298,53 @@ export class Client {
     });
   }
 
+  /** List friends of friends for the current user. */
+  async listFriendsOfFriends(session: Session, limit?: number, cursor?: string) : Promise<FriendsOfFriends> {
+    if (this.autoRefreshSession && session.refresh_token &&
+      session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+      await this.sessionRefresh(session);
+    }
+
+    return this.apiClient.listFriendsOfFriends(session.token, limit, cursor).then((response: ApiFriendsOfFriendsList) => {
+      var result: FriendsOfFriends = {
+        friends_of_friends: [],
+        cursor: response.cursor
+      };
+
+      if (response.friends_of_friends == null)
+      {
+        return Promise.resolve(result);
+      }
+
+      response.friends_of_friends!.forEach(f => {
+        result.friends_of_friends!.push({
+          referrer: f.referrer,
+          user: {
+            avatar_url: f.user!.avatar_url,
+            create_time: f.user!.create_time,
+            display_name: f.user!.display_name,
+            edge_count: f.user!.edge_count ? Number(f.user!.edge_count) : 0,
+            facebook_id: f.user!.facebook_id,
+            gamecenter_id: f.user!.gamecenter_id,
+            google_id: f.user!.google_id,
+            id: f.user!.id,
+            lang_tag: f.user!.lang_tag,
+            location: f.user!.location,
+            online: f.user!.online,
+            steam_id: f.user!.steam_id,
+            timezone: f.user!.timezone,
+            update_time: f.user!.update_time,
+            username: f.user!.username,
+            metadata: f.user!.metadata ? JSON.parse(f.user!.metadata!) : undefined,
+            facebook_instant_game_id: f.user!.facebook_instant_game_id!
+          }
+        })
+      });
+
+      return Promise.resolve(result);
+    });
+  }
+
   /** List leaderboard records */
   async listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string,): Promise<LeaderboardRecordList> {
     if (this.autoRefreshSession && session.refresh_token &&
@@ -1218,6 +1356,7 @@ export class Client {
       var list: LeaderboardRecordList = {
         next_cursor: response.next_cursor,
         prev_cursor: response.prev_cursor,
+        rank_count: response.rank_count ? Number(response.rank_count) : 0,
         owner_records: [],
         records: []
       };
@@ -1262,16 +1401,17 @@ export class Client {
     });
   }
 
-  async listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number, expiry?: string): Promise<LeaderboardRecordList> {
+  async listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number, expiry?: string, cursor?: string): Promise<LeaderboardRecordList> {
     if (this.autoRefreshSession && session.refresh_token &&
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
         await this.sessionRefresh(session);
     }
 
-    return this.apiClient.listLeaderboardRecordsAroundOwner(session.token, leaderboardId, ownerId, limit, expiry).then((response: ApiLeaderboardRecordList) => {
+    return this.apiClient.listLeaderboardRecordsAroundOwner(session.token, leaderboardId, ownerId, limit, expiry, cursor).then((response: ApiLeaderboardRecordList) => {
       var list: LeaderboardRecordList = {
         next_cursor: response.next_cursor,
         prev_cursor: response.prev_cursor,
+        rank_count: response.rank_count ? Number(response.rank_count) : 0,
         owner_records: [],
         records: []
       };
@@ -1425,11 +1565,25 @@ export class Client {
             start_time: o.start_time,
             end_time: o.end_time,
             start_active: o.start_active,
+            authoritative: o.authoritative
           })
         })
       }
 
       return Promise.resolve(list);
+    });
+  }
+
+  /** List user subscriptions. */
+  async listSubscriptions(session: Session, cursor?: string, limit?: number) : Promise<SubscriptionList> {
+    if (this.autoRefreshSession && session.refresh_token &&
+      session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+      await this.sessionRefresh(session);
+    }
+
+    return this.apiClient.listSubscriptions(session.token, {
+      cursor: cursor,
+      limit: limit
     });
   }
 
@@ -1489,13 +1643,13 @@ export class Client {
   }
 
   /** List tournament records from a given tournament around the owner. */
-  async listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number, expiry?: string): Promise<TournamentRecordList> {
+  async listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number, expiry?: string, cursor?: string): Promise<TournamentRecordList> {
     if (this.autoRefreshSession && session.refresh_token &&
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
         await this.sessionRefresh(session);
     }
 
-    return this.apiClient.listTournamentRecordsAroundOwner(session.token, tournamentId, ownerId, limit, expiry).then((response: ApiTournamentRecordList) => {
+    return this.apiClient.listTournamentRecordsAroundOwner(session.token, tournamentId, ownerId, limit, expiry, cursor).then((response: ApiTournamentRecordList) => {
       var list: TournamentRecordList = {
         next_cursor: response.next_cursor,
         prev_cursor: response.prev_cursor,
@@ -1778,33 +1932,63 @@ export class Client {
   }
 
   /** Validate an Apple IAP receipt. */
-  async validatePurchaseApple(session: Session, receipt?: string)  : Promise<ApiValidatePurchaseResponse> {
+  async validatePurchaseApple(session: Session, receipt?: string, persist: boolean = true)  : Promise<ApiValidatePurchaseResponse> {
     if (this.autoRefreshSession && session.refresh_token &&
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
         await this.sessionRefresh(session);
     }
 
-    return this.apiClient.validatePurchaseApple(session.token, {receipt: receipt})
+    return this.apiClient.validatePurchaseApple(session.token, {receipt: receipt, persist: persist})
+  }
+
+  /** Validate a FB Instant IAP receipt. */
+  async validatePurchaseFacebookInstant(session: Session, signedRequest?: string, persist: boolean = true) : Promise<ApiValidatePurchaseResponse> {
+    if (this.autoRefreshSession && session.refresh_token &&
+        session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+        await this.sessionRefresh(session);
+    }
+
+    return this.apiClient.validatePurchaseFacebookInstant(session.token, {signed_request: signedRequest, persist: persist})
   }
 
   /** Validate a Google IAP receipt. */
-  async validatePurchaseGoogle(session: Session, purchase?: string)  : Promise<ApiValidatePurchaseResponse> {
+  async validatePurchaseGoogle(session: Session, purchase?: string, persist: boolean = true)  : Promise<ApiValidatePurchaseResponse> {
     if (this.autoRefreshSession && session.refresh_token &&
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
         await this.sessionRefresh(session);
     }
 
-    return this.apiClient.validatePurchaseGoogle(session.token, {purchase: purchase})
+    return this.apiClient.validatePurchaseGoogle(session.token, {purchase: purchase, persist: persist})
   }
 
   /** Validate a Huawei IAP receipt. */
-  async validatePurchaseHuawei(session: Session, purchase?: string, signature?: string) : Promise<ApiValidatePurchaseResponse> {
+  async validatePurchaseHuawei(session: Session, purchase?: string, signature?: string, persist: boolean = true) : Promise<ApiValidatePurchaseResponse> {
     if (this.autoRefreshSession && session.refresh_token &&
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
         await this.sessionRefresh(session);
     }
 
-    return this.apiClient.validatePurchaseHuawei(session.token, {purchase: purchase, signature: signature})
+    return this.apiClient.validatePurchaseHuawei(session.token, {purchase: purchase, signature: signature, persist: persist})
+  }
+
+  /** Validate Apple Subscription Receipt */
+  async validateSubscriptionApple(session: Session, receipt: string, persist: boolean = true) : Promise<ApiValidateSubscriptionResponse> {
+    if (this.autoRefreshSession && session.refresh_token &&
+      session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+      await this.sessionRefresh(session);
+    }
+
+    return this.apiClient.validateSubscriptionApple(session.token, {receipt: receipt, persist: persist});
+  }
+
+  /** Validate Google Subscription Receipt */
+  async validateSubscriptionGoogle(session: Session, receipt: string, persist: boolean = true) : Promise<ApiValidateSubscriptionResponse> {
+    if (this.autoRefreshSession && session.refresh_token &&
+      session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+      await this.sessionRefresh(session);
+    }
+
+    return this.apiClient.validateSubscriptionGoogle(session.token, {receipt: receipt, persist: persist});
   }
 
   /** Write a record to a leaderboard. */

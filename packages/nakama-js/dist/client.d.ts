@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountFacebookInstantGame, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest, ApiAccountApple, ApiLinkSteamRequest, ApiValidatePurchaseResponse } from "./api.gen";
+import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountFacebookInstantGame, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest, ApiAccountApple, ApiLinkSteamRequest, ApiValidatePurchaseResponse, ApiStoreEnvironment, ApiStoreProvider, ApiValidateSubscriptionResponse, ApiValidatedSubscription } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
 import { WebSocketAdapter } from "./web_socket_adapter";
@@ -59,11 +59,14 @@ export interface LeaderboardRecordList {
     owner_records?: Array<LeaderboardRecord>;
     /** The cursor to send when retrieving the previous page, if any. */
     prev_cursor?: string;
+    rank_count?: number;
     /** A list of leaderboard records. */
     records?: Array<LeaderboardRecord>;
 }
 /** A Tournament on the server. */
 export interface Tournament {
+    /** Whether the leaderboard was created authoritatively or not. */
+    authoritative?: boolean;
     /** The ID of the tournament. */
     id?: string;
     /** The title for the tournament. */
@@ -281,6 +284,16 @@ export interface Friends {
     /** Cursor for the next page of results, if any. */
     cursor?: string;
 }
+/** A friend of a friend. */
+export interface FriendOfFriend {
+    referrer?: string;
+    user?: User;
+}
+/** Friends of the user's friends. */
+export interface FriendsOfFriends {
+    cursor?: string;
+    friends_of_friends?: Array<FriendOfFriend>;
+}
 /** A user-role pair representing the user's role in a group. */
 export interface GroupUser {
     /** The user. */
@@ -367,6 +380,27 @@ export interface NotificationList {
     /** Collection of notifications. */
     notifications?: Array<Notification>;
 }
+export interface ValidatedSubscription {
+    active?: boolean;
+    create_time?: string;
+    environment?: ApiStoreEnvironment;
+    expiry_time?: string;
+    original_transaction_id?: string;
+    product_id?: string;
+    provider_notification?: string;
+    provider_response?: string;
+    purchase_time?: string;
+    refund_time?: string;
+    store?: ApiStoreProvider;
+    update_time?: string;
+    user_id?: string;
+}
+/** A list of validated subscriptions stored by Nakama. */
+export interface SubscriptionList {
+    cursor?: string;
+    prev_cursor?: string;
+    validated_subscriptions?: Array<ValidatedSubscription>;
+}
 /** A client for Nakama server. */
 export declare class Client {
     readonly serverkey: string;
@@ -410,6 +444,8 @@ export declare class Client {
     createGroup(session: Session, request: ApiCreateGroupRequest): Promise<Group>;
     /** A socket created with the client's configuration. */
     createSocket(useSSL?: boolean, verbose?: boolean, adapter?: WebSocketAdapter, sendTimeoutMs?: number): Socket;
+    /** Delete the current user's account. */
+    deleteAccount(session: Session): Promise<boolean>;
     /** Delete one or more users by ID or username. */
     deleteFriends(session: Session, ids?: Array<string>, usernames?: Array<string>): Promise<boolean>;
     /** Delete a group the user is part of and has permissions to delete. */
@@ -418,12 +454,16 @@ export declare class Client {
     deleteNotifications(session: Session, ids?: Array<string>): Promise<boolean>;
     /** Delete one or more storage objects */
     deleteStorageObjects(session: Session, request: ApiDeleteStorageObjectsRequest): Promise<boolean>;
+    /** Delete a tournament record. */
+    deleteTournamentRecord(session: Session, tournamentId: string): Promise<any>;
     /** Demote a set of users in a group to the next role down. */
     demoteGroupUsers(session: Session, groupId: string, ids: Array<string>): Promise<boolean>;
     /** Submit an event for processing in the server's registered runtime custom events handler. */
     emitEvent(session: Session, request: ApiEvent): Promise<boolean>;
     /** Fetch the current user's account. */
     getAccount(session: Session): Promise<ApiAccount>;
+    /** Get subscription by product id. */
+    getSubscription(session: Session, productId: string): Promise<ApiValidatedSubscription>;
     /** Import Facebook friends and add them to a user's account. */
     importFacebookFriends(session: Session, request: ApiAccountFacebook): Promise<boolean>;
     /** Import Steam friends and add them to a user's account. */
@@ -465,6 +505,8 @@ export declare class Client {
     linkSteam(session: Session, request: ApiLinkSteamRequest): Promise<boolean>;
     /** List all friends for the current user. */
     listFriends(session: Session, state?: number, limit?: number, cursor?: string): Promise<Friends>;
+    /** List friends of friends for the current user. */
+    listFriendsOfFriends(session: Session, limit?: number, cursor?: string): Promise<FriendsOfFriends>;
     /** List leaderboard records */
     listLeaderboardRecords(session: Session, leaderboardId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string): Promise<LeaderboardRecordList>;
     listLeaderboardRecordsAroundOwner(session: Session, leaderboardId: string, ownerId: string, limit?: number, expiry?: string): Promise<LeaderboardRecordList>;
@@ -476,10 +518,12 @@ export declare class Client {
     listStorageObjects(session: Session, collection: string, userId?: string, limit?: number, cursor?: string): Promise<StorageObjectList>;
     /** List current or upcoming tournaments. */
     listTournaments(session: Session, categoryStart?: number, categoryEnd?: number, startTime?: number, endTime?: number, limit?: number, cursor?: string): Promise<TournamentList>;
+    /** List user subscriptions. */
+    listSubscriptions(session: Session, cursor?: string, limit?: number): Promise<SubscriptionList>;
     /** List tournament records from a given tournament. */
     listTournamentRecords(session: Session, tournamentId: string, ownerIds?: Array<string>, limit?: number, cursor?: string, expiry?: string): Promise<TournamentRecordList>;
     /** List tournament records from a given tournament around the owner. */
-    listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number, expiry?: string): Promise<TournamentRecordList>;
+    listTournamentRecordsAroundOwner(session: Session, tournamentId: string, ownerId: string, limit?: number, expiry?: string, cursor?: string): Promise<TournamentRecordList>;
     /** Promote users in a group to the next role up. */
     promoteGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;
     /** Fetch storage objects. */
@@ -515,11 +559,17 @@ export declare class Client {
     /** Update a group the user is part of and has permissions to update. */
     updateGroup(session: Session, groupId: string, request: ApiUpdateGroupRequest): Promise<boolean>;
     /** Validate an Apple IAP receipt. */
-    validatePurchaseApple(session: Session, receipt?: string): Promise<ApiValidatePurchaseResponse>;
+    validatePurchaseApple(session: Session, receipt?: string, persist?: boolean): Promise<ApiValidatePurchaseResponse>;
+    /** Validate a FB Instant IAP receipt. */
+    validatePurchaseFacebookInstant(session: Session, signedRequest?: string, persist?: boolean): Promise<ApiValidatePurchaseResponse>;
     /** Validate a Google IAP receipt. */
-    validatePurchaseGoogle(session: Session, purchase?: string): Promise<ApiValidatePurchaseResponse>;
+    validatePurchaseGoogle(session: Session, purchase?: string, persist?: boolean): Promise<ApiValidatePurchaseResponse>;
     /** Validate a Huawei IAP receipt. */
-    validatePurchaseHuawei(session: Session, purchase?: string, signature?: string): Promise<ApiValidatePurchaseResponse>;
+    validatePurchaseHuawei(session: Session, purchase?: string, signature?: string, persist?: boolean): Promise<ApiValidatePurchaseResponse>;
+    /** Validate Apple Subscription Receipt */
+    validateSubscriptionApple(session: Session, receipt: string, persist?: boolean): Promise<ApiValidateSubscriptionResponse>;
+    /** Validate Google Subscription Receipt */
+    validateSubscriptionGoogle(session: Session, receipt: string, persist?: boolean): Promise<ApiValidateSubscriptionResponse>;
     /** Write a record to a leaderboard. */
     writeLeaderboardRecord(session: Session, leaderboardId: string, request: WriteLeaderboardRecord): Promise<LeaderboardRecord>;
     /** Write storage objects. */

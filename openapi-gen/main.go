@@ -50,7 +50,7 @@ export enum {{ $classname | title }}
 export interface {{$classname | title}} {
           {{- range $key, $property := $definition.Properties}}
               {{- $fieldname := camelToSnake $key }}
-  // {{- replace $property.Description "\n" " "}}
+  // {{ replace $property.Description "\n" " "}}
               {{- if eq $property.Type "integer"}}
   {{$fieldname}}?: number;
               {{- else if eq $property.Type "number" }}
