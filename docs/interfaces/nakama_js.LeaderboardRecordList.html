@@ -24,7 +24,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">LeaderboardRecordList</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/heroiclabs/nakama-js/blob/735a71d/packages/nakama-js/client.ts#L105">nakama-js/client.ts:105</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/heroiclabs/nakama-js/blob/625e5b9/packages/nakama-js/client.ts#L110">nakama-js/client.ts:110</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -35,6 +35,7 @@
 <div class="tsd-index-list"><a href="nakama_js.LeaderboardRecordList.html#next_cursor" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-1024-path"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)" id="icon-1024-text"></path></svg><span>next_<wbr/>cursor?</span></a>
 <a href="nakama_js.LeaderboardRecordList.html#owner_records" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>owner_<wbr/>records?</span></a>
 <a href="nakama_js.LeaderboardRecordList.html#prev_cursor" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>prev_<wbr/>cursor?</span></a>
+<a href="nakama_js.LeaderboardRecordList.html#rank_count" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>rank_<wbr/>count?</span></a>
 <a href="nakama_js.LeaderboardRecordList.html#records" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>records?</span></a>
 </div></section></div></details></section></section>
 <section class="tsd-panel-group tsd-member-group">
@@ -45,28 +46,33 @@
 <div class="tsd-comment tsd-typography"><p>The cursor to send when retrieving the next page, if any.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/heroiclabs/nakama-js/blob/735a71d/packages/nakama-js/client.ts#L107">nakama-js/client.ts:107</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/heroiclabs/nakama-js/blob/625e5b9/packages/nakama-js/client.ts#L112">nakama-js/client.ts:112</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="owner_records" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <span>owner_<wbr/>records</span><a href="#owner_records" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">owner_<wbr/>records<span class="tsd-signature-symbol">?:</span> <a href="nakama_js.LeaderboardRecord.html" class="tsd-signature-type" data-tsd-kind="Interface">LeaderboardRecord</a><span class="tsd-signature-symbol">[]</span></div>
 <div class="tsd-comment tsd-typography"><p>A batched set of leaderboard records belonging to specified owners.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/heroiclabs/nakama-js/blob/735a71d/packages/nakama-js/client.ts#L109">nakama-js/client.ts:109</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/heroiclabs/nakama-js/blob/625e5b9/packages/nakama-js/client.ts#L114">nakama-js/client.ts:114</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="prev_cursor" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <span>prev_<wbr/>cursor</span><a href="#prev_cursor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">prev_<wbr/>cursor<span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>The cursor to send when retrieving the previous page, if any.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/heroiclabs/nakama-js/blob/735a71d/packages/nakama-js/client.ts#L111">nakama-js/client.ts:111</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/heroiclabs/nakama-js/blob/625e5b9/packages/nakama-js/client.ts#L116">nakama-js/client.ts:116</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="rank_count" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <span>rank_<wbr/>count</span><a href="#rank_count" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">rank_<wbr/>count<span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/heroiclabs/nakama-js/blob/625e5b9/packages/nakama-js/client.ts#L118">nakama-js/client.ts:118</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="records" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <span>records</span><a href="#records" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">records<span class="tsd-signature-symbol">?:</span> <a href="nakama_js.LeaderboardRecord.html" class="tsd-signature-type" data-tsd-kind="Interface">LeaderboardRecord</a><span class="tsd-signature-symbol">[]</span></div>
 <div class="tsd-comment tsd-typography"><p>A list of leaderboard records.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/heroiclabs/nakama-js/blob/735a71d/packages/nakama-js/client.ts#L113">nakama-js/client.ts:113</a></li></ul></aside></section></section></div>
+<li>Defined in <a href="https://github.com/heroiclabs/nakama-js/blob/625e5b9/packages/nakama-js/client.ts#L120">nakama-js/client.ts:120</a></li></ul></aside></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -97,6 +103,7 @@
 <li class="tsd-kind-property tsd-parent-kind-interface"><a href="nakama_js.LeaderboardRecordList.html#next_cursor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>next_<wbr/>cursor?</a></li>
 <li class="tsd-kind-property tsd-parent-kind-interface"><a href="nakama_js.LeaderboardRecordList.html#owner_records" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>owner_<wbr/>records?</a></li>
 <li class="tsd-kind-property tsd-parent-kind-interface"><a href="nakama_js.LeaderboardRecordList.html#prev_cursor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>prev_<wbr/>cursor?</a></li>
+<li class="tsd-kind-property tsd-parent-kind-interface"><a href="nakama_js.LeaderboardRecordList.html#rank_count" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>rank_<wbr/>count?</a></li>
 <li class="tsd-kind-property tsd-parent-kind-interface"><a href="nakama_js.LeaderboardRecordList.html#records" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>records?</a></li></ul></li></ul></nav></div></div>
 <div class="container tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
