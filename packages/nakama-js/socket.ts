@@ -846,7 +846,10 @@ export class DefaultSocket implements Socket {
       }
       this.adapter.onError = (evt: Event) => {
         reject(evt);
-        this.adapter.close();
+        
+        if (this.adapter.isOpen()) {
+          this.adapter.close();
+        }
       }
 
 
