@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiEvent } from "./api.gen";
+import { SatoriApi, ApiEvent } from "./api.gen";
 import { Session } from "./session";
 /** A client for Satori server. */
 export declare class Client {
@@ -26,7 +26,7 @@ export declare class Client {
     /** The expired timespan used to check session lifetime. */
     expiredTimespanMs: number;
     /** The low level API client for Nakama server. */
-    private readonly apiClient;
+    readonly apiClient: SatoriApi;
     constructor(apiKey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number, autoRefreshSession?: boolean);
     /** Authenticate a user with an ID against the server. */
     authenticate(id: string, customProperties?: Record<string, string>, defaultProperties?: Record<string, string>): Promise<Session>;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountFacebookInstantGame, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest, ApiAccountApple, ApiLinkSteamRequest, ApiValidatePurchaseResponse, ApiStoreEnvironment, ApiStoreProvider, ApiValidateSubscriptionResponse, ApiValidatedSubscription } from "./api.gen";
+import { ApiAccount, ApiAccountCustom, ApiAccountDevice, ApiAccountEmail, ApiAccountFacebook, ApiAccountFacebookInstantGame, ApiAccountGoogle, ApiAccountGameCenter, ApiAccountSteam, ApiCreateGroupRequest, ApiDeleteStorageObjectsRequest, ApiEvent, ApiMatchList, ApiReadStorageObjectsRequest, ApiStorageObjectAcks, ApiUpdateAccountRequest, ApiUpdateGroupRequest, NakamaApi, ApiAccountApple, ApiLinkSteamRequest, ApiValidatePurchaseResponse, ApiStoreEnvironment, ApiStoreProvider, ApiValidateSubscriptionResponse, ApiValidatedSubscription } from "./api.gen";
 import { Session } from "./session";
 import { Socket } from "./socket";
 import { WebSocketAdapter } from "./web_socket_adapter";
@@ -412,7 +412,7 @@ export declare class Client {
     /** The expired timespan used to check session lifetime. */
     expiredTimespanMs: number;
     /** The low level API client for Nakama server. */
-    private readonly apiClient;
+    readonly apiClient: NakamaApi;
     constructor(serverkey?: string, host?: string, port?: string, useSSL?: boolean, timeout?: number, autoRefreshSession?: boolean);
     /** Add users to a group, or accept their join requests. */
     addGroupUsers(session: Session, groupId: string, ids?: Array<string>): Promise<boolean>;

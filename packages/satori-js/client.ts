@@ -31,7 +31,7 @@ export class Client {
   public expiredTimespanMs = DEFAULT_EXPIRED_TIMESPAN_MS;
 
   /** The low level API client for Nakama server. */
-  private readonly apiClient: SatoriApi;
+  public readonly apiClient: SatoriApi;
 
   constructor(
       readonly apiKey = DEFAULT_API_KEY,

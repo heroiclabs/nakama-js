@@ -353,10 +353,10 @@ function Request(input, options) {
     if (options.cache === "no-store" || options.cache === "no-cache") {
       var reParamSearch = /([?&])_=[^&]*/;
       if (reParamSearch.test(this.url)) {
-        this.url = this.url.replace(reParamSearch, "$1_=" + (/* @__PURE__ */ new Date()).getTime());
+        this.url = this.url.replace(reParamSearch, "$1_=" + new Date().getTime());
       } else {
         var reQueryString = /\?/;
-        this.url += (reQueryString.test(this.url) ? "&" : "?") + "_=" + (/* @__PURE__ */ new Date()).getTime();
+        this.url += (reQueryString.test(this.url) ? "&" : "?") + "_=" + new Date().getTime();
       }
     }
   }
@@ -541,7 +541,7 @@ var b64tab = ((a) => {
 })(b64chs);
 var b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
 var _fromCC = String.fromCharCode.bind(String);
-var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it) => new Uint8Array(Array.prototype.slice.call(it, 0));
+var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it, fn = (x) => x) => new Uint8Array(Array.prototype.slice.call(it, 0).map(fn));
 var _mkUriSafe = (src) => src.replace(/=/g, "").replace(/[+\/]/g, (m0) => m0 == "+" ? "-" : "_");
 var _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, "");
 var btoaPolyfill = (bin) => {
@@ -1088,7 +1088,7 @@ var Session = class {
   constructor(token, refresh_token) {
     this.token = token;
     this.refresh_token = refresh_token;
-    this.created_at = Math.floor((/* @__PURE__ */ new Date()).getTime() / 1e3);
+    this.created_at = Math.floor(new Date().getTime() / 1e3);
     this.update(token, refresh_token);
   }
   isexpired(currenttime) {
