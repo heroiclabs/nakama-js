@@ -76,26 +76,13 @@ export class Session implements ISession {
   }
 
   update(token: string, refreshToken: string) {
-
-    const tokenParts = token.split('.');
-    if (tokenParts.length != 3) {
-      throw 'jwt is not valid.';
-    }
-
-    const tokenDecoded = JSON.parse(base64.atob(tokenParts[1]));
+    const tokenDecoded = this.decodeJWT(token);
     const tokenExpiresAt = Math.floor(parseInt(tokenDecoded['exp']));
 
     /** clients that have just updated to the refresh tokens */
     /** client release will not have a cached refresh token */
     if (refreshToken) {
-
-        const refreshTokenParts = refreshToken.split('.');
-
-        if (refreshTokenParts.length != 3) {
-            throw 'refresh jwt is not valid.';
-        }
-
-        const refreshTokenDecoded = JSON.parse(base64.atob(refreshTokenParts[1]))
+        const refreshTokenDecoded = this.decodeJWT(refreshToken);
         const refreshTokenExpiresAt = Math.floor(parseInt(refreshTokenDecoded['exp']));
         this.refresh_expires_at = refreshTokenExpiresAt;
         this.refresh_token = refreshToken;
@@ -106,6 +93,16 @@ export class Session implements ISession {
     this.username = tokenDecoded['usn'];
     this.user_id = tokenDecoded['uid'];
     this.vars = tokenDecoded['vrs'];
+  }
+
+  decodeJWT(token: string) {
+    const { 1: base64Raw } = token.split('.')
+    const _base64 = base64Raw.replace(/-/g, '+').replace(/_/g, '/')
+    const jsonPayload = decodeURIComponent(base64.atob(_base64).split('').map((c) => {
+      return `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`
+    }).join(''))
+  
+    return JSON.parse(jsonPayload)
   }
 
   static restore(token: string, refreshToken: string): Session {

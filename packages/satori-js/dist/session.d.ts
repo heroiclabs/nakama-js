@@ -48,5 +48,6 @@ export declare class Session implements ISession {
     isexpired(currenttime: number): boolean;
     isrefreshexpired(currenttime: number): boolean;
     update(token: string, refreshToken: string): void;
+    decodeJWT(token: string): any;
     static restore(token: string, refreshToken: string): Session;
 }
