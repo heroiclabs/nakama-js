@@ -1122,18 +1122,10 @@ var Session = class {
     return this.refresh_expires_at - currenttime < 0;
   }
   update(token, refreshToken) {
-    const tokenParts = token.split(".");
-    if (tokenParts.length != 3) {
-      throw "jwt is not valid.";
-    }
-    const tokenDecoded = JSON.parse(_atob(tokenParts[1]));
+    const tokenDecoded = this.decodeJWT(token);
     const tokenExpiresAt = Math.floor(parseInt(tokenDecoded["exp"]));
     if (refreshToken) {
-      const refreshTokenParts = refreshToken.split(".");
-      if (refreshTokenParts.length != 3) {
-        throw "refresh jwt is not valid.";
-      }
-      const refreshTokenDecoded = JSON.parse(_atob(refreshTokenParts[1]));
+      const refreshTokenDecoded = this.decodeJWT(refreshToken);
       const refreshTokenExpiresAt = Math.floor(parseInt(refreshTokenDecoded["exp"]));
       this.refresh_expires_at = refreshTokenExpiresAt;
       this.refresh_token = refreshToken;
@@ -1142,6 +1134,14 @@ var Session = class {
     this.expires_at = tokenExpiresAt;
     this.user_id = tokenDecoded["uid"];
     this.vars = tokenDecoded["vrs"];
+  }
+  decodeJWT(token) {
+    const { 1: base64Raw } = token.split(".");
+    const _base64 = base64Raw.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(_atob(_base64).split("").map((c) => {
+      return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
+    }).join(""));
+    return JSON.parse(jsonPayload);
   }
   static restore(token, refreshToken) {
     return new Session(token, refreshToken);
