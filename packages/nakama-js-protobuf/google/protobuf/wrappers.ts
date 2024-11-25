@@ -1,4 +1,5 @@
 /* eslint-disable */
+// @ts-ignore
 import * as Long from 'long';
 import { Writer, Reader, util, configure } from 'protobufjs/minimal';
 

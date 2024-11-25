@@ -7,19 +7,19 @@
     "dependencies": {
         "@heroiclabs/nakama-js": "file:../nakama-js",
         "@heroiclabs/nakama-js-protobuf": "file:../nakama-js-protobuf",
-        "merge": "^2.1.1",
-        "base64url": "3.0.1"
+        "base64url": "3.0.1",
+        "merge": "^2.1.1"
     },
     "devDependencies": {
-        "@types/expect-puppeteer": "^4.4.5",
-        "@types/jest": "^26.0.20",
-        "@types/jest-environment-puppeteer": "^4.4.1",
-        "@types/node": "12.12.6",
-        "@types/puppeteer": "^5.4.2",
-        "jest": "29.0.0",
-        "jest-puppeteer": "7.0.1",
-        "puppeteer": "19.7.2",
-        "ts-jest": "29.0.5"
+        "@types/expect-puppeteer": "^5.0.6",
+        "@types/jest": "^29.5.14",
+        "@types/jest-environment-puppeteer": "^5.0.6",
+        "@types/node": "18.19.66",
+        "@types/puppeteer": "^7.0.4",
+        "jest": "29.7.0",
+        "jest-puppeteer": "10.1.4",
+        "puppeteer": "23.9.0",
+        "ts-jest": "29.2.5"
     },
     "scripts": {
         "test": "npx tsc --project tsconfig.test.json && jest --runInBand"
