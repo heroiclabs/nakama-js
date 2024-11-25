@@ -31,7 +31,6 @@
     "packages/nakama-js-test",
     "packages/satori-js",
     "packages/satori-js-test",
-    "packages/nakama-js-create-react-app-example",
     "packages/nakama-js-iife-example",
     "packages/nakama-js-protobuf",
     "packages/nakama-js-webpack-example"
