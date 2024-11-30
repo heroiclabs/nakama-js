@@ -4,17 +4,20 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.nakamajs = {}));
 })(this, (function (exports) { 'use strict';
 
-  var global =
+  /* eslint-disable no-prototype-builtins */
+  var g =
     (typeof globalThis !== 'undefined' && globalThis) ||
     (typeof self !== 'undefined' && self) ||
-    (typeof global !== 'undefined' && global);
+    // eslint-disable-next-line no-undef
+    (typeof global !== 'undefined' && global) ||
+    {};
 
   var support = {
-    searchParams: 'URLSearchParams' in global,
-    iterable: 'Symbol' in global && 'iterator' in Symbol,
+    searchParams: 'URLSearchParams' in g,
+    iterable: 'Symbol' in g && 'iterator' in Symbol,
     blob:
-      'FileReader' in global &&
-      'Blob' in global &&
+      'FileReader' in g &&
+      'Blob' in g &&
       (function() {
         try {
           new Blob();
@@ -23,8 +26,8 @@
           return false
         }
       })(),
-    formData: 'FormData' in global,
-    arrayBuffer: 'ArrayBuffer' in global
+    formData: 'FormData' in g,
+    arrayBuffer: 'ArrayBuffer' in g
   };
 
   function isDataView(obj) {
@@ -95,6 +98,9 @@
       }, this);
     } else if (Array.isArray(headers)) {
       headers.forEach(function(header) {
+        if (header.length != 2) {
+          throw new TypeError('Headers constructor: expected name/value pair to be length 2, found' + header.length)
+        }
         this.append(header[0], header[1]);
       }, this);
     } else if (headers) {
@@ -165,6 +171,7 @@
   }
 
   function consumed(body) {
+    if (body._noBody) return
     if (body.bodyUsed) {
       return Promise.reject(new TypeError('Already read'))
     }
@@ -192,7 +199,9 @@
   function readBlobAsText(blob) {
     var reader = new FileReader();
     var promise = fileReaderReady(reader);
-    reader.readAsText(blob);
+    var match = /charset=([A-Za-z0-9_-]+)/.exec(blob.type);
+    var encoding = match ? match[1] : 'utf-8';
+    reader.readAsText(blob, encoding);
     return promise
   }
 
@@ -230,9 +239,11 @@
         semantic of setting Request.bodyUsed in the constructor before
         _initBody is called.
       */
+      // eslint-disable-next-line no-self-assign
       this.bodyUsed = this.bodyUsed;
       this._bodyInit = body;
       if (!body) {
+        this._noBody = true;
         this._bodyText = '';
       } else if (typeof body === 'string') {
         this._bodyText = body;
@@ -280,28 +291,29 @@
           return Promise.resolve(new Blob([this._bodyText]))
         }
       };
-
-      this.arrayBuffer = function() {
-        if (this._bodyArrayBuffer) {
-          var isConsumed = consumed(this);
-          if (isConsumed) {
-            return isConsumed
-          }
-          if (ArrayBuffer.isView(this._bodyArrayBuffer)) {
-            return Promise.resolve(
-              this._bodyArrayBuffer.buffer.slice(
-                this._bodyArrayBuffer.byteOffset,
-                this._bodyArrayBuffer.byteOffset + this._bodyArrayBuffer.byteLength
-              )
-            )
-          } else {
-            return Promise.resolve(this._bodyArrayBuffer)
-          }
-        } else {
-          return this.blob().then(readBlobAsArrayBuffer)
-        }
-      };
     }
+
+    this.arrayBuffer = function() {
+      if (this._bodyArrayBuffer) {
+        var isConsumed = consumed(this);
+        if (isConsumed) {
+          return isConsumed
+        } else if (ArrayBuffer.isView(this._bodyArrayBuffer)) {
+          return Promise.resolve(
+            this._bodyArrayBuffer.buffer.slice(
+              this._bodyArrayBuffer.byteOffset,
+              this._bodyArrayBuffer.byteOffset + this._bodyArrayBuffer.byteLength
+            )
+          )
+        } else {
+          return Promise.resolve(this._bodyArrayBuffer)
+        }
+      } else if (support.blob) {
+        return this.blob().then(readBlobAsArrayBuffer)
+      } else {
+        throw new Error('could not read as ArrayBuffer')
+      }
+    };
 
     this.text = function() {
       var rejected = consumed(this);
@@ -334,7 +346,7 @@
   }
 
   // HTTP methods whose capitalization should be normalized
-  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT'];
+  var methods = ['CONNECT', 'DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'TRACE'];
 
   function normalizeMethod(method) {
     var upcased = method.toUpperCase();
@@ -375,7 +387,12 @@
     }
     this.method = normalizeMethod(options.method || this.method || 'GET');
     this.mode = options.mode || this.mode || null;
-    this.signal = options.signal || this.signal;
+    this.signal = options.signal || this.signal || (function () {
+      if ('AbortController' in g) {
+        var ctrl = new AbortController();
+        return ctrl.signal;
+      }
+    }());
     this.referrer = null;
 
     if ((this.method === 'GET' || this.method === 'HEAD') && body) {
@@ -437,7 +454,11 @@
         var key = parts.shift().trim();
         if (key) {
           var value = parts.join(':').trim();
-          headers.append(key, value);
+          try {
+            headers.append(key, value);
+          } catch (error) {
+            console.warn('Response ' + error.message);
+          }
         }
       });
     return headers
@@ -455,6 +476,9 @@
 
     this.type = 'default';
     this.status = options.status === undefined ? 200 : options.status;
+    if (this.status < 200 || this.status > 599) {
+      throw new RangeError("Failed to construct 'Response': The status provided (0) is outside the range [200, 599].")
+    }
     this.ok = this.status >= 200 && this.status < 300;
     this.statusText = options.statusText === undefined ? '' : '' + options.statusText;
     this.headers = new Headers(options.headers);
@@ -474,7 +498,9 @@
   };
 
   Response.error = function() {
-    var response = new Response(null, {status: 0, statusText: ''});
+    var response = new Response(null, {status: 200, statusText: ''});
+    response.ok = false;
+    response.status = 0;
     response.type = 'error';
     return response
   };
@@ -489,7 +515,7 @@
     return new Response(null, {status: status, headers: {location: url}})
   };
 
-  var DOMException = global.DOMException;
+  var DOMException = g.DOMException;
   try {
     new DOMException();
   } catch (err) {
@@ -519,10 +545,16 @@
 
       xhr.onload = function() {
         var options = {
-          status: xhr.status,
           statusText: xhr.statusText,
           headers: parseHeaders(xhr.getAllResponseHeaders() || '')
         };
+        // This check if specifically for when a user fetches a file locally from the file system
+        // Only if the status is out of a normal range
+        if (request.url.indexOf('file://') === 0 && (xhr.status < 200 || xhr.status > 599)) {
+          options.status = 200;
+        } else {
+          options.status = xhr.status;
+        }
         options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL');
         var body = 'response' in xhr ? xhr.response : xhr.responseText;
         setTimeout(function() {
@@ -538,7 +570,7 @@
 
       xhr.ontimeout = function() {
         setTimeout(function() {
-          reject(new TypeError('Network request failed'));
+          reject(new TypeError('Network request timed out'));
         }, 0);
       };
 
@@ -550,7 +582,7 @@
 
       function fixUrl(url) {
         try {
-          return url === '' && global.location.href ? global.location.href : url
+          return url === '' && g.location.href ? g.location.href : url
         } catch (e) {
           return url
         }
@@ -568,17 +600,22 @@
         if (support.blob) {
           xhr.responseType = 'blob';
         } else if (
-          support.arrayBuffer &&
-          request.headers.get('Content-Type') &&
-          request.headers.get('Content-Type').indexOf('application/octet-stream') !== -1
+          support.arrayBuffer
         ) {
           xhr.responseType = 'arraybuffer';
         }
       }
 
-      if (init && typeof init.headers === 'object' && !(init.headers instanceof Headers)) {
+      if (init && typeof init.headers === 'object' && !(init.headers instanceof Headers || (g.Headers && init.headers instanceof g.Headers))) {
+        var names = [];
         Object.getOwnPropertyNames(init.headers).forEach(function(name) {
+          names.push(normalizeName(name));
           xhr.setRequestHeader(name, normalizeValue(init.headers[name]));
+        });
+        request.headers.forEach(function(value, name) {
+          if (names.indexOf(name) === -1) {
+            xhr.setRequestHeader(name, value);
+          }
         });
       } else {
         request.headers.forEach(function(value, name) {
@@ -603,11 +640,11 @@
 
   fetch$1.polyfill = true;
 
-  if (!global.fetch) {
-    global.fetch = fetch$1;
-    global.Headers = Headers;
-    global.Request = Request;
-    global.Response = Response;
+  if (!g.fetch) {
+    g.fetch = fetch$1;
+    g.Headers = Headers;
+    g.Request = Request;
+    g.Response = Response;
   }
 
   /******************************************************************************
@@ -624,6 +661,8 @@
   OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
   PERFORMANCE OF THIS SOFTWARE.
   ***************************************************************************** */
+  /* global Reflect, Promise, SuppressedError, Symbol, Iterator */
+
 
   var __assign = function() {
       __assign = Object.assign || function __assign(t) {
@@ -647,8 +686,8 @@
   }
 
   function __generator(thisArg, body) {
-      var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-      return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+      var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+      return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
       function verb(n) { return function (v) { return step([n, v]); }; }
       function step(op) {
           if (f) throw new TypeError("Generator is already executing.");
@@ -703,6 +742,11 @@
       return ar;
   }
 
+  typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+      var e = new Error(message);
+      return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+  };
+
   /**
    *  base64.ts
    *
@@ -714,8 +758,6 @@
    *
    * @author Dan Kogai (https://github.com/dankogai)
    */
-  const _hasatob = typeof atob === 'function';
-  const _hasbtoa = typeof btoa === 'function';
   const _hasBuffer = typeof Buffer === 'function';
   const _TD = typeof TextDecoder === 'function' ? new TextDecoder() : undefined;
   const _TE = typeof TextEncoder === 'function' ? new TextEncoder() : undefined;
@@ -730,7 +772,7 @@
   const _fromCC = String.fromCharCode.bind(String);
   const _U8Afrom = typeof Uint8Array.from === 'function'
       ? Uint8Array.from.bind(Uint8Array)
-      : (it, fn = (x) => x) => new Uint8Array(Array.prototype.slice.call(it, 0).map(fn));
+      : (it) => new Uint8Array(Array.prototype.slice.call(it, 0));
   const _mkUriSafe = (src) => src
       .replace(/=/g, '').replace(/[+\/]/g, (m0) => m0 == '+' ? '-' : '_');
   const _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, '');
@@ -759,7 +801,7 @@
    * @param {String} bin binary string
    * @returns {string} Base64-encoded string
    */
-  const _btoa = _hasbtoa ? (bin) => btoa(bin)
+  const _btoa = typeof btoa === 'function' ? (bin) => btoa(bin)
       : _hasBuffer ? (bin) => Buffer.from(bin, 'binary').toString('base64')
           : btoaPolyfill;
   const _fromUint8Array = _hasBuffer
@@ -871,13 +913,13 @@
    * @param {String} asc Base64-encoded string
    * @returns {string} binary string
    */
-  const _atob = _hasatob ? (asc) => atob(_tidyB64(asc))
+  const _atob = typeof atob === 'function' ? (asc) => atob(_tidyB64(asc))
       : _hasBuffer ? (asc) => Buffer.from(asc, 'base64').toString('binary')
           : atobPolyfill;
   //
   const _toUint8Array = _hasBuffer
       ? (a) => _U8Afrom(Buffer.from(a, 'base64'))
-      : (a) => _U8Afrom(_atob(a), c => c.charCodeAt(0));
+      : (a) => _U8Afrom(_atob(a).split('').map(c => c.charCodeAt(0)));
   //
   const _decode = _hasBuffer
       ? (a) => Buffer.from(a, 'base64').toString('utf8')
@@ -921,6 +963,7 @@
   }
 
   // tslint:disable
+  /* Code generated by openapi-gen/main.go. DO NOT EDIT. */
   /**
   * Operator that can be used to override the one set in the leaderboard.
   */
@@ -4829,11 +4872,11 @@
           });
       };
       /** Authenticate a user with an Apple ID against the server. */
-      Client.prototype.authenticateApple = function (token, create, username, vars, options) {
-          if (vars === void 0) { vars = {}; }
-          if (options === void 0) { options = {}; }
-          return __awaiter(this, void 0, void 0, function () {
+      Client.prototype.authenticateApple = function (token_1, create_1, username_1) {
+          return __awaiter(this, arguments, void 0, function (token, create, username, vars, options) {
               var request;
+              if (vars === void 0) { vars = {}; }
+              if (options === void 0) { options = {}; }
               return __generator(this, function (_a) {
                   request = {
                       "token": token,
@@ -4901,10 +4944,10 @@
           });
       };
       /** Authenticate a user with Google against the server. */
-      Client.prototype.authenticateGoogle = function (token, create, username, vars, options) {
-          if (options === void 0) { options = {}; }
-          return __awaiter(this, void 0, void 0, function () {
+      Client.prototype.authenticateGoogle = function (token_1, create_1, username_1, vars_1) {
+          return __awaiter(this, arguments, void 0, function (token, create, username, vars, options) {
               var request, apiSession;
+              if (options === void 0) { options = {}; }
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
@@ -4921,10 +4964,10 @@
           });
       };
       /** Authenticate a user with GameCenter against the server. */
-      Client.prototype.authenticateGameCenter = function (bundleId, playerId, publicKeyUrl, salt, signature, timestamp, username, create, vars, options) {
-          if (options === void 0) { options = {}; }
-          return __awaiter(this, void 0, void 0, function () {
+      Client.prototype.authenticateGameCenter = function (bundleId_1, playerId_1, publicKeyUrl_1, salt_1, signature_1, timestamp_1, username_1, create_1, vars_1) {
+          return __awaiter(this, arguments, void 0, function (bundleId, playerId, publicKeyUrl, salt, signature, timestamp, username, create, vars, options) {
               var request, apiSession;
+              if (options === void 0) { options = {}; }
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
@@ -6332,10 +6375,10 @@
           });
       };
       /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
-      Client.prototype.sessionRefresh = function (session, vars) {
-          if (vars === void 0) { vars = {}; }
-          return __awaiter(this, void 0, void 0, function () {
+      Client.prototype.sessionRefresh = function (session_1) {
+          return __awaiter(this, arguments, void 0, function (session, vars) {
               var apiSession;
+              if (vars === void 0) { vars = {}; }
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
@@ -6568,9 +6611,9 @@
           });
       };
       /** Validate an Apple IAP receipt. */
-      Client.prototype.validatePurchaseApple = function (session, receipt, persist) {
-          if (persist === void 0) { persist = true; }
-          return __awaiter(this, void 0, void 0, function () {
+      Client.prototype.validatePurchaseApple = function (session_1, receipt_1) {
+          return __awaiter(this, arguments, void 0, function (session, receipt, persist) {
+              if (persist === void 0) { persist = true; }
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
@@ -6586,9 +6629,9 @@
           });
       };
       /** Validate a FB Instant IAP receipt. */
-      Client.prototype.validatePurchaseFacebookInstant = function (session, signedRequest, persist) {
-          if (persist === void 0) { persist = true; }
-          return __awaiter(this, void 0, void 0, function () {
+      Client.prototype.validatePurchaseFacebookInstant = function (session_1, signedRequest_1) {
+          return __awaiter(this, arguments, void 0, function (session, signedRequest, persist) {
+              if (persist === void 0) { persist = true; }
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
@@ -6604,9 +6647,9 @@
           });
       };
       /** Validate a Google IAP receipt. */
-      Client.prototype.validatePurchaseGoogle = function (session, purchase, persist) {
-          if (persist === void 0) { persist = true; }
-          return __awaiter(this, void 0, void 0, function () {
+      Client.prototype.validatePurchaseGoogle = function (session_1, purchase_1) {
+          return __awaiter(this, arguments, void 0, function (session, purchase, persist) {
+              if (persist === void 0) { persist = true; }
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
@@ -6622,9 +6665,9 @@
           });
       };
       /** Validate a Huawei IAP receipt. */
-      Client.prototype.validatePurchaseHuawei = function (session, purchase, signature, persist) {
-          if (persist === void 0) { persist = true; }
-          return __awaiter(this, void 0, void 0, function () {
+      Client.prototype.validatePurchaseHuawei = function (session_1, purchase_1, signature_1) {
+          return __awaiter(this, arguments, void 0, function (session, purchase, signature, persist) {
+              if (persist === void 0) { persist = true; }
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
@@ -6640,9 +6683,9 @@
           });
       };
       /** Validate Apple Subscription Receipt */
-      Client.prototype.validateSubscriptionApple = function (session, receipt, persist) {
-          if (persist === void 0) { persist = true; }
-          return __awaiter(this, void 0, void 0, function () {
+      Client.prototype.validateSubscriptionApple = function (session_1, receipt_1) {
+          return __awaiter(this, arguments, void 0, function (session, receipt, persist) {
+              if (persist === void 0) { persist = true; }
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
@@ -6658,9 +6701,9 @@
           });
       };
       /** Validate Google Subscription Receipt */
-      Client.prototype.validateSubscriptionGoogle = function (session, receipt, persist) {
-          if (persist === void 0) { persist = true; }
-          return __awaiter(this, void 0, void 0, function () {
+      Client.prototype.validateSubscriptionGoogle = function (session_1, receipt_1) {
+          return __awaiter(this, arguments, void 0, function (session, receipt, persist) {
+              if (persist === void 0) { persist = true; }
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:

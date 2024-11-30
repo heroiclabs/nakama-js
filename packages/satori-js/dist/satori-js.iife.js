@@ -60,11 +60,12 @@ var satorijs = (() => {
   });
 
   // ../../node_modules/whatwg-fetch/fetch.js
-  var global = typeof globalThis !== "undefined" && globalThis || typeof self !== "undefined" && self || typeof global !== "undefined" && global;
+  var g = typeof globalThis !== "undefined" && globalThis || typeof self !== "undefined" && self || // eslint-disable-next-line no-undef
+  typeof global !== "undefined" && global || {};
   var support = {
-    searchParams: "URLSearchParams" in global,
-    iterable: "Symbol" in global && "iterator" in Symbol,
-    blob: "FileReader" in global && "Blob" in global && function() {
+    searchParams: "URLSearchParams" in g,
+    iterable: "Symbol" in g && "iterator" in Symbol,
+    blob: "FileReader" in g && "Blob" in g && function() {
       try {
         new Blob();
         return true;
@@ -72,8 +73,8 @@ var satorijs = (() => {
         return false;
       }
     }(),
-    formData: "FormData" in global,
-    arrayBuffer: "ArrayBuffer" in global
+    formData: "FormData" in g,
+    arrayBuffer: "ArrayBuffer" in g
   };
   function isDataView(obj) {
     return obj && DataView.prototype.isPrototypeOf(obj);
@@ -133,6 +134,9 @@ var satorijs = (() => {
       }, this);
     } else if (Array.isArray(headers)) {
       headers.forEach(function(header) {
+        if (header.length != 2) {
+          throw new TypeError("Headers constructor: expected name/value pair to be length 2, found" + header.length);
+        }
         this.append(header[0], header[1]);
       }, this);
     } else if (headers) {
@@ -192,6 +196,7 @@ var satorijs = (() => {
     Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
   }
   function consumed(body) {
+    if (body._noBody) return;
     if (body.bodyUsed) {
       return Promise.reject(new TypeError("Already read"));
     }
@@ -216,7 +221,9 @@ var satorijs = (() => {
   function readBlobAsText(blob) {
     var reader = new FileReader();
     var promise = fileReaderReady(reader);
-    reader.readAsText(blob);
+    var match = /charset=([A-Za-z0-9_-]+)/.exec(blob.type);
+    var encoding = match ? match[1] : "utf-8";
+    reader.readAsText(blob, encoding);
     return promise;
   }
   function readArrayBufferAsText(buf) {
@@ -242,6 +249,7 @@ var satorijs = (() => {
       this.bodyUsed = this.bodyUsed;
       this._bodyInit = body;
       if (!body) {
+        this._noBody = true;
         this._bodyText = "";
       } else if (typeof body === "string") {
         this._bodyText = body;
@@ -285,27 +293,28 @@ var satorijs = (() => {
           return Promise.resolve(new Blob([this._bodyText]));
         }
       };
-      this.arrayBuffer = function() {
-        if (this._bodyArrayBuffer) {
-          var isConsumed = consumed(this);
-          if (isConsumed) {
-            return isConsumed;
-          }
-          if (ArrayBuffer.isView(this._bodyArrayBuffer)) {
-            return Promise.resolve(
-              this._bodyArrayBuffer.buffer.slice(
-                this._bodyArrayBuffer.byteOffset,
-                this._bodyArrayBuffer.byteOffset + this._bodyArrayBuffer.byteLength
-              )
-            );
-          } else {
-            return Promise.resolve(this._bodyArrayBuffer);
-          }
-        } else {
-          return this.blob().then(readBlobAsArrayBuffer);
-        }
-      };
     }
+    this.arrayBuffer = function() {
+      if (this._bodyArrayBuffer) {
+        var isConsumed = consumed(this);
+        if (isConsumed) {
+          return isConsumed;
+        } else if (ArrayBuffer.isView(this._bodyArrayBuffer)) {
+          return Promise.resolve(
+            this._bodyArrayBuffer.buffer.slice(
+              this._bodyArrayBuffer.byteOffset,
+              this._bodyArrayBuffer.byteOffset + this._bodyArrayBuffer.byteLength
+            )
+          );
+        } else {
+          return Promise.resolve(this._bodyArrayBuffer);
+        }
+      } else if (support.blob) {
+        return this.blob().then(readBlobAsArrayBuffer);
+      } else {
+        throw new Error("could not read as ArrayBuffer");
+      }
+    };
     this.text = function() {
       var rejected = consumed(this);
       if (rejected) {
@@ -331,7 +340,7 @@ var satorijs = (() => {
     };
     return this;
   }
-  var methods = ["DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT"];
+  var methods = ["CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "TRACE"];
   function normalizeMethod(method) {
     var upcased = method.toUpperCase();
     return methods.indexOf(upcased) > -1 ? upcased : method;
@@ -367,7 +376,12 @@ var satorijs = (() => {
     }
     this.method = normalizeMethod(options.method || this.method || "GET");
     this.mode = options.mode || this.mode || null;
-    this.signal = options.signal || this.signal;
+    this.signal = options.signal || this.signal || function() {
+      if ("AbortController" in g) {
+        var ctrl = new AbortController();
+        return ctrl.signal;
+      }
+    }();
     this.referrer = null;
     if ((this.method === "GET" || this.method === "HEAD") && body) {
       throw new TypeError("Body not allowed for GET or HEAD requests");
@@ -377,10 +391,10 @@ var satorijs = (() => {
       if (options.cache === "no-store" || options.cache === "no-cache") {
         var reParamSearch = /([?&])_=[^&]*/;
         if (reParamSearch.test(this.url)) {
-          this.url = this.url.replace(reParamSearch, "$1_=" + new Date().getTime());
+          this.url = this.url.replace(reParamSearch, "$1_=" + (/* @__PURE__ */ new Date()).getTime());
         } else {
           var reQueryString = /\?/;
-          this.url += (reQueryString.test(this.url) ? "&" : "?") + "_=" + new Date().getTime();
+          this.url += (reQueryString.test(this.url) ? "&" : "?") + "_=" + (/* @__PURE__ */ new Date()).getTime();
         }
       }
     }
@@ -410,7 +424,11 @@ var satorijs = (() => {
       var key = parts.shift().trim();
       if (key) {
         var value = parts.join(":").trim();
-        headers.append(key, value);
+        try {
+          headers.append(key, value);
+        } catch (error) {
+          console.warn("Response " + error.message);
+        }
       }
     });
     return headers;
@@ -425,6 +443,9 @@ var satorijs = (() => {
     }
     this.type = "default";
     this.status = options.status === void 0 ? 200 : options.status;
+    if (this.status < 200 || this.status > 599) {
+      throw new RangeError("Failed to construct 'Response': The status provided (0) is outside the range [200, 599].");
+    }
     this.ok = this.status >= 200 && this.status < 300;
     this.statusText = options.statusText === void 0 ? "" : "" + options.statusText;
     this.headers = new Headers(options.headers);
@@ -441,7 +462,9 @@ var satorijs = (() => {
     });
   };
   Response.error = function() {
-    var response = new Response(null, { status: 0, statusText: "" });
+    var response = new Response(null, { status: 200, statusText: "" });
+    response.ok = false;
+    response.status = 0;
     response.type = "error";
     return response;
   };
@@ -452,7 +475,7 @@ var satorijs = (() => {
     }
     return new Response(null, { status, headers: { location: url } });
   };
-  var DOMException = global.DOMException;
+  var DOMException = g.DOMException;
   try {
     new DOMException();
   } catch (err) {
@@ -477,10 +500,14 @@ var satorijs = (() => {
       }
       xhr.onload = function() {
         var options = {
-          status: xhr.status,
           statusText: xhr.statusText,
           headers: parseHeaders(xhr.getAllResponseHeaders() || "")
         };
+        if (request.url.indexOf("file://") === 0 && (xhr.status < 200 || xhr.status > 599)) {
+          options.status = 200;
+        } else {
+          options.status = xhr.status;
+        }
         options.url = "responseURL" in xhr ? xhr.responseURL : options.headers.get("X-Request-URL");
         var body = "response" in xhr ? xhr.response : xhr.responseText;
         setTimeout(function() {
@@ -494,7 +521,7 @@ var satorijs = (() => {
       };
       xhr.ontimeout = function() {
         setTimeout(function() {
-          reject(new TypeError("Network request failed"));
+          reject(new TypeError("Network request timed out"));
         }, 0);
       };
       xhr.onabort = function() {
@@ -504,7 +531,7 @@ var satorijs = (() => {
       };
       function fixUrl(url) {
         try {
-          return url === "" && global.location.href ? global.location.href : url;
+          return url === "" && g.location.href ? g.location.href : url;
         } catch (e) {
           return url;
         }
@@ -518,13 +545,20 @@ var satorijs = (() => {
       if ("responseType" in xhr) {
         if (support.blob) {
           xhr.responseType = "blob";
-        } else if (support.arrayBuffer && request.headers.get("Content-Type") && request.headers.get("Content-Type").indexOf("application/octet-stream") !== -1) {
+        } else if (support.arrayBuffer) {
           xhr.responseType = "arraybuffer";
         }
       }
-      if (init && typeof init.headers === "object" && !(init.headers instanceof Headers)) {
+      if (init && typeof init.headers === "object" && !(init.headers instanceof Headers || g.Headers && init.headers instanceof g.Headers)) {
+        var names = [];
         Object.getOwnPropertyNames(init.headers).forEach(function(name) {
+          names.push(normalizeName(name));
           xhr.setRequestHeader(name, normalizeValue(init.headers[name]));
+        });
+        request.headers.forEach(function(value, name) {
+          if (names.indexOf(name) === -1) {
+            xhr.setRequestHeader(name, value);
+          }
         });
       } else {
         request.headers.forEach(function(value, name) {
@@ -543,16 +577,14 @@ var satorijs = (() => {
     });
   }
   fetch2.polyfill = true;
-  if (!global.fetch) {
-    global.fetch = fetch2;
-    global.Headers = Headers;
-    global.Request = Request;
-    global.Response = Response;
+  if (!g.fetch) {
+    g.fetch = fetch2;
+    g.Headers = Headers;
+    g.Request = Request;
+    g.Response = Response;
   }
 
   // ../../node_modules/js-base64/base64.mjs
-  var _hasatob = typeof atob === "function";
-  var _hasbtoa = typeof btoa === "function";
   var _hasBuffer = typeof Buffer === "function";
   var _TD = typeof TextDecoder === "function" ? new TextDecoder() : void 0;
   var _TE = typeof TextEncoder === "function" ? new TextEncoder() : void 0;
@@ -565,7 +597,7 @@ var satorijs = (() => {
   })(b64chs);
   var b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
   var _fromCC = String.fromCharCode.bind(String);
-  var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it, fn = (x) => x) => new Uint8Array(Array.prototype.slice.call(it, 0).map(fn));
+  var _U8Afrom = typeof Uint8Array.from === "function" ? Uint8Array.from.bind(Uint8Array) : (it) => new Uint8Array(Array.prototype.slice.call(it, 0));
   var _mkUriSafe = (src) => src.replace(/=/g, "").replace(/[+\/]/g, (m0) => m0 == "+" ? "-" : "_");
   var _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, "");
   var btoaPolyfill = (bin) => {
@@ -579,7 +611,7 @@ var satorijs = (() => {
     }
     return pad ? asc.slice(0, pad - 3) + "===".substring(pad) : asc;
   };
-  var _btoa = _hasbtoa ? (bin) => btoa(bin) : _hasBuffer ? (bin) => Buffer.from(bin, "binary").toString("base64") : btoaPolyfill;
+  var _btoa = typeof btoa === "function" ? (bin) => btoa(bin) : _hasBuffer ? (bin) => Buffer.from(bin, "binary").toString("base64") : btoaPolyfill;
   var _fromUint8Array = _hasBuffer ? (u8a) => Buffer.from(u8a).toString("base64") : (u8a) => {
     const maxargs = 4096;
     let strs = [];
@@ -613,7 +645,7 @@ var satorijs = (() => {
     }
     return bin;
   };
-  var _atob = _hasatob ? (asc) => atob(_tidyB64(asc)) : _hasBuffer ? (asc) => Buffer.from(asc, "base64").toString("binary") : atobPolyfill;
+  var _atob = typeof atob === "function" ? (asc) => atob(_tidyB64(asc)) : _hasBuffer ? (asc) => Buffer.from(asc, "base64").toString("binary") : atobPolyfill;
 
   // utils.ts
   function buildFetchOptions(method, options, bodyJson) {
@@ -1108,11 +1140,11 @@ var satorijs = (() => {
   };
 
   // session.ts
-  var Session = class {
+  var Session = class _Session {
     constructor(token, refresh_token) {
       this.token = token;
       this.refresh_token = refresh_token;
-      this.created_at = Math.floor(new Date().getTime() / 1e3);
+      this.created_at = Math.floor((/* @__PURE__ */ new Date()).getTime() / 1e3);
       this.update(token, refresh_token);
     }
     isexpired(currenttime) {
@@ -1144,7 +1176,7 @@ var satorijs = (() => {
       return JSON.parse(jsonPayload);
     }
     static restore(token, refreshToken) {
-      return new Session(token, refreshToken);
+      return new _Session(token, refreshToken);
     }
   };
 
