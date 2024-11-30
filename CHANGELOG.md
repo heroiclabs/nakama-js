@@ -4,6 +4,10 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
 ### Unreleased
+
+### Changed
+- Update dependencies across all packages.
+
 ### Fixed
 - Nakama: Fixed JWT decoding.
 - Satori: Fixed JWT decoding.
