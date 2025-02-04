@@ -32,6 +32,9 @@ import { buildFetchOptions } from './utils';
 import { encode } from 'js-base64';
 
 {{- range $classname, $definition := .Definitions}}
+		{{- if or (eq $classname "protobufAny") (eq $classname "rpcStatus") }}
+        {{- continue -}}
+		{{- end -}}		
     {{- if isRefToEnum $classname }}
 
 /**
@@ -44,8 +47,7 @@ export enum {{ $classname | title }}
     {{ $enum }} = {{ $idx }},
         {{- end }}
 }
-    {{- else }}
-
+{{- else }}
 /** {{$definition.Description}} */
 export interface {{$classname | title}} {
           {{- range $key, $property := $definition.Properties}}
@@ -118,11 +120,11 @@ export class {{ .Namespace }}Api {
           {{- if eq $parameter.In "path" -}}
     {{ $parameter.Type }},
           {{- else if eq $parameter.In "body" -}}
-        {{- if eq $parameter.Schema.Type "string" -}}
-    {{ $parameter.Schema.Type }},
-        {{- else -}}
-    {{ $parameter.Schema.Ref | cleanRef }},
-        {{- end }}
+    {{if $parameter.Schema.Ref}}
+        {{ $parameter.Schema.Ref | cleanRef }},
+    {{else}}
+        unknown,
+    {{- end}}
     {{- else if eq $parameter.Type "array" -}}
     Array<{{$parameter.Items.Type}}>,
       {{- else if eq $parameter.Type "object" -}}
