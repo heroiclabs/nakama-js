@@ -289,20 +289,22 @@ func enumSummary(def Definition) string {
 }
 
 func enumDescriptions(def Definition) (output []string) {
+	if def.Description == "" {
+		return make([]string, len(def.Enum))
+	}
 
 	split := strings.Split(def.Description, "\n")
 
-	if len(split) <= 0 {
-		panic("No newlines in enum description found.")
-	}
-
+	// Handle different description formats
 	if def.Title != "" {
 		return split
 	}
 
-	// quirk of swagger generation: if enum doesn't have a title
-	// then the title can be found as the first entry in the split description.
-	// so ignore for individual enum descriptions.
+	// Gracefully handle insufficient lines
+	if len(split) <= 2 {
+		return split
+	}
+
 	return split[2:]
 }
 
