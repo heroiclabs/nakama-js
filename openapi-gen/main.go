@@ -297,12 +297,11 @@ func enumDescriptions(def Definition) (output []string) {
 
 	split := strings.Split(def.Description, "\n")
 
-	// Handle different description formats
 	if def.Title != "" {
 		return split
 	}
 
-	// Gracefully handle insufficient lines
+	// handle no description cases
 	if len(split) <= 2 {
 		return split
 	}
