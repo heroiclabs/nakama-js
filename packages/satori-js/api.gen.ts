@@ -3,201 +3,240 @@
 
 import { buildFetchOptions } from './utils';
 import { encode } from 'js-base64';
+/**  */
+export interface FlagValueChangeReason {
+  // The name of the configuration that overrides the flag value.
+  name?: string;
+  // The type of the configuration that declared the override.
+  type?: FlagValueChangeReasonType;
+  // The variant name of the configuration that overrides the flag value.
+  variant_name?: string;
+}
 
+/**
+* 
+*/
+export enum FlagValueChangeReasonType
+{
+    /*  */
+    UNKNOWN = 0,
+    /*  */
+    FLAG_VARIANT = 1,
+    /*  */
+    LIVE_EVENT = 2,
+    /*  */
+    EXPERIMENT = 3,
+}
 /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 export interface ApiAuthenticateLogoutRequest {
-  //Refresh token to invalidate.
+  // Refresh token to invalidate.
   refresh_token?: string;
-  //Session token to log out.
+  // Session token to log out.
   token?: string;
 }
-
 /** Authenticate against the server with a refresh token. */
 export interface ApiAuthenticateRefreshRequest {
-  //Refresh token.
+  // Refresh token.
   refresh_token?: string;
 }
-
 /**  */
 export interface ApiAuthenticateRequest {
-  //Optional custom properties to update with this call. If not set, properties are left as they are on the server.
+  // Optional custom properties to update with this call. If not set, properties are left as they are on the server.
   custom?: Record<string, string>;
-  //Optional default properties to update with this call. If not set, properties are left as they are on the server.
+  // Optional default properties to update with this call. If not set, properties are left as they are on the server.
   default?: Record<string, string>;
-  //Identity ID. Must be between eight and 128 characters (inclusive). Must be an alphanumeric string with only underscores and hyphens allowed.
+  // Identity ID. Must be between eight and 128 characters (inclusive). Must be an alphanumeric string with only underscores and hyphens allowed.
   id?: string;
+  // Optional no_session modifies the request to only create/update an identity without creating a new session. If set to 'true' the response won't include a token and a refresh token.
+  no_session?: boolean;
 }
-
 /** A single event. Usually, but not necessarily, part of a batch. */
 export interface ApiEvent {
-  //Optional event ID assigned by the client, used to de-duplicate in retransmission scenarios. If not supplied the server will assign a randomly generated unique event identifier.
+  // Optional event ID assigned by the client, used to de-duplicate in retransmission scenarios. If not supplied the server will assign a randomly generated unique event identifier.
   id?: string;
-  //Event metadata, if any.
+  // Event metadata, if any.
   metadata?: Record<string, string>;
-  //Event name.
+  // Event name.
   name?: string;
-  //The time when the event was triggered on the producer side.
+  // The time when the event was triggered on the producer side.
   timestamp?: string;
-  //Optional value.
+  // Optional value.
   value?: string;
 }
-
 /**  */
 export interface ApiEventRequest {
-  //Some number of events produced by a client.
+  // Some number of events produced by a client.
   events?: Array<ApiEvent>;
 }
-
 /** An experiment that this user is partaking. */
 export interface ApiExperiment {
-  //
+  // 
   name?: string;
-  //Value associated with this Experiment.
+  // Value associated with this Experiment.
   value?: string;
 }
-
 /** All experiments that this identity is involved with. */
 export interface ApiExperimentList {
-  //All experiments for this identity.
+  // All experiments for this identity.
   experiments?: Array<ApiExperiment>;
 }
-
 /** Feature flag available to the identity. */
 export interface ApiFlag {
-  //Whether the value for this flag has conditionally changed from the default state.
+  // The origin of change on the flag value returned.
+  change_reason?: FlagValueChangeReason;
+  // Whether the value for this flag has conditionally changed from the default state.
   condition_changed?: boolean;
-  //
+  // 
   name?: string;
-  //Value associated with this flag.
+  // Value associated with this flag.
   value?: string;
 }
-
 /**  */
 export interface ApiFlagList {
-  //
+  // 
   flags?: Array<ApiFlag>;
 }
+/** Feature flag available to the identity. */
+export interface ApiFlagOverride {
+  // 
+  flag_name?: string;
+  // The list of configuration that affect the value of the flag.
+  overrides?: Array<ApiFlagOverrideValue>;
+}
+/**  */
+export interface ApiFlagOverrideList {
+  // 
+  flags?: Array<ApiFlagOverride>;
+}
 
+/**
+* 
+*/
+export enum ApiFlagOverrideType
+{
+    /*  */
+    FLAG = 0,
+    /*  */
+    FLAG_VARIANT = 1,
+    /*  */
+    LIVE_EVENT_FLAG = 2,
+    /*  */
+    LIVE_EVENT_FLAG_VARIANT = 3,
+    /*  */
+    EXPERIMENT_PHASE_VARIANT_FLAG = 4,
+}
+/** The details of a flag value override. */
+export interface ApiFlagOverrideValue {
+  // The create time of the configuration that overrides the flag.
+  create_time_sec?: string;
+  // The name of the configuration that overrides the flag value.
+  name?: string;
+  // The type of the configuration that declared the override.
+  type?: ApiFlagOverrideType;
+  // The value of the configuration that overrides the flag.
+  value?: string;
+  // The variant name of the configuration that overrides the flag value.
+  variant_name?: string;
+}
 /** A response containing all the messages for an identity. */
 export interface ApiGetMessageListResponse {
-  //Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
+  // Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
   cacheable_cursor?: string;
-  //The list of messages.
+  // The list of messages.
   messages?: Array<ApiMessage>;
-  //The cursor to send when retrieving the next page, if any.
+  // The cursor to send when retrieving the next page, if any.
   next_cursor?: string;
-  //The cursor to send when retrieving the previous page, if any.
+  // The cursor to send when retrieving the previous page, if any.
   prev_cursor?: string;
 }
-
 /** Enrich/replace the current session with a new ID. */
 export interface ApiIdentifyRequest {
-  //Optional custom properties to update with this call. If not set, properties are left as they are on the server.
+  // Optional custom properties to update with this call. If not set, properties are left as they are on the server.
   custom?: Record<string, string>;
-  //Optional default properties to update with this call. If not set, properties are left as they are on the server.
+  // Optional default properties to update with this call. If not set, properties are left as they are on the server.
   default?: Record<string, string>;
-  //Identity ID to enrich the current session and return a new session. Old session will no longer be usable.
+  // Identity ID to enrich the current session and return a new session. Old session will no longer be usable.
   id?: string;
 }
-
 /** A single live event. */
 export interface ApiLiveEvent {
-  //End time of current event run.
+  // End time of current event run.
   active_end_time_sec?: string;
-  //Start time of current event run.
+  // Start time of current event run.
   active_start_time_sec?: string;
-  //Description.
+  // Description.
   description?: string;
-  //The live event identifier.
+  // Duration in seconds.
+  duration_sec?: string;
+  // End time, 0 if it repeats forever.
+  end_time_sec?: string;
+  // The live event identifier.
   id?: string;
-  //Name.
+  // Name.
   name?: string;
-  //Event value.
+  // Reset CRON schedule, if configured.
+  reset_cron?: string;
+  // Start time.
+  start_time_sec?: string;
+  // Event value.
   value?: string;
 }
-
 /** List of Live events. */
 export interface ApiLiveEventList {
-  //Live events.
+  // Live events.
   live_events?: Array<ApiLiveEvent>;
 }
-
 /** A scheduled message. */
 export interface ApiMessage {
-  //The time the message was consumed by the identity.
+  // The time the message was consumed by the identity.
   consume_time?: string;
-  //The time the message was created.
+  // The time the message was created.
   create_time?: string;
-  //A key-value pairs of metadata.
+  // The message's unique identifier.
+  id?: string;
+  // The message's image url.
+  image_url?: string;
+  // A key-value pairs of metadata.
   metadata?: Record<string, string>;
-  //The time the message was read by the client.
+  // The time the message was read by the client.
   read_time?: string;
-  //The identifier of the schedule.
+  // The identifier of the schedule.
   schedule_id?: string;
-  //The send time for the message.
+  // The send time for the message.
   send_time?: string;
-  //The message's text.
+  // The message's text.
   text?: string;
-  //The time the message was updated.
+  // The message's title.
+  title?: string;
+  // The time the message was updated.
   update_time?: string;
 }
-
 /** Properties associated with an identity. */
 export interface ApiProperties {
-  //Event computed properties.
+  // Event computed properties.
   computed?: Record<string, string>;
-  //Event custom properties.
+  // Event custom properties.
   custom?: Record<string, string>;
-  //Event default properties.
+  // Event default properties.
   default?: Record<string, string>;
 }
-
 /** A session. */
 export interface ApiSession {
-  //Properties associated with this identity.
+  // Properties associated with this identity.
   properties?: ApiProperties;
-  //Refresh token.
+  // Refresh token.
   refresh_token?: string;
-  //Token credential.
+  // Token credential.
   token?: string;
 }
-
-/** The request to update the status of a message. */
-export interface ApiUpdateMessageRequest {
-  //The time the message was consumed by the identity.
-  consume_time?: string;
-  //The identifier of the messages.
-  id?: string;
-  //The time the message was read at the client.
-  read_time?: string;
-}
-
 /** Update Properties associated with this identity. */
 export interface ApiUpdatePropertiesRequest {
-  //Event custom properties.
+  // Event custom properties.
   custom?: Record<string, string>;
-  //Event default properties.
+  // Event default properties.
   default?: Record<string, string>;
-  //Informs the server to recompute the audience membership of the identity.
+  // Informs the server to recompute the audience membership of the identity.
   recompute?: boolean;
-}
-
-/**  */
-export interface ProtobufAny {
-  //
-  type_url?: string;
-  //
-  value?: string;
-}
-
-/**  */
-export interface RpcStatus {
-  //
-  code?: number;
-  //
-  details?: Array<ProtobufAny>;
-  //
-  message?: string;
 }
 
 export class SatoriApi {
@@ -269,7 +308,9 @@ export class SatoriApi {
   /** Authenticate against the server. */
   satoriAuthenticate(basicAuthUsername: string,
     basicAuthPassword: string,
-      body:ApiAuthenticateRequest,
+      body:
+        ApiAuthenticateRequest,
+    
       options: any = {}): Promise<ApiSession> {
     
     if (body === null || body === undefined) {
@@ -305,7 +346,9 @@ export class SatoriApi {
 
   /** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
   satoriAuthenticateLogout(bearerToken: string,
-      body:ApiAuthenticateLogoutRequest,
+      body:
+        ApiAuthenticateLogoutRequest,
+    
       options: any = {}): Promise<any> {
     
     if (body === null || body === undefined) {
@@ -342,7 +385,9 @@ export class SatoriApi {
   /** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
   satoriAuthenticateRefresh(basicAuthUsername: string,
     basicAuthPassword: string,
-      body:ApiAuthenticateRefreshRequest,
+      body:
+        ApiAuthenticateRefreshRequest,
+    
       options: any = {}): Promise<ApiSession> {
     
     if (body === null || body === undefined) {
@@ -378,7 +423,9 @@ export class SatoriApi {
 
   /** Publish an event for this session. */
   satoriEvent(bearerToken: string,
-      body:ApiEventRequest,
+      body:
+        ApiEventRequest,
+    
       options: any = {}): Promise<any> {
     
     if (body === null || body === undefined) {
@@ -482,9 +529,48 @@ export class SatoriApi {
     ]);
 }
 
+  /** List all available flags and their value overrides for this identity. */
+  satoriGetFlagOverrides(bearerToken: string,basicAuthUsername: string,
+		basicAuthPassword: string,
+      names?:Array<string>,
+      options: any = {}): Promise<ApiFlagOverrideList> {
+    
+    const urlPath = "/v1/flag/override";
+    const queryParams = new Map<string, any>();
+    queryParams.set("names", names);
+
+    let bodyJson : string = "";
+
+    const fullUrl = this.buildFullUrl(this.basePath, urlPath, queryParams);
+    const fetchOptions = buildFetchOptions("GET", options, bodyJson);
+		if (bearerToken) {
+				fetchOptions.headers["Authorization"] = "Bearer " + bearerToken;
+		}
+		if (basicAuthUsername) {
+			fetchOptions.headers["Authorization"] = "Basic " + encode(basicAuthUsername + ":" + basicAuthPassword);
+		}
+
+    return Promise.race([
+      fetch(fullUrl, fetchOptions).then((response) => {
+        if (response.status == 204) {
+          return response;
+        } else if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          throw response;
+        }
+      }),
+      new Promise((_, reject) =>
+        setTimeout(reject, this.timeoutMs, "Request timed out.")
+      ),
+    ]);
+}
+
   /** Enrich/replace the current session with new identifier. */
   satoriIdentify(bearerToken: string,
-      body:ApiIdentifyRequest,
+      body:
+        ApiIdentifyRequest,
+    
       options: any = {}): Promise<ApiSession> {
     
     if (body === null || body === undefined) {
@@ -658,7 +744,8 @@ export class SatoriApi {
   /** Updates a message for an identity. */
   satoriUpdateMessage(bearerToken: string,
       id:string,
-      body:ApiUpdateMessageRequest,
+      body:
+        unknown,
       options: any = {}): Promise<any> {
     
     if (id === null || id === undefined) {
@@ -729,7 +816,9 @@ export class SatoriApi {
 
   /** Update identity properties. */
   satoriUpdateProperties(bearerToken: string,
-      body:ApiUpdatePropertiesRequest,
+      body:
+        ApiUpdatePropertiesRequest,
+    
       options: any = {}): Promise<any> {
     
     if (body === null || body === undefined) {
