@@ -16,8 +16,9 @@
         "build": "npx tsc && node build.mjs"
     },
     "devDependencies": {
+        "protobufjs": "^7.5.6",
         "ts-proto": "^1.80.1",
-        "ts-proto-descriptors": "1.2.1"
+        "ts-proto-descriptors": "^1.16.0"
     },
     "keywords": [
         "app server",
