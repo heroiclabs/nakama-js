@@ -324,4 +324,16 @@ export class Client {
             return Promise.resolve(response !== undefined);
         });
     }
+
+    /** List all available flags and their value overrides for this identity. */
+    async getFlagOverrides(session : Session, names?: Array<string>) {
+      if (this.autoRefreshSession && session.refresh_token &&
+          session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
+          await this.sessionRefresh(session);
+      }
+
+      return this.apiClient.satoriGetFlagOverrides(session.token, this.apiKey, "", names).then((response) => {
+          return Promise.resolve(response !== undefined);
+      });
+  }
 };
