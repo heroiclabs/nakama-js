@@ -75,7 +75,7 @@ export interface RpcResponse {
   /** The identifier of the function. */
   id?: string;
   /** The payload of the function which must be a JSON object. */
-  payload?: object;
+  payload?: object | string;
 }
 
 /** Represents a complete leaderboard record with all scores and associated metadata. */
@@ -1739,27 +1739,28 @@ export class Client {
   }
 
   /** Execute an RPC function on the server. */
-  async rpc(session: Session, id: string, input: object): Promise<RpcResponse> {
+  async rpc(session: Session, id: string, input: object | string, rawInput: boolean = false, rawOutput: boolean = false): Promise<RpcResponse> {
     if (this.autoRefreshSession && session.refresh_token &&
         session.isexpired((Date.now() + this.expiredTimespanMs)/1000)) {
         await this.sessionRefresh(session);
     }
-
-    return this.apiClient.rpcFunc(session.token, id, JSON.stringify(input)).then((response: ApiRpc) => {
+    const inputStr = rawInput ? input as string : JSON.stringify(input);
+    return this.apiClient.rpcFunc(session.token, id, inputStr).then((response: ApiRpc) => {
       return Promise.resolve({
         id: response.id,
-        payload: (!response.payload) ? undefined : JSON.parse(response.payload)
+        payload: (!response.payload) ? undefined : (rawOutput ? response.payload : JSON.parse(response.payload))
       });
     });
   }
 
   /** Execute an RPC function on the server. */
-  async rpcHttpKey(httpKey: string, id: string, input?: object): Promise<RpcResponse> {
-    return this.apiClient.rpcFunc2("", id, input && JSON.stringify(input) || "", httpKey)
+  async rpcHttpKey(httpKey: string, id: string, input?: object | string, rawInput: boolean = false, rawOutput: boolean = false): Promise<RpcResponse> {
+    const inputStr = input && (rawInput ? input as string : JSON.stringify(input));
+    return this.apiClient.rpcFunc2("", id, inputStr || "", httpKey)
       .then((response: ApiRpc) => {
         return Promise.resolve({
           id: response.id,
-          payload: (!response.payload) ? undefined : JSON.parse(response.payload)
+          payload: (!response.payload) ? undefined : (rawOutput ? response.payload : JSON.parse(response.payload))
         });
       }).catch((err: any) => {
         throw err;
