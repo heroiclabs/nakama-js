@@ -11,6 +11,7 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - Nakama: Fixed JWT decoding.
 - Satori: Fixed JWT decoding.
+- Nakama: Socket requests now clear their response timeout once a response arrives, and drop the pending request when it times out.
 
 ### [2.8.0]
 ### Added

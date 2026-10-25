@@ -1027,10 +1027,14 @@ export class DefaultSocket implements Socket {
           }
 
           const cid = this.generatecid();
-          this.cIds[cid] = {resolve, reject};
-          setTimeout(() => {
+          const timer = setTimeout(() => {
+            delete this.cIds[cid];
             reject("The socket timed out while waiting for a response.")
           }, sendTimeout);
+          this.cIds[cid] = {
+            resolve: (value?: any) => { clearTimeout(timer); resolve(value); },
+            reject: (reason?: any) => { clearTimeout(timer); reject(reason); },
+          };
 
           /** Add id for promise executor. */
           untypedMessage.cid = cid;
