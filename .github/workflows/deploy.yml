@@ -1,0 +1,66 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy_staging:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Deploy to staging
+      env:
+        STAGING_SERVER: ${{ secrets.STAGING_SERVER }}
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        STAGING_DIR: ${{ secrets.STAGING_DIR }}
+      run: |
+        echo "$SSH_PRIVATE_KEY" > private_key
+        chmod 600 private_key
+        rsync -avz -e "ssh -i private_key" ./build/ user@${{ env.STAGING_SERVER }}:${{ env.STAGING_DIR }}
+        rm private_key
+
+  deploy_production:
+    needs: deploy_staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Deploy to production
+      env:
+        PRODUCTION_SERVER: ${{ secrets.PRODUCTION_SERVER }}
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        PRODUCTION_DIR: ${{ secrets.PRODUCTION_DIR }}
+      run: |
+        echo "$SSH_PRIVATE_KEY" > private_key
+        chmod 600 private_key
+        rsync -avz -e "ssh -i private_key" ./build/ user@${{ env.PRODUCTION_SERVER }}:${{ env.PRODUCTION_DIR }}
+        rm private_key
