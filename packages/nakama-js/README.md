@@ -194,7 +194,15 @@ To run tests you will need to run the server and database. Most tests are writte
 Tests are run against each workspace bundle; if you have made source code changes, you should `npm run build --workspace=<workspace>` prior to running tests.
 
 ```shell
-docker-compose -f ./docker-compose.yml up
+docker run -d --name njs-pg -e POSTGRES_PASSWORD=localdb -e POSTGRES_DB=nakama postgres:16
+docker run -d --name njs-nakama --link njs-pg:db -p 7349-7351:7349-7351 \
+  -v /path/to/nakama/data/modules:/nakama/data/modules --entrypoint /bin/sh heroiclabs/nakama:3.40.0 -ec \
+  '/nakama/nakama migrate up --database.address postgres:localdb@db:5432/nakama && exec /nakama/nakama \
+   --database.address postgres:localdb@db:5432/nakama --runtime.path /nakama/data/modules \
+   --matchmaker.rev_precision=true --matchmaker.rev_threshold 10 \
+   --session.token_expiry_sec 7200 --session.refresh_token_expiry_sec 7200'
+npm install
+npm run build --workspace=@heroiclabs/nakama-js --workspace=@heroiclabs/nakama-js-protobuf
 npm run test --workspace=@heroiclabs/nakama-js-test
 ```
 

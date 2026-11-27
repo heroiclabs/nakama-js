@@ -41,14 +41,14 @@ typeof global !== "undefined" && global || {};
 var support = {
   searchParams: "URLSearchParams" in g,
   iterable: "Symbol" in g && "iterator" in Symbol,
-  blob: "FileReader" in g && "Blob" in g && function() {
+  blob: "FileReader" in g && "Blob" in g && (function() {
     try {
       new Blob();
       return true;
     } catch (e) {
       return false;
     }
-  }(),
+  })(),
   formData: "FormData" in g,
   arrayBuffer: "ArrayBuffer" in g
 };
@@ -205,8 +205,8 @@ function readBlobAsText(blob) {
 function readArrayBufferAsText(buf) {
   var view = new Uint8Array(buf);
   var chars2 = new Array(view.length);
-  for (var i = 0; i < view.length; i++) {
-    chars2[i] = String.fromCharCode(view[i]);
+  for (var i2 = 0; i2 < view.length; i2++) {
+    chars2[i2] = String.fromCharCode(view[i2]);
   }
   return chars2.join("");
 }
@@ -352,12 +352,12 @@ function Request(input, options) {
   }
   this.method = normalizeMethod(options.method || this.method || "GET");
   this.mode = options.mode || this.mode || null;
-  this.signal = options.signal || this.signal || function() {
+  this.signal = options.signal || this.signal || (function() {
     if ("AbortController" in g) {
       var ctrl = new AbortController();
       return ctrl.signal;
     }
-  }();
+  })();
   this.referrer = null;
   if ((this.method === "GET" || this.method === "HEAD") && body) {
     throw new TypeError("Body not allowed for GET or HEAD requests");
@@ -568,7 +568,7 @@ var b64ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 var b64chs = Array.prototype.slice.call(b64ch);
 var b64tab = ((a) => {
   let tab = {};
-  a.forEach((c, i) => tab[c] = i);
+  a.forEach((c, i2) => tab[c] = i2);
   return tab;
 })(b64chs);
 var b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
@@ -579,8 +579,8 @@ var _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, "");
 var btoaPolyfill = (bin) => {
   let u32, c0, c1, c2, asc = "";
   const pad = bin.length % 3;
-  for (let i = 0; i < bin.length; ) {
-    if ((c0 = bin.charCodeAt(i++)) > 255 || (c1 = bin.charCodeAt(i++)) > 255 || (c2 = bin.charCodeAt(i++)) > 255)
+  for (let i2 = 0; i2 < bin.length; ) {
+    if ((c0 = bin.charCodeAt(i2++)) > 255 || (c1 = bin.charCodeAt(i2++)) > 255 || (c2 = bin.charCodeAt(i2++)) > 255)
       throw new TypeError("invalid character found");
     u32 = c0 << 16 | c1 << 8 | c2;
     asc += b64chs[u32 >> 18 & 63] + b64chs[u32 >> 12 & 63] + b64chs[u32 >> 6 & 63] + b64chs[u32 & 63];
@@ -591,8 +591,8 @@ var _btoa = typeof btoa === "function" ? (bin) => btoa(bin) : _hasBuffer ? (bin)
 var _fromUint8Array = _hasBuffer ? (u8a) => Buffer.from(u8a).toString("base64") : (u8a) => {
   const maxargs = 4096;
   let strs = [];
-  for (let i = 0, l = u8a.length; i < l; i += maxargs) {
-    strs.push(_fromCC.apply(null, u8a.subarray(i, i + maxargs)));
+  for (let i2 = 0, l = u8a.length; i2 < l; i2 += maxargs) {
+    strs.push(_fromCC.apply(null, u8a.subarray(i2, i2 + maxargs)));
   }
   return _btoa(strs.join(""));
 };
@@ -628,8 +628,8 @@ var atobPolyfill = (asc) => {
     throw new TypeError("malformed base64.");
   asc += "==".slice(2 - (asc.length & 3));
   let u24, bin = "", r1, r2;
-  for (let i = 0; i < asc.length; ) {
-    u24 = b64tab[asc.charAt(i++)] << 18 | b64tab[asc.charAt(i++)] << 12 | (r1 = b64tab[asc.charAt(i++)]) << 6 | (r2 = b64tab[asc.charAt(i++)]);
+  for (let i2 = 0; i2 < asc.length; ) {
+    u24 = b64tab[asc.charAt(i2++)] << 18 | b64tab[asc.charAt(i2++)] << 12 | (r1 = b64tab[asc.charAt(i2++)]) << 6 | (r2 = b64tab[asc.charAt(i2++)]);
     bin += r1 === 64 ? _fromCC(u24 >> 16 & 255) : r2 === 64 ? _fromCC(u24 >> 16 & 255, u24 >> 8 & 255) : _fromCC(u24 >> 16 & 255, u24 >> 8 & 255, u24 & 255);
   }
   return bin;
@@ -3247,12 +3247,12 @@ for (i = 0; i < chars.length; i++) {
 }
 var i;
 var encode2 = function(arraybuffer) {
-  var bytes = new Uint8Array(arraybuffer), i, len = bytes.length, base64 = "";
-  for (i = 0; i < len; i += 3) {
-    base64 += chars[bytes[i] >> 2];
-    base64 += chars[(bytes[i] & 3) << 4 | bytes[i + 1] >> 4];
-    base64 += chars[(bytes[i + 1] & 15) << 2 | bytes[i + 2] >> 6];
-    base64 += chars[bytes[i + 2] & 63];
+  var bytes = new Uint8Array(arraybuffer), i2, len = bytes.length, base64 = "";
+  for (i2 = 0; i2 < len; i2 += 3) {
+    base64 += chars[bytes[i2] >> 2];
+    base64 += chars[(bytes[i2] & 3) << 4 | bytes[i2 + 1] >> 4];
+    base64 += chars[(bytes[i2 + 1] & 15) << 2 | bytes[i2 + 2] >> 6];
+    base64 += chars[bytes[i2 + 2] & 63];
   }
   if (len % 3 === 2) {
     base64 = base64.substring(0, base64.length - 1) + "=";
@@ -3262,7 +3262,7 @@ var encode2 = function(arraybuffer) {
   return base64;
 };
 var decode3 = function(base64) {
-  var bufferLength = base64.length * 0.75, len = base64.length, i, p = 0, encoded1, encoded2, encoded3, encoded4;
+  var bufferLength = base64.length * 0.75, len = base64.length, i2, p = 0, encoded1, encoded2, encoded3, encoded4;
   if (base64[base64.length - 1] === "=") {
     bufferLength--;
     if (base64[base64.length - 2] === "=") {
@@ -3270,11 +3270,11 @@ var decode3 = function(base64) {
     }
   }
   var arraybuffer = new ArrayBuffer(bufferLength), bytes = new Uint8Array(arraybuffer);
-  for (i = 0; i < len; i += 4) {
-    encoded1 = lookup[base64.charCodeAt(i)];
-    encoded2 = lookup[base64.charCodeAt(i + 1)];
-    encoded3 = lookup[base64.charCodeAt(i + 2)];
-    encoded4 = lookup[base64.charCodeAt(i + 3)];
+  for (i2 = 0; i2 < len; i2 += 4) {
+    encoded1 = lookup[base64.charCodeAt(i2)];
+    encoded2 = lookup[base64.charCodeAt(i2 + 1)];
+    encoded3 = lookup[base64.charCodeAt(i2 + 2)];
+    encoded4 = lookup[base64.charCodeAt(i2 + 3)];
     bytes[p++] = encoded1 << 2 | encoded2 >> 4;
     bytes[p++] = (encoded2 & 15) << 4 | encoded3 >> 2;
     bytes[p++] = (encoded3 & 3) << 6 | encoded4 & 63;
