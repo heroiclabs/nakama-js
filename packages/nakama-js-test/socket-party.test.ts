@@ -433,7 +433,7 @@ describe('Party Tests', () => {
       await socket1.connect(session1, false);
       await socket2.connect(session2, false);
 
-      const party = await socket1.createParty(true, 1);
+      const party = await socket1.createParty(true, 2);
 
       await socket2.joinParty(party.party_id);
 

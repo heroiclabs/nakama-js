@@ -199,7 +199,7 @@ docker run -d --name njs-nakama --link njs-pg:db -p 7349-7351:7349-7351 \
   -v /path/to/nakama/data/modules:/nakama/data/modules --entrypoint /bin/sh heroiclabs/nakama:3.40.0 -ec \
   '/nakama/nakama migrate up --database.address postgres:localdb@db:5432/nakama && exec /nakama/nakama \
    --database.address postgres:localdb@db:5432/nakama --runtime.path /nakama/data/modules \
-   --matchmaker.rev_precision true --matchmaker.rev_threshold 10 \
+   --matchmaker.rev_precision=true --matchmaker.rev_threshold 10 \
    --session.token_expiry_sec 7200 --session.refresh_token_expiry_sec 7200'
 npm install
 npm run build --workspace=@heroiclabs/nakama-js --workspace=@heroiclabs/nakama-js-protobuf

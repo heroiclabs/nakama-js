@@ -288,6 +288,7 @@ describe('Match Tests', () => {
       const session = await client.authenticateCustom(customid);
       await socket.connect(session, false);
       await socket.rpc(id, "{}");
+      await globalThis.timeoutPromise(1500); // match label index updates every 1s (match.label_update_interval_ms)
       return await client.listMatches(session, 1, true)
     }, customid, ID, adapter);
 
@@ -350,6 +351,7 @@ describe('Match Tests', () => {
       var label = { convo_ids: [convoId1, convoId2, convoId3] };
       var data = { label: JSON.stringify(label) }  // needs to be string
       await socket.rpc(id, JSON.stringify(data));
+      await globalThis.timeoutPromise(1500); // match label index updates every 1s (match.label_update_interval_ms)
 
       var query = "+label.convo_ids:" + convoId2;
       return await client.listMatches(session, 1, true, "", 0, 100, query)
