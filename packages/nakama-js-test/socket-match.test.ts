@@ -315,6 +315,7 @@ describe('Match Tests', () => {
       var label = { skill: 60 };
       var data = { label: JSON.stringify(label) }  // needs to be string
       await socket.rpc(id, JSON.stringify(data));
+      await globalThis.timeoutPromise(1500); // match label index updates every 1s (match.label_update_interval_ms)
 
       var query = "+label.skill:>=50";
       return await client.listMatches(session, 1, true, "", 0, 100, query)
