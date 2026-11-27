@@ -23,9 +23,13 @@
   "devDependencies": {
     "axios": ">=1.15.2",
     "esbuild": "^0.28.0",
-    "fast-uri": ">=3.1.2",
     "typedoc": "^0.26.11",
     "typescript": "^5.6.3"
+  },
+  "overrides": {
+    "fast-uri": "^3.1.9",
+    "js-yaml@^3": "^3.15.2",
+    "js-yaml@^4": "^4.3.2"
   },
   "private": true,
   "workspaces": [
